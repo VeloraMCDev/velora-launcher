@@ -1,0 +1,467 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "host_revision": "27965f28f3e8704cfc5e4207f8b24dffe222bcb7",
+  "reviewed_host_working_tree": true,
+  "visibility_verified": "PRIVATE",
+  "publication_decision": {
+    "owner_approved_on": "2026-10-08",
+    "scope": "complete-product-source",
+    "extraction_visibility_is_historical": true,
+    "license_change": false
+  },
+  "files": [
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/ActionPoller.java",
+      "source_sha256": "95c707790bec6649ccfcbe747faf3cba138ab66cf9732d27a93efa0de1c4c10f",
+      "destination": "gameplay/src/main/java/net/scopenet/core/ActionPoller.java",
+      "output_sha256_lf": "95c707790bec6649ccfcbe747faf3cba138ab66cf9732d27a93efa0de1c4c10f"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/BoardCommands.java",
+      "source_sha256": "497fa247be25a2e4217effd373a66dbbf00dcac52eff329af1b37538376c26bf",
+      "destination": "gameplay/src/main/java/net/scopenet/core/BoardCommands.java",
+      "output_sha256_lf": "497fa247be25a2e4217effd373a66dbbf00dcac52eff329af1b37538376c26bf"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/ClientLink.java",
+      "source_sha256": "eb1f5c2194c26d2d5c17bc6ed36bf6c051d6fc7e559e14004b30a7c6de10e590",
+      "destination": "gameplay/src/main/java/net/scopenet/core/ClientLink.java",
+      "output_sha256_lf": "5a5dce942f6527ab6d4057c4e31371045a782146f381e21e7f4784e991a3cbdb"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Cmd.java",
+      "source_sha256": "df9fe8542b128258a28ab08bd678352d4d9431a83bacb20665f0e50825b33513",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Cmd.java",
+      "output_sha256_lf": "df9fe8542b128258a28ab08bd678352d4d9431a83bacb20665f0e50825b33513"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/CommandSet.java",
+      "source_sha256": "5bb4cbea687fe8421c1e9aa7e7badc7ad7bc7d16a0edd16407656ac383f27ce9",
+      "destination": "gameplay/src/main/java/net/scopenet/core/CommandSet.java",
+      "output_sha256_lf": "5bb4cbea687fe8421c1e9aa7e7badc7ad7bc7d16a0edd16407656ac383f27ce9"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/CommandSuggestions.java",
+      "source_sha256": "004f335dabe30fdb538baf2a618a2e016b99b481d8cc6b5fceca139c6e58f489",
+      "destination": "gameplay/src/main/java/net/scopenet/core/CommandSuggestions.java",
+      "output_sha256_lf": "004f335dabe30fdb538baf2a618a2e016b99b481d8cc6b5fceca139c6e58f489"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/ContentDef.java",
+      "source_sha256": "9c8647dfeee80c5fff92daa4b9d4504ce3fb94136b4469c9d98dec0f9be8da45",
+      "destination": "gameplay/src/main/java/net/scopenet/core/ContentDef.java",
+      "output_sha256_lf": "9c8647dfeee80c5fff92daa4b9d4504ce3fb94136b4469c9d98dec0f9be8da45"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/CoreCommand.java",
+      "source_sha256": "a4ae8f1a7dda41b2bca89a4ee91c0970a07d40ac2570de0a4d03fd28b7de2e21",
+      "destination": "gameplay/src/main/java/net/scopenet/core/CoreCommand.java",
+      "output_sha256_lf": "a4ae8f1a7dda41b2bca89a4ee91c0970a07d40ac2570de0a4d03fd28b7de2e21"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/CorePlayer.java",
+      "source_sha256": "0d7a8db2242d97b1648436fa20601bfa31edb3c71e612a39e90a6078c63ae27f",
+      "destination": "gameplay/src/main/java/net/scopenet/core/CorePlayer.java",
+      "output_sha256_lf": "0d7a8db2242d97b1648436fa20601bfa31edb3c71e612a39e90a6078c63ae27f"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/CosmeticCommands.java",
+      "source_sha256": "df41267280bfcb93f90790490dc466052c7ba103e9cda1072676bf4578763cb6",
+      "destination": "gameplay/src/main/java/net/scopenet/core/CosmeticCommands.java",
+      "output_sha256_lf": "df41267280bfcb93f90790490dc466052c7ba103e9cda1072676bf4578763cb6"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/EconomyCommands.java",
+      "source_sha256": "37b86e5b28f55720aee84d01618d4b6d680af86f58aa7b939473edbd1f2bebb2",
+      "destination": "gameplay/src/main/java/net/scopenet/core/EconomyCommands.java",
+      "output_sha256_lf": "810fcb131d9a3b536c351d274ed76a7558b7e5cb602e6eed8d3462ab73d78d63"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Env.java",
+      "source_sha256": "3bfdcd939eff89f5fe3fc1cf14dd0131ff7010115bd6525b1be6104e861add32",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Env.java",
+      "output_sha256_lf": "3bfdcd939eff89f5fe3fc1cf14dd0131ff7010115bd6525b1be6104e861add32"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/EssentialsCommands.java",
+      "source_sha256": "d2fcbda496b4098b40aeb8655729b1856d7f48d94e87d8bc9623ffa8cb7b40af",
+      "destination": "gameplay/src/main/java/net/scopenet/core/EssentialsCommands.java",
+      "output_sha256_lf": "d2fcbda496b4098b40aeb8655729b1856d7f48d94e87d8bc9623ffa8cb7b40af"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/EssentialsConfig.java",
+      "source_sha256": "63cb00b973dd891e44099b70de8c7bd914c8c43d51fb722f16e527b5fb5429c9",
+      "destination": "gameplay/src/main/java/net/scopenet/core/EssentialsConfig.java",
+      "output_sha256_lf": "63cb00b973dd891e44099b70de8c7bd914c8c43d51fb722f16e527b5fb5429c9"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/EssentialsService.java",
+      "source_sha256": "5d43fb9c624a880cabd4df914e5e2731a2983b80708956a877e0c62d52347f8f",
+      "destination": "gameplay/src/main/java/net/scopenet/core/EssentialsService.java",
+      "output_sha256_lf": "5d43fb9c624a880cabd4df914e5e2731a2983b80708956a877e0c62d52347f8f"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Features.java",
+      "source_sha256": "15bd14bc4afed1ab8ed06e9dacbe6f45c46886b4290a6313bae6484819560e52",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Features.java",
+      "output_sha256_lf": "15bd14bc4afed1ab8ed06e9dacbe6f45c46886b4290a6313bae6484819560e52"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Format.java",
+      "source_sha256": "46769947e9ce028fbe8e69e8f6744cf55e319ab8b7f4ae5e95f4ceb231913572",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Format.java",
+      "output_sha256_lf": "46769947e9ce028fbe8e69e8f6744cf55e319ab8b7f4ae5e95f4ceb231913572"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/GuildCommands.java",
+      "source_sha256": "f324287addc4e246fbb0359afaaf2e77d7da9ed27da60cca71a94c036aefae82",
+      "destination": "gameplay/src/main/java/net/scopenet/core/GuildCommands.java",
+      "output_sha256_lf": "e84cee25911f942feda3e3b36b5584d550e6aa4048f29325d060aa5df1a6c932"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/GuildManage.java",
+      "source_sha256": "3b9bed0d89e66544689f5211116a06a191cb3c959854e40b000800ea9da462b5",
+      "destination": "gameplay/src/main/java/net/scopenet/core/GuildManage.java",
+      "output_sha256_lf": "3b9bed0d89e66544689f5211116a06a191cb3c959854e40b000800ea9da462b5"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Item.java",
+      "source_sha256": "17cfecdaed3e77577497f932f06f2a432d5080cbf55c32d24555e43e1ac6338c",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Item.java",
+      "output_sha256_lf": "17cfecdaed3e77577497f932f06f2a432d5080cbf55c32d24555e43e1ac6338c"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/ItemSpec.java",
+      "source_sha256": "8910ad66fdf8d6c23e45f98162b4a7e3046549b05f9b62460ad6310e64c56127",
+      "destination": "gameplay/src/main/java/net/scopenet/core/ItemSpec.java",
+      "output_sha256_lf": "8910ad66fdf8d6c23e45f98162b4a7e3046549b05f9b62460ad6310e64c56127"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/ItemValues.java",
+      "source_sha256": "073e13cc330b6f43a2b27c4cee6364005256725531f8e9dcc8503d96e1c39445",
+      "destination": "gameplay/src/main/java/net/scopenet/core/ItemValues.java",
+      "output_sha256_lf": "073e13cc330b6f43a2b27c4cee6364005256725531f8e9dcc8503d96e1c39445"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Jobs.java",
+      "source_sha256": "a519ac4b11919ec10ce4531ad2147c660066cb0f2c6847f8f4f40a25dd1249f5",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Jobs.java",
+      "output_sha256_lf": "a519ac4b11919ec10ce4531ad2147c660066cb0f2c6847f8f4f40a25dd1249f5"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Limits.java",
+      "source_sha256": "ceb828e0bfb48ae21769e99cfa7b707d6e6b6f686c3c74db6361213e36b61766",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Limits.java",
+      "output_sha256_lf": "ceb828e0bfb48ae21769e99cfa7b707d6e6b6f686c3c74db6361213e36b61766"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Panel.java",
+      "source_sha256": "f49591bf317a3cdd9651fe96081c9b66a154e1b1aac2f7e990e9b9540403e33b",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Panel.java",
+      "output_sha256_lf": "f49591bf317a3cdd9651fe96081c9b66a154e1b1aac2f7e990e9b9540403e33b"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/PanelAdapter.java",
+      "source_sha256": "3f8154cbbee8bf0375be09ba63e92a3e16962fd2a876d80795fc92d6b312b548",
+      "destination": "gameplay/src/main/java/net/scopenet/core/PanelAdapter.java",
+      "output_sha256_lf": "3f8154cbbee8bf0375be09ba63e92a3e16962fd2a876d80795fc92d6b312b548"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/PanelMessages.java",
+      "source_sha256": "35fa0b9c5852ae457cb706a6083800fc3e56dd1eaf7107bfbfe978f8626e2123",
+      "destination": "gameplay/src/main/java/net/scopenet/core/PanelMessages.java",
+      "output_sha256_lf": "ac2cc203da4064428a527a015d3a0bb7a502ff86f124ed23ae1688a9048fd565"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Placeholders.java",
+      "source_sha256": "3aa37ded965ee69dd257d6e37004cd08499139a61e6960ab2d789c8ccd5c7ac8",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Placeholders.java",
+      "output_sha256_lf": "3aa37ded965ee69dd257d6e37004cd08499139a61e6960ab2d789c8ccd5c7ac8"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Platform.java",
+      "source_sha256": "29f78a33758b9c8e2ef18a19daa5c66d3c200883c887118a91b46445d11e145f",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Platform.java",
+      "output_sha256_lf": "29f78a33758b9c8e2ef18a19daa5c66d3c200883c887118a91b46445d11e145f"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/PlayerCache.java",
+      "source_sha256": "945e8991e232d5ad8914ed83f435248233777613f4321723f93f22ad3221d958",
+      "destination": "gameplay/src/main/java/net/scopenet/core/PlayerCache.java",
+      "output_sha256_lf": "945e8991e232d5ad8914ed83f435248233777613f4321723f93f22ad3221d958"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Pos.java",
+      "source_sha256": "e32c2f716a6ed359c9f2ded29579ad8edebbc1c1f4967f0f1cd5ff80df6b9b49",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Pos.java",
+      "output_sha256_lf": "e32c2f716a6ed359c9f2ded29579ad8edebbc1c1f4967f0f1cd5ff80df6b9b49"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/ResourcePackPoller.java",
+      "source_sha256": "c551d421facd0e3bf67c344a777f0133d6e4943f7bc716a4db6bbbdb78d4a6bd",
+      "destination": "gameplay/src/main/java/net/scopenet/core/ResourcePackPoller.java",
+      "output_sha256_lf": "c551d421facd0e3bf67c344a777f0133d6e4943f7bc716a4db6bbbdb78d4a6bd"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/RewardPoller.java",
+      "source_sha256": "03c3d32f26084059eaf8c45707f0b219ab2703950a04a68fe2c4b7ec610e73e4",
+      "destination": "gameplay/src/main/java/net/scopenet/core/RewardPoller.java",
+      "output_sha256_lf": "03c3d32f26084059eaf8c45707f0b219ab2703950a04a68fe2c4b7ec610e73e4"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/RewardRules.java",
+      "source_sha256": "2fc9c342662c2a815800210bca5d27768e641d91bcd87e144af9ef99eadb77a4",
+      "destination": "gameplay/src/main/java/net/scopenet/core/RewardRules.java",
+      "output_sha256_lf": "2fc9c342662c2a815800210bca5d27768e641d91bcd87e144af9ef99eadb77a4"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/ShopPoints.java",
+      "source_sha256": "c091e7a4d3d0e11f6f8692e48ee19be4d060e53572119722b44c76ba1d02ef5e",
+      "destination": "gameplay/src/main/java/net/scopenet/core/ShopPoints.java",
+      "output_sha256_lf": "c091e7a4d3d0e11f6f8692e48ee19be4d060e53572119722b44c76ba1d02ef5e"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Utilities.java",
+      "source_sha256": "dc8c94ea96920b23140e7c67bb595f21e6704ec06eb1cd72aacc894a1edf75e6",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Utilities.java",
+      "output_sha256_lf": "dc8c94ea96920b23140e7c67bb595f21e6704ec06eb1cd72aacc894a1edf75e6"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/UtilityHub.java",
+      "source_sha256": "c654b1f6e5200c80d2b77466b692a3918caef52694f3f4fc7e9777c962b200e6",
+      "destination": "gameplay/src/main/java/net/scopenet/core/UtilityHub.java",
+      "output_sha256_lf": "c654b1f6e5200c80d2b77466b692a3918caef52694f3f4fc7e9777c962b200e6"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/UtilityStore.java",
+      "source_sha256": "a9fa2644bd02e9f1d6d2c9717316ead862c3edf2404272dc5a6697ab936fcfbf",
+      "destination": "gameplay/src/main/java/net/scopenet/core/UtilityStore.java",
+      "output_sha256_lf": "a9fa2644bd02e9f1d6d2c9717316ead862c3edf2404272dc5a6697ab936fcfbf"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/VaultDeliveries.java",
+      "source_sha256": "5a1304dc6841fca1d2c9cb3bc8500e7aa1709e1ba4125c2fdb533004347fe989",
+      "destination": "gameplay/src/main/java/net/scopenet/core/VaultDeliveries.java",
+      "output_sha256_lf": "5a1304dc6841fca1d2c9cb3bc8500e7aa1709e1ba4125c2fdb533004347fe989"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/Wire.java",
+      "source_sha256": "27340f65db707b9fed686fb9990e0d6dee6b36baacac36ab94b5b9e144986f15",
+      "destination": "gameplay/src/main/java/net/scopenet/core/Wire.java",
+      "output_sha256_lf": "27340f65db707b9fed686fb9990e0d6dee6b36baacac36ab94b5b9e144986f15"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/map/ChunkRegions.java",
+      "source_sha256": "5e535442d0d3d198b7cd20a6b4585b1b016e50955da76f056c447fca4c3cf934",
+      "destination": "gameplay/src/main/java/net/scopenet/core/map/ChunkRegions.java",
+      "output_sha256_lf": "5e535442d0d3d198b7cd20a6b4585b1b016e50955da76f056c447fca4c3cf934"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/map/MapData.java",
+      "source_sha256": "343ade9eab07486838799ba28cd794a8cc0b47bcb4147ea0323b9e625a02fa3b",
+      "destination": "gameplay/src/main/java/net/scopenet/core/map/MapData.java",
+      "output_sha256_lf": "343ade9eab07486838799ba28cd794a8cc0b47bcb4147ea0323b9e625a02fa3b"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/map/MapModel.java",
+      "source_sha256": "59ab7f6d9a54cb8784b996f8e8c876d2107edccb1a4fceabe8ae10155818dc86",
+      "destination": "gameplay/src/main/java/net/scopenet/core/map/MapModel.java",
+      "output_sha256_lf": "59ab7f6d9a54cb8784b996f8e8c876d2107edccb1a4fceabe8ae10155818dc86"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/map/MapOverlay.java",
+      "source_sha256": "6de93e0e4703c97686a79e8ede60e39aee965b2cb84a5900efe6df284c659459",
+      "destination": "gameplay/src/main/java/net/scopenet/core/map/MapOverlay.java",
+      "output_sha256_lf": "6de93e0e4703c97686a79e8ede60e39aee965b2cb84a5900efe6df284c659459"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/map/MapService.java",
+      "source_sha256": "1b9702ff649993e6139c74df36f6840e703f621c7861e45ca483e7c2d45a2026",
+      "destination": "gameplay/src/main/java/net/scopenet/core/map/MapService.java",
+      "output_sha256_lf": "1b9702ff649993e6139c74df36f6840e703f621c7861e45ca483e7c2d45a2026"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/core/map/MapSource.java",
+      "source_sha256": "00ac72dea05d4f0678ecbedd4cbc8df6628919ce9faf8298cf343fd03adb5d8e",
+      "destination": "gameplay/src/main/java/net/scopenet/core/map/MapSource.java",
+      "output_sha256_lf": "00ac72dea05d4f0678ecbedd4cbc8df6628919ce9faf8298cf343fd03adb5d8e"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/integration/Activity.java",
+      "source_sha256": "7a16f94ea15a1ac2d7868ea6b8eda1c63f33be2c5ddc6b8b9d623be75130a90e",
+      "destination": "gameplay/src/main/java/net/scopenet/integration/Activity.java",
+      "output_sha256_lf": "7a16f94ea15a1ac2d7868ea6b8eda1c63f33be2c5ddc6b8b9d623be75130a90e"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/integration/ChatLayout.java",
+      "source_sha256": "12ac17d9919aeaaa955f95339b57b6fcd68805d24e6d02917a728a279678d8ac",
+      "destination": "gameplay/src/main/java/net/scopenet/integration/ChatLayout.java",
+      "output_sha256_lf": "12ac17d9919aeaaa955f95339b57b6fcd68805d24e6d02917a728a279678d8ac"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/integration/ChunkCheckResult.java",
+      "source_sha256": "486735ebc0c13b013ce963eb83f6af9d7f7af0b69b7b07b8248c82ce5f47ea86",
+      "destination": "gameplay/src/main/java/net/scopenet/integration/ChunkCheckResult.java",
+      "output_sha256_lf": "486735ebc0c13b013ce963eb83f6af9d7f7af0b69b7b07b8248c82ce5f47ea86"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/integration/ClaimIndex.java",
+      "source_sha256": "b15dc9e04e3072dd9490f17861d04ff02f6d25e3e19541eaacc1adb913e14e5e",
+      "destination": "gameplay/src/main/java/net/scopenet/integration/ClaimIndex.java",
+      "output_sha256_lf": "b15dc9e04e3072dd9490f17861d04ff02f6d25e3e19541eaacc1adb913e14e5e"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/integration/Integration.java",
+      "source_sha256": "7036c0c8b26178c2e896a3604a4c533e5495033adab8bc2a75b1cb19dc074c9e",
+      "destination": "gameplay/src/main/java/net/scopenet/integration/Integration.java",
+      "output_sha256_lf": "6ea338855f0704c9e4bcf8c69007b8c7619cd5e4c029708b8b0a94a8c2c6ed4c"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/integration/OperationLedger.java",
+      "source_sha256": "dae64eee838494cd7e04a1f76f9e3f9c0727687e0421c50d672dedeed99851dc",
+      "destination": "gameplay/src/main/java/net/scopenet/integration/OperationLedger.java",
+      "output_sha256_lf": "497362cebe381bcd705fbcb85dd88d20ab75426c40de6baaebad5e94ade08a79"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/integration/PanelClient.java",
+      "source_sha256": "20e4e6aecfd6e094498f07359753e9d75ed238cdba3625d6a0c911bccffca54e",
+      "destination": "gameplay/src/main/java/net/scopenet/integration/PanelClient.java",
+      "output_sha256_lf": "c07ddbabc00d3fd156275dc8828a4050299e0cb074d1c201fb8c868dc0de93f6"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/integration/Settings.java",
+      "source_sha256": "3141c160282fb6da53215a75b61810a972f9133f59f316cb28faa31c449182b7",
+      "destination": "gameplay/src/main/java/net/scopenet/integration/Settings.java",
+      "output_sha256_lf": "a12e6fe88eed90257bf358d9c9cf73e86d516c5b749d5efe7b346fee874eede2"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/BoardTest.java",
+      "source_sha256": "3e2f7b76d428f839732c696b66cc8af1439614a18dba57d83c374b3ca71c690b",
+      "destination": "gameplay/src/test/java/net/scopenet/core/BoardTest.java",
+      "output_sha256_lf": "3e2f7b76d428f839732c696b66cc8af1439614a18dba57d83c374b3ca71c690b"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/ChatLayoutTest.java",
+      "source_sha256": "a61ab883a7aa1b25503f1a9c2408d13d63b2aa03c870044a7fecf37874922edd",
+      "destination": "gameplay/src/test/java/net/scopenet/core/ChatLayoutTest.java",
+      "output_sha256_lf": "a61ab883a7aa1b25503f1a9c2408d13d63b2aa03c870044a7fecf37874922edd"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/CommandSuggestionsTest.java",
+      "source_sha256": "90d657e56c09ea94b23468152cc59894dd8ca8302a4158256d891a45f495351e",
+      "destination": "gameplay/src/test/java/net/scopenet/core/CommandSuggestionsTest.java",
+      "output_sha256_lf": "90d657e56c09ea94b23468152cc59894dd8ca8302a4158256d891a45f495351e"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/CommandsTest.java",
+      "source_sha256": "e81ff4fad1fff5fdec69dfbafac19788837077bc286639b619d84f5a0ef54fc7",
+      "destination": "gameplay/src/test/java/net/scopenet/core/CommandsTest.java",
+      "output_sha256_lf": "e81ff4fad1fff5fdec69dfbafac19788837077bc286639b619d84f5a0ef54fc7"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/ContentDefTest.java",
+      "source_sha256": "2198827defc11e29a7ebc980320c1a23a98fd0cab0adb3baa38f6016d8822ecd",
+      "destination": "gameplay/src/test/java/net/scopenet/core/ContentDefTest.java",
+      "output_sha256_lf": "2198827defc11e29a7ebc980320c1a23a98fd0cab0adb3baa38f6016d8822ecd"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/EssentialsServiceTest.java",
+      "source_sha256": "5c16a835e3eb4f7caa7da4049d7f2ff6e64d8f2a11878fc2f7262169501a0020",
+      "destination": "gameplay/src/test/java/net/scopenet/core/EssentialsServiceTest.java",
+      "output_sha256_lf": "5c16a835e3eb4f7caa7da4049d7f2ff6e64d8f2a11878fc2f7262169501a0020"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/Kit.java",
+      "source_sha256": "f757f1a3fa3d614746154e99494f045e6a3bf5f72a88baec7b97876166c73018",
+      "destination": "gameplay/src/test/java/net/scopenet/core/Kit.java",
+      "output_sha256_lf": "f757f1a3fa3d614746154e99494f045e6a3bf5f72a88baec7b97876166c73018"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/LimitsTest.java",
+      "source_sha256": "1feca0beecc531b238350ce839f809e08c3871f9e937ae4a3a9c880c86b5a8e9",
+      "destination": "gameplay/src/test/java/net/scopenet/core/LimitsTest.java",
+      "output_sha256_lf": "1feca0beecc531b238350ce839f809e08c3871f9e937ae4a3a9c880c86b5a8e9"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/LinkTest.java",
+      "source_sha256": "5d0830d2672bcd9943758dfa939e25092fee2692e8aa70644d01bd1f69096626",
+      "destination": "gameplay/src/test/java/net/scopenet/core/LinkTest.java",
+      "output_sha256_lf": "5d0830d2672bcd9943758dfa939e25092fee2692e8aa70644d01bd1f69096626"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/MapOverlayTest.java",
+      "source_sha256": "48c8430b3c236d8d0932071d09260d4c7686bf6497f080615dd740b76f4a1cd5",
+      "destination": "gameplay/src/test/java/net/scopenet/core/MapOverlayTest.java",
+      "output_sha256_lf": "48c8430b3c236d8d0932071d09260d4c7686bf6497f080615dd740b76f4a1cd5"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/MapTest.java",
+      "source_sha256": "e5aecefacee119a0d7d0b73a0003f76eccd1a097fc2c7ef44d87b73e9e8462aa",
+      "destination": "gameplay/src/test/java/net/scopenet/core/MapTest.java",
+      "output_sha256_lf": "e5aecefacee119a0d7d0b73a0003f76eccd1a097fc2c7ef44d87b73e9e8462aa"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/ResourcePackPollerTest.java",
+      "source_sha256": "9706da1f74bb0344f002dc56a3a7915f9636c9b96b76c92d9915ba7ab4f88edc",
+      "destination": "gameplay/src/test/java/net/scopenet/core/ResourcePackPollerTest.java",
+      "output_sha256_lf": "9706da1f74bb0344f002dc56a3a7915f9636c9b96b76c92d9915ba7ab4f88edc"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/RewardPollerTest.java",
+      "source_sha256": "eae57b7711d88e676982bafad0bbec5346fe61b0b87fc15736a0a1e13fbcbb26",
+      "destination": "gameplay/src/test/java/net/scopenet/core/RewardPollerTest.java",
+      "output_sha256_lf": "eae57b7711d88e676982bafad0bbec5346fe61b0b87fc15736a0a1e13fbcbb26"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/ShopkeeperTest.java",
+      "source_sha256": "1ccaded126a4f85ffbc17711ea5fd0b832c104caa03876eca2b62448cbdbef48",
+      "destination": "gameplay/src/test/java/net/scopenet/core/ShopkeeperTest.java",
+      "output_sha256_lf": "1ccaded126a4f85ffbc17711ea5fd0b832c104caa03876eca2b62448cbdbef48"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/core/UtilityHubTest.java",
+      "source_sha256": "cd1a40b929c4046f4880982d5a732ee5798c916cb83825d3ec19cfac3207b806",
+      "destination": "gameplay/src/test/java/net/scopenet/core/UtilityHubTest.java",
+      "output_sha256_lf": "cd1a40b929c4046f4880982d5a732ee5798c916cb83825d3ec19cfac3207b806"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/integration/ActivityTest.java",
+      "source_sha256": "6faceb92bac89f65bdfc93197b76eb26b755751972637fe6dd81ec594341af37",
+      "destination": "gameplay/src/test/java/net/scopenet/integration/ActivityTest.java",
+      "output_sha256_lf": "6faceb92bac89f65bdfc93197b76eb26b755751972637fe6dd81ec594341af37"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/integration/ClaimIndexTest.java",
+      "source_sha256": "b67b322edd3cd31066fdd20baa1cbb44a923af184d3bb7cc98eb00fdb7c9386e",
+      "destination": "gameplay/src/test/java/net/scopenet/integration/ClaimIndexTest.java",
+      "output_sha256_lf": "b67b322edd3cd31066fdd20baa1cbb44a923af184d3bb7cc98eb00fdb7c9386e"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/integration/OperationLedgerTest.java",
+      "source_sha256": "c7d5b09e1bc602dbd9800752029b410ec322de2af42b54f9b224c7c56818d450",
+      "destination": "gameplay/src/test/java/net/scopenet/integration/OperationLedgerTest.java",
+      "output_sha256_lf": "c7d5b09e1bc602dbd9800752029b410ec322de2af42b54f9b224c7c56818d450"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/integration/PanelClientTest.java",
+      "source_sha256": "e1237b0813aa55ff420d00e0e7d10149ff89053fcff334844b60971b798cf980",
+      "destination": "gameplay/src/test/java/net/scopenet/integration/PanelClientTest.java",
+      "output_sha256_lf": "e1237b0813aa55ff420d00e0e7d10149ff89053fcff334844b60971b798cf980"
+    }
+  ],
+  "changes": [
+    "Keep gameplay commands, utilities, guild/shop/reward/chat rules, settings and claims private",
+    "Delegate generic HTTP to public SDK transport",
+    "Map composition depends only on neutral SDK ports and reviewed installed providers",
+    "No direct renderer, loader or panel-internal imports",
+    "Keep Java namespaces, storage names, protocol fields, atomic receipts and retry behavior",
+    "Rebrand presentation text to Velora; no MIT grant to private implementation"
+  ],
+  "added_validation_tests": [
+    {
+      "path": "gameplay/src/test/java/net/scopenet/integration/MissingMapProviderTest.java",
+      "sha256_lf": "0fb6f75a0772940f0d4dfdd545e6762db82cb8a5e2756a505af52fcf488f0c9a"
+    }
+  ]
+}

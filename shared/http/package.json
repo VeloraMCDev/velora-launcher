@@ -1,0 +1,11 @@
+{
+  "name": "velora-platform-http",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "exports": {".": {"types": "./client.d.mts", "import": "./client.mjs"}, "./platform": {"types": "./platform.d.mts", "import": "./platform.mjs"}},
+  "files": ["client.mjs", "client.d.mts", "platform.mjs", "platform.d.mts", "README.md", "LICENSE"],
+  "scripts": {"test": "node --test tests/*.test.mjs", "check": "tsc --noEmit -p tsconfig.json"},
+  "devDependencies": {"typescript": "5.9.3"}
+}

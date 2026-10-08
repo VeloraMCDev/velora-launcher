@@ -1,0 +1,11 @@
+// Velora's compatible public API: depend on this (compileOnly) from your plugin.
+// Retain the legacy provider identity; the integration bundles one API copy.
+plugins { id 'java-library' }
+sourceSets.main.java.setSrcDirs([
+    rootProject.file('../packages/java-legacy-api/api/src/main/java'),
+    rootProject.file('../packages/java-legacy-api/bukkit-api/src/main/java')
+])
+repositories { maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' } }
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT'
+}

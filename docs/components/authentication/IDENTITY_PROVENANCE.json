@@ -1,0 +1,23 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "sources": [
+    {
+      "path": "panel/server/src/auth.rs",
+      "sha256": "4046d9615bdb801bd829f97d2b7d5322267ce3f9e8727338f65a3b6be63af969"
+    },
+    {
+      "path": "panel/server/src/store.rs",
+      "sha256": "18b915d84c894934d42d04dc7e88cd189b0015e99c9b95e41b4157080b148aed"
+    }
+  ],
+  "output_path": "crates/core/src/identity.rs",
+  "output_sha256_lf": "257085a9472f029976ce74a59cd4290de1fd648a777e77dee34f25aacfe92d0c",
+  "changes": [
+    "Move authority-local account record with unchanged fields/nullability/serialization skips",
+    "Opt-in SQLite row mapping; default cryptography build does not depend on SQLx",
+    "Keep source UserRow alias and exact admin role semantics",
+    "Move supplied username policy without platform settings or gameplay dependencies",
+    "No public SDK credential model, account data or migration SQL is copied; authority persistence/service remains pending"
+  ]
+}

@@ -1,0 +1,184 @@
+# ==============================================================================
+# SCOPENET Paper plugin  ->  plugins/SCOPENET/config.yml
+# Fully commented example. Every key shown here is read by the plugin; the values
+# are the defaults. Remove anything you don't want to change.
+# Requires Paper 1.20+ and online-mode=true in server.properties.
+# ==============================================================================
+
+# --- Connection (required) ----------------------------------------------------
+# The panel's address, with no trailing path. Use the address players and servers
+# can reach, normally the same HTTPS address you set as the panel's Public address.
+panel-url: "https://panel.example.com"
+
+# The server token. In the panel: Servers -> your server -> Generate token.
+# It starts with "sn_". Keep it secret; anyone with it can act as this server.
+token: ""
+
+# ==============================================================================
+# Feature toggles
+# Turn off anything you don't want on this server. Changing a value needs
+# "/scopenet reload" or a restart. The panel can still switch features off for you.
+# ==============================================================================
+
+leveling:
+  # Global and per-server levels, earned from playtime, kills, mining and more.
+  enabled: true
+  # Speed of the account-wide Global Level. 1.0 is normal, 2.0 is double.
+  global-xp-multiplier: 1.0
+  # Speed of this server's own Server Level. Higher than global by default so
+  # a server's level feels alive.
+  server-xp-multiplier: 1.5
+
+quests:
+  # Daily and weekly quests. How many are offered is set in the panel
+  # (Progression -> Quest limits).
+  enabled: true
+
+achievements:
+  # Achievement tracking and unlock notifications.
+  enabled: true
+
+guilds:
+  # Guilds, /guild commands, the guild bank and guild market.
+  enabled: true
+  # Guild land claims. Other players can't build or break in a claimed chunk
+  # unless they are in that guild (or have scopenet.claims.bypass).
+  # Claims are checked against a local copy that refreshes from the panel, so
+  # breaking blocks never waits on the network.
+  land-claiming: true
+
+social:
+  # Friends, direct messages and game invites.
+  enabled: true
+  # Show guild tag and level title in chat.
+  chat-prefixes: true
+
+essentials:
+  # /spawn /home /sethome /delhome /back /tpa /tpaccept /tpdeny /rtp /warp /playtime
+  enabled: true
+  # Homes every player can set. Raise it for a rank with a permission node:
+  # scopenet.homes.10 gives 10 homes, scopenet.homes.25 gives 25 (highest wins),
+  # scopenet.homes.unlimited removes the limit. Operators and "*" get the top tier.
+  max-homes: 5
+  # Longest allowed home name.
+  home-name-max-length: 32
+  # Most warps the server may have (0 = no limit).
+  max-warps: 0
+  # How long a /tpa request stays open.
+  tpa-timeout-seconds: 60
+  # /rtp picks a random safe spot between rtp-min-radius and rtp-radius blocks from 0,0.
+  rtp-radius: 2500
+  rtp-min-radius: 0
+  # Random spots tried before /rtp gives up.
+  rtp-attempts: 15
+  # Seconds between uses (0 = none). Starts when the command actually teleports.
+  # Players with scopenet.cooldown.bypass skip all of these.
+  cooldowns:
+    spawn: 0
+    home: 0
+    back: 0
+    tpa: 0
+    rtp: 0
+    warp: 0
+
+map:
+  # The SCOPENET Map: this server draws its world to map tiles in the background and
+  # sends only what changed, with players, guild land and pins, to the panel.
+  # It also needs the map switched on for this server in the panel (on by default).
+  enabled: true
+  # Show every player's homes as pins. Off by default: homes are private.
+  show-homes: false
+
+economy:
+  # /balance /pay /baltop /shop /sell /market /orders /trade /transactions
+  enabled: true
+  # Shown next to amounts.
+  currency-symbol: "$"
+
+# ==============================================================================
+# Optional plugin integrations
+# SCOPENET finds these plugins by itself. Switch one off here if you don't want it.
+# "/scopenet status" shows which are active.
+# ==============================================================================
+integrations:
+  luckperms:
+    enabled: true
+    # How often each online player's LuckPerms rank is sent to the panel, which
+    # shows it on profiles and the server page.
+    report-interval-seconds: 60
+    # Let the panel add or remove LuckPerms groups for players, for groups an admin
+    # mapped in Panel -> Players -> Groups. LuckPerms still decides real permissions.
+    # Off by default: turn it on only when you want panel groups to change ranks here.
+    apply-panel-groups: false
+    # Let admins manage LuckPerms from the panel (Panel -> LuckPerms): create and edit groups,
+    # set permissions and prefixes, move players. Turn this off to make the panel read-only.
+    allow-panel-commands: true
+    # How often (seconds) the plugin checks the panel for those instructions. Minimum 2.
+    command-poll-seconds: 5
+  placeholderapi:
+    # Adds %scopenet_level%, %scopenet_guild%, %scopenet_balance%, %scopenet_playtime%,
+    # %scopenet_quest_progress% and more for scoreboards, tab lists, holograms and chat.
+    enabled: true
+  vault:
+    # Make SCOPENET's economy the Vault economy, so shop, jobs and other plugins
+    # use the same balances.
+    enabled: true
+  coreprotect:
+    # Show logging activity and backup status in the panel.
+    enabled: true
+    # Folders (relative to the server folder) checked for world backups.
+    backup-folders:
+      - backups
+  worldguard:
+    # Show WorldGuard regions, including server-owned territory, in the panel.
+    enabled: true
+    report-interval-minutes: 5
+  spark:
+    # Show TPS, MSPT, CPU and memory in the panel.
+    enabled: true
+    report-interval-seconds: 30
+
+# ==============================================================================
+# Rewards
+# Quests, achievements and rank milestones can give more than XP: money, items, permissions, groups, claim
+# chunks, badges and messages (set them in the admin panel). The panel hands items, permissions and commands
+# to this server when the player is online. Permissions and groups use console commands, so any permissions
+# plugin works; the defaults are LuckPerms'. Placeholders: {player} {uuid} {node} {value} {duration} {group}.
+# ==============================================================================
+rewards:
+  enabled: true
+  # Let the panel run its own console commands as rewards. Off by default: anyone who can edit rewards in the
+  # panel could otherwise run commands on this server. Only switch it on if you trust every panel admin.
+  allow-commands: false
+  permission-command: "lp user {player} permission set {node} true"
+  permission-deny-command: "lp user {player} permission set {node} false"
+  permission-temp-command: "lp user {player} permission settemp {node} {value} {duration}"
+  group-command: "lp user {player} parent add {group}"
+
+# ==============================================================================
+# Cosmetics
+# Modelled cosmetics (wings, hats, auras...) from the panel's Cosmetics Studio, shown on the player wearing them.
+# They are plain display entities wearing a model from the server resource pack, so any client that has the pack
+# sees them, including the Fabric companion. Equipping in the launcher or web panel shows in game within ~20 seconds.
+# ==============================================================================
+cosmetics:
+  enabled: true
+
+# ==============================================================================
+# Client mod link
+# Sends balance, level, guild and claim info to players who have the optional SCOPENET
+# client mod (HUD widgets, claim overlay, shop and market windows). Players without it
+# are unaffected. Display only: everything the client does is an ordinary command.
+# ==============================================================================
+clientlink:
+  enabled: true
+
+# ==============================================================================
+# Permissions (set these in LuckPerms, not here)
+#   scopenet.command.<command>             e.g. scopenet.command.home
+#   scopenet.command.guild.*               every /guild subcommand
+#   scopenet.command.*                     everything
+#   scopenet.claims.bypass                 build in other guilds' claims (staff)
+#   scopenet.admin                         /scopenet status and reload
+# All nodes are listed in the plugin's plugin.yml.
+# ==============================================================================

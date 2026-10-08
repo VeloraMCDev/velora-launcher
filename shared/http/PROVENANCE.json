@@ -1,0 +1,29 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/web/src/lib/api.ts",
+  "source_sha256": "2dc4c603ec262a3bd2dc10bae72bcae63f5a570ae8d416d52cd5002369881c0a",
+  "neutral_fragment_sha256": "002357aa58b913b53ba98e044a4563347255efb42a7c39770697d6de9fe573aa",
+  "boundary": "Generic fetch/request/error/scoped header mechanisms only; session, navigation, uploads, formatting and catalogs remain caller-owned",
+  "outputs": [
+    {
+      "path": "client.mjs",
+      "sha256_lf": "f82d825f02d8044d0574c81bc2635c12d8785452851499eadc6f2a1fea61f06a"
+    },
+    {
+      "path": "client.d.mts",
+      "sha256_lf": "f6bab2fce731e1399a4400c743d007be299005d25f028a407d82ee6f02c5d0b1"
+    },
+    {
+      "path": "tests/legacy-fixture.mjs",
+      "sha256_lf": "d8d0b5dc23da3bdea6e4637b2ec4bc06caaad7ccc1bab2b2174a264cd6119945"
+    }
+  ],
+  "additions": [
+    "Injected fetch/live token/instance/unauthorized ports; optional operator origin/prefix",
+    "Explicit timeout/cancellation; compatibility host uses timeoutMs=0 to retain original behavior",
+    "Explicit API v1 manifest assertion, no invented version header or generated endpoint claims",
+    "No private presets, algorithms, credentials or application state dependency; publication remains gated",
+    "Corrected manifest helper URL to actual /api/v1/launcher/manifest from reviewed source route catalogue; request mechanism unchanged"
+  ]
+}

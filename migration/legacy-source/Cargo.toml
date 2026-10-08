@@ -1,0 +1,43 @@
+[workspace]
+resolver = "2"
+members = ["crates/shared", "crates/core", "panel/server", "launcher/src-tauri"]
+
+[workspace.package]
+version = "0.5.0"
+edition = "2021"
+repository = "https://github.com/scopeddlol/SCOPENET-MC"
+
+[workspace.dependencies]
+scopenet-shared = { path = "crates/shared" }
+scopenet-core = { path = "crates/core" }
+anyhow = "1"
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "process", "io-util", "net", "time", "sync", "signal"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "stream", "http2", "gzip"] }
+futures = "0.3"
+sha1 = { version = "0.10", features = ["oid"] }
+sha2 = "0.10"
+md-5 = "0.10"
+hex = "0.4"
+uuid = { version = "1", features = ["v4", "serde"] }
+zip = { version = "2", default-features = false, features = ["deflate"] }
+tracing = "0.1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde", "std"] }
+base64 = "0.22"
+rand = "0.8"
+
+# Small, fast binaries: the launcher and the panel both ship lean.
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
+
+[profile.dev.package."*"]
+opt-level = 1
+# Dependencies rarely need a debugger; skipping their debug info keeps
+# target/ several times smaller.
+debug = false

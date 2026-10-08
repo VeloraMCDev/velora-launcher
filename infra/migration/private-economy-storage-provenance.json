@@ -1,0 +1,52 @@
+{
+  "kind": "private-economy-storage-ownership",
+  "repository": "https://github.com/VeloraMCDev/experiences",
+  "revision": "bc74336fa03f67d1dba120c27c9d5e15b61deece",
+  "destination": "rust/storage",
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "a3a7e5167d30a887589ee7bb58a91a67ecf615e5",
+  "inputs": [
+    {
+      "path": "panel/server/src/routes/economy.rs",
+      "sha256": "b7d94f953726e4055eab62a7635ea76d5bcf308a0014ee638cb9aa0e0ecd2a69"
+    },
+    {
+      "path": "panel/server/src/routes/ledger.rs",
+      "sha256": "bd1d83963f7d3b91f3bd0ff68357c128a44bac1608898df2a8233a50eb4df4b0"
+    }
+  ],
+  "visibility": "private; no public gameplay redistribution grant",
+  "compatibility": [
+    "Same caller transaction and scoped pool; no separate service or transaction introduced",
+    "Starting policy, admission, response/error mapping and clocks remain in compatibility host",
+    "Original data paths, schema, IDs, stored values and operation replay format retained"
+  ],
+  "validation": {
+    "owner_tests": 25,
+    "storage_tests": 10,
+    "formatting": "passed",
+    "strict_clippy": "passed",
+    "host_regressions": "All seven full source CI jobs passed, including 59 host units, all host integrations and ten adopted storage tests",
+    "linux_runs": [
+      {
+        "id": 37653593305,
+        "result": "success"
+      },
+      {
+        "id": 37653587209,
+        "result": "success"
+      }
+    ],
+    "source_ci": {
+      "id": 37654101575,
+      "result": "success"
+    },
+    "original_ordered_sql_and_source_hashes": "verified unchanged",
+    "local_host_run": "duplicate Windows compilation stopped after full Linux CI success; not counted as passed"
+  },
+  "remaining": [
+    "Complete private gameplay storage/routes/service composition",
+    "Independent public shells and full deployment/upgrade acceptance"
+  ],
+  "host_revision": "c6744ae8e84a0f2fc294b479e30aa38e5bde17f9"
+}

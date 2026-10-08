@@ -1,0 +1,6 @@
+{
+  "schema": 1,
+  "service": { "id": "deployment-probe", "artifact_type": "oci" },
+  "runtime": { "health": { "type": "http", "path": "/health", "expected_service": "deployment-probe", "expected_commit": "candidate.git_sha" }, "port": 8080, "platform": "linux/amd64" },
+  "deployment": { "target": "AGENT_COMPOSE", "environments": ["development"], "backup_required": false, "stabilization_seconds": 30, "migration": { "required": false, "compatibility": "backward_compatible", "data_restore_required_for_rollback": false } }
+}

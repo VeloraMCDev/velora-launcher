@@ -1,0 +1,2465 @@
+{
+  "schema": 1,
+  "canonical_repository": "VeloraMCDev/experiences",
+  "sources": [
+    {
+      "repository": "VeloraMCDev/authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "disposition": "deprecated; mark for archiving after canonical merge; deletion pending durable history custody and release/source-policy review"
+    },
+    {
+      "repository": "VeloraMCDev/panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "disposition": "deprecated; mark for archiving after canonical merge; deletion pending durable history custody and release/source-policy review"
+    },
+    {
+      "repository": "VeloraMCDev/launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "disposition": "deprecated; mark for archiving after canonical merge; deletion pending durable history custody and release/source-policy review"
+    },
+    {
+      "repository": "VeloraMCDev/sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "disposition": "deprecated; mark for archiving after canonical merge; deletion pending durable history custody and release/source-policy review"
+    },
+    {
+      "repository": "VeloraMCDev/minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "disposition": "deprecated; mark for archiving after canonical merge; deletion pending durable history custody and release/source-policy review"
+    },
+    {
+      "repository": "VeloraMCDev/infra",
+      "revision": "316bc04528dfec49ec23e517648ef2c104f76f5f",
+      "disposition": "deprecated; mark for archiving after canonical merge; deletion pending durable history custody and release/source-policy review"
+    },
+    {
+      "repository": "VeloraMCDev/docs",
+      "revision": "cd7dc01ff70aa9a5dafb04a66426cdc9320fe703",
+      "disposition": "deprecated; mark for archiving after canonical merge; deletion pending durable history custody and release/source-policy review"
+    }
+  ],
+  "runtime_mappings": [
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/Cargo.toml",
+      "target": "crates/auth-core/Cargo.toml",
+      "sha256": "bf843b61421ac0f567f1b0edf3913f9fae89f7fbf984eee92e1d5d5b240893cd",
+      "targetSha256": "fff239512f69fe498936c29c072cd15818b23797693484b978ad9df548038942",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/admission.rs",
+      "target": "crates/auth-core/src/admission.rs",
+      "sha256": "cd6bf5bed2a2009328262769af6e26e7cf3f231e4232f92146dd5fb7436b6dea",
+      "targetSha256": "3fb8f9944cf3dec9e074c087c7dd8ea3ea4c39b81faee580a3a852d27a14173f",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/capes.rs",
+      "target": "crates/auth-core/src/capes.rs",
+      "sha256": "0a14be67fd5369fa3bbd485ff04214d1ecdc11ca0738140e647c1413ac2dcf5b",
+      "targetSha256": "0d30a0d952ddf7a41073e91b440aa7a71cdbfa7e1e97b56bdfa68c302052c168",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/certificates.rs",
+      "target": "crates/auth-core/src/certificates.rs",
+      "sha256": "07875f166fb51d8fc758d90231fea4d378793e8bffa773ba894e5aab95517726",
+      "targetSha256": "ab21723e959589c86242204cd4fcf0fd51b5e55b34fa3dfb47f266c279ec27e2",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/identity.rs",
+      "target": "crates/auth-core/src/identity.rs",
+      "sha256": "257085a9472f029976ce74a59cd4290de1fd648a777e77dee34f25aacfe92d0c",
+      "targetSha256": "5a4ba42b9babdb2d5a6ca5aed39ec49cce72ab9a6d94232ae5cde71c4f147ade",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/identity_store.rs",
+      "target": "crates/auth-core/src/identity_store.rs",
+      "sha256": "a8ca687457f8dbb81ea46b104918918fb552d326639b9a4f9acb9c6d0c8765c7",
+      "targetSha256": "29404b22b85a35ca173306818d9b7ad8277b528c38be43c79d3a4efe6f1d5035",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/import.rs",
+      "target": "crates/auth-core/src/import.rs",
+      "sha256": "9f8411459054daef5b649fb9b8c96ad50c6c760cad9bb43de370d0a79693ba4c",
+      "targetSha256": "166a5fdb73acccaa84d6842fd509d0728350e41b775a660cc53cc1bb75b837b8",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/keys.rs",
+      "target": "crates/auth-core/src/keys.rs",
+      "sha256": "4ae016bf2ad6f0eff85fd7d0119c9edc841da57fa026f72ca9f19d6af6b21d02",
+      "targetSha256": "425839ff57b5cc04cdedffcf17861778088b6cdf05a31be9fae30a470fe75a01",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/launcher_sessions.rs",
+      "target": "crates/auth-core/src/launcher_sessions.rs",
+      "sha256": "5d42628cd3e628b4204a80d60d643e8b049470198f9836902380e7c1bc52d2c0",
+      "targetSha256": "24c6b2fd3357f8f7bd641f72bfda4168b1366215a9aa8e83382b18d32daaea2d",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/lib.rs",
+      "target": "crates/auth-core/src/lib.rs",
+      "sha256": "2101c0f9e2c521f72576465b8663af974606cd58723d5b97c41c4eaae3c1a750",
+      "targetSha256": "6a110a6b31b8f48ecf1be29c15d5b7c503459ac2a66d5c11786796664a1d6e5e",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/login_guard.rs",
+      "target": "crates/auth-core/src/login_guard.rs",
+      "sha256": "c8c9591b77979e379bbc8d75e4ea61bcd9c019ee59d989cadb10702412700b15",
+      "targetSha256": "bf46a8fc6f3d921a3739b27975e33848e0dc78ca1225b71349099c94b848b4fe",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/password.rs",
+      "target": "crates/auth-core/src/password.rs",
+      "sha256": "e938e20c353ae051b3e9ad89e5bc0a23ef6d9effb6124b94a1bb3ee1b4b75acd",
+      "targetSha256": "b77d24d277ddaa0835239e69e2bfe76cc49f1f63ad2c58cf18e96fb5143f25d8",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/schema.rs",
+      "target": "crates/auth-core/src/schema.rs",
+      "sha256": "a230a5e87891309f80189a8c2b619a899e0ef35c51ec7fb2721e3c41126404d0",
+      "targetSha256": "38ee9757c2bd58b55e40d434c1ad2e2662165d1e182f80209ace881e8f17bac4",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/secrets.rs",
+      "target": "crates/auth-core/src/secrets.rs",
+      "sha256": "f24e7118afb12e2b2532fb904810b22d976472d9b6c042f92efa160b44576b36",
+      "targetSha256": "df833340a6dbffd3abb72d9626fd43ce05175d5cdc03fe3ae9d58e7fe6ee123e",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/textures.rs",
+      "target": "crates/auth-core/src/textures.rs",
+      "sha256": "18998c2771c6ecde9c5cf895b2e4158e9fd0c88c21a3846c215b8a999e384caf",
+      "targetSha256": "e095426cd389d8c712207a24c8df316b616177eb77c5cfccd9d0496fcd886605",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/tokens.rs",
+      "target": "crates/auth-core/src/tokens.rs",
+      "sha256": "f8fb7c904612b07c3116c9653dfc5e5ab71446147f5f6a0048a4fee6bebbf7e6",
+      "targetSha256": "01ef3f9aa19e3fa8ce7e8a165b79b6bbc9c289d2b092cf73e7e3e115f766453b",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/core/src/ygg_store.rs",
+      "target": "crates/auth-core/src/ygg_store.rs",
+      "sha256": "1cfb30d31698310ede6b679cf439cedec9677c362210d6c5b8b1f6a416ec544e",
+      "targetSha256": "a80a400184ad0ce5d6c5c822584b97b6d4e5a1968b100fb9119775c25f9f53e2",
+      "state": "line-endings"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/Cargo.toml",
+      "target": "crates/auth-http/Cargo.toml",
+      "sha256": "14b757a88f6dbe311023a5ece2a87e8713b275738a582a3ca16131d1c7f5c295",
+      "targetSha256": "bb7a58ab744e4404ea5cf9fdba1a0bd343f83ce723be77f8e979dc7beffd84ae",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/account.rs",
+      "target": "crates/auth-http/src/account.rs",
+      "sha256": "5b632df9953e1fe522a06c6415d7199f1f12c915157480f54a93af0e76089854",
+      "targetSha256": "5b632df9953e1fe522a06c6415d7199f1f12c915157480f54a93af0e76089854",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/admin.rs",
+      "target": "crates/auth-http/src/admin.rs",
+      "sha256": "e160c4358ecd3f811562ef26046fff6587af141c2ed6582c9cabb28af0b9aa3f",
+      "targetSha256": "e160c4358ecd3f811562ef26046fff6587af141c2ed6582c9cabb28af0b9aa3f",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/auth.rs",
+      "target": "crates/auth-http/src/auth.rs",
+      "sha256": "5f2178f518490a7ee7aa941babbc032bbed43959636601540ead1dbf20e8879e",
+      "targetSha256": "5f2178f518490a7ee7aa941babbc032bbed43959636601540ead1dbf20e8879e",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/config.rs",
+      "target": "crates/auth-http/src/config.rs",
+      "sha256": "049fab52c4aa2c128dab29b17b1d4493ee25c4a33c7b0d1ccbb147c73ac7340b",
+      "targetSha256": "049fab52c4aa2c128dab29b17b1d4493ee25c4a33c7b0d1ccbb147c73ac7340b",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/cosmetics.rs",
+      "target": "crates/auth-http/src/cosmetics.rs",
+      "sha256": "0a0778a683f7d9340ae3461329e45b06e76d5508fed32c44c2eb7a6e1ebb38e6",
+      "targetSha256": "0a0778a683f7d9340ae3461329e45b06e76d5508fed32c44c2eb7a6e1ebb38e6",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/error.rs",
+      "target": "crates/auth-http/src/error.rs",
+      "sha256": "c10201956341ea66d46c2b07c70ec94130b9f22100f050568faaf8edac3773a8",
+      "targetSha256": "c10201956341ea66d46c2b07c70ec94130b9f22100f050568faaf8edac3773a8",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/lib.rs",
+      "target": "crates/auth-http/src/lib.rs",
+      "sha256": "5cccf9f2792c714164d24cb7121cdf0c6295debee9dc01fb4d095a83f14f427a",
+      "targetSha256": "b3f317f087a8c7a78fef4727101862457c8c0739e853e0b795ccd671c730d66b",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/net.rs",
+      "target": "crates/auth-http/src/net.rs",
+      "sha256": "e498d7dd319f43bdb0a40d3f1814b9373819dc2bfe27488787eff7e4266cdc38",
+      "targetSha256": "e498d7dd319f43bdb0a40d3f1814b9373819dc2bfe27488787eff7e4266cdc38",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/oauth.rs",
+      "target": "crates/auth-http/src/oauth.rs",
+      "sha256": "66421362a711482f88be43276354b1dd8823df2a491cf52996217bfc1da8c699",
+      "targetSha256": "66421362a711482f88be43276354b1dd8823df2a491cf52996217bfc1da8c699",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/reset.rs",
+      "target": "crates/auth-http/src/reset.rs",
+      "sha256": "c2a0fe14ecaeda6dadfe0dcc18022c48b8e15823bec598fb1a84993ae1e70d37",
+      "targetSha256": "c2a0fe14ecaeda6dadfe0dcc18022c48b8e15823bec598fb1a84993ae1e70d37",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/state.rs",
+      "target": "crates/auth-http/src/state.rs",
+      "sha256": "0ed55c19af5ddab836b48932bd132aa5e7a8317c3dd4d694c3c560bd308e679a",
+      "targetSha256": "0ed55c19af5ddab836b48932bd132aa5e7a8317c3dd4d694c3c560bd308e679a",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/textures.rs",
+      "target": "crates/auth-http/src/textures.rs",
+      "sha256": "8ff23e71fdfc1e3861bdb21bf0dc856722293a53d6c853545cb3844b0c4561e0",
+      "targetSha256": "8ff23e71fdfc1e3861bdb21bf0dc856722293a53d6c853545cb3844b0c4561e0",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/web.rs",
+      "target": "crates/auth-http/src/web.rs",
+      "sha256": "3604d85ab1a66a8df5caf2fbc2325cc43268b0a22a735e54c9e8aa67da8bfe52",
+      "targetSha256": "3604d85ab1a66a8df5caf2fbc2325cc43268b0a22a735e54c9e8aa67da8bfe52",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/src/web_routes.rs",
+      "target": "crates/auth-http/src/web_routes.rs",
+      "sha256": "b6445e36c9013c564b1d3581b9814f8e3778b3e0694617994d6efe1081cb14c1",
+      "targetSha256": "b6445e36c9013c564b1d3581b9814f8e3778b3e0694617994d6efe1081cb14c1",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/http/tests/router.rs",
+      "target": "crates/auth-http/tests/router.rs",
+      "sha256": "f43cb4a7e14e4025c5d8b6e541023479d7563cad402d37be7e2464f2b44eb920",
+      "targetSha256": "f43cb4a7e14e4025c5d8b6e541023479d7563cad402d37be7e2464f2b44eb920",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/service/Cargo.toml",
+      "target": "crates/auth-service/Cargo.toml",
+      "sha256": "a8f8c5df2b85d45564f66308c70488a84fa072e4e5c2400ae07967a94ab2116d",
+      "targetSha256": "0aca4140aec1160de7ea8b4e4f63d702fcd376c1da27e772d00caac684ae0189",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/service/src/lib.rs",
+      "target": "crates/auth-service/src/lib.rs",
+      "sha256": "d1b409d1176f3484e2dff996fee1bf42d8f71fc8f137383c3622b02d1360d50e",
+      "targetSha256": "d1b409d1176f3484e2dff996fee1bf42d8f71fc8f137383c3622b02d1360d50e",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/service/src/main.rs",
+      "target": "crates/auth-service/src/main.rs",
+      "sha256": "4dd92881cf33779e2429c40a436fdd52cb0bf6b8e4ce5cf3ceaf41523246b45b",
+      "targetSha256": "4dd92881cf33779e2429c40a436fdd52cb0bf6b8e4ce5cf3ceaf41523246b45b",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/service/tests/accounts.rs",
+      "target": "crates/auth-service/tests/accounts.rs",
+      "sha256": "52e256cc1a9cda914af88fe1165ff0b7c175397e2fe3adb4d2e89ac3dc5cec11",
+      "targetSha256": "52e256cc1a9cda914af88fe1165ff0b7c175397e2fe3adb4d2e89ac3dc5cec11",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/service/tests/runtime.rs",
+      "target": "crates/auth-service/tests/runtime.rs",
+      "sha256": "ec4323fd6516646de4193d50785b313277e5e322010e2bc45acc871fb76c8d6f",
+      "targetSha256": "ec4323fd6516646de4193d50785b313277e5e322010e2bc45acc871fb76c8d6f",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/tools/Cargo.toml",
+      "target": "crates/auth-tools/Cargo.toml",
+      "sha256": "789011d7907c92f0a4c8cb49626870afeb7902e179296777c78d674941fc44a9",
+      "targetSha256": "c38d89576caab6876a389ba2ace186744c07634926f954b216dfad8777685454",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/tools/src/assets.rs",
+      "target": "crates/auth-tools/src/assets.rs",
+      "sha256": "8e1899745e479c4b3aa03271370c36455428b5f2b43e4ce9181dfd5ef7ab5a6f",
+      "targetSha256": "8e1899745e479c4b3aa03271370c36455428b5f2b43e4ce9181dfd5ef7ab5a6f",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/tools/src/lib.rs",
+      "target": "crates/auth-tools/src/lib.rs",
+      "sha256": "073a79f8bdf9e6760c3431203558181b49365948072aab1d35b4504a7ec8d59d",
+      "targetSha256": "073a79f8bdf9e6760c3431203558181b49365948072aab1d35b4504a7ec8d59d",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/tools/src/main.rs",
+      "target": "crates/auth-tools/src/main.rs",
+      "sha256": "ff29919b03e5ca955266ed1f94f1d086cd97b3d78214d92a244a78aba80b88aa",
+      "targetSha256": "ff29919b03e5ca955266ed1f94f1d086cd97b3d78214d92a244a78aba80b88aa",
+      "state": "exact"
+    },
+    {
+      "repository": "authentication",
+      "revision": "5162abd28300300667ea2b029fc63551cb966977",
+      "source": "crates/tools/tests/cli.rs",
+      "target": "crates/auth-tools/tests/cli.rs",
+      "sha256": "e99b736c2672b28838ec12a0b113135fd3ae7cd5a4023ebf57b400a4ac2f846a",
+      "targetSha256": "e99b736c2672b28838ec12a0b113135fd3ae7cd5a4023ebf57b400a4ac2f846a",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/activity/Cargo.toml",
+      "target": "crates/panel-activity/Cargo.toml",
+      "sha256": "a74e5e1739dcde6b23f1403a8a3bfd3e0db560843c34793ae63b63381958393d",
+      "targetSha256": "7e0bb88f9c7e75c020c5090d5733f285f95bf6129433aff1dca92bb329c1a030",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/activity/src/lib.rs",
+      "target": "crates/panel-activity/src/lib.rs",
+      "sha256": "36a5e18f60f3997a19f521d764a6e59c1a5dbacf022e3df237d6171d30ceadc0",
+      "targetSha256": "36a5e18f60f3997a19f521d764a6e59c1a5dbacf022e3df237d6171d30ceadc0",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/Cargo.toml",
+      "target": "crates/panel-communications/Cargo.toml",
+      "sha256": "d27d53d26ec688fc1b3dc781ed173deb7b5a349190f64bf9896112c1c7ebfc29",
+      "targetSha256": "7089186e7879462ec43c4ce8680ae830f3e602368466f931217aab20609f0e03",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/src/discord.rs",
+      "target": "crates/panel-communications/src/discord.rs",
+      "sha256": "28ea24fd4a1526b21b1a2c10d0639e2d0cd12081662bc99f568c4e36f81ea828",
+      "targetSha256": "28ea24fd4a1526b21b1a2c10d0639e2d0cd12081662bc99f568c4e36f81ea828",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/src/lib.rs",
+      "target": "crates/panel-communications/src/lib.rs",
+      "sha256": "804a00fb490fb6900e7834db6ca117491b93134a181befd4cc90caaa04c48679",
+      "targetSha256": "804a00fb490fb6900e7834db6ca117491b93134a181befd4cc90caaa04c48679",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/src/mail.rs",
+      "target": "crates/panel-communications/src/mail.rs",
+      "sha256": "13682da2820d82c89952f8d6edb6e411a6cf565929697c5d54a52d467b450c96",
+      "targetSha256": "13682da2820d82c89952f8d6edb6e411a6cf565929697c5d54a52d467b450c96",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/src/render.rs",
+      "target": "crates/panel-communications/src/render.rs",
+      "sha256": "c348fa4f2b758348584cbe33929eb9e626066f87bfb9a1807e77a5dbbae93c92",
+      "targetSha256": "c348fa4f2b758348584cbe33929eb9e626066f87bfb9a1807e77a5dbbae93c92",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/src/settings.rs",
+      "target": "crates/panel-communications/src/settings.rs",
+      "sha256": "40835a7958edd929a69133487147dc9ec6ab4f17110cfe10183479007a922b23",
+      "targetSha256": "40835a7958edd929a69133487147dc9ec6ab4f17110cfe10183479007a922b23",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/src/templates.rs",
+      "target": "crates/panel-communications/src/templates.rs",
+      "sha256": "cce786bd7254a42494bb07e5b4915958960589fec6ad276eb63498f70ade711c",
+      "targetSha256": "cce786bd7254a42494bb07e5b4915958960589fec6ad276eb63498f70ade711c",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/tests/fixtures/render-0.html",
+      "target": "crates/panel-communications/tests/fixtures/render-0.html",
+      "sha256": "1c86631e83138f689d0390248f2846276030054476e4c909cf7cfa366d0caa46",
+      "targetSha256": "1c86631e83138f689d0390248f2846276030054476e4c909cf7cfa366d0caa46",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/tests/fixtures/render-1.html",
+      "target": "crates/panel-communications/tests/fixtures/render-1.html",
+      "sha256": "0c0546804ff0b08473ad6d59b506c9a672a76d941c151712bb5f208aace30b03",
+      "targetSha256": "0c0546804ff0b08473ad6d59b506c9a672a76d941c151712bb5f208aace30b03",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/tests/fixtures/render-2.html",
+      "target": "crates/panel-communications/tests/fixtures/render-2.html",
+      "sha256": "6474520982581fbbeeb1680f560449fa055fa29efb4f14610579b62b9167f134",
+      "targetSha256": "6474520982581fbbeeb1680f560449fa055fa29efb4f14610579b62b9167f134",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/tests/fixtures/render-3.html",
+      "target": "crates/panel-communications/tests/fixtures/render-3.html",
+      "sha256": "f0f313610f02073c5d663d9b751a06ea8e353f26b5be87b72ecd22e303b750e6",
+      "targetSha256": "f0f313610f02073c5d663d9b751a06ea8e353f26b5be87b72ecd22e303b750e6",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/tests/fixtures/render-inputs.json",
+      "target": "crates/panel-communications/tests/fixtures/render-inputs.json",
+      "sha256": "59bacf6320bd787b4609277c5c41e64ee1e2e74bac511fe788772d97e85dd999",
+      "targetSha256": "59bacf6320bd787b4609277c5c41e64ee1e2e74bac511fe788772d97e85dd999",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/communications/tests/render.rs",
+      "target": "crates/panel-communications/tests/render.rs",
+      "sha256": "2cde7fe6f4d26affba0883e339ea6ebdafada47424c8c7fd608ea7d71427f1e4",
+      "targetSha256": "2cde7fe6f4d26affba0883e339ea6ebdafada47424c8c7fd608ea7d71427f1e4",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/distribution/Cargo.toml",
+      "target": "crates/panel-distribution/Cargo.toml",
+      "sha256": "8c8e9c1fd7e6ede66f788b181ec8dc03ae70974c99f404171841d85c098ccd9f",
+      "targetSha256": "9e66d0cb8bb92526090b2079e83bfcf0a652e525b70b135182efa289f86a4fbd",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/distribution/src/lib.rs",
+      "target": "crates/panel-distribution/src/lib.rs",
+      "sha256": "05f8635328a06262122f8680c72e7bbdc820a5efba97b73ab3eeb46f2c5733d6",
+      "targetSha256": "05f8635328a06262122f8680c72e7bbdc820a5efba97b73ab3eeb46f2c5733d6",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/gateway/Cargo.toml",
+      "target": "crates/panel-gateway/Cargo.toml",
+      "sha256": "fac09ce8b85a61510a24b4f266e4d6ec167ac15537ce90751752142b9f16150d",
+      "targetSha256": "d2bc7c2331bb51924bd011fa79a0c22300fe29e3143752b5352a1a65106c7f56",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/gateway/src/config.rs",
+      "target": "crates/panel-gateway/src/config.rs",
+      "sha256": "d8aca8d85b6fbae256142e7567fdace13d63574dad3c7338054064e154484bb3",
+      "targetSha256": "d8aca8d85b6fbae256142e7567fdace13d63574dad3c7338054064e154484bb3",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/gateway/src/lib.rs",
+      "target": "crates/panel-gateway/src/lib.rs",
+      "sha256": "6b7fa9b90a55269e806dc06d16af964492540377641174ad0fbadd71665c59c1",
+      "targetSha256": "6b7fa9b90a55269e806dc06d16af964492540377641174ad0fbadd71665c59c1",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/gateway/src/main.rs",
+      "target": "crates/panel-gateway/src/main.rs",
+      "sha256": "457e95796b57fd59f891a6fb8a1fade392477cbf5cba45b479039544e9590df6",
+      "targetSha256": "457e95796b57fd59f891a6fb8a1fade392477cbf5cba45b479039544e9590df6",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/gateway/tests/proxy.rs",
+      "target": "crates/panel-gateway/tests/proxy.rs",
+      "sha256": "7b2abeddf23612f92fede596f5f6061412201aa5f86aac14c7ec755bdb0bdcd6",
+      "targetSha256": "7b2abeddf23612f92fede596f5f6061412201aa5f86aac14c7ec755bdb0bdcd6",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/instances/Cargo.toml",
+      "target": "crates/panel-instances/Cargo.toml",
+      "sha256": "48362d340ab096b37387f1c38e87a601db34981bfa164add5119e55b0b384f86",
+      "targetSha256": "0e17c89cff39c9edb3e1eb9510c0821c94f81905399395ae0595efec1d11e87a",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/instances/src/lib.rs",
+      "target": "crates/panel-instances/src/lib.rs",
+      "sha256": "32fa7e17547dbb12b1b375fe9cbc9cb1155dcd450a8db5555ba6f7bc963f9c82",
+      "targetSha256": "32fa7e17547dbb12b1b375fe9cbc9cb1155dcd450a8db5555ba6f7bc963f9c82",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/instances/src/mutations.rs",
+      "target": "crates/panel-instances/src/mutations.rs",
+      "sha256": "1fde67ec5f389c8e41f46b7787291fb6e983bd2dd7bbfde79a154b02bb716b97",
+      "targetSha256": "1fde67ec5f389c8e41f46b7787291fb6e983bd2dd7bbfde79a154b02bb716b97",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/instances/tests/metadata.rs",
+      "target": "crates/panel-instances/tests/metadata.rs",
+      "sha256": "de88274998bfe64ddbc9cfdefd7ff2f2918b202a56c31b2d961b3d9146b4cc9a",
+      "targetSha256": "de88274998bfe64ddbc9cfdefd7ff2f2918b202a56c31b2d961b3d9146b4cc9a",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/instances/tests/mutations.rs",
+      "target": "crates/panel-instances/tests/mutations.rs",
+      "sha256": "0683e909dea707246a467fb1af81e58538ba282db9c797e603ca1f5ff38e1f6f",
+      "targetSha256": "0683e909dea707246a467fb1af81e58538ba282db9c797e603ca1f5ff38e1f6f",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/packs/Cargo.toml",
+      "target": "crates/panel-packs/Cargo.toml",
+      "sha256": "695904f169fa33b4390fff3677c8e81fd6a4e26cf4ac76cf903581f54bf36757",
+      "targetSha256": "630ee1322e229b1e80c47a58e26d1a50ae5ef57acfe29e0dd390dae22371c1f3",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/packs/src/error.rs",
+      "target": "crates/panel-packs/src/error.rs",
+      "sha256": "04cf580dc503c71b7fa0a4839e36d736ab85d2691a5f88c8311ec60a8335df9b",
+      "targetSha256": "04cf580dc503c71b7fa0a4839e36d736ab85d2691a5f88c8311ec60a8335df9b",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/packs/src/lib.rs",
+      "target": "crates/panel-packs/src/lib.rs",
+      "sha256": "20ed028bf610bd6a8d9b53e6cceee5b5bb51d76dadde9c8c283cfed02e42fae2",
+      "targetSha256": "20ed028bf610bd6a8d9b53e6cceee5b5bb51d76dadde9c8c283cfed02e42fae2",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/packs/tests/imports.rs",
+      "target": "crates/panel-packs/tests/imports.rs",
+      "sha256": "61b17dc51bc1d1ab63b75c3ffb85ff95b59489a6cf891e6b7436372a05dc4a84",
+      "targetSha256": "61b17dc51bc1d1ab63b75c3ffb85ff95b59489a6cf891e6b7436372a05dc4a84",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/settings/Cargo.toml",
+      "target": "crates/panel-settings/Cargo.toml",
+      "sha256": "cd64e8dc8a13961c58f27f5bb8209c5968ba84ed4e44ae31da782f03e3c4ed43",
+      "targetSha256": "12931fb8bc2ef59c845178ab7fbf19c75d8a5de1b8e671396114835fd9f71278",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/settings/src/lib.rs",
+      "target": "crates/panel-settings/src/lib.rs",
+      "sha256": "5d051a4b488fa5cf3524c65adb5060c0a925856cdc0c1751d430fcbdd5d92bab",
+      "targetSha256": "5d051a4b488fa5cf3524c65adb5060c0a925856cdc0c1751d430fcbdd5d92bab",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "crates/settings/tests/settings.rs",
+      "target": "crates/panel-settings/tests/settings.rs",
+      "sha256": "65152b13eb718b00a46516a7818c0230e95a05c6104970424f1fc90cd8f5a236",
+      "targetSha256": "65152b13eb718b00a46516a7818c0230e95a05c6104970424f1fc90cd8f5a236",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "deployment-ui/README.md",
+      "target": "panel/deployment-ui/README.md",
+      "sha256": "a1d81cf599632dc12f5c5a3eb05887920806b2abb1d5bb2a95df29aacc0de93d",
+      "targetSha256": "7989e3e5e9e36c593e38f506bac5b3afd763a350a4a8000168699f243274624c",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "deployment-ui/app.mjs",
+      "target": "panel/deployment-ui/app.mjs",
+      "sha256": "5c84ad734ef8943e5e169f793709e52ba1c82be8750ba01dfc7b02011307cdab",
+      "targetSha256": "fd009f2ce60cf131956ceeb39a62eddc455378b17a5c4bfe5909269f52977e2b",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "deployment-ui/build.mjs",
+      "target": "panel/deployment-ui/build.mjs",
+      "sha256": "d5ad2bda0377cd52d312c77a734cf547a1fa5eadd876900d9370915d20675952",
+      "targetSha256": "69a571cef36aa53b5d777533a54a714edc983ae7636de09bb874d802e8adad78",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "deployment-ui/client.mjs",
+      "target": "panel/deployment-ui/client.mjs",
+      "sha256": "d9a71c71ea5be0883f1a6c60be6b411b092f734520642cd3034685f3f6c752bc",
+      "targetSha256": "d9a71c71ea5be0883f1a6c60be6b411b092f734520642cd3034685f3f6c752bc",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "deployment-ui/client.test.mjs",
+      "target": "panel/deployment-ui/client.test.mjs",
+      "sha256": "f285d707a453f7deb9b73b1fa2d6949d6b7a91a5ff803bd4cdb28c1fa220dadd",
+      "targetSha256": "f285d707a453f7deb9b73b1fa2d6949d6b7a91a5ff803bd4cdb28c1fa220dadd",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "deployment-ui/index.html",
+      "target": "panel/deployment-ui/index.html",
+      "sha256": "ae61604e16395a0551b231e4b6792a7c36bf4ee813b24d9c2057f32f94d0aa8a",
+      "targetSha256": "0026148078d6a435eac9c98bde076c27cdcfe0f30a92914014fd09940c2553a4",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "deployment-ui/styles.css",
+      "target": "panel/deployment-ui/styles.css",
+      "sha256": "c6f8b8390a543a3dc66b1cd40612aa4f24ef9b0487bdcdf132f633f5d2c4de33",
+      "targetSha256": "c6f8b8390a543a3dc66b1cd40612aa4f24ef9b0487bdcdf132f633f5d2c4de33",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/.gitignore",
+      "target": "panel/mobile/.gitignore",
+      "sha256": "ea8ffab34564fdb39bbd6ce321e5d865f1f036c9c0f1d6ab6a45ad8ef750213e",
+      "targetSha256": "ac85d9c69406b356b6dd80746d0bf2df30870982a7af7170dd47a61589dc8835",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/PROVENANCE.json",
+      "target": "panel/mobile/PROVENANCE.json",
+      "sha256": "9f2327e843f23b770d6ec82d222f6e1f52acab1453f6c062ac849304d8951ef4",
+      "targetSha256": "8c9ec1a9bb1e72406e2a35ba538c2de857b8bbc844972d72a4c4b5f90b1aafd0",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/README.md",
+      "target": "panel/mobile/README.md",
+      "sha256": "3b374adb6188c7e36cbf12b2a5d5c9088e292bd7dde118b5c22ddecbc0988049",
+      "targetSha256": "0cea05f03cd13f1422d9b57d370ab91944a1dafdde3586a6c3114cfd6663e435",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/capacitor.config.ts",
+      "target": "panel/mobile/capacitor.config.ts",
+      "sha256": "24b3f9c00876c7d175525dcc769f8d2f6721e23a6c58b983ca4f284664ba39f7",
+      "targetSha256": "844daba60f2ae43b35366c9da9cc71f36322b6657077c3e84735e289b1c71aea",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/config.d.mts",
+      "target": "panel/mobile/config.d.mts",
+      "sha256": "83169c2e4caa78e19839774a3894ba13e19cd45a648d9d40716ba89d6efc2dc3",
+      "targetSha256": "d8d4b5ebb4a00e8c7b58bdb41016f81fb71d59eab97ceb99ab617f9c4b5a2500",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/config.mjs",
+      "target": "panel/mobile/config.mjs",
+      "sha256": "7e84710e98aadc692c3639662c0d6305b11f597ec8f5c6207018d9cdb48a758d",
+      "targetSha256": "127bf521424c5bea1dfabc30e3aa9c381f49bcf09ae927e10c1e4a73f644c4d2",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/config.test.mjs",
+      "target": "panel/mobile/config.test.mjs",
+      "sha256": "2c1bc8e718686ccd63abd21786ed11b5590e3b269793857e7afde77db73d08b0",
+      "targetSha256": "cdaa5c93dfaf8f69019092bbb796688f0869aca1d18d41a1faf0703968b50279",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/materialize-keystore.mjs",
+      "target": "panel/mobile/materialize-keystore.mjs",
+      "sha256": "a58c9b0c7ccbc70f6907b5e99b014403837747229b8a6c74251c0182112ce3e9",
+      "targetSha256": "e91cbbf584985ba774ad244ef24360cd877533df62fb7725fc15b306c81bae1d",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/package-lock.json",
+      "target": "panel/mobile/package-lock.json",
+      "sha256": "ea8f03afcba67f5bca85c64d3d8230165f315bb54b557a1620a3c32fadc5131e",
+      "targetSha256": "cf1f4fc393a3a15617ca4d90412fc98435ad2f99efc9e08c6ba52dd3192f3adf",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/package.json",
+      "target": "panel/mobile/package.json",
+      "sha256": "dfac65e8b3b1b3155f38d012750ab26952043f709d73fdd58288b01cc8dbf0a2",
+      "targetSha256": "2dcc52ddc3636fadcc3f3486c9b042096e85951fbb33c92a1a5d72e3c7ade616",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/prepare.mjs",
+      "target": "panel/mobile/prepare.mjs",
+      "sha256": "2223b7683af9751552463e4ebb85cc00a6d3cfd3f02b63288dac7fe2d31cedc6",
+      "targetSha256": "9f03e20e6fe52f9069cb9cdd85fcfce8dc04067f195764a11ad077132e5d4307",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/setup-android-signing.ps1",
+      "target": "panel/mobile/setup-android-signing.ps1",
+      "sha256": "2b9377ee004cf15f590cb12268b8c4ab14386dba762b0885f468602ebaa51b02",
+      "targetSha256": "b8d90debf17f952d12b1a33ca50f0302ca81d3819423312939c3f1bd85e8b050",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/signing.gradle",
+      "target": "panel/mobile/signing.gradle",
+      "sha256": "cae6deadb79e93d9b0fc644cbe5bedd8fa5a7d07ee47958402bb001d876e4bd0",
+      "targetSha256": "963ae20dbe28234df9c0a32a6b83e4111738171065785acdda206b4949116376",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "mobile/www/index.html",
+      "target": "panel/mobile/www/index.html",
+      "sha256": "98f6006d52aa1f8e35450462ffdd634d088911a7ec608ed1cc2a222b3b970d7e",
+      "targetSha256": "b451d09176b0b1bc945b37211d35ac382005c35605b4420315c9d32485aa50a8",
+      "state": "line-endings"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/.gitignore",
+      "target": "packages/panel-ui/.gitignore",
+      "sha256": "f31d6b9f42246fcf437021df2892821af77fc24f0de3c8d157dab416ec00cd57",
+      "targetSha256": "f31d6b9f42246fcf437021df2892821af77fc24f0de3c8d157dab416ec00cd57",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/LICENSE",
+      "target": "packages/panel-ui/LICENSE",
+      "sha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349",
+      "targetSha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/Login.svelte",
+      "target": "packages/panel-ui/Login.svelte",
+      "sha256": "b114e5c0350637cbb8eac833921f8a0a944a69bcb30eccac17e62b2f07cd958a",
+      "targetSha256": "50a62eb102e767d9d3ab7adf53ac60501e500529b14225ae1a1b2e73723be235",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/PROVENANCE.json",
+      "target": "packages/panel-ui/PROVENANCE.json",
+      "sha256": "0f229bfab42d04528af90945b3c717fec811172fda5d28e3b557605246ca50d6",
+      "targetSha256": "9d03663fd09e5cec04bf2481fcdc1d33b5b44398025196e4c77110c300d735d7",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/README.md",
+      "target": "packages/panel-ui/README.md",
+      "sha256": "fece582461dbdd5ac17f52f24ab52cccafe75a54764683152ed6249f94be093a",
+      "targetSha256": "73da8a8aaf6b9439e45fdb9ab16429bc251e4ba41468c46d2439c4de0cb070f5",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/package-lock.json",
+      "target": "packages/panel-ui/package-lock.json",
+      "sha256": "6b734a5ec588c88d249461bca86b718b69d7c30e37a23966cde03ddb40ca4367",
+      "targetSha256": "6b734a5ec588c88d249461bca86b718b69d7c30e37a23966cde03ddb40ca4367",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/package.json",
+      "target": "packages/panel-ui/package.json",
+      "sha256": "15d39cd62e48fb319ed3db23786bab368a2492cae760100cd9f85329ff90c19b",
+      "targetSha256": "f17ab4972318588af46a4ee80a4238491c40a7cfba001f43f2ae69a17f5559e0",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/tests/login.test.mjs",
+      "target": "packages/panel-ui/tests/login.test.mjs",
+      "sha256": "4c5d84b96bd4cb3966fe1981b2acbfe2b8b2995fc0082c21f7010528d083b5f6",
+      "targetSha256": "4c5d84b96bd4cb3966fe1981b2acbfe2b8b2995fc0082c21f7010528d083b5f6",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/tsconfig.json",
+      "target": "packages/panel-ui/tsconfig.json",
+      "sha256": "436ec3d980006bfd9266a9b3600700bdc9fff438816fecd5748f374f8e01679a",
+      "targetSha256": "436ec3d980006bfd9266a9b3600700bdc9fff438816fecd5748f374f8e01679a",
+      "state": "exact"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/vendor/http/LICENSE",
+      "target": "shared/http/LICENSE",
+      "sha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349",
+      "targetSha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349",
+      "state": "canonical-replacement"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/vendor/http/SNAPSHOT.json",
+      "target": "migration/superseded-snapshots/panel-http.json",
+      "sha256": "bcedb44f6c17f378144adb65b108250cd898e2879ae6ba0017f3535ea931edc1",
+      "targetSha256": "bcedb44f6c17f378144adb65b108250cd898e2879ae6ba0017f3535ea931edc1",
+      "state": "canonical-replacement"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/vendor/http/client.d.mts",
+      "target": "shared/http/client.d.mts",
+      "sha256": "f6bab2fce731e1399a4400c743d007be299005d25f028a407d82ee6f02c5d0b1",
+      "targetSha256": "f6bab2fce731e1399a4400c743d007be299005d25f028a407d82ee6f02c5d0b1",
+      "state": "canonical-replacement"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/vendor/http/client.mjs",
+      "target": "shared/http/client.mjs",
+      "sha256": "f82d825f02d8044d0574c81bc2635c12d8785452851499eadc6f2a1fea61f06a",
+      "targetSha256": "f82d825f02d8044d0574c81bc2635c12d8785452851499eadc6f2a1fea61f06a",
+      "state": "canonical-replacement"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/vendor/http/platform.d.mts",
+      "target": "shared/http/platform.d.mts",
+      "sha256": "0b802ac7432a441a5964ead83cba06c422ce090a3bf98b120ee94d962ff17cbb",
+      "targetSha256": "0b802ac7432a441a5964ead83cba06c422ce090a3bf98b120ee94d962ff17cbb",
+      "state": "canonical-replacement"
+    },
+    {
+      "repository": "panel",
+      "revision": "a5ebb0e81c653a22095893dc71e7e400e5b0e6cc",
+      "source": "ui/vendor/http/platform.mjs",
+      "target": "shared/http/platform.mjs",
+      "sha256": "5535ee008032104c34a0cd3928cc2c2116f6b430a038e30d7221c3ea40f850b5",
+      "targetSha256": "5535ee008032104c34a0cd3928cc2c2116f6b430a038e30d7221c3ea40f850b5",
+      "state": "canonical-replacement"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/Cargo.toml",
+      "target": "crates/core/Cargo.toml",
+      "sha256": "426c6e43d4c1324e4e50f05dffb7a64ba0ee832badf2187289756f8accb79d1e",
+      "targetSha256": "037835c7154f9f27467e8898c0bdd4846817d432d2ad2ff862905128da946cc3",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/assets.rs",
+      "target": "crates/core/src/assets.rs",
+      "sha256": "8444f684adf725ceae0f39ed6b65987856f5121747fe42f36ad418a07a63cb78",
+      "targetSha256": "cef396f4f8ce64f50ea178947ad56f25ef8bc4d11ae1a0786128496529eecc17",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/authlib.rs",
+      "target": "crates/core/src/authlib.rs",
+      "sha256": "7e7193159385c160ee1bd60e8753a620078775ca5234b9cbc1eb7da0d5ee0749",
+      "targetSha256": "b58fe748efa66448f62c912aa94c05e45a8a19bccefbcbd8de20f3ef2f4f6a17",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/http.rs",
+      "target": "crates/core/src/http.rs",
+      "sha256": "5cbbf74e6763e76ad0f687922738bfbbd8f5dd61b51aa91535ff3fc7bae034d9",
+      "targetSha256": "1064acf618545c1a355314e0b800c9a903ae2c516f9b800db20ea00304920477",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/install.rs",
+      "target": "crates/core/src/install.rs",
+      "sha256": "b47c683ca3eb4118b5ea875779aa62de288fcf353c156517f075169d5c0eb947",
+      "targetSha256": "22525fe52e308e84d4b071b63f2d77e05abffb70012e022f1ee679a6271357d1",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/java.rs",
+      "target": "crates/core/src/java.rs",
+      "sha256": "bfe0ada569a60e8589ab3bb967bfe7a751954cdab33b0a5b595bddb37f1a2b41",
+      "targetSha256": "8d3b937995cc7ab68e9148db3d95f7d26c7d593436bfa60d6d420d7849202efa",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/launch.rs",
+      "target": "crates/core/src/launch.rs",
+      "sha256": "0cb000b47635436868a9ace228b690452e829056d8b65901603b3472af1fde5d",
+      "targetSha256": "6d0b9144d449c7401b2bf570f059b185668a6470de020c0727ac746a91e5f114",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/lib.rs",
+      "target": "crates/core/src/lib.rs",
+      "sha256": "591547399c0c0470629de9976b2a3055be5c80f5fa290b25e4e1f997b175fabd",
+      "targetSha256": "c45587274eb31d7cc3edf9a76f695815da6ee908312fd21c4afaa0d5546439ae",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/libraries.rs",
+      "target": "crates/core/src/libraries.rs",
+      "sha256": "31d95ba3374e2414dd691dacecb51cccd407bd172e3f0c488f1e9e6174d4e7a8",
+      "targetSha256": "73e8d3411091abde809ef64a5a6553eadb57905747e2b8c9af6fb505073f0aaf",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/loaders/fabric.rs",
+      "target": "crates/core/src/loaders/fabric.rs",
+      "sha256": "6f02cccf2e4c752a8fcbda417ab8d13d0d4b3446bfd7e4373143bd4f3dae1947",
+      "targetSha256": "0a7c43c60a66c831c1ae0c229ff1dde1a6e955f91eb85ed9964d465541b0d35d",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/loaders/forge.rs",
+      "target": "crates/core/src/loaders/forge.rs",
+      "sha256": "121f39de4c076cca4c2083d8562e11b2cb9652945179e499658953dcf82c251d",
+      "targetSha256": "8a8bde8aac878a5f8f75b760c1e87bdd4681a790e6cb21b9ee63489ad9c14f2f",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/loaders/mod.rs",
+      "target": "crates/core/src/loaders/mod.rs",
+      "sha256": "e871db757716267cbf12a115ad860479eb083f4c7ed259f4fa7504036ed75855",
+      "targetSha256": "f7fe5fb8ce80ddd9cff3310413ef8f86721ac040db3b5ca344b70a0b0079fdf4",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/maven.rs",
+      "target": "crates/core/src/maven.rs",
+      "sha256": "0fa8f60593bac1013affb89ac64d9abdac964bfe7c69573042c2337ee9defa16",
+      "targetSha256": "efb6b1f76e9da0573353d6ba73ee2016bb989b1a2ca61976eebc7f323616c366",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/meta.rs",
+      "target": "crates/core/src/meta.rs",
+      "sha256": "961917e635b2ee9343b6c9d425ef4ab5ae0ee9c866663c8c67891a3ad235de2f",
+      "targetSha256": "2158013bcc3325ab016237f11cbf176173320c28d19ca36820d0fbd98bb7cb61",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/options.rs",
+      "target": "crates/core/src/options.rs",
+      "sha256": "0cf7b97ef2342bf34f9179e33ffacb548301a5c0f588c331ed187da1b95b4722",
+      "targetSha256": "513a3f0fa18f2a80486f9cab124aaf597d0fa076feffadf12e6fc1f2b446e208",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/paths.rs",
+      "target": "crates/core/src/paths.rs",
+      "sha256": "7f9ea1833aabc54c7ca3c48b93ff713bb8e74ade211f95d3b23ba63e45f031a2",
+      "targetSha256": "2e3cf2efcfb9577f0cb73ec166466dd8b867a2322b09b977374f50a84fb7c291",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/ping.rs",
+      "target": "crates/core/src/ping.rs",
+      "sha256": "12ab8fe0d771365342a478bc37361661b720a9a5620a5deaa81b5b2e465c4bf7",
+      "targetSha256": "d2b2c00415472b23cb512ef3dddaec2f5df1c3a68497f81aaaae3df1c6ebf6d0",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/progress.rs",
+      "target": "crates/core/src/progress.rs",
+      "sha256": "4d46d1e254018c32b2eb8cf4c76fbc993db4542f729bc3ff6a9d19a813e73fd7",
+      "targetSha256": "0625016a54c01a3de550def25ecd777f3acf4053f739d27d6c0bb16590813237",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/rules.rs",
+      "target": "crates/core/src/rules.rs",
+      "sha256": "5922b238c6a642d45ef137046802e79639791a84e0340eb5f5fb24bbe28fc3b5",
+      "targetSha256": "aa50f61e49726a5988d66993e6f8e456661ff2cdd03e3c8f4daf9a299097d0ad",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/servers_dat.rs",
+      "target": "crates/core/src/servers_dat.rs",
+      "sha256": "ce2c0b6138546524cda757b571d99a44b76f879e9b99f093c37e465b87da6e31",
+      "targetSha256": "d56aa4563e692e2c3af2fcd0d2cd3bc29e2b4753e5a8e4326be35c38488b3c3a",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/sync.rs",
+      "target": "crates/core/src/sync.rs",
+      "sha256": "757ee2fe9cfa18720c718905b02d835d34944fdc714e8fdc6b7b5a6cd288b1aa",
+      "targetSha256": "f6b46bd8270442f92f26333820eba82a1a562f60da62ea237c1f21032f9adf12",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/sys.rs",
+      "target": "crates/core/src/sys.rs",
+      "sha256": "4eae3f17940d908029cb2295e3a0e2f5cc41ab28bfd79f95b922acbbcf9019ff",
+      "targetSha256": "8e2b76e63df71c4439316565b915f0aa986482754fc1d2a23636a0a694d2c12c",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/textures.rs",
+      "target": "crates/core/src/textures.rs",
+      "sha256": "c4e237ac9f9f3a364684c36b4eef5504134ae9beaed3598f6e3d7354d9226ae6",
+      "targetSha256": "3456de9bbd0f14712c2e13389e4964d6d28dd53628a4d85122f46a649535df73",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/src/version.rs",
+      "target": "crates/core/src/version.rs",
+      "sha256": "b0692c6a2144fce68cf41e4593c900f23dca767fc4b76b8f6324ce98a95c24d1",
+      "targetSha256": "b80e022170052dc64febd815de7c1b1702cd63a8b154192c357a9a5b42ae8ba9",
+      "state": "line-endings"
+    },
+    {
+      "repository": "launcher",
+      "revision": "404d3b6a007f7b795e2d3efbabd3cb2308d9e362",
+      "source": "engine/tests/online.rs",
+      "target": "crates/core/tests/online.rs",
+      "sha256": "8f78d8d322a61a5234bae7ab28d25aaaccfa116d5efd75f73df1b5efb751f96f",
+      "targetSha256": "a0a3d627bb1cb0e8e376eed72728169f93e8aff56cbb760f48af48296168159b",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "branding/README.md",
+      "target": "branding/README.md",
+      "sha256": "5f834598953193fd26be655faecdab2ab32c6ffca8b0c8d2b03db048e6123d1b",
+      "targetSha256": "5f834598953193fd26be655faecdab2ab32c6ffca8b0c8d2b03db048e6123d1b",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "branding/icon-fullbleed.svg",
+      "target": "branding/icon-fullbleed.svg",
+      "sha256": "0591f864e7343e24b4d33685499df64a0b3723a0b6094ccf39c971d25bd66102",
+      "targetSha256": "0591f864e7343e24b4d33685499df64a0b3723a0b6094ccf39c971d25bd66102",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "branding/icon.svg",
+      "target": "branding/icon.svg",
+      "sha256": "5e0dfff5bab2c625a084665bc69de7ef1041e76863dc0147706766341987d765",
+      "targetSha256": "5e0dfff5bab2c625a084665bc69de7ef1041e76863dc0147706766341987d765",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "branding/originals/manifest.json",
+      "target": "branding/originals/manifest.json",
+      "sha256": "138d3b48fa2a5d055ae8ef75cab05fc46d242335adf3ac5be42c496e54d911b8",
+      "targetSha256": "138d3b48fa2a5d055ae8ef75cab05fc46d242335adf3ac5be42c496e54d911b8",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "branding/originals/velora1.png",
+      "target": "branding/originals/velora1.png",
+      "sha256": "a1e6a56cdcfbdb3e75537375e05b80cc5db17276c1a1a5d37c8539156f5d271b",
+      "targetSha256": "a1e6a56cdcfbdb3e75537375e05b80cc5db17276c1a1a5d37c8539156f5d271b",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "branding/originals/velora2.png",
+      "target": "branding/originals/velora2.png",
+      "sha256": "cec8fe83bfb43f0c66f77b8acd5b5ab73fc7b9fe59aac03a722134d6dceb3e89",
+      "targetSha256": "cec8fe83bfb43f0c66f77b8acd5b5ab73fc7b9fe59aac03a722134d6dceb3e89",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "branding/wordmark.svg",
+      "target": "branding/wordmark.svg",
+      "sha256": "167c6fb9e0ce814e2bc4f0f233c996304ae9ceaaffc29886c610801c7874a031",
+      "targetSha256": "167c6fb9e0ce814e2bc4f0f233c996304ae9ceaaffc29886c610801c7874a031",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/.gitignore",
+      "target": "packages/java-legacy-api/.gitignore",
+      "sha256": "2853601a1921d8c25a743a25230292fd4fe5253b446a55f80d50d752a99bf45d",
+      "targetSha256": "2853601a1921d8c25a743a25230292fd4fe5253b446a55f80d50d752a99bf45d",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/API_PROVENANCE.json",
+      "target": "packages/java-legacy-api/API_PROVENANCE.json",
+      "sha256": "a9aee53e3b8d2fdb004d14f10a38e5a625d8e93e76e8556ec537345ceee0e0ee",
+      "targetSha256": "a9aee53e3b8d2fdb004d14f10a38e5a625d8e93e76e8556ec537345ceee0e0ee",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/MAP_PORTS_PROVENANCE.json",
+      "target": "packages/java-legacy-api/MAP_PORTS_PROVENANCE.json",
+      "sha256": "ee6523e0bc495b950e0363fd7f9d9bd429e56a6d1661bf39f09c1e936ab56ee2",
+      "targetSha256": "ee6523e0bc495b950e0363fd7f9d9bd429e56a6d1661bf39f09c1e936ab56ee2",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/README.md",
+      "target": "packages/java-legacy-api/README.md",
+      "sha256": "bd2075faba248b2106a5b54dc3b26c1aa4a54a55e45934242f9d76ef946a58b3",
+      "targetSha256": "01f91d0b57b661022c71c41a928eccb2c3f2412631bb7406aacda1108b45ecf9",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/api/build.gradle",
+      "target": "packages/java-legacy-api/api/build.gradle",
+      "sha256": "fdccbb264e3dcb6f91e23550d63cd45b42e14eb6f9b59c0c8aad2e116bc0eccd",
+      "targetSha256": "fdccbb264e3dcb6f91e23550d63cd45b42e14eb6f9b59c0c8aad2e116bc0eccd",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/api/src/main/java/net/scopenet/api/GuildSummary.java",
+      "target": "packages/java-legacy-api/api/src/main/java/net/scopenet/api/GuildSummary.java",
+      "sha256": "8ca506972f30491eb4f6185e42e6c9f9b8a21ae8521b769b4254eb93e95c2e4e",
+      "targetSha256": "8ca506972f30491eb4f6185e42e6c9f9b8a21ae8521b769b4254eb93e95c2e4e",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/api/src/main/java/net/scopenet/api/QuestProgress.java",
+      "target": "packages/java-legacy-api/api/src/main/java/net/scopenet/api/QuestProgress.java",
+      "sha256": "c0894d7f1e93ba979fa3bc9a8577f3850c2adffa57ecb125427ff1bc3dd7133d",
+      "targetSha256": "c0894d7f1e93ba979fa3bc9a8577f3850c2adffa57ecb125427ff1bc3dd7133d",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/api/src/main/java/net/scopenet/api/ScopenetApi.java",
+      "target": "packages/java-legacy-api/api/src/main/java/net/scopenet/api/ScopenetApi.java",
+      "sha256": "01d3d647549cd4e79f0dc43816bd88213ac6df4233c32d4ce763abcc1c867ae9",
+      "targetSha256": "01d3d647549cd4e79f0dc43816bd88213ac6df4233c32d4ce763abcc1c867ae9",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/api/src/main/java/net/scopenet/api/ScopenetApiProvider.java",
+      "target": "packages/java-legacy-api/api/src/main/java/net/scopenet/api/ScopenetApiProvider.java",
+      "sha256": "f00415604b6f74ee532ddb9001665c2e2ae12d48fc58d2a18f9e3b7de2b769bb",
+      "targetSha256": "f00415604b6f74ee532ddb9001665c2e2ae12d48fc58d2a18f9e3b7de2b769bb",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/api/src/main/java/net/scopenet/api/ScopenetFriend.java",
+      "target": "packages/java-legacy-api/api/src/main/java/net/scopenet/api/ScopenetFriend.java",
+      "sha256": "5b0835e3df1540daf7b273f19cac850c125092e95e3e2a61eb7cd018211d6f53",
+      "targetSha256": "5b0835e3df1540daf7b273f19cac850c125092e95e3e2a61eb7cd018211d6f53",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/api/src/main/java/net/scopenet/api/ScopenetGuild.java",
+      "target": "packages/java-legacy-api/api/src/main/java/net/scopenet/api/ScopenetGuild.java",
+      "sha256": "b3857f2721317ac2780942d2175e4502d38d0e88cd12f5ec2a7a1e52f1bf598c",
+      "targetSha256": "b3857f2721317ac2780942d2175e4502d38d0e88cd12f5ec2a7a1e52f1bf598c",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/api/src/main/java/net/scopenet/api/ScopenetPlayer.java",
+      "target": "packages/java-legacy-api/api/src/main/java/net/scopenet/api/ScopenetPlayer.java",
+      "sha256": "80f2bec1f6895e8da9615240ec427f6887fea7c95790f5fb4eee072dd9b80096",
+      "targetSha256": "80f2bec1f6895e8da9615240ec427f6887fea7c95790f5fb4eee072dd9b80096",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/api/src/main/java/net/scopenet/api/XpResult.java",
+      "target": "packages/java-legacy-api/api/src/main/java/net/scopenet/api/XpResult.java",
+      "sha256": "fcfd08dc738617ba179757bdfac4de9d157ee1d072d7b4d9723ca1aa69900ae8",
+      "targetSha256": "fcfd08dc738617ba179757bdfac4de9d157ee1d072d7b4d9723ca1aa69900ae8",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/api/src/main/java/net/scopenet/api/XpScope.java",
+      "target": "packages/java-legacy-api/api/src/main/java/net/scopenet/api/XpScope.java",
+      "sha256": "a65581cad801a5158f36265ec9309bbeabbb303220c5c27d2a6c42e7886442dc",
+      "targetSha256": "a65581cad801a5158f36265ec9309bbeabbb303220c5c27d2a6c42e7886442dc",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/api/src/test/java/net/scopenet/api/ProviderCompatibilityTest.java",
+      "target": "packages/java-legacy-api/api/src/test/java/net/scopenet/api/ProviderCompatibilityTest.java",
+      "sha256": "e3bbe3f9a81f961a915b6694b7f95e27536323c908b78b78fa20b0969fc38874",
+      "targetSha256": "e3bbe3f9a81f961a915b6694b7f95e27536323c908b78b78fa20b0969fc38874",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/bukkit-api/build.gradle",
+      "target": "packages/java-legacy-api/bukkit-api/build.gradle",
+      "sha256": "87130d4e0d80bf5897447b6770938fa3424b1ec8f631bb582f0d184cb4551cb3",
+      "targetSha256": "87130d4e0d80bf5897447b6770938fa3424b1ec8f631bb582f0d184cb4551cb3",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/bukkit-api/src/main/java/net/scopenet/api/event/AchievementUnlockEvent.java",
+      "target": "packages/java-legacy-api/bukkit-api/src/main/java/net/scopenet/api/event/AchievementUnlockEvent.java",
+      "sha256": "c2cd367db89286f58b303937bfe07433c74fbe9b4f8a1129e077597a22a76690",
+      "targetSha256": "c2cd367db89286f58b303937bfe07433c74fbe9b4f8a1129e077597a22a76690",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/bukkit-api/src/main/java/net/scopenet/api/event/GuildJoinEvent.java",
+      "target": "packages/java-legacy-api/bukkit-api/src/main/java/net/scopenet/api/event/GuildJoinEvent.java",
+      "sha256": "c64437439e767ed8b75c5647db8e6c5e89602479b176954ac6d4a9df04253517",
+      "targetSha256": "c64437439e767ed8b75c5647db8e6c5e89602479b176954ac6d4a9df04253517",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/bukkit-api/src/main/java/net/scopenet/api/event/GuildLeaveEvent.java",
+      "target": "packages/java-legacy-api/bukkit-api/src/main/java/net/scopenet/api/event/GuildLeaveEvent.java",
+      "sha256": "af649151bd77edbba4467610227287b993586ca076af9a5210b33efced858fb3",
+      "targetSha256": "af649151bd77edbba4467610227287b993586ca076af9a5210b33efced858fb3",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/bukkit-api/src/main/java/net/scopenet/api/event/ScopenetEvent.java",
+      "target": "packages/java-legacy-api/bukkit-api/src/main/java/net/scopenet/api/event/ScopenetEvent.java",
+      "sha256": "86c084dbed5f401e25f0462a738f2ac3d10e824b6248bcd3d23ff5216bda5251",
+      "targetSha256": "86c084dbed5f401e25f0462a738f2ac3d10e824b6248bcd3d23ff5216bda5251",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/bukkit-api/src/main/java/net/scopenet/api/event/ScopenetLevelUpEvent.java",
+      "target": "packages/java-legacy-api/bukkit-api/src/main/java/net/scopenet/api/event/ScopenetLevelUpEvent.java",
+      "sha256": "556d9274bc6c996214d83b0e3fd7750ff27296b85b2e237c719387c30937da90",
+      "targetSha256": "556d9274bc6c996214d83b0e3fd7750ff27296b85b2e237c719387c30937da90",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/example-consumer/build.gradle",
+      "target": "packages/java-legacy-api/example-consumer/build.gradle",
+      "sha256": "842bea5e5c6d589a3c9f700544f26784aed6c7bdb46bd24ac7ba8d9fa3c6f841",
+      "targetSha256": "842bea5e5c6d589a3c9f700544f26784aed6c7bdb46bd24ac7ba8d9fa3c6f841",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/example-consumer/src/main/java/example/ApiConsumer.java",
+      "target": "packages/java-legacy-api/example-consumer/src/main/java/example/ApiConsumer.java",
+      "sha256": "a1ddd27c5b539395350b93d77502d940887f6aea257ddf0b758ea444be726693",
+      "targetSha256": "a1ddd27c5b539395350b93d77502d940887f6aea257ddf0b758ea444be726693",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/.gitignore",
+      "target": "packages/java-platform-client/.gitignore",
+      "sha256": "8c14e5ce2a4b785f38e12036540e8838090de3a962d6e91132c34bf1f129d2a2",
+      "targetSha256": "8c14e5ce2a4b785f38e12036540e8838090de3a962d6e91132c34bf1f129d2a2",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/PROVENANCE.json",
+      "target": "packages/java-platform-client/PROVENANCE.json",
+      "sha256": "d26bca3f6c0491e65388a8a826776e3ea57558ce87c3bbded7dd7aa7328408fe",
+      "targetSha256": "d26bca3f6c0491e65388a8a826776e3ea57558ce87c3bbded7dd7aa7328408fe",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/README.md",
+      "target": "packages/java-platform-client/README.md",
+      "sha256": "d06b205b66c6a3d7e6a1c1ba6c8b8f764f865fc57c30268214c1f8edbf23056d",
+      "targetSha256": "19df93e26e25d93afc542f8bd41193d7fc7183ade306026d93fcf3af939cdd5b",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/build.gradle",
+      "target": "packages/java-platform-client/build.gradle",
+      "sha256": "619129c9e425bea9b31bc1bf11d51e011dd55a99ebde4fca7cc484fceb347121",
+      "targetSha256": "619129c9e425bea9b31bc1bf11d51e011dd55a99ebde4fca7cc484fceb347121",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/gradle/LICENSE",
+      "target": "packages/java-platform-client/gradle/LICENSE",
+      "sha256": "bb36a3818cbf1f90a76585ab9e9661cccde459c97458c4bfd0939e4502353fd0",
+      "targetSha256": "bb36a3818cbf1f90a76585ab9e9661cccde459c97458c4bfd0939e4502353fd0",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/gradle/NOTICE",
+      "target": "packages/java-platform-client/gradle/NOTICE",
+      "sha256": "c2de5fd9adc7ccc4e1382a0e1f38ec6e14f8ca6e28d3c20289fe80353b019aa1",
+      "targetSha256": "c2de5fd9adc7ccc4e1382a0e1f38ec6e14f8ca6e28d3c20289fe80353b019aa1",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/gradle/wrapper/gradle-wrapper.jar",
+      "target": "packages/java-platform-client/gradle/wrapper/gradle-wrapper.jar",
+      "sha256": "2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046",
+      "targetSha256": "2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/gradle/wrapper/gradle-wrapper.properties",
+      "target": "packages/java-platform-client/gradle/wrapper/gradle-wrapper.properties",
+      "sha256": "204ecfecc01b80429bc99b01d515271e2fd803f2d2bec6cc8957f1a2f877182e",
+      "targetSha256": "204ecfecc01b80429bc99b01d515271e2fd803f2d2bec6cc8957f1a2f877182e",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/gradlew",
+      "target": "packages/java-platform-client/gradlew",
+      "sha256": "a3648413b47ef77af21d5ebc36c687c7d103aaef3e17f33de7d4f080a6f300a3",
+      "targetSha256": "a3648413b47ef77af21d5ebc36c687c7d103aaef3e17f33de7d4f080a6f300a3",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/gradlew.bat",
+      "target": "packages/java-platform-client/gradlew.bat",
+      "sha256": "2209f919a22528af59a2af2ad97e8d056cca18e39f7d87aa3fd549a73b180150",
+      "targetSha256": "2209f919a22528af59a2af2ad97e8d056cca18e39f7d87aa3fd549a73b180150",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/settings.gradle",
+      "target": "packages/java-platform-client/settings.gradle",
+      "sha256": "11c993c895131823754b159c3aac78e3697256d045cd0a84e98f25592a19db2c",
+      "targetSha256": "11c993c895131823754b159c3aac78e3697256d045cd0a84e98f25592a19db2c",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/src/main/java/net/scopenet/integration/PanelTransport.java",
+      "target": "packages/java-platform-client/src/main/java/net/scopenet/integration/PanelTransport.java",
+      "sha256": "0dd4295fcff5aa61dd0dc791e3cf002ffcdfc07a226ce30bca97393351bcf554",
+      "targetSha256": "0dd4295fcff5aa61dd0dc791e3cf002ffcdfc07a226ce30bca97393351bcf554",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/src/main/java/net/scopenet/integration/ServerConnection.java",
+      "target": "packages/java-platform-client/src/main/java/net/scopenet/integration/ServerConnection.java",
+      "sha256": "f6d67597c5192e90368392687537ddeb17503c1a0ddbc1068c2305c5f3bf6b3f",
+      "targetSha256": "f6d67597c5192e90368392687537ddeb17503c1a0ddbc1068c2305c5f3bf6b3f",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/src/main/java/net/scopenet/integration/map/MapPosition.java",
+      "target": "packages/java-platform-client/src/main/java/net/scopenet/integration/map/MapPosition.java",
+      "sha256": "55231d44bacb2ff848eff14e72c414d19d5f33c34867eef224d913a04d46aeb9",
+      "targetSha256": "55231d44bacb2ff848eff14e72c414d19d5f33c34867eef224d913a04d46aeb9",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/src/main/java/net/scopenet/integration/map/MapProducerFactory.java",
+      "target": "packages/java-platform-client/src/main/java/net/scopenet/integration/map/MapProducerFactory.java",
+      "sha256": "1b34b5a9a24b3a177e4aeb6629a2038030f128ec3508ba8cafcaae491fdc66da",
+      "targetSha256": "1b34b5a9a24b3a177e4aeb6629a2038030f128ec3508ba8cafcaae491fdc66da",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/src/main/java/net/scopenet/integration/map/MapSink.java",
+      "target": "packages/java-platform-client/src/main/java/net/scopenet/integration/map/MapSink.java",
+      "sha256": "f059198e6f0298e802065d417e84c76aaacc2e8fe0a6285b005317b5f4f3a79d",
+      "targetSha256": "f059198e6f0298e802065d417e84c76aaacc2e8fe0a6285b005317b5f4f3a79d",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/platform-client/src/test/java/net/scopenet/integration/PanelTransportTest.java",
+      "target": "packages/java-platform-client/src/test/java/net/scopenet/integration/PanelTransportTest.java",
+      "sha256": "3ecdfefb7477b1fcbd38b4a8cf2312d5a2409963d7fa197939195fd3e0146f2a",
+      "targetSha256": "3ecdfefb7477b1fcbd38b4a8cf2312d5a2409963d7fa197939195fd3e0146f2a",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "java/settings.gradle",
+      "target": "packages/java-legacy-api/settings.gradle",
+      "sha256": "c7dcbfbe2d9f2839ec4eb29bbd353399a53bd4544f2a9e19a345ca89b870973f",
+      "targetSha256": "a85c366dd2ea96dfe37c3ee9bdcad93cab42e32f00151ddaa53ad473b1d01e90",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-contracts/Cargo.toml",
+      "target": "packages/rust-platform-contracts/Cargo.toml",
+      "sha256": "acf95ad8cf5fd2ef2675d56322635337ca31102daa46b8931a74cca9189f97a5",
+      "targetSha256": "f1748e484ddb0af544953cc9db31d43bed3d659a5c89868629ca9d57a0068f2d",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-contracts/src/experience.rs",
+      "target": "packages/rust-platform-contracts/src/experience.rs",
+      "sha256": "71f7e9fd8149673b63006855a09181f79274a64a53999a57a2f80729b06686f5",
+      "targetSha256": "71f7e9fd8149673b63006855a09181f79274a64a53999a57a2f80729b06686f5",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-contracts/src/lib.rs",
+      "target": "packages/rust-platform-contracts/src/lib.rs",
+      "sha256": "b9b4e629d0f71a06cec34ddc694c23bfba4310018541249c1954e30cfc38e9cb",
+      "targetSha256": "b9b4e629d0f71a06cec34ddc694c23bfba4310018541249c1954e30cfc38e9cb",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-contracts/src/updates.rs",
+      "target": "packages/rust-platform-contracts/src/updates.rs",
+      "sha256": "574346a6c21b3b70d79c5f3622937d396c6d20c26dd4fd685c31cf5d6a74b040",
+      "targetSha256": "574346a6c21b3b70d79c5f3622937d396c6d20c26dd4fd685c31cf5d6a74b040",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-contracts/tests/compatibility.rs",
+      "target": "packages/rust-platform-contracts/tests/compatibility.rs",
+      "sha256": "7eecc8dbc7c92cbc36433c04e51e96b87bfef9e4822f4d0d264523ff20623b5c",
+      "targetSha256": "7eecc8dbc7c92cbc36433c04e51e96b87bfef9e4822f4d0d264523ff20623b5c",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-contracts/tests/fixtures/README.md",
+      "target": "packages/rust-platform-contracts/tests/fixtures/README.md",
+      "sha256": "c653a0b82122c726458fbb98477949ae3340f775038eba53dcff2fb910afdf17",
+      "targetSha256": "219d498487cdec5d94aef285bc640f4b7137fb322b4d5f60c742ab261870bce3",
+      "state": "line-endings"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-contracts/tests/fixtures/legacy-manifest.json",
+      "target": "packages/rust-platform-contracts/tests/fixtures/legacy-manifest.json",
+      "sha256": "136ef35409b1b07403c32e8686e29dc0c1c244cf7d8ad911aa02520b1661d219",
+      "targetSha256": "52cd841113e5943b7408150db4f3b7ffe5f9c7c2ef2c0ec6dc2112bd56ea942f",
+      "state": "line-endings"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-utils/Cargo.toml",
+      "target": "crates/platform-utils/Cargo.toml",
+      "sha256": "c39ea268c2f653b1c5adc331ec73aad4dee3ac55d5de9bc55e841325fd9fb703",
+      "targetSha256": "2a25a1c7453c3410882bb8db2b1eaa8798de731da29c9c528af946bd6535a1f8",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-utils/src/authlib.rs",
+      "target": "crates/platform-utils/src/authlib.rs",
+      "sha256": "b5c3df9bccb2cdf9ea8ffc861837dc923d13dbc48213fa48cfabcac9d97ec079",
+      "targetSha256": "6560819f3c67941f4194b73c889277f606dbf9c0ac91f300683369dd41a2863d",
+      "state": "line-endings"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-utils/src/http.rs",
+      "target": "crates/platform-utils/src/http.rs",
+      "sha256": "cf28dd21fe74c81caf8f33e6becaaa53232644640632b9d9ed3cbfe6e831883d",
+      "targetSha256": "6329064f670006d6aee77d4834d16403d9080d20ac6cbab4cbff758e0e869376",
+      "state": "line-endings"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-utils/src/lib.rs",
+      "target": "crates/platform-utils/src/lib.rs",
+      "sha256": "91e6efe94c42d27258d37ae5fea225fdca5164988baf139ecebefc1720aad472",
+      "targetSha256": "58b8ef88d47c441739cac3840dba945dae9c4bdf3f49419c5ee87dfb2c53d588",
+      "state": "line-endings"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-utils/src/meta.rs",
+      "target": "crates/platform-utils/src/meta.rs",
+      "sha256": "97017c05cbc1a0e3ef177f00ec718f0100148e068f0673efcf979085edccf650",
+      "targetSha256": "b9dfa2d9969dcf5773eacb865c0c4286de58ca2af5498d2a384bc6f8a66ecca3",
+      "state": "line-endings"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "rust/platform-utils/src/paths.rs",
+      "target": "crates/platform-utils/src/paths.rs",
+      "sha256": "96f29a37019cc1183869e2600ea2440e774096aad7afa6806c7c66b5f7609acf",
+      "targetSha256": "7fee4acfdac4d4d1aa007cb026820ca2b19f5dfaed0a1a9fc7b5b448af350d6f",
+      "state": "line-endings"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/.gitignore",
+      "target": "shared/http/.gitignore",
+      "sha256": "ca1838cde9e4cfb493f3ea87a08bf973a9d6102aac688fc8828107d5586042aa",
+      "targetSha256": "ca1838cde9e4cfb493f3ea87a08bf973a9d6102aac688fc8828107d5586042aa",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/LICENSE",
+      "target": "shared/http/LICENSE",
+      "sha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349",
+      "targetSha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/PLATFORM_PROVENANCE.json",
+      "target": "shared/http/PLATFORM_PROVENANCE.json",
+      "sha256": "df1399f4689f7437b0cd9e67de46a41e89b512692e80b9413748e89a2fcedaca",
+      "targetSha256": "df1399f4689f7437b0cd9e67de46a41e89b512692e80b9413748e89a2fcedaca",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/PROVENANCE.json",
+      "target": "shared/http/PROVENANCE.json",
+      "sha256": "0330f51121d64f9cbf915a057c42a194c80f8916175989e1428cbf1837c93451",
+      "targetSha256": "0330f51121d64f9cbf915a057c42a194c80f8916175989e1428cbf1837c93451",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/README.md",
+      "target": "shared/http/README.md",
+      "sha256": "cec67da62b0bd8c5fb525dc5dd54749d7c73c662a03234fab7e5f40194a7af9d",
+      "targetSha256": "cc5bfc5c41d2170dd5f0d0dc5e93773bb2d4e33d7c01cdd4b0c1cb8d9a42fbab",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/client.d.mts",
+      "target": "shared/http/client.d.mts",
+      "sha256": "f6bab2fce731e1399a4400c743d007be299005d25f028a407d82ee6f02c5d0b1",
+      "targetSha256": "f6bab2fce731e1399a4400c743d007be299005d25f028a407d82ee6f02c5d0b1",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/client.mjs",
+      "target": "shared/http/client.mjs",
+      "sha256": "f82d825f02d8044d0574c81bc2635c12d8785452851499eadc6f2a1fea61f06a",
+      "targetSha256": "f82d825f02d8044d0574c81bc2635c12d8785452851499eadc6f2a1fea61f06a",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/package-lock.json",
+      "target": "shared/http/package-lock.json",
+      "sha256": "d425b0035cafc14917eec1a8c7d32008c2269dd880915b36950c61d248e2e5d4",
+      "targetSha256": "d425b0035cafc14917eec1a8c7d32008c2269dd880915b36950c61d248e2e5d4",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/package.json",
+      "target": "shared/http/package.json",
+      "sha256": "02e14670f271c8cba5929af8da4bd8d09f2ad90a0a45ab9019d069cd1088353b",
+      "targetSha256": "02e14670f271c8cba5929af8da4bd8d09f2ad90a0a45ab9019d069cd1088353b",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/platform.d.mts",
+      "target": "shared/http/platform.d.mts",
+      "sha256": "0b802ac7432a441a5964ead83cba06c422ce090a3bf98b120ee94d962ff17cbb",
+      "targetSha256": "0b802ac7432a441a5964ead83cba06c422ce090a3bf98b120ee94d962ff17cbb",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/platform.mjs",
+      "target": "shared/http/platform.mjs",
+      "sha256": "5535ee008032104c34a0cd3928cc2c2116f6b430a038e30d7221c3ea40f850b5",
+      "targetSha256": "5535ee008032104c34a0cd3928cc2c2116f6b430a038e30d7221c3ea40f850b5",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/tests/client.test.mjs",
+      "target": "shared/http/tests/client.test.mjs",
+      "sha256": "13c840d40715a3d011f812f5e9760a36cc4d159c36fbc8258e721d816f239a94",
+      "targetSha256": "13c840d40715a3d011f812f5e9760a36cc4d159c36fbc8258e721d816f239a94",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/tests/legacy-fixture.mjs",
+      "target": "shared/http/tests/legacy-fixture.mjs",
+      "sha256": "d8d0b5dc23da3bdea6e4637b2ec4bc06caaad7ccc1bab2b2174a264cd6119945",
+      "targetSha256": "d8d0b5dc23da3bdea6e4637b2ec4bc06caaad7ccc1bab2b2174a264cd6119945",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/tests/platform.test.mjs",
+      "target": "shared/http/tests/platform.test.mjs",
+      "sha256": "dfe0e1457a696b9dfbb6b685c4d41137320ed95e812759e72a56aeb18aea88cc",
+      "targetSha256": "dfe0e1457a696b9dfbb6b685c4d41137320ed95e812759e72a56aeb18aea88cc",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/tests/routes.json",
+      "target": "shared/http/tests/routes.json",
+      "sha256": "804758fa37497f512ad077139d3abe15b27c33af2a443b95ca0555f5a3db35e6",
+      "targetSha256": "804758fa37497f512ad077139d3abe15b27c33af2a443b95ca0555f5a3db35e6",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/tests/types.ts",
+      "target": "shared/http/tests/types.ts",
+      "sha256": "ad2370a586131b4549cbbb51db3b219effb3fe86eb7bf94e2364fbb2a6c68a41",
+      "targetSha256": "ad2370a586131b4549cbbb51db3b219effb3fe86eb7bf94e2364fbb2a6c68a41",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "typescript/http-client/tsconfig.json",
+      "target": "shared/http/tsconfig.json",
+      "sha256": "a4716b223f8f23f1f24b65605dcb9908ed572ab52a8d8aaad8e87ffae1a7b481",
+      "targetSha256": "a4716b223f8f23f1f24b65605dcb9908ed572ab52a8d8aaad8e87ffae1a7b481",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/experience/.gitignore",
+      "target": "packages/platform-ui/.gitignore",
+      "sha256": "a844a41334864a015cb67681daf42d08eecf2bbdb289085def88f2b60d2ee312",
+      "targetSha256": "a844a41334864a015cb67681daf42d08eecf2bbdb289085def88f2b60d2ee312",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/experience/ExperienceWidgets.svelte",
+      "target": "packages/platform-ui/ExperienceWidgets.svelte",
+      "sha256": "dc0db2a38bb200e85f187d6c5eee49dabcb58352a29e03218894396f9b04c5b0",
+      "targetSha256": "dc0db2a38bb200e85f187d6c5eee49dabcb58352a29e03218894396f9b04c5b0",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/experience/PROVENANCE.json",
+      "target": "packages/platform-ui/PROVENANCE.json",
+      "sha256": "4941e39e559655ffd1769da60cb92c76c955f51c0a0c8f5baf2af5e4b49bd071",
+      "targetSha256": "4941e39e559655ffd1769da60cb92c76c955f51c0a0c8f5baf2af5e4b49bd071",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/experience/README.md",
+      "target": "packages/platform-ui/README.md",
+      "sha256": "10586e3a5189b5799b23c48fea3dd4c9a77d26bbfab3d918fabd575ad2cb33a5",
+      "targetSha256": "7a1bcb0358be62cb18aab5658441e8451bb8edf4eeede1ba181e5d5d16cc0b03",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/experience/branding.ts",
+      "target": "packages/platform-ui/branding.ts",
+      "sha256": "26dda6662c5ce107a9963e7cf32174fda3097c07aca6a39bbc5b8ccfe2997154",
+      "targetSha256": "26dda6662c5ce107a9963e7cf32174fda3097c07aca6a39bbc5b8ccfe2997154",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/experience/experience.ts",
+      "target": "packages/platform-ui/experience.ts",
+      "sha256": "58606d597f0f5f6229c3fc2fec77262739d7cfab90bd6446459ce82ab2bd6617",
+      "targetSha256": "58606d597f0f5f6229c3fc2fec77262739d7cfab90bd6446459ce82ab2bd6617",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/experience/package-lock.json",
+      "target": "packages/platform-ui/package-lock.json",
+      "sha256": "d432d58c74a0d05c89abe3cbae720611720e4dff7c09f884c09707621667c35c",
+      "targetSha256": "d432d58c74a0d05c89abe3cbae720611720e4dff7c09f884c09707621667c35c",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/experience/package.json",
+      "target": "packages/platform-ui/package.json",
+      "sha256": "fdb20895590e3976e296f350b11b3b7172d7edd7d1d795b311087f6f2fe205c3",
+      "targetSha256": "fdb20895590e3976e296f350b11b3b7172d7edd7d1d795b311087f6f2fe205c3",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/experience/tests.mjs",
+      "target": "packages/platform-ui/tests.mjs",
+      "sha256": "6650999fa9ce7b5e01d972c488464ffa2c1a4960c43d139c7eecc2bd2360ffc0",
+      "targetSha256": "6650999fa9ce7b5e01d972c488464ffa2c1a4960c43d139c7eecc2bd2360ffc0",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/experience/tsconfig.json",
+      "target": "packages/platform-ui/tsconfig.json",
+      "sha256": "436ec3d980006bfd9266a9b3600700bdc9fff438816fecd5748f374f8e01679a",
+      "targetSha256": "436ec3d980006bfd9266a9b3600700bdc9fff438816fecd5748f374f8e01679a",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/.gitignore",
+      "target": "packages/platform-map/.gitignore",
+      "sha256": "fb699984870f5096b25c37107c04396151275d18c632354b1f8be16c1c2e30c5",
+      "targetSha256": "fb699984870f5096b25c37107c04396151275d18c632354b1f8be16c1c2e30c5",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/LICENSE",
+      "target": "packages/platform-map/LICENSE",
+      "sha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349",
+      "targetSha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/MapViewer.svelte",
+      "target": "packages/platform-map/MapViewer.svelte",
+      "sha256": "7907466a949115ee763bb93182ba0c44f26552eb4c4161c209be5ea4e549ff67",
+      "targetSha256": "7907466a949115ee763bb93182ba0c44f26552eb4c4161c209be5ea4e549ff67",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/PROVENANCE.json",
+      "target": "packages/platform-map/PROVENANCE.json",
+      "sha256": "7b38d0d7fd7ab141d1c2df5beb7b6ec4ffc135389b4bee352a853c74938f3388",
+      "targetSha256": "7b38d0d7fd7ab141d1c2df5beb7b6ec4ffc135389b4bee352a853c74938f3388",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/README.md",
+      "target": "packages/platform-map/README.md",
+      "sha256": "d8bcd77a2e39daafc6f28f2853da057dc754fa6293781c4e8876c216fdaa4979",
+      "targetSha256": "b7e19d00eb9f0852f6f059de71ffcfee7ce7bf287b8fa00d51ef30920f565b9e",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/engine.ts",
+      "target": "packages/platform-map/engine.ts",
+      "sha256": "0dcc848a0990bdf17c56b469a34b8797e85fc6b7f28ff50880c0c9431135eec5",
+      "targetSha256": "0dcc848a0990bdf17c56b469a34b8797e85fc6b7f28ff50880c0c9431135eec5",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/feed.ts",
+      "target": "packages/platform-map/feed.ts",
+      "sha256": "653cb506d9999b214426fb6c909755f7c0f99e673a14dc39f7ab89902f925dd9",
+      "targetSha256": "653cb506d9999b214426fb6c909755f7c0f99e673a14dc39f7ab89902f925dd9",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/index.ts",
+      "target": "packages/platform-map/index.ts",
+      "sha256": "c4aea8294f12fcf82b40032a16dc78ac111e63e41d88b1c6634d9afbb9050e15",
+      "targetSha256": "c4aea8294f12fcf82b40032a16dc78ac111e63e41d88b1c6634d9afbb9050e15",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/package-lock.json",
+      "target": "packages/platform-map/package-lock.json",
+      "sha256": "3b2ac5981e82e2198210ab261c7978941a0854a81c1b2a35f4ababcbe8d31f75",
+      "targetSha256": "3b2ac5981e82e2198210ab261c7978941a0854a81c1b2a35f4ababcbe8d31f75",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/package.json",
+      "target": "packages/platform-map/package.json",
+      "sha256": "a5b05a2e3aef3ba620054be393ebed1066ddea8de6c176e0b06c9381dbc4d43b",
+      "targetSha256": "a5b05a2e3aef3ba620054be393ebed1066ddea8de6c176e0b06c9381dbc4d43b",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/tests/map.test.mjs",
+      "target": "packages/platform-map/tests/map.test.mjs",
+      "sha256": "968ba85c98f42718a081359c012e945c5f234e8276990990a0feda86567dbf80",
+      "targetSha256": "968ba85c98f42718a081359c012e945c5f234e8276990990a0feda86567dbf80",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/tsconfig.json",
+      "target": "packages/platform-map/tsconfig.json",
+      "sha256": "436ec3d980006bfd9266a9b3600700bdc9fff438816fecd5748f374f8e01679a",
+      "targetSha256": "436ec3d980006bfd9266a9b3600700bdc9fff438816fecd5748f374f8e01679a",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/map/types.ts",
+      "target": "packages/platform-map/types.ts",
+      "sha256": "5ea8e6db3a643c232452f428ff84eeaf518d1227b99e24620323cb6eaeec6f52",
+      "targetSha256": "5ea8e6db3a643c232452f428ff84eeaf518d1227b99e24620323cb6eaeec6f52",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/skin/.gitignore",
+      "target": "packages/platform-skin/.gitignore",
+      "sha256": "fb699984870f5096b25c37107c04396151275d18c632354b1f8be16c1c2e30c5",
+      "targetSha256": "fb699984870f5096b25c37107c04396151275d18c632354b1f8be16c1c2e30c5",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/skin/LICENSE",
+      "target": "packages/platform-skin/LICENSE",
+      "sha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349",
+      "targetSha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/skin/PROVENANCE.json",
+      "target": "packages/platform-skin/PROVENANCE.json",
+      "sha256": "8743ae17eddc97fe088f099930197070d02662e12ef4d6836aa7bbe32967419e",
+      "targetSha256": "8743ae17eddc97fe088f099930197070d02662e12ef4d6836aa7bbe32967419e",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/skin/README.md",
+      "target": "packages/platform-skin/README.md",
+      "sha256": "6ddc98dc38d6edbbf4b3ba2e766a096ff5ee666a8cf04c2999617922639430de",
+      "targetSha256": "d565cd8df39a848ef442f35a8e6d9126f048ac82d3a417a710b6f00c0cc0ed2a",
+      "state": "changed",
+      "review": "Monorepo package/build metadata, canonical dependency paths, maintained documentation, or reviewed formatting/test branding; see README."
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/skin/SkinView.svelte",
+      "target": "packages/platform-skin/SkinView.svelte",
+      "sha256": "4d1e11f2cd7323bd2be6602bd7864574b7e959e21d79bc9e07111617c2fc2c61",
+      "targetSha256": "4d1e11f2cd7323bd2be6602bd7864574b7e959e21d79bc9e07111617c2fc2c61",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/skin/package-lock.json",
+      "target": "packages/platform-skin/package-lock.json",
+      "sha256": "d35bf1547c74f7d9211c15d9b25487a7b266cae5d9f58225940831892cc73dcf",
+      "targetSha256": "d35bf1547c74f7d9211c15d9b25487a7b266cae5d9f58225940831892cc73dcf",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/skin/package.json",
+      "target": "packages/platform-skin/package.json",
+      "sha256": "94ce384de483b0efd85b20a3d6abfdf69314f46f6782e64be00577588dd00899",
+      "targetSha256": "94ce384de483b0efd85b20a3d6abfdf69314f46f6782e64be00577588dd00899",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/skin/tests/skin.test.mjs",
+      "target": "packages/platform-skin/tests/skin.test.mjs",
+      "sha256": "dffa25eeab6112afc7c19c5cbbe3540c4f3e495d2844dbcc04a7f7c0be9602ee",
+      "targetSha256": "dffa25eeab6112afc7c19c5cbbe3540c4f3e495d2844dbcc04a7f7c0be9602ee",
+      "state": "exact"
+    },
+    {
+      "repository": "sdk",
+      "revision": "de3b8fd7539c3b9d20fbc8a3b58317f61a321faa",
+      "source": "ui/skin/tsconfig.json",
+      "target": "packages/platform-skin/tsconfig.json",
+      "sha256": "436ec3d980006bfd9266a9b3600700bdc9fff438816fecd5748f374f8e01679a",
+      "targetSha256": "436ec3d980006bfd9266a9b3600700bdc9fff438816fecd5748f374f8e01679a",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/java/net/scopenet/worldmap/BiomeColors.java",
+      "target": "packages/java-map-producer/src/main/java/net/scopenet/worldmap/BiomeColors.java",
+      "sha256": "168f3a9f856f7972a92da35ffc0c5cf1c628b09e9c993ee41b52b80fd061258f",
+      "targetSha256": "168f3a9f856f7972a92da35ffc0c5cf1c628b09e9c993ee41b52b80fd061258f",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/java/net/scopenet/worldmap/BlockColors.java",
+      "target": "packages/java-map-producer/src/main/java/net/scopenet/worldmap/BlockColors.java",
+      "sha256": "0c00f258f29bed697f7029595d3dba0153abe863e45718443b304789f2d774a9",
+      "targetSha256": "0c00f258f29bed697f7029595d3dba0153abe863e45718443b304789f2d774a9",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/java/net/scopenet/worldmap/ChunkSampler.java",
+      "target": "packages/java-map-producer/src/main/java/net/scopenet/worldmap/ChunkSampler.java",
+      "sha256": "5ef4ad7d69641ce41e76b87828d860a577dac25228bf27be43dee16f0c5ae2ff",
+      "targetSha256": "5ef4ad7d69641ce41e76b87828d860a577dac25228bf27be43dee16f0c5ae2ff",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/java/net/scopenet/worldmap/DefaultMapProducer.java",
+      "target": "packages/java-map-producer/src/main/java/net/scopenet/worldmap/DefaultMapProducer.java",
+      "sha256": "cd5d4ca7d90fee5de66589ac3154b8ff833ef260725b2d066c3f42482119b0d7",
+      "targetSha256": "cd5d4ca7d90fee5de66589ac3154b8ff833ef260725b2d066c3f42482119b0d7",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/java/net/scopenet/worldmap/MapColors.java",
+      "target": "packages/java-map-producer/src/main/java/net/scopenet/worldmap/MapColors.java",
+      "sha256": "a1d35e8d549a4e7dcf3b3df56d9199c9ae9b076e75dbf6fa60c0273b88208024",
+      "targetSha256": "a1d35e8d549a4e7dcf3b3df56d9199c9ae9b076e75dbf6fa60c0273b88208024",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/java/net/scopenet/worldmap/Nbt.java",
+      "target": "packages/java-map-producer/src/main/java/net/scopenet/worldmap/Nbt.java",
+      "sha256": "630eb968ab89f46fcc8e7cedb84b7ebde8bf9bd62685b368b80202133bbe112a",
+      "targetSha256": "630eb968ab89f46fcc8e7cedb84b7ebde8bf9bd62685b368b80202133bbe112a",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/java/net/scopenet/worldmap/Png.java",
+      "target": "packages/java-map-producer/src/main/java/net/scopenet/worldmap/Png.java",
+      "sha256": "f41fc6ce98cd672a7b2a9b3b0c3e69c89290fd30bf7b79ab7bae93c6b5c6de10",
+      "targetSha256": "f41fc6ce98cd672a7b2a9b3b0c3e69c89290fd30bf7b79ab7bae93c6b5c6de10",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/java/net/scopenet/worldmap/RegionFile.java",
+      "target": "packages/java-map-producer/src/main/java/net/scopenet/worldmap/RegionFile.java",
+      "sha256": "bb970f2c475e7a04eb58f31b207bf16909349038435e98b30fff6cc8c01c6b9e",
+      "targetSha256": "bb970f2c475e7a04eb58f31b207bf16909349038435e98b30fff6cc8c01c6b9e",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/java/net/scopenet/worldmap/RegionRenderer.java",
+      "target": "packages/java-map-producer/src/main/java/net/scopenet/worldmap/RegionRenderer.java",
+      "sha256": "00272a646fb6063e8378266332a2e61bdf24101f863ad6597d32ab471ad2d280",
+      "targetSha256": "00272a646fb6063e8378266332a2e61bdf24101f863ad6597d32ab471ad2d280",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/java/net/scopenet/worldmap/TileStore.java",
+      "target": "packages/java-map-producer/src/main/java/net/scopenet/worldmap/TileStore.java",
+      "sha256": "4561b9c8cbf3f3f4ac063ff158ae707c8dc0d4ac29ace88b251daab92dc48ea2",
+      "targetSha256": "4561b9c8cbf3f3f4ac063ff158ae707c8dc0d4ac29ace88b251daab92dc48ea2",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/java/net/scopenet/worldmap/WorldMapSync.java",
+      "target": "packages/java-map-producer/src/main/java/net/scopenet/worldmap/WorldMapSync.java",
+      "sha256": "2bd3391d6841b135d46fef6be6c1ea1fe1d04f17f879fef0dab88ca91cd8b67d",
+      "targetSha256": "2bd3391d6841b135d46fef6be6c1ea1fe1d04f17f879fef0dab88ca91cd8b67d",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/resources/META-INF/services/net.scopenet.integration.map.MapProducerFactory",
+      "target": "packages/java-map-producer/src/main/resources/META-INF/services/net.scopenet.integration.map.MapProducerFactory",
+      "sha256": "0e5d3570009ed90fe1b8b134fe430263b9adb84f341d4f5beb100c83ca2ea173",
+      "targetSha256": "0e5d3570009ed90fe1b8b134fe430263b9adb84f341d4f5beb100c83ca2ea173",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/main/resources/net/scopenet/worldmap/block_colors.csv",
+      "target": "packages/java-map-producer/src/main/resources/net/scopenet/worldmap/block_colors.csv",
+      "sha256": "91d3cc3f8b7fc1b1a657eaad798d23cb8c93c4cead0fcf5ad41fc2311d7f49b7",
+      "targetSha256": "91d3cc3f8b7fc1b1a657eaad798d23cb8c93c4cead0fcf5ad41fc2311d7f49b7",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/test/java/net/scopenet/worldmap/InstalledProviderTest.java",
+      "target": "packages/java-map-producer/src/test/java/net/scopenet/worldmap/InstalledProviderTest.java",
+      "sha256": "e4f1e57eb4b8680b1a1e7dc742e4559555a3af350ab2bfe706adb7022426dd01",
+      "targetSha256": "e4f1e57eb4b8680b1a1e7dc742e4559555a3af350ab2bfe706adb7022426dd01",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/test/java/net/scopenet/worldmap/MapRenderTest.java",
+      "target": "packages/java-map-producer/src/test/java/net/scopenet/worldmap/MapRenderTest.java",
+      "sha256": "5029ce7167da8f3adb7b4e138799dbcf101ae43bb493a8fe4df1a2e79c474529",
+      "targetSha256": "5029ce7167da8f3adb7b4e138799dbcf101ae43bb493a8fe4df1a2e79c474529",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/test/java/net/scopenet/worldmap/PackagedPaletteTest.java",
+      "target": "packages/java-map-producer/src/test/java/net/scopenet/worldmap/PackagedPaletteTest.java",
+      "sha256": "31a4840510b07b355025eab9e13e5d79ca4be298e015cce10a3481062a3c9c03",
+      "targetSha256": "31a4840510b07b355025eab9e13e5d79ca4be298e015cce10a3481062a3c9c03",
+      "state": "exact"
+    },
+    {
+      "repository": "minecraft-integrations",
+      "revision": "410bad40189c3af73d24f7cf37be57a4a86f14b9",
+      "source": "producer/src/test/java/net/scopenet/worldmap/WorldMapSyncTest.java",
+      "target": "packages/java-map-producer/src/test/java/net/scopenet/worldmap/WorldMapSyncTest.java",
+      "sha256": "b6bb6a23a3f90e61a8fa5e7ab1615691da5de3e7deffa40d7821eb0d41b55d67",
+      "targetSha256": "b6bb6a23a3f90e61a8fa5e7ab1615691da5de3e7deffa40d7821eb0d41b55d67",
+      "state": "exact"
+    }
+  ],
+  "infra": "Tracked source imported into infra; npm/Cargo workspaces remain independent.",
+  "docs": "Tracked source imported into docs; owner introductions/provenance retained in docs/components; root workflows retained as nested/reference files.",
+  "history": "Full source histories retained in old repositories and ignored local Git bundles; no unrelated histories merged into canonical Git ancestry.",
+  "target_hash_basis": "Git index blob bytes; independent of working-tree line-ending conversion"
+}

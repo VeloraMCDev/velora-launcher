@@ -1,0 +1,16 @@
+[package]
+name = "velora-panel-instances"
+version.workspace = true
+edition.workspace = true
+license = "MIT"
+repository = "https://github.com/VeloraMCDev/velora-launcher"
+publish = false
+
+[dependencies]
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "sqlite", "derive"] }
+serde = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt"] }
+tempfile = "3"
+serde_json = "1"

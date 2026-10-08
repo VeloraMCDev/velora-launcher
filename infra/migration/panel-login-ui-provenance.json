@@ -1,0 +1,22 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "aa662d77a5130865ca39739afbf6a5881ff9d60c",
+  "source_path": "panel/web/src/pages/Login.svelte",
+  "source_sha256": "4bcd83363b9c9f67e37af79f3ee488b96ff613ad7a31f471f85a3d12338512ce",
+  "scope": "Neutral existing login/registration/password-reset/Discord sign-in page with injected SDK client and token lifecycle callback",
+  "adaptations": [
+    "Four original platform JSON calls use reviewed typed client methods",
+    "Original live transport calls, polling timing, popup identity, hash reset navigation, strings, markup and CSS retained",
+    "Private session/router imports replaced by client/onToken props; no storage or authorization moved"
+  ],
+  "output_sha256_lf": "b114e5c0350637cbb8eac833921f8a0a944a69bcb30eccac17e62b2f07cd958a",
+  "markup_sha256_lf": "45daf64b6e60f430c75d9695da71e939b31de010b3836a7df93acde5b5bce06d",
+  "destination_revision": "578e8f25adb01d50ee6999de76145714462a108f",
+  "compatibility_host_snapshot": "packages/panel-ui",
+  "validation": {
+    "tests": 7,
+    "owner_typecheck": "passed, zero errors/warnings",
+    "host_frontends": "both check/build passed",
+    "full_product": "incomplete"
+  }
+}

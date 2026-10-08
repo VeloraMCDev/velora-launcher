@@ -1,0 +1,29 @@
+{
+  "name": "scopenet-panel-web",
+  "private": true,
+  "version": "0.5.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "check:runes": "node check-runes.mjs"
+  },
+  "devDependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/outfit": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
+    "@lucide/svelte": "^1.48.0",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/three": "^0.170.0",
+    "svelte": "^5.57.1",
+    "svelte-check": "^4.7.6",
+    "three": "^0.170.0",
+    "typescript": "~5.9.0",
+    "vite": "^8.3.1"
+  }
+}

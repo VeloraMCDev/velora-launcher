@@ -1,0 +1,32 @@
+{
+  "repository": "https://github.com/VeloraMCDev/sdk",
+  "revision": "737f6c7e1e3aa238fb74392de14112d35f5cee3e",
+  "path": "ui/map",
+  "purpose": "Neutral map presentation; source hosts retain transport/scope/private overlay policy and supply snippets/URLs",
+  "files": [
+    {
+      "path": "engine.ts",
+      "sha256": "0dcc848a0990bdf17c56b469a34b8797e85fc6b7f28ff50880c0c9431135eec5"
+    },
+    {
+      "path": "feed.ts",
+      "sha256": "653cb506d9999b214426fb6c909755f7c0f99e673a14dc39f7ab89902f925dd9"
+    },
+    {
+      "path": "types.ts",
+      "sha256": "5ea8e6db3a643c232452f428ff84eeaf518d1227b99e24620323cb6eaeec6f52"
+    },
+    {
+      "path": "index.ts",
+      "sha256": "c4aea8294f12fcf82b40032a16dc78ac111e63e41d88b1c6634d9afbb9050e15"
+    },
+    {
+      "path": "MapViewer.svelte",
+      "sha256": "7907466a949115ee763bb93182ba0c44f26552eb4c4161c209be5ea4e549ff67"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349"
+    }
+  ]
+}

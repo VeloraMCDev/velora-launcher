@@ -1,0 +1,20 @@
+{
+  "repository": "https://github.com/VeloraMCDev/experiences",
+  "revision": "d92ddbba5354ee6a472ac83f3ea9cc2de04dd282",
+  "path": "rust/gameplay",
+  "visibility": "private; no public redistribution grant",
+  "files": [
+    {
+      "path": "src/lib.rs",
+      "sha256": "5e5e7eb359ea49c604495e5b6cd607e0de37ee34b1c4e70c03f89723aea703ba"
+    },
+    {
+      "path": "src/casino.rs",
+      "sha256": "74d2459cf175358168fb6c5129c8490b04260a28f6a338d235c395ab2c24b46e"
+    },
+    {
+      "path": "PROVENANCE.json",
+      "sha256": "9cad89369741dad1fbb1b1b0c6407d89716f23f9da46130ab82d35fac613b89a"
+    }
+  ]
+}

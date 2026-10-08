@@ -1,0 +1,19 @@
+plugins { id 'java-library' }
+group = 'net.scopenet'
+version = '0.1.0'
+repositories { mavenCentral() }
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
+sourceSets {
+    main.java.setSrcDirs(['gameplay/src/main/java'])
+    test.java.setSrcDirs(['gameplay/src/test/java'])
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+dependencies {
+    compileOnly project(':sdk-contracts')
+    implementation 'com.google.code.gson:gson:2.10.1'
+    testImplementation project(':sdk-contracts')
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+tasks.withType(Test).configureEach { useJUnitPlatform() }

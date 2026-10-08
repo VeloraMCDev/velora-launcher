@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "SCOPENET Launcher",
+  "version": "0.5.0",
+  "identifier": "net.scopenet.launcher",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "main",
+        "title": "SCOPENET Launcher",
+        "width": 1120,
+        "height": 700,
+        "minWidth": 960,
+        "minHeight": 600,
+        "decorations": false,
+        "shadow": true,
+        "center": true,
+        "visible": false,
+        "backgroundColor": "#0b0d17"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https: http: data: blob:; media-src 'self' https: http: blob:; font-src 'self' data:; frame-src https: http:; connect-src 'self' ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "publisher": "SCOPENET",
+    "category": "Game",
+    "shortDescription": "Minecraft launcher",
+    "longDescription": "A fast, customisable Minecraft launcher connected to your community's admin panel.",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+    "macOS": { "minimumSystemVersion": "11.0" },
+    "linux": { "deb": { "depends": [] } },
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper", "silent": true },
+      "nsis": {
+        "installMode": "currentUser",
+        "displayLanguageSelector": false,
+        "installerIcon": "icons/icon.ico"
+      }
+    }
+  }
+}

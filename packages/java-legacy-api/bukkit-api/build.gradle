@@ -1,0 +1,14 @@
+plugins { id 'java-library' }
+group = 'net.scopenet'
+version = '0.1.0'
+repositories {
+    mavenCentral()
+    maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+}
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+dependencies {
+    api project(':api')
+    compileOnly 'org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT'
+}

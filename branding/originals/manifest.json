@@ -1,0 +1,22 @@
+{
+  "provenance": "Original artwork supplied by the project owner on 2026-10-04.",
+  "licensing": "Artwork and trademarks are excluded from the platform MIT license. No separate artwork license has been granted.",
+  "assets": [
+    {
+      "source": "branding/originals/velora1.png",
+      "role": "emblem",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1513094,
+      "sha256": "a1e6a56cdcfbdb3e75537375e05b80cc5db17276c1a1a5d37c8539156f5d271b"
+    },
+    {
+      "source": "branding/originals/velora2.png",
+      "role": "wordmark",
+      "width": 1774,
+      "height": 887,
+      "bytes": 1243456,
+      "sha256": "cec8fe83bfb43f0c66f77b8acd5b5ab73fc7b9fe59aac03a722134d6dceb3e89"
+    }
+  ]
+}

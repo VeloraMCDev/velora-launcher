@@ -1,0 +1,3 @@
+rootProject.name = 'velora-map-producer'
+include 'platform-client'
+project(':platform-client').projectDir = file('../java-platform-client')

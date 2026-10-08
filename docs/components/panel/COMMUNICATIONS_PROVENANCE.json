@@ -1,0 +1,46 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/routes/connections.rs",
+  "source_sha256": "8bdefd157c4b48bf41d12cab45cdd18d60ba2f3b081eaedf9fcd83719d0ecdf4",
+  "additional_sources": [
+    {
+      "path": "panel/server/src/routes/emails.rs",
+      "sha256": "1a4e4b3f6ac4b5a7a249c9c04f19eea7ed893ce719a2428f1d34eadfaf159e5b",
+      "selection": "Neutral renderer and EmailTemplate shape/size/bulk validation only; exclude starter catalog, gameplay variables, recipients, unsubscribe secret, persistence and queued delivery"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "crates/communications/src/discord.rs",
+      "sha256_lf": "28ea24fd4a1526b21b1a2c10d0639e2d0cd12081662bc99f568c4e36f81ea828"
+    },
+    {
+      "path": "crates/communications/src/lib.rs",
+      "sha256_lf": "804a00fb490fb6900e7834db6ca117491b93134a181befd4cc90caaa04c48679"
+    },
+    {
+      "path": "crates/communications/src/mail.rs",
+      "sha256_lf": "13682da2820d82c89952f8d6edb6e411a6cf565929697c5d54a52d467b450c96"
+    },
+    {
+      "path": "crates/communications/src/render.rs",
+      "sha256_lf": "c348fa4f2b758348584cbe33929eb9e626066f87bfb9a1807e77a5dbbae93c92"
+    },
+    {
+      "path": "crates/communications/src/settings.rs",
+      "sha256_lf": "40835a7958edd929a69133487147dc9ec6ab4f17110cfe10183479007a922b23"
+    },
+    {
+      "path": "crates/communications/src/templates.rs",
+      "sha256_lf": "cce786bd7254a42494bb07e5b4915958960589fec6ad276eb63498f70ade711c"
+    }
+  ],
+  "changes": [
+    "Extract generic settings, SMTP message/delivery and Discord provider exchange only; exclude mixed route guards, persistence and private gameplay",
+    "Preserve JSON fields, secret update policy, validation/error precedence, MIME format, relay, OAuth form and profile exchange",
+    "Caller owns account/reset lifecycle, authorization, protected storage, callback and HTTP client policy",
+    "Generic renderer and template validation preserve legacy HTML bytes, character limits, ID trim/case/error rules and bulk versus individual policy differences",
+    "Public dependencies and synthetic MIME/loopback/frozen rendering fixtures; standalone services and deployment acceptance remain incomplete"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "reviewed_sources": [
+    {
+      "path": "integrations/common/src/main/java/net/scopenet/integration/Integration.java",
+      "sha256": "7036c0c8b26178c2e896a3604a4c533e5495033adab8bc2a75b1cb19dc074c9e"
+    },
+    {
+      "path": "integrations/common/src/main/java/net/scopenet/worldmap/WorldMapSync.java",
+      "sha256": "a7379bdbd01a8f3271027e11f7aa22299fd69878b375acf0fb84fd5914a61f18"
+    }
+  ],
+  "files": [
+    {
+      "path": "java/platform-client/src/main/java/net/scopenet/integration/map/MapPosition.java",
+      "sha256_lf": "55231d44bacb2ff848eff14e72c414d19d5f33c34867eef224d913a04d46aeb9"
+    },
+    {
+      "path": "java/platform-client/src/main/java/net/scopenet/integration/map/MapSink.java",
+      "sha256_lf": "f059198e6f0298e802065d417e84c76aaacc2e8fe0a6285b005317b5f4f3a79d"
+    },
+    {
+      "path": "java/platform-client/src/main/java/net/scopenet/integration/map/MapProducerFactory.java",
+      "sha256_lf": "1b34b5a9a24b3a177e4aeb6629a2038030f128ec3508ba8cafcaae491fdc66da"
+    }
+  ],
+  "changes": [
+    "New neutral lifecycle/position/factory ports based on existing map calls",
+    "API version 1 for reviewed local ServiceLoader providers",
+    "No loader internals, rendering algorithm, private settings or gameplay policy"
+  ],
+  "complete_extension_sdk": false
+}

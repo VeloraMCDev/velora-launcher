@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "source_scope": "complete-product",
+  "gameplay_publication_authorized": true,
+  "owner_decision_date": "2026-10-08",
+  "license_change_authorized": false,
+  "pending_reviews": [],
+  "publication_repository": "VeloraMCDev/velora-launcher",
+  "github_repository_id": "1411074604",
+  "history_strategy": "One reviewed root commit; old repository retained privately"
+}

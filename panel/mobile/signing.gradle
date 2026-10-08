@@ -1,0 +1,21 @@
+// Direct APK distribution uses the operator's persistent key, without Play services.
+def signingPath = System.getenv('VELORA_ANDROID_KEYSTORE')
+def signingPassword = System.getenv('VELORA_ANDROID_KEYSTORE_PASSWORD')
+def operatorKeyPassword = System.getenv('VELORA_ANDROID_KEY_PASSWORD')
+if (System.getenv('VELORA_REQUIRE_ANDROID_SIGNING') == '1' && !signingPath) {
+    throw new GradleException('A persistent Android signing key is required for this build')
+}
+if (signingPath) {
+    if (!new File(signingPath).isAbsolute() || !new File(signingPath).isFile() || !signingPassword || !operatorKeyPassword) {
+        throw new GradleException('Android signing configuration is incomplete')
+    }
+    android.signingConfigs {
+        veloraDistribution {
+            storeFile file(signingPath)
+            storePassword signingPassword
+            keyAlias System.getenv('VELORA_ANDROID_KEY_ALIAS') ?: 'velora-player'
+            keyPassword operatorKeyPassword
+        }
+    }
+    android.buildTypes.release.signingConfig = android.signingConfigs.veloraDistribution
+}

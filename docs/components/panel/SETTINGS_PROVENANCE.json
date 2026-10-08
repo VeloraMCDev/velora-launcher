@@ -1,0 +1,33 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "2c7b1f99e0db3fb6fdf2378e4728451397981368",
+  "inputs": [
+    {
+      "path": "panel/server/src/store.rs",
+      "sha256": "af43ce639bbc674c83c24e94c1a37b3a021eaa4dd423db5ca1a95b440d659447"
+    },
+    {
+      "path": "panel/server/src/routes/admin.rs",
+      "sha256": "96f6985fe804b84f1fdd774a82b8ec3087d51d3b340e8c0bc4f1d6ecf8ef86aa"
+    }
+  ],
+  "scope": "Neutral settings shape/default username rules, key replacement/input validation, branding name validation and pool-only KV SQL; generic auth type retains host defaults",
+  "excluded": "Pool/scope selection, derived auth URL clearing, live guards, secret masking and private Experience branding resolution remain host-owned",
+  "outputs": [
+    {
+      "path": "src/lib.rs",
+      "sha256_lf": "5d051a4b488fa5cf3524c65adb5060c0a925856cdc0c1751d430fcbdd5d92bab"
+    },
+    {
+      "path": "tests/settings.rs",
+      "sha256_lf": "65152b13eb718b00a46516a7818c0230e95a05c6104970424f1fc90cd8f5a236"
+    }
+  ],
+  "validation": {
+    "independent_tests": 5,
+    "formatting": "passed",
+    "strict_clippy": "passed",
+    "host_adoption": "pending",
+    "full_service": "incomplete"
+  }
+}

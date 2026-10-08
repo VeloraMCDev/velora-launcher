@@ -1,0 +1,115 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "sources": [
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/worldmap/BiomeColors.java",
+      "source_sha256": "168f3a9f856f7972a92da35ffc0c5cf1c628b09e9c993ee41b52b80fd061258f",
+      "destination": "producer/src/main/java/net/scopenet/worldmap/BiomeColors.java",
+      "output_sha256_lf": "168f3a9f856f7972a92da35ffc0c5cf1c628b09e9c993ee41b52b80fd061258f"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/worldmap/BlockColors.java",
+      "source_sha256": "0c00f258f29bed697f7029595d3dba0153abe863e45718443b304789f2d774a9",
+      "destination": "producer/src/main/java/net/scopenet/worldmap/BlockColors.java",
+      "output_sha256_lf": "0c00f258f29bed697f7029595d3dba0153abe863e45718443b304789f2d774a9"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/worldmap/ChunkSampler.java",
+      "source_sha256": "5ef4ad7d69641ce41e76b87828d860a577dac25228bf27be43dee16f0c5ae2ff",
+      "destination": "producer/src/main/java/net/scopenet/worldmap/ChunkSampler.java",
+      "output_sha256_lf": "5ef4ad7d69641ce41e76b87828d860a577dac25228bf27be43dee16f0c5ae2ff"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/worldmap/MapColors.java",
+      "source_sha256": "a1d35e8d549a4e7dcf3b3df56d9199c9ae9b076e75dbf6fa60c0273b88208024",
+      "destination": "producer/src/main/java/net/scopenet/worldmap/MapColors.java",
+      "output_sha256_lf": "a1d35e8d549a4e7dcf3b3df56d9199c9ae9b076e75dbf6fa60c0273b88208024"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/worldmap/Nbt.java",
+      "source_sha256": "630eb968ab89f46fcc8e7cedb84b7ebde8bf9bd62685b368b80202133bbe112a",
+      "destination": "producer/src/main/java/net/scopenet/worldmap/Nbt.java",
+      "output_sha256_lf": "630eb968ab89f46fcc8e7cedb84b7ebde8bf9bd62685b368b80202133bbe112a"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/worldmap/Png.java",
+      "source_sha256": "f41fc6ce98cd672a7b2a9b3b0c3e69c89290fd30bf7b79ab7bae93c6b5c6de10",
+      "destination": "producer/src/main/java/net/scopenet/worldmap/Png.java",
+      "output_sha256_lf": "f41fc6ce98cd672a7b2a9b3b0c3e69c89290fd30bf7b79ab7bae93c6b5c6de10"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/worldmap/RegionFile.java",
+      "source_sha256": "bb970f2c475e7a04eb58f31b207bf16909349038435e98b30fff6cc8c01c6b9e",
+      "destination": "producer/src/main/java/net/scopenet/worldmap/RegionFile.java",
+      "output_sha256_lf": "bb970f2c475e7a04eb58f31b207bf16909349038435e98b30fff6cc8c01c6b9e"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/worldmap/RegionRenderer.java",
+      "source_sha256": "00272a646fb6063e8378266332a2e61bdf24101f863ad6597d32ab471ad2d280",
+      "destination": "producer/src/main/java/net/scopenet/worldmap/RegionRenderer.java",
+      "output_sha256_lf": "00272a646fb6063e8378266332a2e61bdf24101f863ad6597d32ab471ad2d280"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/worldmap/TileStore.java",
+      "source_sha256": "4561b9c8cbf3f3f4ac063ff158ae707c8dc0d4ac29ace88b251daab92dc48ea2",
+      "destination": "producer/src/main/java/net/scopenet/worldmap/TileStore.java",
+      "output_sha256_lf": "4561b9c8cbf3f3f4ac063ff158ae707c8dc0d4ac29ace88b251daab92dc48ea2"
+    },
+    {
+      "source_path": "integrations/common/src/main/java/net/scopenet/worldmap/WorldMapSync.java",
+      "source_sha256": "a7379bdbd01a8f3271027e11f7aa22299fd69878b375acf0fb84fd5914a61f18",
+      "destination": "producer/src/main/java/net/scopenet/worldmap/WorldMapSync.java",
+      "output_sha256_lf": "2bd3391d6841b135d46fef6be6c1ea1fe1d04f17f879fef0dab88ca91cd8b67d"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/worldmap/MapRenderTest.java",
+      "source_sha256": "5029ce7167da8f3adb7b4e138799dbcf101ae43bb493a8fe4df1a2e79c474529",
+      "destination": "producer/src/test/java/net/scopenet/worldmap/MapRenderTest.java",
+      "output_sha256_lf": "5029ce7167da8f3adb7b4e138799dbcf101ae43bb493a8fe4df1a2e79c474529"
+    },
+    {
+      "source_path": "integrations/common/src/test/java/net/scopenet/worldmap/WorldMapSyncTest.java",
+      "source_sha256": "00fa4cea5cfff570f906901dafa11559b007173d897cd877cae324e250cd9843",
+      "destination": "producer/src/test/java/net/scopenet/worldmap/WorldMapSyncTest.java",
+      "output_sha256_lf": "b6bb6a23a3f90e61a8fa5e7ab1615691da5de3e7deffa40d7821eb0d41b55d67"
+    },
+    {
+      "source_path": "integrations/common/src/main/resources/net/scopenet/worldmap/block_colors.csv",
+      "source_sha256": "91d3cc3f8b7fc1b1a657eaad798d23cb8c93c4cead0fcf5ad41fc2311d7f49b7",
+      "destination": "producer/src/main/resources/net/scopenet/worldmap/block_colors.csv",
+      "output_sha256_lf": "91d3cc3f8b7fc1b1a657eaad798d23cb8c93c4cead0fcf5ad41fc2311d7f49b7"
+    }
+  ],
+  "changes": [
+    "Only vanilla region/NBT/palette/PNG/tile rendering and generic map uploads are extracted",
+    "WorldMapSync consumes neutral SDK transport instead of private PanelClient",
+    "Opaque player/overlay messages are carried without claim or gameplay policies",
+    "Keep renderer version, cache paths, dimensions, upload formats, timeouts, scheduling and HTTP refusal handling",
+    "Retain legacy namespaces; rebrand display text",
+    "Tests use generated worlds and a synthetic HTTP panel, with no private settings/client imports",
+    "Generated-world test now actually restarts the producer and checks persisted tiles are not replayed",
+    "Include the original texture-derived block color table and verify packaged resource/fallback distinction",
+    "Implement neutral SDK map ports and API-versioned local ServiceLoader provider; game extensions need no renderer class import"
+  ],
+  "added_validation_tests": [
+    {
+      "path": "producer/src/test/java/net/scopenet/worldmap/PackagedPaletteTest.java",
+      "sha256_lf": "31a4840510b07b355025eab9e13e5d79ca4be298e015cce10a3481062a3c9c03"
+    },
+    {
+      "path": "producer/src/test/java/net/scopenet/worldmap/InstalledProviderTest.java",
+      "sha256_lf": "e4f1e57eb4b8680b1a1e7dc742e4559555a3af350ab2bfe706adb7022426dd01"
+    }
+  ],
+  "owned_extension_files": [
+    {
+      "destination": "producer/src/main/java/net/scopenet/worldmap/DefaultMapProducer.java",
+      "output_sha256_lf": "cd5d4ca7d90fee5de66589ac3154b8ff833ef260725b2d066c3f42482119b0d7"
+    },
+    {
+      "destination": "producer/src/main/resources/META-INF/services/net.scopenet.integration.map.MapProducerFactory",
+      "output_sha256_lf": "0e5d3570009ed90fe1b8b134fe430263b9adb84f341d4f5beb100c83ca2ea173"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "scopenet_client",
+  "version": "${version}",
+  "name": "Velora Companion",
+  "icon": "assets/scopenet_client/icon.png",
+  "description": "Native Velora screens, modular HUD, quests, guilds, marketplace, orders and contracts on Fabric 26.3. Gameplay stays on the server.",
+  "environment": "client",
+  "entrypoints": { "client": ["net.scopenet.client.Companion"] },
+  "depends": { "fabricloader": ">=0.19.5", "minecraft": "26.3", "java": ">=25", "fabric-api": ">=0.161.0" }
+}

@@ -1,0 +1,49 @@
+{
+  "kind": "new migration tooling; not a wholesale legacy extraction",
+  "authority_api_repository": "https://github.com/VeloraMCDev/authentication",
+  "authority_api_base_revision": "836034c758b5185ac7fee9296db31cbcfb9278cf",
+  "authority_extensions": [
+    {
+      "path": "crates/core/src/keys.rs",
+      "sha256_lf": "4ae016bf2ad6f0eff85fd7d0119c9edc841da57fa026f72ca9f19d6af6b21d02"
+    },
+    {
+      "path": "crates/core/src/schema.rs",
+      "sha256_lf": "ef49820214ecf3408fdf3fb47e6f6030962181866baecab2c92b974ca8897954"
+    }
+  ],
+  "files": [
+    {
+      "path": "crates/tools/Cargo.toml",
+      "sha256_lf": "789011d7907c92f0a4c8cb49626870afeb7902e179296777c78d674941fc44a9"
+    },
+    {
+      "path": "crates/tools/src/lib.rs",
+      "sha256_lf": "073a79f8bdf9e6760c3431203558181b49365948072aab1d35b4504a7ec8d59d"
+    },
+    {
+      "path": "crates/tools/src/main.rs",
+      "sha256_lf": "ff29919b03e5ca955266ed1f94f1d086cd97b3d78214d92a244a78aba80b88aa"
+    },
+    {
+      "path": "crates/tools/src/assets.rs",
+      "sha256_lf": "8e1899745e479c4b3aa03271370c36455428b5f2b43e4ce9181dfd5ef7ab5a6f"
+    },
+    {
+      "path": "crates/tools/tests/cli.rs",
+      "sha256_lf": "e99b736c2672b28838ec12a0b113135fd3ae7cd5a4023ebf57b400a4ac2f846a"
+    }
+  ],
+  "boundaries": [
+    "Offline byte-exact closed SQLite checkpoint, new-file init/import and verified signing/texture carry; no HTTP daemon or live credential cutover",
+    "Fixed authority-only import API; no private gameplay extraction",
+    "Read-only/query-only closed source, sidecar and overwrite refusal, source/destination integrity report",
+    "Only synthetic temporary files used for tests; no production databases, assets or signing keys imported",
+    "All referenced and cached textures retained with content-hash verification, exact RSA/JWT bytes and protected manifests; no generation or overwrite",
+    "Synthetic database/asset restore verifies original password, web/game/join sessions, player certificates, RSA signatures and live revocation",
+    "Closed database checkpoint preserves all bytes/private schema/user-version and passes hash/SQLite integrity validation without source writes",
+    "Immutable read-only checkpoint access after canonical sidecar preflight preserves closed WAL-mode files without journal changes",
+    "Asset validation never upgrades supported version-one backups and reports actual store version; version-two imports include launcher admission history",
+    "Operator quiescence/checkpoint acceptance, standalone bootstrap/configuration and full restore/rollback/deployment acceptance remain pending"
+  ]
+}

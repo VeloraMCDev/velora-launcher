@@ -1,0 +1,6 @@
+{
+  "schema": 1,
+  "trusted_public_key": "",
+  "agent_id": "",
+  "state_directory": "/var/lib/velora-probe"
+}

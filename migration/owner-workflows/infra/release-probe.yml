@@ -1,0 +1,109 @@
+name: Build immutable Development probe candidate
+on:
+  workflow_dispatch:
+    inputs:
+      fault_drill:
+        description: 'Build a deliberately unhealthy image (internal commit differs from the source SHA) for the Development rollback drill'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: probe-release-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  candidate:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      artifact-uri: ${{ steps.publish.outputs.artifact-uri }}
+      artifact-sha256: ${{ steps.publish.outputs.artifact-sha256 }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run test:deployment
+      - name: Exact release image coordinates
+        env:
+          FAULT_DRILL: ${{ inputs.fault_drill }}
+        run: |
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/deployment-probe" >> "$GITHUB_ENV"
+          if [ "$FAULT_DRILL" = "true" ]; then
+            # The image is self-consistent but reports a commit that is not the registered source SHA.
+            echo "BUILD_COMMIT=$(printf 'f%.0s' $(seq 40))" >> "$GITHUB_ENV"
+            echo "IMAGE_TAG=drill-wrong-commit-${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+          else
+            echo "BUILD_COMMIT=$GITHUB_SHA" >> "$GITHUB_ENV"
+            echo "IMAGE_TAG=sha-${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+          fi
+      - name: Build once
+        run: docker build --platform linux/amd64 --build-arg BUILD_REVISION="$BUILD_COMMIT" --build-arg BUILD_RUN_ID="$GITHUB_RUN_ID.$GITHUB_RUN_ATTEMPT" --build-arg BUILD_CREATED="$(date -u +%Y-%m-%dT%H:%M:%SZ)" --tag "$IMAGE:$IMAGE_TAG" deployment/probe
+      - name: Test the exact image before publishing
+        run: node scripts/check-probe-container.mjs "$IMAGE:$IMAGE_TAG" "$BUILD_COMMIT"
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish the tested bytes without rebuilding
+        id: publish
+        run: |
+          docker push "$IMAGE:$IMAGE_TAG"
+          uri=$(docker image inspect --format '{{index .RepoDigests 0}}' "$IMAGE:$IMAGE_TAG")
+          echo "ARTIFACT_URI=$uri" >> "$GITHUB_ENV"
+          echo "artifact-uri=$uri" >> "$GITHUB_OUTPUT"
+          echo "artifact-sha256=${uri##*@sha256:}" >> "$GITHUB_OUTPUT"
+      - name: Generate checksummed candidate input
+        run: |
+          node --input-type=module <<'JS'
+          import {writeFileSync} from 'node:fs';
+          const e=process.env, digest=e.ARTIFACT_URI?.split('@')[1];
+          writeFileSync('artifact-input.json',JSON.stringify({schema:1,repository:e.GITHUB_REPOSITORY,service_id:'deployment-probe',git_sha:e.GITHUB_SHA,git_ref:e.GITHUB_REF,build_run_id:e.GITHUB_RUN_ID,artifact_type:'oci',artifact_uri:e.ARTIFACT_URI,sha256:digest?.replace('sha256:',''),oci_digest:digest,version:'0.1.0',build_status:'PASSED',test_status:'PASSED'}));
+          JS
+          node scripts/artifact-metadata.mjs artifact-input.json candidate.json
+          sha256sum candidate.json > candidate.json.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: probe-candidate-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            candidate.json
+            candidate.json.sha256
+          retention-days: 14
+          if-no-files-found: error
+  register-development:
+    needs: candidate
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.VELORA_DEVELOPMENT_REGISTRATION_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Register the exact tested image
+        env:
+          VELORA_REGISTRATION_ENDPOINT: ${{ vars.VELORA_DEVELOPMENT_REGISTRATION_ENDPOINT }}
+          ARTIFACT_URI: ${{ needs.candidate.outputs.artifact-uri }}
+          IMAGE_SHA256: ${{ needs.candidate.outputs.artifact-sha256 }}
+        run: |
+          node --input-type=module <<'JS'
+          import {writeFileSync} from 'node:fs';
+          const e=process.env;
+          writeFileSync('registration-input.json',JSON.stringify({schema:1,repository:e.GITHUB_REPOSITORY,service_id:'deployment-probe',git_sha:e.GITHUB_SHA,git_ref:e.GITHUB_REF,build_run_id:e.GITHUB_RUN_ID,artifact_type:'oci',artifact_uri:e.ARTIFACT_URI,sha256:e.IMAGE_SHA256,oci_digest:'sha256:'+e.IMAGE_SHA256,version:'0.1.0',build_status:'PASSED',test_status:'PASSED'}));
+          JS
+          CANDIDATE_FILE=registration-input.json node scripts/register-development-candidate.mjs

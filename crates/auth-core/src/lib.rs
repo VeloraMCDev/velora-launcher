@@ -1,0 +1,22 @@
+//! Velora identity cryptography. No panel or experience dependencies.
+pub mod admission;
+pub mod capes;
+pub mod certificates;
+pub mod identity;
+#[cfg(feature = "sqlite")]
+pub mod identity_store;
+#[cfg(feature = "sqlite")]
+pub mod import;
+pub mod keys;
+#[cfg(feature = "sqlite")]
+pub mod launcher_sessions;
+pub mod login_guard;
+pub mod password;
+#[cfg(feature = "sqlite")]
+pub mod schema;
+pub mod secrets;
+#[cfg(feature = "textures")]
+pub mod textures;
+pub mod tokens;
+#[cfg(feature = "sqlite")]
+pub mod ygg_store;

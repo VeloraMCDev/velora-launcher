@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://velora.invalid/contracts/artifact-v1",
+  "title": "Velora immutable artifact registration input v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "repository",
+    "service_id",
+    "git_sha",
+    "git_ref",
+    "build_run_id",
+    "artifact_type",
+    "artifact_uri",
+    "sha256",
+    "version",
+    "build_status",
+    "test_status"
+  ],
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$"
+    },
+    "service_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,63}$"
+    },
+    "git_sha": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "git_ref": {
+      "type": "string",
+      "pattern": "^refs/(heads|tags)/[A-Za-z0-9][A-Za-z0-9_./-]{0,199}$"
+    },
+    "build_run_id": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]{0,19}$"
+    },
+    "artifact_type": {
+      "enum": [
+        "oci",
+        "binary",
+        "static_bundle",
+        "worker_bundle",
+        "jar",
+        "config_bundle"
+      ]
+    },
+    "artifact_uri": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "oci_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+      "maxLength": 128
+    },
+    "build_status": {
+      "const": "PASSED"
+    },
+    "test_status": {
+      "const": "PASSED"
+    },
+    "provenance_uri": {
+      "type": "string",
+      "maxLength": 1024
+    },
+    "sbom_uri": {
+      "type": "string",
+      "maxLength": 1024
+    },
+    "candidate_id": {
+      "type": "string",
+      "pattern": "^rc_[a-f0-9]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "artifact_type": {
+            "const": "oci"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "oci_digest"
+        ],
+        "properties": {
+          "artifact_uri": {
+            "pattern": "^ghcr\\.io/[a-z0-9][a-z0-9._/-]*@sha256:[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "oci_digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "artifact_uri": {
+            "pattern": "^https://",
+            "type": "string"
+          }
+        },
+        "not": {
+          "required": [
+            "oci_digest"
+          ],
+          "properties": {
+            "oci_digest": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

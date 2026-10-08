@@ -1,0 +1,15 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/net.rs",
+  "source_sha256": "de871ad47b98362e493af83314d3a114ba96b238120a863ce9aef76c821af044",
+  "output_path": "crates/http/src/net.rs",
+  "output_sha256_lf": "e498d7dd319f43bdb0a40d3f1814b9373819dc2bfe27488787eff7e4266cdc38",
+  "changes": [
+    "Extract trusted socket-peer and right-to-left forwarded-IP resolution as a pure supplied-policy helper",
+    "Preserve malformed-hop failure and x-real-ip/peer fallback ordering; missing or untrusted peers cannot authorize forwarded headers",
+    "HostPorts still supplies runtime origins/branding/proxy policy; legacy operator settings and public URL adapter remain unchanged",
+    "Synthetic request fixtures cover prefix spoofing, missing/untrusted peers, malformed chain precedence and IPv6 formatting",
+    "No platform settings SQL, private gameplay, production addresses or standalone daemon included"
+  ]
+}

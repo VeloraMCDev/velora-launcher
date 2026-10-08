@@ -1,0 +1,30 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "contracts": [
+    {
+      "source_path": "crates/shared/src/lib.rs",
+      "source_sha256": "1a0fbe6e526455c98e9605e2998f7abc6338f7a110bdfaa683f121e0942bd4e9",
+      "destination": "sdk/rust/platform-contracts/src/lib.rs",
+      "output_sha256": "b9b4e629d0f71a06cec34ddc694c23bfba4310018541249c1954e30cfc38e9cb"
+    },
+    {
+      "source_path": "crates/shared/src/updates.rs",
+      "source_sha256": "574346a6c21b3b70d79c5f3622937d396c6d20c26dd4fd685c31cf5d6a74b040",
+      "destination": "sdk/rust/platform-contracts/src/updates.rs",
+      "output_sha256": "574346a6c21b3b70d79c5f3622937d396c6d20c26dd4fd685c31cf5d6a74b040"
+    }
+  ],
+  "utility_sources": [
+    "crates/core/src/http.rs",
+    "crates/core/src/paths.rs",
+    "crates/core/src/meta.rs",
+    "crates/core/src/authlib.rs"
+  ],
+  "changes": [
+    "Velora display defaults",
+    "Generic empty experience defaults retained from stage 1",
+    "Gameplay DTO declarations added; no gameplay policies",
+    "HTTP/path/metadata/artifact utilities extracted without install engine"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/db.rs",
+  "source_sha256": "bb39ae42059b2e7003e84ad5e477474bc71d27ad9970f2094b9bd44d8b3fd2bb",
+  "output_path": "crates/core/src/import.rs",
+  "output_sha256_lf": "9f8411459054daef5b649fb9b8c96ad50c6c760cad9bb43de370d0a79693ba4c",
+  "changes": [
+    "New explicit pool-only importer uses fixed authority projections from the final legacy schema; no mixed migrations or private gameplay triggers are copied",
+    "Source must be an offline consistent checkpoint with query_only enabled; destination must be an initialized empty owned store",
+    "Copy records in one destination transaction and compare every projected value before commit, preserving key bytes, credential versions, preferences, IDs and historical names",
+    "Preserve users/groups/capes/launcher_sessions AUTOINCREMENT high-water marks and enforce destination foreign keys; failure rolls back all imported records",
+    "Return counts only; synthetic fixtures verify excluded gameplay, source preservation, duplicate import refusal and missing-table rollback",
+    "Include exact session IDs, nullable account/name fields, raw IPs and anonymous history; refuse checkpoints lacking the final legacy session table",
+    "Offline checkpoint/asset tools are separate; operator acceptance, full rollback/gateway and service single-writer cutover remain incomplete"
+  ]
+}

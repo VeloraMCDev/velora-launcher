@@ -1,0 +1,18 @@
+{
+  "repository": "https://github.com/VeloraMCDev/sdk",
+  "revision": "fe16aac849bb3ac266f48c645592ab9e8ed8b8fa",
+  "path": "ui/skin",
+  "adaptation": "No source changes. Compatibility Launcher supplies its original placeholder opacity 0.08; Panel retains default 0.07.",
+  "files": [
+    {
+      "path": "SkinView.svelte",
+      "sha256": "4d1e11f2cd7323bd2be6602bd7864574b7e959e21d79bc9e07111617c2fc2c61",
+      "owner_sha256": "4d1e11f2cd7323bd2be6602bd7864574b7e959e21d79bc9e07111617c2fc2c61"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349",
+      "owner_sha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349"
+    }
+  ]
+}

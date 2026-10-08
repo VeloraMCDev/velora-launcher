@@ -1,0 +1,87 @@
+{
+  "repository": "https://github.com/VeloraMCDev/authentication",
+  "revision": "0a9f0fbd7c46834d6b8ee80fe7bc95a1d40d7d6c",
+  "purpose": "Temporary host copies of reviewed authority library sources; remove at service/package cutover",
+  "files": [
+    {
+      "path": "crates/auth-core/src/admission.rs",
+      "source_path": "crates/core/src/admission.rs",
+      "sha256_lf": "cd6bf5bed2a2009328262769af6e26e7cf3f231e4232f92146dd5fb7436b6dea"
+    },
+    {
+      "path": "crates/auth-core/src/capes.rs",
+      "source_path": "crates/core/src/capes.rs",
+      "sha256_lf": "0a14be67fd5369fa3bbd485ff04214d1ecdc11ca0738140e647c1413ac2dcf5b"
+    },
+    {
+      "path": "crates/auth-core/src/certificates.rs",
+      "source_path": "crates/core/src/certificates.rs",
+      "sha256_lf": "07875f166fb51d8fc758d90231fea4d378793e8bffa773ba894e5aab95517726"
+    },
+    {
+      "path": "crates/auth-core/src/identity.rs",
+      "source_path": "crates/core/src/identity.rs",
+      "sha256_lf": "257085a9472f029976ce74a59cd4290de1fd648a777e77dee34f25aacfe92d0c"
+    },
+    {
+      "path": "crates/auth-core/src/identity_store.rs",
+      "source_path": "crates/core/src/identity_store.rs",
+      "sha256_lf": "a8ca687457f8dbb81ea46b104918918fb552d326639b9a4f9acb9c6d0c8765c7"
+    },
+    {
+      "path": "crates/auth-core/src/import.rs",
+      "source_path": "crates/core/src/import.rs",
+      "sha256_lf": "9f8411459054daef5b649fb9b8c96ad50c6c760cad9bb43de370d0a79693ba4c"
+    },
+    {
+      "path": "crates/auth-core/src/keys.rs",
+      "source_path": "crates/core/src/keys.rs",
+      "sha256_lf": "4ae016bf2ad6f0eff85fd7d0119c9edc841da57fa026f72ca9f19d6af6b21d02"
+    },
+    {
+      "path": "crates/auth-core/src/launcher_sessions.rs",
+      "source_path": "crates/core/src/launcher_sessions.rs",
+      "sha256_lf": "5d42628cd3e628b4204a80d60d643e8b049470198f9836902380e7c1bc52d2c0"
+    },
+    {
+      "path": "crates/auth-core/src/lib.rs",
+      "source_path": "crates/core/src/lib.rs",
+      "sha256_lf": "2101c0f9e2c521f72576465b8663af974606cd58723d5b97c41c4eaae3c1a750"
+    },
+    {
+      "path": "crates/auth-core/src/login_guard.rs",
+      "source_path": "crates/core/src/login_guard.rs",
+      "sha256_lf": "c8c9591b77979e379bbc8d75e4ea61bcd9c019ee59d989cadb10702412700b15"
+    },
+    {
+      "path": "crates/auth-core/src/password.rs",
+      "source_path": "crates/core/src/password.rs",
+      "sha256_lf": "e938e20c353ae051b3e9ad89e5bc0a23ef6d9effb6124b94a1bb3ee1b4b75acd"
+    },
+    {
+      "path": "crates/auth-core/src/schema.rs",
+      "source_path": "crates/core/src/schema.rs",
+      "sha256_lf": "a230a5e87891309f80189a8c2b619a899e0ef35c51ec7fb2721e3c41126404d0"
+    },
+    {
+      "path": "crates/auth-core/src/secrets.rs",
+      "source_path": "crates/core/src/secrets.rs",
+      "sha256_lf": "f24e7118afb12e2b2532fb904810b22d976472d9b6c042f92efa160b44576b36"
+    },
+    {
+      "path": "crates/auth-core/src/textures.rs",
+      "source_path": "crates/core/src/textures.rs",
+      "sha256_lf": "18998c2771c6ecde9c5cf895b2e4158e9fd0c88c21a3846c215b8a999e384caf"
+    },
+    {
+      "path": "crates/auth-core/src/tokens.rs",
+      "source_path": "crates/core/src/tokens.rs",
+      "sha256_lf": "f8fb7c904612b07c3116c9653dfc5e5ab71446147f5f6a0048a4fee6bebbf7e6"
+    },
+    {
+      "path": "crates/auth-core/src/ygg_store.rs",
+      "source_path": "crates/core/src/ygg_store.rs",
+      "sha256_lf": "1cfb30d31698310ede6b679cf439cedec9677c362210d6c5b8b1f6a416ec544e"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/routes/connections.rs",
+  "source_sha256": "8bdefd157c4b48bf41d12cab45cdd18d60ba2f3b081eaedf9fcd83719d0ecdf4",
+  "output_path": "crates/http/src/reset.rs",
+  "output_sha256_lf": "c2a0fe14ecaeda6dadfe0dcc18022c48b8e15823bec598fb1a84993ae1e70d37",
+  "changes": [
+    "Split generic forgot/reset workflow from mixed administrator/provider module",
+    "Typed host ports retain email readiness/origin validation ordering and SMTP delivery; no host settings or provider credentials are copied",
+    "Preserve generic anti-enumeration responses, active-email lookup, UUID token format, SHA256-only persistence, five-minute suppression and 30-minute lifetime",
+    "Preserve failed-delivery token cleanup and atomic single-use/password/auth-version/game-token/join-session mutation",
+    "Use Velora email presentation; runtime paths/pools and credential records stay supplied by the host",
+    "Synthetic tests verify revocation, retry rollback, expiry, hashing and email/store failures",
+    "SMTP/provider configuration, account linking, schema/import and standalone service cutover remain incomplete"
+  ]
+}

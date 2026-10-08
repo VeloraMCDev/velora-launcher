@@ -1,0 +1,15 @@
+{
+  "name": "velora-platform-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./experience.ts",
+    "./branding": "./branding.ts",
+    "./ExperienceWidgets.svelte": "./ExperienceWidgets.svelte"
+  },
+  "peerDependencies": { "svelte": "^5.57.1" },
+  "devDependencies": { "svelte": "5.57.1", "svelte-check": "4.7.6", "typescript": "5.9.3" },
+  "scripts": { "test": "node --test tests.mjs", "check": "svelte-check --tsconfig tsconfig.json" }
+}

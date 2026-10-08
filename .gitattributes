@@ -1,0 +1,9 @@
+# Preserve the frozen archive byte for byte on Windows and Linux.
+migration/legacy-source/** -text
+vendor/platform-ui/** -text
+java/gameplay/src/** -text
+java/vendor/platform-client/** -text
+/.github/assets/banner.svg -text
+
+# Preserve the original source bytes, including existing CRLF and whitespace.
+* -text -whitespace

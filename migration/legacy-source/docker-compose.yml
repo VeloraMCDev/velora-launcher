@@ -1,0 +1,39 @@
+# SCOPENET admin panel
+#
+#   cp .env.example .env    # set ADMIN_PASSWORD and PUBLIC_URL
+#   docker compose up -d --build
+#
+# Then open http://localhost:8080 (or your domain behind a reverse proxy).
+services:
+  panel:
+    # Tag the image built from this checkout so an older GHCR release is not used.
+    image: scopenet-panel:local
+    build:
+      context: .
+    container_name: scopenet-panel
+    restart: unless-stopped
+    ports:
+      - "${PANEL_PORT:-8080}:8080"
+    environment:
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      # First start only: creates the admin account. If empty, a random
+      # password is printed in `docker compose logs panel`.
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      # Signs login tokens. Auto-generated into the data volume if empty.
+      JWT_SECRET: ${JWT_SECRET:-}
+      # Optional — can also be set in the panel's Settings page.
+      CURSEFORGE_API_KEY: ${CURSEFORGE_API_KEY:-}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-2048}
+      PUBLIC_URL: ${PUBLIC_URL:-}
+      SCOPENET_TRUSTED_PROXIES: ${SCOPENET_TRUSTED_PROXIES:-}
+      RUST_LOG: ${RUST_LOG:-info}
+    volumes:
+      - panel-data:/data
+    # Very small footprint: the panel idles at ~10 MB RAM.
+    deploy:
+      resources:
+        limits:
+          memory: ${PANEL_MEMORY:-256M}
+
+volumes:
+  panel-data:

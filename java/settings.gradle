@@ -1,0 +1,2 @@
+rootProject.name = 'velora-private-gameplay'
+include 'sdk-contracts'

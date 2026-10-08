@@ -1,0 +1,32 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "sources": [
+    {
+      "path": "panel/server/src/routes/public.rs",
+      "sha256": "706affa66fa86d77ae9d72a8de474eb6ee813146749bd8e7b55a227c536f6f73"
+    },
+    {
+      "path": "panel/server/src/routes/servers.rs",
+      "sha256": "5a460d4c82ea3f09e1a24126154117c44f7071162e6ca373de19a285572ded70"
+    },
+    {
+      "path": "panel/server/src/routes/account.rs",
+      "sha256": "2000dca1d3743d3e39a3426826d3a1538aa7de3180701cc427df2855225f6a7d"
+    },
+    {
+      "path": "panel/server/src/db.rs",
+      "sha256": "bb39ae42059b2e7003e84ad5e477474bc71d27ad9970f2094b9bd44d8b3fd2bb"
+    }
+  ],
+  "output_path": "crates/core/src/launcher_sessions.rs",
+  "output_sha256_lf": "5d42628cd3e628b4204a80d60d643e8b049470198f9836902380e7c1bc52d2c0",
+  "changes": [
+    "Extract session INSERT/prune, per-user/anonymous recent-IP lookup, canonical IP comparison and open-transaction revocation only",
+    "Preserve fifty-row ID ordering, inclusive admission cutoff, strict global prune cutoff and partial-commit behavior",
+    "Caller supplies verified identity/timestamps; Panel retains event observations and rename audit",
+    "Tests use actual owned version-two schema for rollback, cascade, outage, retention and admission boundaries",
+    "No mixed server/gameplay implementation, production data or released migrations copied",
+    "Owned additive schema/import preserves admission history; authenticated service interface and cross-store audit/deletion acceptance remain pending"
+  ]
+}

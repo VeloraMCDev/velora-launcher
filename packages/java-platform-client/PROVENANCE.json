@@ -1,0 +1,30 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "sources": [
+    {
+      "path": "integrations/common/src/main/java/net/scopenet/integration/PanelClient.java",
+      "sha256": "20e4e6aecfd6e094498f07359753e9d75ed238cdba3625d6a0c911bccffca54e"
+    },
+    {
+      "path": "integrations/common/src/main/java/net/scopenet/integration/Settings.java",
+      "sha256": "3141c160282fb6da53215a75b61810a972f9133f59f316cb28faa31c449182b7"
+    }
+  ],
+  "files": [
+    {
+      "path": "src/main/java/net/scopenet/integration/PanelTransport.java",
+      "sha256": "0dd4295fcff5aa61dd0dc791e3cf002ffcdfc07a226ce30bca97393351bcf554"
+    },
+    {
+      "path": "src/main/java/net/scopenet/integration/ServerConnection.java",
+      "sha256": "f6d67597c5192e90368392687537ddeb17503c1a0ddbc1068c2305c5f3bf6b3f"
+    }
+  ],
+  "changes": [
+    "Extract only HTTP transport and URL/token validation",
+    "Inject connection supplier and error factory to retain host compatibility",
+    "Leave gameplay settings, methods, caches and rules in the private host",
+    "Keep existing Java namespace, endpoint roots, bearer tokens and timeouts"
+  ]
+}

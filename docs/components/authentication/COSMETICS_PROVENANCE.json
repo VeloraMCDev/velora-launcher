@@ -1,0 +1,17 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/routes/admin.rs",
+  "source_sha256": "575d723acd1117f6b5f5b8bcfbb38592a67d545181efb5f202baf3a800cbcf10",
+  "output_path": "crates/http/src/cosmetics.rs",
+  "output_sha256_lf": "0a0778a683f7d9340ae3461329e45b06e76d5508fed32c44c2eb7a6e1ebb38e6",
+  "changes": [
+    "Split administrator skin/model/cape mutations and cape CRUD/projection from mixed application routes",
+    "Caller retains administrator admission/multipart extraction and private aggregate view; current pools/storage paths supplied explicitly",
+    "Preserve strict administrator model rules, missing target error distinctions and private-cape assignment",
+    "Preserve name/visibility/group/file validation order, PNG blocking/storage behavior, JSON errors, sorting and wearer projections",
+    "Preserve create/update name-limit difference and wearer clearing before cape deletion, including partial failure behavior",
+    "Independent synthetic fixtures verify admission/error precedence, wire fields, UUIDs, model retention and failures",
+    "Provider/SMTP configuration, deletion/service writer cutover, owned schema/import and standalone deployment remain incomplete"
+  ]
+}

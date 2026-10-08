@@ -1,0 +1,86 @@
+name: velora-game-auth-dev
+services:
+  authentication:
+    build:
+      context: ${VELORA_AUTH_CONTEXT:-../../../authentication}
+      dockerfile: Dockerfile
+    image: velora-auth-component:dev
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 30s
+    environment:
+      VELORA_AUTH_BIND: 0.0.0.0:8081
+      VELORA_AUTH_DATA_DIR: ${VELORA_AUTH_DATA_DIR:-/data}
+      VELORA_AUTH_PUBLIC_ORIGIN: ${VELORA_PUBLIC_ORIGIN:?supply the operator public origin}
+      VELORA_AUTH_TRUSTED_PROXIES: ${VELORA_GATEWAY_INTERNAL_IP:-172.30.50.2}
+      VELORA_AUTH_BOOTSTRAP_USERNAME: ${VELORA_BOOTSTRAP_USERNAME:-VeloraAdmin}
+      VELORA_AUTH_BOOTSTRAP_PASSWORD_FILE: /run/secrets/bootstrap_password
+    secrets: [bootstrap_password]
+    volumes:
+      - ${VELORA_AUTH_VOLUME:-auth_data}:/data
+    networks:
+      authority:
+        ipv4_address: ${VELORA_AUTH_INTERNAL_IP:-172.30.50.3}
+    healthcheck:
+      test: [CMD, curl, --fail, --silent, http://127.0.0.1:8081/health/ready]
+      interval: 2s
+      timeout: 5s
+      start_period: 90s
+      retries: 10
+  tools:
+    profiles: [offline]
+    image: velora-auth-component:dev
+    entrypoint: [/usr/local/bin/velora-auth-tools]
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    network_mode: none
+    volumes:
+      - auth_data:/source:ro
+      - restored_data:/data
+  gateway:
+    build:
+      context: ${VELORA_GATEWAY_CONTEXT:-../../../panel}
+      dockerfile: Dockerfile.gateway
+    image: velora-gateway-component:dev
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    stop_grace_period: 30s
+    environment:
+      VELORA_GATEWAY_BIND: 0.0.0.0:8080
+      VELORA_GATEWAY_PUBLIC_ORIGIN: ${VELORA_PUBLIC_ORIGIN:?supply the operator public origin}
+      VELORA_GATEWAY_AUTH_UPSTREAM: http://authentication:8081
+      VELORA_GATEWAY_HEALTH_PATH: ${VELORA_HEALTH_PATH:-/health/ready}
+    ports:
+      - 127.0.0.1:${VELORA_GATEWAY_PORT:-8080}:8080
+    networks:
+      frontend: {}
+      authority:
+        ipv4_address: ${VELORA_GATEWAY_INTERNAL_IP:-172.30.50.2}
+    depends_on:
+      authentication:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD-SHELL, 'curl --fail --silent "http://127.0.0.1:8080$${VELORA_GATEWAY_HEALTH_PATH}"']
+      interval: 2s
+      timeout: 5s
+      retries: 10
+secrets:
+  bootstrap_password:
+    file: ${VELORA_BOOTSTRAP_PASSWORD_FILE:?supply a protected bootstrap password file}
+volumes:
+  auth_data: {}
+  restored_data: {}
+networks:
+  frontend: {}
+  authority:
+    internal: true
+    ipam:
+      config:
+        - subnet: ${VELORA_INTERNAL_SUBNET:-172.30.50.0/24}

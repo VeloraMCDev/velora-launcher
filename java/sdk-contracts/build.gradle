@@ -1,0 +1,8 @@
+plugins { id 'java-library' }
+group = 'net.scopenet'
+version = '0.1.0'
+repositories { mavenCentral() }
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
+sourceSets.main.java.setSrcDirs(['../../packages/java-platform-client/src/main/java'])
+dependencies { api 'com.google.code.gson:gson:2.10.1' }

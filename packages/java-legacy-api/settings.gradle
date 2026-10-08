@@ -1,0 +1,4 @@
+rootProject.name = 'velora-java-sdk'
+include 'platform-client', 'api', 'bukkit-api', 'example-consumer'
+
+project(':platform-client').projectDir = file('../java-platform-client')

@@ -1,0 +1,31 @@
+[package]
+name = "velora-auth-service"
+version.workspace = true
+edition.workspace = true
+license = "MIT"
+repository = "https://github.com/VeloraMCDev/velora-launcher"
+publish = false
+
+[[bin]]
+name = "velora-auth-server"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+axum = { version = "0.8", features = ["tokio", "http1"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "signal"] }
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "sqlite"] }
+velora-auth-core = { workspace = true, features = ["sqlite", "textures"] }
+velora-auth-http = { workspace = true }
+serde_json = "1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+uuid = { version = "1", features = ["v4"] }
+
+[dev-dependencies]
+image = { version = "0.25", default-features = false, features = ["png"] }
+velora-platform-contracts = { path = "../../packages/rust-platform-contracts" }
+tempfile = "3"
+reqwest = { version = "0.12", default-features = false, features = ["json", "multipart"] }
+rsa = { version = "0.9", features = ["sha1", "pem"] }
+sha1 = { version = "0.10", features = ["oid"] }
+base64 = "0.22"

@@ -1,0 +1,23 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "changes": [
+    "Generic empty default; no SMP/Frontiers policy or component imports",
+    "Injected local registry replaces private registry import",
+    "Own-property check prevents inherited object keys becoming components"
+  ],
+  "inputs": [
+    {
+      "path": "shared/experience/index.ts",
+      "sha256": "59518f477eb1d5a1dd9d0a403cd99f790718805eed77fdf457ab9d0b2212679e"
+    },
+    {
+      "path": "shared/experience/branding.ts",
+      "sha256": "26dda6662c5ce107a9963e7cf32174fda3097c07aca6a39bbc5b8ccfe2997154"
+    },
+    {
+      "path": "shared/experience/ExperienceWidgets.svelte",
+      "sha256": "2d0bc7c748269a6bbc375f090b0883e0ce7e8eb619550ddbf49cb372d3bd5a21"
+    }
+  ]
+}

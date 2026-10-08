@@ -1,0 +1,17 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/auth.rs",
+  "source_sha256": "4046d9615bdb801bd829f97d2b7d5322267ce3f9e8727338f65a3b6be63af969",
+  "output_path": "crates/core/src/identity_store.rs",
+  "output_sha256_lf": "a8ca687457f8dbb81ea46b104918918fb552d326639b9a4f9acb9c6d0c8765c7",
+  "changes": [
+    "Move identity INSERT/lookup/group SQL behind pool-only owner-local functions",
+    "Preserve name/email normalization, optional rows, sorted groups and database errors",
+    "HTTP owner allocates hashes/time/UUIDs; host supplies username policy and conflict/HTTP adapters",
+    "Live lookups propagate authority-unavailable errors; no credential cache grants access",
+    "Conditional first-admin INSERT arbitrates competing bootstrap attempts without promoting or overwriting existing users",
+    "Tests use synthetic projection and owned-schema fixtures, not production migrations or account records",
+    "Fresh schema/import helpers are available; signing/texture checkpoint, credential-writer/service cutover remain incomplete"
+  ]
+}

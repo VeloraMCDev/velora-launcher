@@ -1,0 +1,567 @@
+name: SCOPENET
+version: '${version}'
+main: net.scopenet.paper.ScopenetPlugin
+api-version: '1.20'
+description: SCOPENET private authentication, access control and activity reporting.
+load: STARTUP
+softdepend: [LuckPerms, PlaceholderAPI, Vault, CoreProtect, WorldGuard, WorldEdit, spark]
+
+commands:
+  scopenet:
+    permission: scopenet.command.scopenet
+    description: SCOPENET server commands, status, and help
+    aliases: [sn]
+  map:
+    permission: scopenet.command.scopenet.status
+    description: Show live map rendering and upload progress
+  spawn:
+    permission: scopenet.command.spawn
+    description: Teleport to the server spawn point
+    aliases: [hub, lobby]
+  home:
+    permission: scopenet.command.home
+    description: Teleport to one of your homes or open the homes GUI
+    aliases: [homes]
+  sethome:
+    permission: scopenet.command.sethome
+    description: Set a new home location
+    aliases: [createshome]
+  delhome:
+    permission: scopenet.command.delhome
+    description: Delete an existing home
+    aliases: [rmhome]
+  back:
+    permission: scopenet.command.back
+    description: Return to your previous location or death point
+    aliases: [return]
+  tpa:
+    permission: scopenet.command.tpa
+    description: Request to teleport to another player
+  tpaccept:
+    permission: scopenet.command.tpaccept
+    description: Accept an incoming teleport request
+    aliases: [tpyes]
+  tpdeny:
+    permission: scopenet.command.tpdeny
+    description: Deny an incoming teleport request
+    aliases: [tpno]
+  rtp:
+    permission: scopenet.command.rtp
+    description: Teleport to a random safe location in the wilderness
+    aliases: [wild, randomtp]
+  warp:
+    permission: scopenet.command.warp
+    description: Teleport to a server warp or open the warps GUI
+    aliases: [warps]
+  reqwarp:
+    permission: scopenet.command.reqwarp
+    description: Request a new public warp at your location
+  warprequests:
+    permission: scopenet.command.warp.manage
+    description: List pending warp requests
+  warpapprove:
+    permission: scopenet.command.warp.manage
+    description: Approve a pending warp request
+  warpdeny:
+    permission: scopenet.command.warp.manage
+    description: Deny a pending warp request
+  setwarp:
+    permission: scopenet.command.warp.manage
+    description: Set a public warp at your location
+  delwarp:
+    permission: scopenet.command.warp.manage
+    description: Delete a public warp
+  playtime:
+    permission: scopenet.command.playtime
+    description: Check total and session playtime
+    aliases: [ontime]
+  hand:
+    permission: scopenet.command.hand
+    description: Share your held item in chat
+  handview:
+    permission: scopenet.command.hand
+    description: Inspect a shared item
+  nick:
+    permission: scopenet.command.nick
+    description: Set or remove your chat nickname
+  balance:
+    permission: scopenet.command.balance
+    description: Check your server economy balance
+    aliases: [bal, money]
+  pay:
+    permission: scopenet.command.pay
+    description: Send money to another player
+  baltop:
+    permission: scopenet.command.baltop
+    description: View the richest players on the server
+    aliases: [richest]
+  shop:
+    permission: scopenet.command.shop
+    description: Open the interactive server shop GUI
+  sell:
+    permission: scopenet.command.sell
+    description: Open the item selling GUI
+  market:
+    permission: scopenet.command.market
+    description: Open the player marketplace GUI
+    aliases: [ah, auction]
+  orders:
+    permission: scopenet.command.orders
+    description: The buy order board - request items, pick up an order and hand the items in
+    aliases: [buyorder, bo]
+  contracts:
+    permission: scopenet.command.contracts
+    description: Your randomly generated contracts - kill mobs or hand in resources for money
+    aliases: [contract]
+  trade:
+    permission: scopenet.command.trade
+    description: Request a secure trade with another player
+  transactions:
+    permission: scopenet.command.transactions
+    description: View recent economy transactions
+  guild:
+    permission: scopenet.command.guild
+    description: Guild management, members, claims, and relations
+    aliases: [g, clan]
+  claim:
+    permission: scopenet.command.claim
+    description: Claim the current chunk for your guild
+  unclaim:
+    permission: scopenet.command.unclaim
+    description: Unclaim the current chunk
+  autoclaim:
+    permission: scopenet.command.claim
+    description: Claim chunks as you walk into them
+
+
+  quests:
+    permission: scopenet.command.quests
+    description: See your daily and weekly quests, or another player's
+    aliases: [quest, dailies]
+  cosmetic:
+    permission: scopenet.command.cosmetic
+    description: See your unlocked cosmetics and put them on or take them off
+    aliases: [cosmetics, wardrobe]
+  shopkeeper:
+    permission: scopenet.command.market.point
+    description: Create shopkeeper NPCs that open the market
+    aliases: [npcshop]
+  heal:
+    permission: scopenet.command.heal
+    description: Restore your health
+  feed:
+    permission: scopenet.command.feed
+    description: Restore your hunger
+  fly:
+    description: Fly freely (needs free.fly, or guild.fly inside your own guild's land)
+  vault:
+    permission: scopenet.command.vault
+    description: Open a portable vault, e.g. /vault 2
+    aliases: [pv]
+  echest:
+    permission: scopenet.command.echest
+    description: Open your ender chest from anywhere
+    aliases: [ec, enderchest]
+  kit:
+    permission: scopenet.command.kit
+    description: Claim a kit, or list the kits you can claim
+    aliases: [kits]
+  customitem:
+    permission: scopenet.admin.customitem
+    description: Give one of the custom items designed in the admin panel
+    aliases: [citem]
+  adminclaim:
+    permission: scopenet.admin.claims
+    description: Create and edit admin claims (protected server land)
+    aliases: [aclaim]
+
+permissions:
+  scopenet.content.place:
+    description: Place blocks, chests, decorations, NPCs, vehicles, crops and mobs from the Content Studio
+    default: true
+  scopenet.content.break:
+    description: Pick up (sneak + right-click) or break placed Content Studio props
+    default: true
+  scopenet.content.admin:
+    description: Remove NPCs and mobs, and spawn content anywhere
+    default: op
+  scopenet.admin.kits:
+    description: Create kits from inventory
+    default: op
+  scopenet.command.quests:
+    description: Use /quests
+    default: true
+  scopenet.command.cosmetic:
+    description: Use /cosmetic
+    default: true
+  scopenet.command.heal:
+    description: Use /heal
+    default: true
+  scopenet.command.heal.others:
+    description: Heal other players
+    default: op
+  scopenet.command.feed:
+    description: Use /feed
+    default: true
+  scopenet.command.feed.others:
+    description: Feed other players
+    default: op
+  scopenet.command.vault:
+    description: Use /vault
+    default: true
+  scopenet.command.echest:
+    description: Use /echest
+    default: true
+  scopenet.command.kit:
+    description: Use /kit
+    default: true
+  scopenet.admin.customitem:
+    description: Give custom items
+    default: op
+  scopenet.admin.claims:
+    description: Manage admin claims
+    default: op
+  free.fly:
+    description: /fly anywhere
+    default: false
+  guild.fly:
+    description: /fly inside your own guild's land
+    default: false
+  scopenet.vault.*:
+    description: Every vault
+    default: false
+  scopenet.admin:
+    description: Legacy administrator permission (status, reload, claim bypass)
+    default: op
+    children:
+      scopenet.admin.kits: true
+      scopenet.admin.customitem: true
+      scopenet.admin.claims: true
+      scopenet.command.scopenet.status: true
+      scopenet.command.scopenet.reload: true
+      scopenet.claims.bypass: true
+  scopenet.command.scopenet:
+    description: Use /scopenet
+    default: true
+  scopenet.command.spawn:
+    description: Use /spawn
+    default: true
+  scopenet.command.home:
+    description: Use /home
+    default: true
+  scopenet.command.sethome:
+    description: Use /sethome
+    default: true
+  scopenet.command.delhome:
+    description: Use /delhome
+    default: true
+  scopenet.command.back:
+    description: Use /back
+    default: true
+  scopenet.command.tpa:
+    description: Use /tpa
+    default: true
+  scopenet.command.tpaccept:
+    description: Use /tpaccept
+    default: true
+  scopenet.command.tpdeny:
+    description: Use /tpdeny
+    default: true
+  scopenet.command.rtp:
+    description: Use /rtp
+    default: true
+  scopenet.command.warp:
+    description: Use /warp
+    default: true
+  scopenet.command.reqwarp:
+    description: Request a public warp
+    default: true
+  scopenet.command.warp.manage:
+    description: Review and manage public warps
+    default: op
+  scopenet.command.playtime:
+    description: Use /playtime
+    default: true
+  scopenet.command.hand:
+    description: Share and inspect held items in chat
+    default: true
+  scopenet.command.nick:
+    description: Set or remove your chat nickname
+    default: true
+  scopenet.command.balance:
+    description: Use /balance
+    default: true
+  scopenet.command.pay:
+    description: Use /pay
+    default: true
+  scopenet.command.baltop:
+    description: Use /baltop
+    default: true
+  scopenet.command.shop:
+    description: Use /shop
+    default: true
+  scopenet.command.sell:
+    description: Use /sell
+    default: true
+  scopenet.command.market:
+    description: Use /market
+    default: true
+  scopenet.command.orders:
+    description: Use /orders
+    default: true
+  scopenet.command.contracts:
+    description: Use /contracts
+    default: true
+  scopenet.command.trade:
+    description: Use /trade
+    default: true
+  scopenet.command.transactions:
+    description: Use /transactions
+    default: true
+  scopenet.command.guild:
+    description: Use /guild
+    default: true
+  scopenet.command.claim:
+    description: Use /claim
+    default: true
+  scopenet.command.unclaim:
+    description: Use /unclaim
+    default: true
+  scopenet.chat.color:
+    description: Use Minecraft color codes in chat
+    default: op
+  scopenet.command.scopenet.help:
+    description: Use /scopenet help
+    default: true
+  scopenet.command.scopenet.panel:
+    description: Use /scopenet panel (the link to the web player panel)
+    default: true
+  scopenet.command.scopenet.status:
+    description: Use /scopenet status
+    default: op
+  scopenet.command.scopenet.reload:
+    description: Use /scopenet reload
+    default: op
+  scopenet.command.guild.info:
+    description: Open the guild dashboard (/guild, /guild info)
+    default: true
+  scopenet.command.guild.create:
+    description: Use /guild create
+    default: true
+  scopenet.command.guild.leave:
+    description: Use /guild leave
+    default: true
+  scopenet.command.guild.rename:
+    description: Use /guild rename (guild leaders only, enforced by the panel)
+    default: true
+  scopenet.command.guild.disband:
+    description: Use /guild disband (guild leaders only, enforced by the panel)
+    default: true
+  scopenet.command.guild.claim:
+    description: Use /guild claim
+    default: true
+  scopenet.command.guild.unclaim:
+    description: Use /guild unclaim
+    default: true
+  scopenet.command.guild.map:
+    description: Use /guild map
+    default: true
+  scopenet.command.guild.chat:
+    description: Use /guild chat
+    default: true
+  scopenet.command.guild.sethome:
+    description: Use /guild sethome
+    default: true
+  scopenet.command.guild.home:
+    description: Use /guild home
+    default: true
+  scopenet.command.guild.members:
+    description: Use /guild members
+    default: true
+  scopenet.command.guild.flags:
+    description: Use /guild flags (see your guild's land rules; changing them is limited to leaders and officers by the panel)
+    default: true
+  scopenet.command.guild.bank:
+    description: View the guild bank (/guild bank)
+    default: true
+  scopenet.command.guild.bank.deposit:
+    description: Deposit into the guild bank
+    default: true
+  scopenet.command.guild.bank.withdraw:
+    description: Withdraw from the guild bank (the panel also requires officer or leader)
+    default: true
+  scopenet.command.guild.sell:
+    description: Sell items to the shop for the guild bank (/guild sell)
+    default: true
+  scopenet.command.guild.sell.hand:
+    description: Use /guild sell hand
+    default: true
+  scopenet.command.guild.market:
+    description: Use the market as a guild (/guild market)
+    default: true
+  scopenet.command.guild.market.sell:
+    description: List items on the market for the guild
+    default: true
+  scopenet.command.guild.market.buy:
+    description: Buy market listings with guild money
+    default: true
+  scopenet.command.guild.pay:
+    description: Pay another guild (/guild pay)
+    default: true
+  scopenet.command.guild.invite:
+    description: Invite a player to your guild (/guild invite); the panel also requires leader or officer
+    default: true
+  scopenet.command.guild.accept:
+    description: Accept a guild invitation (/guild accept)
+    default: true
+  scopenet.command.guild.decline:
+    description: Decline a guild invitation (/guild decline)
+    default: true
+  scopenet.command.market.point:
+    description: Create and remove shop points, blocks that open the market or shop (/market point)
+    default: op
+  scopenet.command.sell.hand:
+    description: Use /sell hand
+    default: true
+  scopenet.command.market.sell:
+    description: List an item with /market sell
+    default: true
+  scopenet.command.market.buy:
+    description: Buy listings from the /market GUI
+    default: true
+  scopenet.claims.bypass:
+    description: Build and break inside other guilds' claims
+    default: op
+  scopenet.command.guild.*:
+    description: Every /guild subcommand
+    default: false
+    children:
+      scopenet.command.guild: true
+      scopenet.command.guild.info: true
+      scopenet.command.guild.create: true
+      scopenet.command.guild.leave: true
+      scopenet.command.guild.rename: true
+      scopenet.command.guild.disband: true
+      scopenet.command.guild.claim: true
+      scopenet.command.guild.unclaim: true
+      scopenet.command.guild.map: true
+      scopenet.command.guild.chat: true
+      scopenet.command.guild.sethome: true
+      scopenet.command.guild.home: true
+      scopenet.command.guild.members: true
+      scopenet.command.guild.flags: true
+      scopenet.command.guild.bank: true
+      scopenet.command.guild.bank.deposit: true
+      scopenet.command.guild.bank.withdraw: true
+      scopenet.command.guild.sell: true
+      scopenet.command.guild.sell.hand: true
+      scopenet.command.guild.market: true
+      scopenet.command.guild.market.sell: true
+      scopenet.command.guild.market.buy: true
+      scopenet.command.guild.pay: true
+      scopenet.command.guild.invite: true
+      scopenet.command.guild.accept: true
+      scopenet.command.guild.decline: true
+  scopenet.command.*:
+    description: Every SCOPENET command and subcommand, including admin ones
+    default: false
+    children:
+      scopenet.command.scopenet: true
+      scopenet.command.spawn: true
+      scopenet.command.home: true
+      scopenet.command.sethome: true
+      scopenet.command.delhome: true
+      scopenet.command.back: true
+      scopenet.command.tpa: true
+      scopenet.command.tpaccept: true
+      scopenet.command.tpdeny: true
+      scopenet.command.rtp: true
+      scopenet.command.warp: true
+      scopenet.command.playtime: true
+      scopenet.command.balance: true
+      scopenet.command.pay: true
+      scopenet.command.baltop: true
+      scopenet.command.shop: true
+      scopenet.command.sell: true
+      scopenet.command.market: true
+      scopenet.command.orders: true
+      scopenet.command.contracts: true
+      scopenet.command.cosmetic: true
+      scopenet.command.trade: true
+      scopenet.command.transactions: true
+      scopenet.command.guild: true
+      scopenet.command.claim: true
+      scopenet.command.unclaim: true
+      scopenet.command.scopenet.help: true
+      scopenet.command.scopenet.panel: true
+      scopenet.command.scopenet.status: true
+      scopenet.command.scopenet.reload: true
+      scopenet.command.guild.info: true
+      scopenet.command.guild.create: true
+      scopenet.command.guild.leave: true
+      scopenet.command.guild.rename: true
+      scopenet.command.guild.disband: true
+      scopenet.command.guild.claim: true
+      scopenet.command.guild.unclaim: true
+      scopenet.command.guild.map: true
+      scopenet.command.guild.chat: true
+      scopenet.command.guild.sethome: true
+      scopenet.command.guild.home: true
+      scopenet.command.guild.members: true
+      scopenet.command.guild.flags: true
+      scopenet.command.guild.bank: true
+      scopenet.command.guild.bank.deposit: true
+      scopenet.command.guild.bank.withdraw: true
+      scopenet.command.guild.sell: true
+      scopenet.command.guild.sell.hand: true
+      scopenet.command.guild.market: true
+      scopenet.command.guild.market.sell: true
+      scopenet.command.guild.market.buy: true
+      scopenet.command.guild.pay: true
+      scopenet.command.guild.invite: true
+      scopenet.command.guild.accept: true
+      scopenet.command.guild.decline: true
+      scopenet.command.sell.hand: true
+      scopenet.command.market.sell: true
+      scopenet.command.market.point: true
+      scopenet.command.market.buy: true
+  scopenet.command.economy.*:
+    description: All economy commands
+    default: false
+    children:
+      scopenet.command.balance: true
+      scopenet.command.pay: true
+      scopenet.command.baltop: true
+      scopenet.command.shop: true
+      scopenet.command.sell: true
+      scopenet.command.sell.hand: true
+      scopenet.command.market: true
+      scopenet.command.market.sell: true
+      scopenet.command.market.buy: true
+      scopenet.command.orders: true
+      scopenet.command.contracts: true
+      scopenet.command.cosmetic: true
+      scopenet.command.trade: true
+      scopenet.command.transactions: true
+  scopenet.command.essentials.*:
+    description: All teleport and utility commands
+    default: false
+    children:
+      scopenet.command.spawn: true
+      scopenet.command.home: true
+      scopenet.command.sethome: true
+      scopenet.command.delhome: true
+      scopenet.command.back: true
+      scopenet.command.tpa: true
+      scopenet.command.tpaccept: true
+      scopenet.command.tpdeny: true
+      scopenet.command.rtp: true
+      scopenet.command.warp: true
+      scopenet.command.playtime: true
+  scopenet.*:
+    description: Everything SCOPENET
+    default: false
+    children:
+      scopenet.command.*: true
+      scopenet.admin: true
+      scopenet.claims.bypass: true

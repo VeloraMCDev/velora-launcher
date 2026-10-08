@@ -1,0 +1,3215 @@
+{
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "status": "Static registered route inventory; runtime middleware/error/response conformance still requires fixtures",
+  "routes": [
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 61,
+      "path": "/resource-pack.zip",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 62,
+      "path": "/icons/{pack}/{file}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 63,
+      "path": "/launcher/manifest",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 64,
+      "path": "/launcher/update",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 65,
+      "path": "/mobile-apps",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 66,
+      "path": "/mobile-apps/altstore.json",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 67,
+      "path": "/mobile-apps/{platform}/download",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 68,
+      "path": "/launcher/updates/{digest}/setup.exe",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 69,
+      "path": "/launcher/instances/{id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 70,
+      "path": "/launcher/events",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 71,
+      "path": "/instances",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 72,
+      "path": "/auth/login",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 73,
+      "path": "/auth/register",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 74,
+      "path": "/auth/me",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 75,
+      "path": "/auth/connections/config",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 76,
+      "path": "/auth/forgot-password",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 77,
+      "path": "/auth/reset-password",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 78,
+      "path": "/auth/discord/start",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 79,
+      "path": "/auth/discord/callback",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 80,
+      "path": "/auth/discord/poll",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 81,
+      "path": "/account/discord",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 82,
+      "path": "/account/connections/discord",
+      "methods": [
+        "GET",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 83,
+      "path": "/account/profile",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 84,
+      "path": "/account/stats",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 85,
+      "path": "/account/username",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 86,
+      "path": "/account/skin",
+      "methods": [
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 87,
+      "path": "/account/skin/model",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 88,
+      "path": "/account/cape",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 89,
+      "path": "/avatar/{id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 90,
+      "path": "/servers/public",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 91,
+      "path": "/servers/{id}/leaderboard",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 92,
+      "path": "/servers/{id}/map",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 93,
+      "path": "/servers/{id}/map/overlay",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 94,
+      "path": "/servers/{id}/map/actions",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 95,
+      "path": "/guilds/invites",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 96,
+      "path": "/guilds/invites/{id}/accept",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 97,
+      "path": "/guilds/invites/{id}/decline",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 98,
+      "path": "/guilds/{id}/invites",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 99,
+      "path": "/leaderboard",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 100,
+      "path": "/landing",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 101,
+      "path": "/public/map/{id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 102,
+      "path": "/public/map/{id}/overlay",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 103,
+      "path": "/email/unsubscribe",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 104,
+      "path": "/discord/interactions",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 105,
+      "path": "/launcher/authlib-injector.json",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 106,
+      "path": "/launcher/authlib-injector.jar",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 108,
+      "path": "/levels/me",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 109,
+      "path": "/leveling/me",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 110,
+      "path": "/levels/player/{uuid}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 111,
+      "path": "/levels/leaderboard",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 112,
+      "path": "/levels/rewards",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 114,
+      "path": "/notifications",
+      "methods": [
+        "GET",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 115,
+      "path": "/notifications/read",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 116,
+      "path": "/notifications/{id}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 118,
+      "path": "/quests/my",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 119,
+      "path": "/quests/me",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 120,
+      "path": "/quests/{id}/claim",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 121,
+      "path": "/reward-bundles",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 122,
+      "path": "/collections/me",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 123,
+      "path": "/collections/equip",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 124,
+      "path": "/events",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 125,
+      "path": "/events/{id}/join",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 126,
+      "path": "/events/{id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 128,
+      "path": "/achievements/my",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 129,
+      "path": "/achievements/me",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 130,
+      "path": "/achievements/player/{uuid}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 132,
+      "path": "/guilds",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 133,
+      "path": "/guilds/my",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 134,
+      "path": "/guilds/memberships",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 135,
+      "path": "/guilds/{id}/primary",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 136,
+      "path": "/guilds/claims/grid",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 137,
+      "path": "/guilds/claims/{id}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 138,
+      "path": "/guilds/{id}",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 139,
+      "path": "/guilds/{id}/name",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 140,
+      "path": "/guilds/{id}/leader",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 141,
+      "path": "/guilds/{id}/members",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 142,
+      "path": "/guilds/{id}/members/{uuid}/role",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 143,
+      "path": "/guilds/{id}/roles",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 144,
+      "path": "/guilds/{id}/roles/{role_id}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 145,
+      "path": "/guilds/{id}/requests",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 146,
+      "path": "/guilds/{id}/requests/{uuid}/respond",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 147,
+      "path": "/guilds/{id}/members/{uuid}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 148,
+      "path": "/guilds/{id}/posts",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 149,
+      "path": "/guilds/{id}/wallet",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 150,
+      "path": "/guilds/{id}/wallet/deposit",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 151,
+      "path": "/guilds/{id}/wallet/withdraw",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 152,
+      "path": "/guilds/{id}/claim-flags",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 153,
+      "path": "/guilds/{id}/claims",
+      "methods": [
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 154,
+      "path": "/guilds/{id}/relations",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 155,
+      "path": "/guilds/{id}/relations/{relation_id}/respond",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 156,
+      "path": "/guilds/{id}/claim",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 157,
+      "path": "/guilds/{id}/unclaim",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 159,
+      "path": "/board/{sid}/orders",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 160,
+      "path": "/board/{sid}/orders/{id}/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 161,
+      "path": "/board/{sid}/orders/{id}/claim",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 162,
+      "path": "/board/{sid}/orders/{id}/release",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 163,
+      "path": "/board/{sid}/contracts",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 164,
+      "path": "/board/{sid}/contracts/{id}/abandon",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 165,
+      "path": "/market/{server_id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 166,
+      "path": "/market/{server_id}/mine",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 167,
+      "path": "/market/{server_id}/buy",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 168,
+      "path": "/market/{server_id}/bid",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 169,
+      "path": "/market/{server_id}/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 170,
+      "path": "/casino/{sid}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 171,
+      "path": "/casino/{sid}/history",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 172,
+      "path": "/casino/{sid}/players",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 173,
+      "path": "/casino/{sid}/slots",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 174,
+      "path": "/casino/{sid}/wheel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 175,
+      "path": "/casino/{sid}/plinko",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 176,
+      "path": "/casino/{sid}/dice",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 177,
+      "path": "/casino/{sid}/coinflip",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 178,
+      "path": "/casino/{sid}/double",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 179,
+      "path": "/casino/{sid}/crash/start",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 180,
+      "path": "/casino/{sid}/crash/status",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 181,
+      "path": "/casino/{sid}/crash/cashout",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 182,
+      "path": "/casino/{sid}/blackjack/start",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 183,
+      "path": "/casino/{sid}/blackjack/hit",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 184,
+      "path": "/casino/{sid}/blackjack/stand",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 185,
+      "path": "/casino/{sid}/blackjack/double",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 186,
+      "path": "/casino/{sid}/daily",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 187,
+      "path": "/casino/{sid}/mines/start",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 188,
+      "path": "/casino/{sid}/mines/reveal",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 189,
+      "path": "/casino/{sid}/mines/cashout",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 190,
+      "path": "/casino/{sid}/bounties",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 191,
+      "path": "/casino/{sid}/bounties/{id}/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 192,
+      "path": "/casino/{sid}/markets",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 193,
+      "path": "/casino/{sid}/markets/{id}/bet",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 194,
+      "path": "/casino/{sid}/markets/{id}/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 195,
+      "path": "/economy/me",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 196,
+      "path": "/economy/balances",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 197,
+      "path": "/economy/balance/{server_id}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 198,
+      "path": "/economy/transactions",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 199,
+      "path": "/servers/{id}/economy/baltop",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 200,
+      "path": "/servers/{id}/economy/market",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 202,
+      "path": "/friends",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 203,
+      "path": "/friends/request",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 204,
+      "path": "/friends/respond",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 205,
+      "path": "/friends/{uuid}/accept",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 206,
+      "path": "/friends/{uuid}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 207,
+      "path": "/messages/{uuid}",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 208,
+      "path": "/invites",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 209,
+      "path": "/invites/{id}/respond",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 210,
+      "path": "/profiles/me",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 211,
+      "path": "/profiles/{uuid}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 212,
+      "path": "/profiles/me/posts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 213,
+      "path": "/profiles/me/posts/{id}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 214,
+      "path": "/posts/{id}/like",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 215,
+      "path": "/social/friends",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 216,
+      "path": "/social/friends/request",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 217,
+      "path": "/social/friends/respond",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 218,
+      "path": "/social/messages/{uuid}",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 219,
+      "path": "/social/profile/me",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 220,
+      "path": "/social/profile/{uuid}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 221,
+      "path": "/social/posts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 222,
+      "path": "/social/posts/{id}/like",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 223,
+      "path": "/social/members",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 224,
+      "path": "/members/search",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 228,
+      "path": "/instances/{id}/experience",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 229,
+      "path": "/icons/packs",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 230,
+      "path": "/icons/search",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 231,
+      "path": "/resource-assets",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 232,
+      "path": "/content",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 233,
+      "path": "/content/analyze",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 234,
+      "path": "/content/import",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 235,
+      "path": "/content/view",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 236,
+      "path": "/content/{id}",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 237,
+      "path": "/resource-assets-check",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 238,
+      "path": "/resource-assets-browse",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 239,
+      "path": "/resource-assets-preview",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 240,
+      "path": "/resource-assets-import",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 241,
+      "path": "/resource-assets/{*path}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 242,
+      "path": "/resource-pack",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 243,
+      "path": "/connections",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 244,
+      "path": "/connections/test-email",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 245,
+      "path": "/activity",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 246,
+      "path": "/stats",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 247,
+      "path": "/chat",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 248,
+      "path": "/utilities",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 249,
+      "path": "/custom-items",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 250,
+      "path": "/custom-items/{id}",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 251,
+      "path": "/servers/{id}/admin-claims",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 252,
+      "path": "/admin-claims/{id}",
+      "methods": [
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 253,
+      "path": "/admin-claims/{id}/area",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 254,
+      "path": "/casino",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 255,
+      "path": "/casino/preview",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 256,
+      "path": "/casino/stats",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 257,
+      "path": "/casino/bounties",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 258,
+      "path": "/casino/bounties/{id}/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 259,
+      "path": "/casino/markets",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 260,
+      "path": "/casino/markets/{id}/void",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 261,
+      "path": "/economy/overview",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 262,
+      "path": "/economy/players",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 263,
+      "path": "/economy/players/adjust",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 264,
+      "path": "/economy/accounts/missing",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 265,
+      "path": "/economy/accounts/repair",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 266,
+      "path": "/economy/accounts/assign",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 267,
+      "path": "/economy/guilds",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 268,
+      "path": "/economy/guilds/adjust",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 269,
+      "path": "/economy/orders",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 270,
+      "path": "/economy/orders/{id}/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 271,
+      "path": "/economy/contracts",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 272,
+      "path": "/economy/market",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 273,
+      "path": "/economy/market/{id}/remove",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 274,
+      "path": "/economy/market/{id}/extend",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 275,
+      "path": "/economy/market/{id}/price",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 276,
+      "path": "/economy/transactions",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 277,
+      "path": "/tasks",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 278,
+      "path": "/tasks/{id}",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 279,
+      "path": "/tasks/{id}/run",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 280,
+      "path": "/users",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 281,
+      "path": "/users/{id}",
+      "methods": [
+        "PATCH",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 282,
+      "path": "/instance-groups",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 283,
+      "path": "/groups",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 284,
+      "path": "/groups/{id}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 285,
+      "path": "/branding",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 286,
+      "path": "/settings",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 287,
+      "path": "/landing",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 288,
+      "path": "/landing/upload-launcher",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 289,
+      "path": "/landing/launcher/{platform}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 290,
+      "path": "/launcher/update",
+      "methods": [
+        "GET",
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 291,
+      "path": "/mobile-apps",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 292,
+      "path": "/mobile-apps/{platform}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 293,
+      "path": "/instances",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 294,
+      "path": "/instances/{id}",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 295,
+      "path": "/instances/{id}/reset",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 296,
+      "path": "/instances/{id}/clean-update",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 297,
+      "path": "/instances/{id}/import/modrinth",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 298,
+      "path": "/instances/{id}/import/curseforge",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 299,
+      "path": "/instances/{id}/import/upload",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 300,
+      "path": "/instances/{id}/files",
+      "methods": [
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 301,
+      "path": "/uploads",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 302,
+      "path": "/users/{id}/skin",
+      "methods": [
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 303,
+      "path": "/users/{id}/skin/model",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 304,
+      "path": "/users/{id}/cape",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 305,
+      "path": "/capes",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 306,
+      "path": "/capes/{id}",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 307,
+      "path": "/auth-server",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 308,
+      "path": "/servers",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 309,
+      "path": "/servers/{id}",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 310,
+      "path": "/servers/{id}/token",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 311,
+      "path": "/servers/{id}/map",
+      "methods": [
+        "GET",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 312,
+      "path": "/users/{id}/activity",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 313,
+      "path": "/meta/minecraft",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 314,
+      "path": "/meta/loaders/{loader}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 315,
+      "path": "/modrinth/search",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 316,
+      "path": "/modrinth/project/{id}/versions",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 317,
+      "path": "/curseforge/search",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 318,
+      "path": "/curseforge/mod/{id}/files",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 320,
+      "path": "/rewards",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 321,
+      "path": "/rewards/{id}",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 322,
+      "path": "/levels/rewards",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 323,
+      "path": "/levels/rewards/{id}",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 324,
+      "path": "/levels/sync-titles",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 325,
+      "path": "/email",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 326,
+      "path": "/email/templates",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 327,
+      "path": "/email/preview",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 328,
+      "path": "/email/audience",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 329,
+      "path": "/email/send",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 330,
+      "path": "/discord/studio",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 331,
+      "path": "/discord/studio/templates",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 332,
+      "path": "/discord/studio/live",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 333,
+      "path": "/discord/studio/preview",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 334,
+      "path": "/discord/studio/send/{kind}",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 335,
+      "path": "/discord/studio/repost/{kind}",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 336,
+      "path": "/bulk/{kind}",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 337,
+      "path": "/quests",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 338,
+      "path": "/quests/{id}",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 339,
+      "path": "/quest-chains",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 340,
+      "path": "/quest-chains/{id}",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 341,
+      "path": "/achievements",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 342,
+      "path": "/achievements/{id}",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 343,
+      "path": "/progression",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 344,
+      "path": "/progression/auto-money/apply",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 345,
+      "path": "/progression/players",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 346,
+      "path": "/progression/players/{uuid}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 347,
+      "path": "/progression/players/{uuid}/adjust",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 348,
+      "path": "/events",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 349,
+      "path": "/events/{id}",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 350,
+      "path": "/players/{uuid}/collections",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 351,
+      "path": "/collections/grant",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 352,
+      "path": "/collections/{uuid}/{key}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 353,
+      "path": "/cosmetics/templates",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 354,
+      "path": "/cosmetics/templates/{id}",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 355,
+      "path": "/reward-bundles/{kind}/{id}",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 356,
+      "path": "/reward-deliveries",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 357,
+      "path": "/reward-deliveries/{id}/retry",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 358,
+      "path": "/reward-deliveries/{id}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 359,
+      "path": "/reward-deliveries/clear-delivered",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 360,
+      "path": "/companion/layouts",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 361,
+      "path": "/companion/layouts/{id}",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 362,
+      "path": "/companion/layouts/{id}/set-default",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 363,
+      "path": "/email-templates",
+      "methods": [
+        "GET",
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 364,
+      "path": "/email-templates/{id}",
+      "methods": [
+        "GET",
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 365,
+      "path": "/email-templates/test",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 366,
+      "path": "/guild-flag-policy",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 367,
+      "path": "/luckperms",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 368,
+      "path": "/luckperms/groups",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 369,
+      "path": "/luckperms/groups/{name}",
+      "methods": [
+        "PUT",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 370,
+      "path": "/luckperms/groups/{name}/permissions",
+      "methods": [
+        "POST",
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 371,
+      "path": "/luckperms/groups/{name}/parents",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 372,
+      "path": "/luckperms/groups/{name}/parents/{parent}",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 373,
+      "path": "/luckperms/level-links",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 374,
+      "path": "/luckperms/players",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 375,
+      "path": "/luckperms/players/bulk-move",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 376,
+      "path": "/luckperms/players/{uuid}/groups",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 377,
+      "path": "/luckperms/commands",
+      "methods": [
+        "DELETE"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 378,
+      "path": "/luckperms/commands/{id}/retry",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 379,
+      "path": "/integrations/settings",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 380,
+      "path": "/groups/{id}/luckperms",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 381,
+      "path": "/groups/{id}/discord-role",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 382,
+      "path": "/discord",
+      "methods": [
+        "GET",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 383,
+      "path": "/discord/roles",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 384,
+      "path": "/discord/sync",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 385,
+      "path": "/discord/commands/register",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 386,
+      "path": "/discord/test",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 387,
+      "path": "/discord/channels",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 388,
+      "path": "/servers/{id}/integrations",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 389,
+      "path": "/guilds",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 390,
+      "path": "/guilds/{id}",
+      "methods": [
+        "DELETE",
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 395,
+      "path": "/resource-pack",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 396,
+      "path": "/kits/create",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 397,
+      "path": "/companion",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 398,
+      "path": "/hello",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 399,
+      "path": "/login",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 400,
+      "path": "/sync",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 401,
+      "path": "/guilds/check-chunk",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 402,
+      "path": "/guilds/claim-snapshot",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 403,
+      "path": "/guilds/claim-index",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 404,
+      "path": "/admin-claims",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 405,
+      "path": "/guilds/claim",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 406,
+      "path": "/guilds/unclaim",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 407,
+      "path": "/guilds/player",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 408,
+      "path": "/guilds/create",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 409,
+      "path": "/guilds/leave",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 410,
+      "path": "/guilds/rename",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 411,
+      "path": "/guilds/disband",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 412,
+      "path": "/guilds/manage",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 413,
+      "path": "/quests/player",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 414,
+      "path": "/cosmetics/list",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 415,
+      "path": "/cosmetics/equip",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 416,
+      "path": "/integrations/report",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 417,
+      "path": "/actions/poll",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 418,
+      "path": "/rewards/poll",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 419,
+      "path": "/rewards/ack",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 420,
+      "path": "/guilds/invite/send",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 421,
+      "path": "/guilds/invite/list",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 422,
+      "path": "/guilds/invite/respond",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 423,
+      "path": "/player/info",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 424,
+      "path": "/player/xp",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 425,
+      "path": "/player/quest-objective",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 426,
+      "path": "/player/friends",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 427,
+      "path": "/guild/info",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 428,
+      "path": "/guilds/bank",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 429,
+      "path": "/guilds/bank/transfer",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 430,
+      "path": "/guilds/bank/credit",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 431,
+      "path": "/guilds/bank/pay",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 432,
+      "path": "/economy/balance",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 433,
+      "path": "/economy/pay",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 434,
+      "path": "/economy/transfer",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 435,
+      "path": "/economy/adjust",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 436,
+      "path": "/economy/market",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 437,
+      "path": "/economy/sync-balance",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 438,
+      "path": "/economy/baltop",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 439,
+      "path": "/economy/market/list",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 440,
+      "path": "/economy/market/buy",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 441,
+      "path": "/economy/market/bid",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 442,
+      "path": "/economy/market/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 443,
+      "path": "/economy/orders",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 444,
+      "path": "/economy/orders/create",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 445,
+      "path": "/economy/orders/cancel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 446,
+      "path": "/economy/orders/claim",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 447,
+      "path": "/economy/orders/release",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 448,
+      "path": "/economy/orders/fill",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 449,
+      "path": "/economy/contracts",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 450,
+      "path": "/economy/contracts/submit",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 451,
+      "path": "/economy/contracts/abandon",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 452,
+      "path": "/economy/market/mailbox",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 453,
+      "path": "/economy/market/mailbox/claim",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 454,
+      "path": "/economy/market/vault",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 455,
+      "path": "/economy/market/vault/ack",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 460,
+      "path": "/map/config",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 461,
+      "path": "/map/tiles",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 462,
+      "path": "/map/players",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 463,
+      "path": "/map/overlay",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 464,
+      "path": "/map/diagnostics",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 468,
+      "path": "/api/server/v1/experience/modules/{module}",
+      "methods": [
+        "PUT"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 469,
+      "path": "/api/experience-map/{instance}/{id}/{dim}/{z}/{x}/{file}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/routes/mod.rs",
+      "source_line": 470,
+      "path": "/api/map/{id}/{dim}/{z}/{x}/{file}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/yggdrasil/mod.rs",
+      "source_line": 721,
+      "path": "/textures/{hash}",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/lib.rs",
+      "source_line": 119,
+      "path": "/healthz",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "source": "panel/server/src/lib.rs",
+      "source_line": 120,
+      "path": "/download/launcher/{platform}",
+      "methods": [
+        "GET"
+      ]
+    }
+  ]
+}

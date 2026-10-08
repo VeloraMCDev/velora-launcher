@@ -1,0 +1,25 @@
+{
+  "kind": "new standalone configuration library; legacy host configuration remains separately adapted",
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "references": [
+    {
+      "path": "panel/server/src/config.rs",
+      "sha256": "15a1cda0745c40f48bdd5083f91b308f4311d637b518c63d5280dea630fbcf1c"
+    },
+    {
+      "path": "panel/server/src/lib.rs",
+      "sha256": "e14ae3663efef575352b3578da853ffa036db6c05c79d3c96e6588e877edaf06"
+    }
+  ],
+  "output_path": "crates/http/src/config.rs",
+  "output_sha256_lf": "049fab52c4aa2c128dab29b17b1d4493ee25c4a33c7b0d1ccbb147c73ac7340b",
+  "boundaries": [
+    "Explicit operator public origin and storage paths; no private endpoint or renamed live database",
+    "Typed proxy/bind/registration/boolean/bootstrap validation; detected database/signing path collisions rejected",
+    "Configured JWT and bootstrap file bytes are exact; missing configured JWT never falls back to generation",
+    "Existing administrator check skips bootstrap file access on restart; loaded credentials have no Debug/Serialize",
+    "Injected lookup/temporary-file tests do not mutate global environment or read production material",
+    "Legacy host configuration and aliases remain unchanged; standalone entrypoint/provider/SMTP/readiness/gateway and writer cutover remain incomplete"
+  ]
+}

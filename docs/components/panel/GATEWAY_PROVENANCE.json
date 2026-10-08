@@ -1,0 +1,60 @@
+{
+  "kind": "new standalone HTTP composition; no wholesale mixed/private source import",
+  "owner_repository": "https://github.com/VeloraMCDev/panel",
+  "public_authentication_revision": "3c7f70bbf9a35d7d4970566405b98b178f885025",
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "references": [
+    {
+      "path": "panel/server/src/lib.rs",
+      "sha256": "e14ae3663efef575352b3578da853ffa036db6c05c79d3c96e6588e877edaf06"
+    },
+    {
+      "path": "panel/server/src/net.rs",
+      "sha256": "de871ad47b98362e493af83314d3a114ba96b238120a863ce9aef76c821af044"
+    }
+  ],
+  "files": [
+    {
+      "path": "crates/gateway/Cargo.toml",
+      "sha256_lf": "fac09ce8b85a61510a24b4f266e4d6ec167ac15537ce90751752142b9f16150d"
+    },
+    {
+      "path": "crates/gateway/src/config.rs",
+      "sha256_lf": "d8aca8d85b6fbae256142e7567fdace13d63574dad3c7338054064e154484bb3"
+    },
+    {
+      "path": "crates/gateway/src/lib.rs",
+      "sha256_lf": "6b7fa9b90a55269e806dc06d16af964492540377641174ad0fbadd71665c59c1"
+    },
+    {
+      "path": "crates/gateway/src/main.rs",
+      "sha256_lf": "457e95796b57fd59f891a6fb8a1fade392477cbf5cba45b479039544e9590df6"
+    },
+    {
+      "path": "crates/gateway/tests/proxy.rs",
+      "sha256_lf": "7b2abeddf23612f92fede596f5f6061412201aa5f86aac14c7ec755bdb0bdcd6"
+    },
+    {
+      "path": "scripts/check-game-auth-gateway.py",
+      "sha256_lf": "1742e6c874ccd7eb20f0b0f4625523c2c2702299209633ba3244b9d0960a4d14"
+    }
+  ],
+  "acceptance_checker": {
+    "canonical_repository": "https://github.com/VeloraMCDev/infra",
+    "path": "tests/game_auth_gateway.py",
+    "sha256_lf": "1742e6c874ccd7eb20f0b0f4625523c2c2702299209633ba3244b9d0960a4d14"
+  },
+  "compatibility": [
+    "Fixed game-auth/texture ownership, no fallback or cached grants",
+    "Streaming raw HTTP methods/query/body/status/error/cookie/range/cache/encoding forwarding",
+    "Supplied public origin/prefix and exact trusted socket-peer chain; no request-selected upstream",
+    "No service writer/data cutover, private gameplay/UI import, credential duplication, deployment or publication",
+    "Private HTTP upstreams, no protocol upgrades, full web/admin/provider/gateway acceptance remains incomplete"
+  ],
+  "validation": [
+    "Independent synthetic upstream tests; real process fresh bootstrap/game login/join/skin/signature/prefix/origin/outage fixtures",
+    "Closed checkpoint/assets restore with original identity/password/key/token/texture continuity and live revocation",
+    "Linux actual SIGTERM, Windows process termination/recovery; Rust runtime graceful-stream drain"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/auth.rs",
+  "source_sha256": "4046d9615bdb801bd829f97d2b7d5322267ce3f9e8727338f65a3b6be63af969",
+  "files": [
+    {
+      "path": "crates/core/src/admission.rs",
+      "output_sha256_lf": "cd6bf5bed2a2009328262769af6e26e7cf3f231e4232f92146dd5fb7436b6dea"
+    },
+    {
+      "path": "crates/core/src/login_guard.rs",
+      "output_sha256_lf": "c8c9591b77979e379bbc8d75e4ea61bcd9c019ee59d989cadb10702412700b15"
+    }
+  ],
+  "changes": [
+    "Supply current account status/version instead of Panel UserRow",
+    "Retain pending-account precedence, messages and active-version revocation semantics",
+    "Preserve per-name case-insensitive ten-failure five-minute throttle and success reset",
+    "Separate HTTP status mapping into source adapter; clock-driven tests exercise window boundaries",
+    "Identity database lookup and errors remain live in host; service persistence is not migrated"
+  ]
+}

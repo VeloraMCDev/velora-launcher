@@ -1,0 +1,17 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/routes/account.rs",
+  "source_sha256": "2000dca1d3743d3e39a3426826d3a1538aa7de3180701cc427df2855225f6a7d",
+  "output_path": "crates/http/src/account.rs",
+  "output_sha256_lf": "5b632df9953e1fe522a06c6415d7199f1f12c915157480f54a93af0e76089854",
+  "changes": [
+    "Split identity username/profile/skin/model/cape/avatar workflows from host artifact mirror",
+    "Typed host ports retain live server presence and launcher/audit cleanup inside the same supplied transaction",
+    "Preserve name/password/guard/error ordering, conflict mapping, UUIDs, session revocation and rollback",
+    "Preserve supplied pool/origin/storage paths, live cape admission, model normalization, missing-avatar behavior and blocking renderer",
+    "Independent synthetic fixtures verify failed-audit rollback, online admission, password failures, successful revocation and cosmetic errors",
+    "Host keeps multipart extraction and HTTP headers; no private server or gameplay schemas copied",
+    "Full administrator workflows, owned schema/import and standalone service cutover remain incomplete"
+  ]
+}

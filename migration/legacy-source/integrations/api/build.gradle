@@ -1,0 +1,7 @@
+// The public SCOPENET API: depend on this (compileOnly) from your own plugin.
+// It is bundled inside the SCOPENET plugin jar, so there is nothing to shade.
+plugins { id 'java-library' }
+repositories { maven { url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' } }
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT'
+}

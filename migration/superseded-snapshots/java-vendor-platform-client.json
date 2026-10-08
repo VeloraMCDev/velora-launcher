@@ -1,0 +1,26 @@
+{
+  "repository": "https://github.com/VeloraMCDev/sdk",
+  "revision": "b6c8297ae334a8dece78d2c1957d561e7cc624ad",
+  "files": [
+    {
+      "path": "src/main/java/net/scopenet/integration/PanelTransport.java",
+      "sha256": "0dd4295fcff5aa61dd0dc791e3cf002ffcdfc07a226ce30bca97393351bcf554"
+    },
+    {
+      "path": "src/main/java/net/scopenet/integration/ServerConnection.java",
+      "sha256": "f6d67597c5192e90368392687537ddeb17503c1a0ddbc1068c2305c5f3bf6b3f"
+    },
+    {
+      "path": "src/main/java/net/scopenet/integration/map/MapPosition.java",
+      "sha256": "55231d44bacb2ff848eff14e72c414d19d5f33c34867eef224d913a04d46aeb9"
+    },
+    {
+      "path": "src/main/java/net/scopenet/integration/map/MapProducerFactory.java",
+      "sha256": "1b34b5a9a24b3a177e4aeb6629a2038030f128ec3508ba8cafcaae491fdc66da"
+    },
+    {
+      "path": "src/main/java/net/scopenet/integration/map/MapSink.java",
+      "sha256": "f059198e6f0298e802065d417e84c76aaacc2e8fe0a6285b005317b5f4f3a79d"
+    }
+  ]
+}

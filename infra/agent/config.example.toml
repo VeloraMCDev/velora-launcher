@@ -1,0 +1,5 @@
+schema = 1
+control_origin = "https://control.example.com"
+environment = "development"
+identity_path = "/etc/velora-agent/identity.key"
+heartbeat_seconds = 45

@@ -1,0 +1,21 @@
+{
+  "visibility": "private; no MIT/public gameplay grant",
+  "publication_decision": {
+    "owner_approved_on": "2026-10-08",
+    "scope": "complete-product-source",
+    "extraction_visibility_is_historical": true,
+    "license_change": false
+  },
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/casino.rs",
+  "source_sha256": "eb8bd47704004f9fbc42787ba305a2624f0c66ce903cf0d8949aabe30499352f",
+  "output_path": "src/casino.rs",
+  "output_sha256_lf": "74d2459cf175358168fb6c5129c8490b04260a28f6a338d235c395ab2c24b46e",
+  "transformation": "Rustfmt only; original rules, defaults, seeded random behavior, validation and serializer declarations retained",
+  "boundaries": [
+    "No Panel/AppState/credential/storage dependency; host still owns authenticated routes and transactions",
+    "Private maintained Rust package; public packages must not depend on it by default",
+    "No runtime identity, data path, writer or stored game configuration change; full experience backend/pages remain unfinished"
+  ]
+}

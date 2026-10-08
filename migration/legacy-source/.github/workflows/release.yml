@@ -1,0 +1,663 @@
+name: Release
+
+# This release workflow only runs when you start it:
+#   Actions -> Release -> Run workflow -> enter the new tag (for example v0.6.0).
+#
+# One run builds everything and publishes it:
+#   - Windows installer (NSIS)
+#   - Fabric client for 26.3, Fabric/Forge servers for 1.20.1, 1.21.1 and 26.3, and ONE Paper plugin for every version
+#   - Player app for phones: Android .apk and an unsigned iOS .ipa (the player panel in a native shell; see docs/mobile-apps.md)
+#   - Panel Docker image  ->  ghcr.io/<owner>/scopenet-mc-panel:latest
+#   - A DRAFT GitHub release holding the installer and every JAR (you review it, then press Publish)
+#
+# Optional repository variables (Settings -> Secrets and variables -> Actions -> Variables):
+#   PANEL_URL      https://panel.example.com   baked into the launcher as its default server
+#   LOCK_PANEL     "1" to stop players from changing the server
+#   LAUNCHER_NAME  installer / window name (default "SCOPENET Launcher")
+#   MOBILE_APP_NAME  name under the phone app's icon (default "SCOPENET")
+# Optional secrets for a stable Android signing key (otherwise a one-off key is generated and updates will not install over older builds):
+#   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'New release tag, e.g. v0.6.0 (must not exist yet)'
+        required: true
+        type: string
+
+run-name: Release ${{ inputs.tag }}
+
+permissions:
+  contents: read
+
+# One release at a time; a second run waits instead of burning minutes in parallel.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  CARGO_NET_RETRY: 5
+
+jobs:
+  # Seconds long. Rejects a bad or already-used tag before any expensive runner starts.
+  prepare:
+    name: Check tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # GitHub only lists draft releases to tokens that can write; this job only reads
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      tag: ${{ steps.v.outputs.tag }}
+      image: ${{ steps.v.outputs.image }}
+    steps:
+      - id: v
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          version="${INPUT_TAG#v}"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::'$INPUT_TAG' is not a version tag like v1.2.3 or v1.2.3-beta.1"; exit 1
+          fi
+          tag="v$version"
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" >/dev/null 2>&1; then
+            echo "::error::The tag $tag already exists. Choose a new tag."; exit 1
+          fi
+          if [ -n "$(gh api --paginate "repos/$GITHUB_REPOSITORY/releases" --jq ".[] | select(.tag_name == \"$tag\") | .id")" ]; then
+            echo "::error::A release for $tag already exists (maybe a draft). Delete it or choose a new tag."; exit 1
+          fi
+          {
+            echo "version=$version"
+            echo "tag=$tag"
+            echo "image=ghcr.io/${OWNER,,}/scopenet-mc-panel"
+          } >> "$GITHUB_OUTPUT"
+
+  # The only Windows job (Windows minutes cost double, so nothing else runs there).
+  installer:
+    name: Windows installer
+    needs: prepare
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: launcher/package-lock.json
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: installer
+          cache-on-failure: true # a failure after the compile (like a download) must not throw the compile away
+
+      # Tauri downloads NSIS and a helper DLL from GitHub while bundling. Keep them between runs so most runs download nothing.
+      - uses: actions/cache@v4
+        with:
+          path: ~\AppData\Local\tauri
+          key: tauri-bundler-tools-${{ runner.os }}-${{ hashFiles('launcher/package-lock.json') }}
+          restore-keys: tauri-bundler-tools-${{ runner.os }}-
+
+      - name: Stamp version
+        shell: pwsh
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          $cargo = Get-Content Cargo.toml -Raw
+          $cargo = [regex]::new('(?m)^version = ".*"').Replace($cargo, 'version = "' + $env:VERSION + '"', 1)
+          [IO.File]::WriteAllText((Join-Path (Get-Location) 'Cargo.toml'), $cargo)
+          node -e "for(const f of ['launcher/src-tauri/tauri.conf.json','launcher/package.json']){const fs=require('fs');const c=JSON.parse(fs.readFileSync(f));c.version=process.env.VERSION;fs.writeFileSync(f,JSON.stringify(c,null,2))}"
+
+      # About and update comparisons use CARGO_PKG_VERSION. Keep it identical to the installer tag.
+      - name: Verify launcher version
+        shell: pwsh
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          $metadata = cargo metadata --no-deps --format-version 1 | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { throw 'Cargo metadata failed' }
+          $launcher = $metadata.packages | Where-Object name -eq 'scopenet-launcher'
+          if ($launcher.version -ne $env:VERSION) { throw 'Launcher About version differs from release tag' }
+          node -e "for(const f of ['launcher/src-tauri/tauri.conf.json','launcher/package.json']){if(JSON.parse(require('fs').readFileSync(f)).version!==process.env.VERSION)throw Error(f+' version differs from release tag')}"
+
+      - run: npm ci --no-audit --no-fund
+        working-directory: launcher
+
+      # An empty window in the shipped installer is the failure this catches (runes outside .svelte files).
+      - run: npm run check:runes
+        working-directory: launcher
+
+      - name: Build NSIS installer
+        working-directory: launcher
+        shell: pwsh
+        env:
+          SCOPENET_PANEL_URL: ${{ vars.PANEL_URL }}
+          SCOPENET_LOCK_PANEL: ${{ vars.LOCK_PANEL }}
+          SCOPENET_REPO: ${{ github.server_url }}/${{ github.repository }}
+          LAUNCHER_NAME: ${{ vars.LAUNCHER_NAME }}
+        run: |
+          $config = $null
+          if ($env:LAUNCHER_NAME) {
+            $config = node -e "console.log(JSON.stringify({productName: process.env.LAUNCHER_NAME, app: {windows: [{...require('./src-tauri/tauri.conf.json').app.windows[0], title: process.env.LAUNCHER_NAME}]}}))"
+          }
+          # The compile is the slow part and is finished after the first attempt; what can fail afterwards is a download (the
+          # NSIS tools come from GitHub). A retry therefore costs seconds, not another full build.
+          $code = 1
+          foreach ($attempt in 1..4) {
+            if ($config) { npx tauri build --bundles nsis --config $config } else { npx tauri build --bundles nsis }
+            $code = $LASTEXITCODE
+            if ($code -eq 0) { break }
+            if ($attempt -lt 4) {
+              Write-Host "::warning::Installer build attempt $attempt failed (exit code $code); retrying in $($attempt * 30)s"
+              Start-Sleep -Seconds ($attempt * 30)
+            }
+          }
+          if ($code -ne 0) { throw "Installer build failed with exit code $code after 4 attempts" }
+
+      - name: Verify installer artifact
+        shell: pwsh
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          $installers = @(Get-ChildItem target/release/bundle/nsis/*-setup.exe -File | Where-Object { $_.Name.EndsWith("_$($env:VERSION)_x64-setup.exe") })
+          if ($installers.Count -ne 1) {
+            throw 'Expected exactly one Windows x64 NSIS installer stamped with the release version'
+          }
+          New-Item -ItemType Directory -Force out-installer | Out-Null
+          Copy-Item -LiteralPath $installers[0].FullName -Destination out-installer
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: out-installer/*-setup.exe
+          if-no-files-found: error
+          retention-days: 3
+
+  # One job per Minecraft version; each builds Fabric and Forge. The single Paper plugin (it works on every version) is built by the 1.20.1 job.
+  jars:
+    name: Mods ${{ matrix.mc }}
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: true # one broken version stops the rest instead of paying for them
+      matrix:
+        include:
+          - { mc: '1.20.1', java: '21', gradle: '8.10.2' }
+          - { mc: '1.21.1', java: '21', gradle: '8.10.2' }
+          - { mc: '26.3', java: '25', gradle: '9.6.0' }
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+
+      - name: Test release artifact verification
+        if: matrix.mc == '1.20.1'
+        run: python3 .github/scripts/test_release_assets.py
+
+      # Installs the Gradle this Minecraft version needs and caches its downloads (Gradle distribution, Loom/Forge, dependencies).
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: ${{ matrix.gradle }}
+
+      - name: Build Fabric and Forge
+        run: |
+          for loader in fabric forge; do
+            gradle -p integrations --console=plain -Ploader="$loader" -PmcVersion=${{ matrix.mc }} -PreleaseVersion="$VERSION" ":$loader:build" -x test
+          done
+
+      - name: Build Paper plugin (one JAR for every version)
+        if: matrix.mc == '1.20.1'
+        run: gradle -p integrations --console=plain -PreleaseVersion="$VERSION" :common:test :paper:build
+
+      - name: Test shared code
+        if: matrix.mc == '1.21.1'
+        run: gradle -p integrations --console=plain -PmcVersion=${{ matrix.mc }} -PreleaseVersion="$VERSION" :common:test
+
+      - name: Build Fabric 26.3 companion
+        if: matrix.mc == '26.3'
+        run: gradle -p integrations --console=plain -Ploader=fabric-client -PmcVersion=26.3 -PreleaseVersion="$VERSION" :fabric-client:build :common:test
+
+      - name: Collect JARs
+        run: |
+          mkdir -p out
+          for loader in fabric forge; do
+            cp "integrations/$loader/build/libs/scopenet-$loader-${{ matrix.mc }}-$VERSION.jar" out/
+          done
+          if [ '${{ matrix.mc }}' = '1.20.1' ]; then
+            cp "integrations/paper/build/libs/scopenet-paper-$VERSION.jar" out/
+          fi
+          if [ '${{ matrix.mc }}' = '26.3' ]; then
+            cp "integrations/fabric-client/build/libs/scopenet-client-fabric-26.3-$VERSION.jar" out/
+          fi
+          python3 .github/scripts/verify-release-assets.py --version "$VERSION" --assets out --minecraft '${{ matrix.mc }}'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jars-${{ matrix.mc }}
+          path: out/*.jar
+          if-no-files-found: error
+          retention-days: 3
+
+  # The player panel as a phone app: a Capacitor shell around the website's player panel. Neither phone job blocks the release
+  # (continue-on-error) until you have run them once on your own account; whatever they produce is attached to the draft.
+  android:
+    name: Android app
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    continue-on-error: true
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      PANEL_URL: ${{ vars.PANEL_URL || 'https://scopenetmcpanel.scopedd.lol' }}
+      APP_NAME: ${{ vars.MOBILE_APP_NAME }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # The runner image already ships the Android SDK; the setup action's `sdkmanager tools` call fails on current images.
+      - name: Accept Android SDK licenses
+        run: yes | "$(ls -d "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager | sort -V | tail -n 1)" --licenses > /dev/null || true
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Create the Android project
+        working-directory: mobile
+        run: |
+          npm ci --no-audit --no-fund
+          npx capacitor-assets generate --android
+          npx cap add android
+          npx cap sync android
+          code=$(python3 - <<'PY'
+          import os, re
+          m = re.match(r"(\d+)\.(\d+)\.(\d+)", os.environ["VERSION"])
+          print(int(m[1]) * 1000000 + int(m[2]) * 1000 + int(m[3]))
+          PY
+          )
+          f=android/app/build.gradle
+          sed -i -E "s/versionCode [0-9]+/versionCode $code/; s/versionName \"[^\"]*\"/versionName \"$VERSION\"/" "$f"
+          grep -nE "versionCode|versionName" "$f"
+
+      - name: Build release APK
+        working-directory: mobile/android
+        run: ./gradlew --console=plain assembleRelease
+
+      - name: Sign
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          tools=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)
+          if [ -n "${KEYSTORE_BASE64:-}" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            store_pass="$KEYSTORE_PASSWORD"; alias="$KEY_ALIAS"; key_pass="${KEY_PASSWORD:-$KEYSTORE_PASSWORD}"
+          else
+            echo "::warning::No ANDROID_KEYSTORE_* secrets: signing with a one-off key. Add them so updates install over older builds."
+            store_pass=scopenet-ci; alias=scopenet; key_pass=scopenet-ci
+            keytool -genkeypair -keystore "$RUNNER_TEMP/release.jks" -storepass "$store_pass" -keypass "$key_pass" -alias "$alias" \
+              -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=SCOPENET Player"
+          fi
+          unsigned=$(ls mobile/android/app/build/outputs/apk/release/*.apk | head -n 1)
+          "$tools/zipalign" -f -p 4 "$unsigned" "$RUNNER_TEMP/aligned.apk"
+          mkdir -p out-mobile
+          "$tools/apksigner" sign --ks "$RUNNER_TEMP/release.jks" --ks-pass "pass:$store_pass" --ks-key-alias "$alias" --key-pass "pass:$key_pass" \
+            --out "out-mobile/scopenet-player-$VERSION.apk" "$RUNNER_TEMP/aligned.apk"
+          "$tools/apksigner" verify "out-mobile/scopenet-player-$VERSION.apk"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mobile-android
+          path: out-mobile/*.apk
+          if-no-files-found: error
+          retention-days: 3
+
+  # macOS and Linux launchers. Optional like the phone apps: a failure here leaves them out of the draft instead of blocking the Windows release.
+  # macOS minutes cost ten times as much, so it builds one universal (Apple silicon + Intel) disk image and nothing else.
+  desktop:
+    name: Launcher (${{ matrix.name }})
+    needs: prepare
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            runner: ubuntu-22.04
+            bundles: appimage,deb
+            args: ''
+            dir: target/release/bundle
+          - name: macOS
+            runner: macos-latest
+            bundles: dmg
+            args: --target universal-apple-darwin
+            dir: target/universal-apple-darwin/release/bundle
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: launcher/package-lock.json
+
+      - name: Linux system libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev libssl-dev libxdo-dev patchelf file
+
+      - name: macOS Rust targets
+        if: runner.os == 'macOS'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: desktop-${{ matrix.name }}
+          cache-on-failure: true
+
+      - name: Stamp version
+        run: |
+          sed -i.bak '0,/^version = ".*"/s//version = "'"$VERSION"'"/' Cargo.toml && rm Cargo.toml.bak
+          node -e "for(const f of ['launcher/src-tauri/tauri.conf.json','launcher/package.json']){const fs=require('fs');const c=JSON.parse(fs.readFileSync(f));c.version=process.env.VERSION;fs.writeFileSync(f,JSON.stringify(c,null,2))}"
+
+      - run: npm ci --no-audit --no-fund
+        working-directory: launcher
+
+      - run: npm run check:runes
+        working-directory: launcher
+
+      - name: Build
+        working-directory: launcher
+        env:
+          SCOPENET_PANEL_URL: ${{ vars.PANEL_URL }}
+          SCOPENET_LOCK_PANEL: ${{ vars.LOCK_PANEL }}
+          SCOPENET_REPO: ${{ github.server_url }}/${{ github.repository }}
+          NO_STRIP: 'true' # linuxdeploy's strip breaks on current distros
+        run: npx tauri build --bundles ${{ matrix.bundles }} ${{ matrix.args }}
+
+      - name: Name the files
+        run: |
+          mkdir -p out-desktop
+          bundle="${{ matrix.dir }}"
+          if [ "$RUNNER_OS" = "Linux" ]; then
+            cp "$bundle"/appimage/*.AppImage "out-desktop/scopenet-launcher-$VERSION-linux-x64.AppImage"
+            cp "$bundle"/deb/*.deb "out-desktop/scopenet-launcher-$VERSION-linux-x64.deb"
+          else
+            cp "$bundle"/dmg/*.dmg "out-desktop/scopenet-launcher-$VERSION-macos-universal.dmg"
+          fi
+          ls -l out-desktop
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ matrix.name }}
+          path: out-desktop/*
+          if-no-files-found: error
+          retention-days: 3
+
+  ios:
+    name: iOS app
+    needs: prepare
+    runs-on: macos-latest
+    timeout-minutes: 40
+    continue-on-error: true
+    env:
+      VERSION: ${{ needs.prepare.outputs.version }}
+      PANEL_URL: ${{ vars.PANEL_URL || 'https://scopenetmcpanel.scopedd.lol' }}
+      APP_NAME: ${{ vars.MOBILE_APP_NAME }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Create the iOS project
+        working-directory: mobile
+        run: |
+          npm ci --no-audit --no-fund
+          npx capacitor-assets generate --ios
+          npx cap add ios
+          npx cap sync ios
+
+      # Unsigned on purpose: signing needs your Apple developer account. Re-sign the .ipa with it (or sideload with a tool such as
+      # AltStore or Sideloadly). See docs/mobile-apps.md.
+      - name: Build unsigned IPA
+        working-directory: mobile
+        run: |
+          set -euo pipefail
+          short="${VERSION%%-*}"
+          code=$(python3 -c "import os,re;m=re.match(r'(\d+)\.(\d+)\.(\d+)',os.environ['VERSION']);print(int(m[1])*1000000+int(m[2])*1000+int(m[3]))")
+          xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" archive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            MARKETING_VERSION="$short" CURRENT_PROJECT_VERSION="$code"
+          mkdir -p "$RUNNER_TEMP/ipa/Payload" ../out-mobile
+          cp -R "$RUNNER_TEMP/App.xcarchive/Products/Applications/App.app" "$RUNNER_TEMP/ipa/Payload/"
+          (cd "$RUNNER_TEMP/ipa" && zip -qry "$GITHUB_WORKSPACE/out-mobile/scopenet-player-$VERSION-unsigned.ipa" Payload)
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mobile-ios
+          path: out-mobile/*.ipa
+          if-no-files-found: error
+          retention-days: 3
+
+  # Compiles the panel natively with a warm Cargo cache; Docker only packages the result, which takes seconds.
+  panel:
+    name: Panel binary
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: panel/web/package-lock.json
+
+      - name: Static (musl) toolchain
+        run: |
+          rustup target add x86_64-unknown-linux-musl
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends musl-tools
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: panel-musl
+          cache-on-failure: true
+
+      - name: Stamp version
+        run: sed -i '0,/^version = ".*"/s//version = "${{ needs.prepare.outputs.version }}"/' Cargo.toml
+
+      - name: Build web UI
+        working-directory: panel/web
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Pack icon library
+        working-directory: panel/icons
+        run: |
+          npm ci --no-audit --no-fund
+          node build.mjs
+
+      - name: Build panel
+        run: cargo build --release -p scopenet-panel --target x86_64-unknown-linux-musl
+
+      - name: Stage Docker context
+        run: |
+          mkdir -p image/data
+          cp target/x86_64-unknown-linux-musl/release/scopenet-panel image/
+          cp -r panel/web/dist image/web
+          cp -r panel/icons/dist image/icons
+          touch image/data/.keep
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: panel-image-context
+          path: image
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
+
+  # Runs only when every build above succeeded, so a failure never leaves a half-published release or a new `latest` image.
+  publish:
+    name: Publish
+    needs: [prepare, installer, jars, panel, android, desktop, ios]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      packages: write
+    env:
+      TAG: ${{ needs.prepare.outputs.tag }}
+      VERSION: ${{ needs.prepare.outputs.version }}
+      IMAGE: ${{ needs.prepare.outputs.image }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            Dockerfile
+            .github/scripts/verify-release-assets.py
+            .github/scripts/test-panel-image.py
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: panel-image-context
+          path: image
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-installer
+          path: assets
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: jars-*
+          merge-multiple: true
+          path: assets
+
+      # Optional: a phone-app job that failed (or was skipped) simply leaves nothing to download.
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: mobile-*
+          merge-multiple: true
+          path: assets
+
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: desktop-*
+          merge-multiple: true
+          path: assets
+
+      - name: Restore executable bit
+        run: chmod +x image/scopenet-panel # artifacts do not keep file modes
+
+      - name: Verify complete release assets
+        run: python3 .github/scripts/verify-release-assets.py --version "$VERSION" --assets assets --installer --mobile --desktop
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Build panel image for verification
+        uses: docker/build-push-action@v6
+        with:
+          context: image
+          file: Dockerfile
+          target: prebuilt
+          platforms: linux/amd64
+          load: true
+          provenance: false
+          tags: scopenet-panel:release-smoke
+
+      - name: Verify packaged panel and persistent instance storage
+        run: python3 .github/scripts/test-panel-image.py scopenet-panel:release-smoke
+
+      - name: Publish panel image (latest)
+        uses: docker/build-push-action@v6
+        with:
+          context: image
+          file: Dockerfile
+          target: prebuilt
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          tags: ${{ env.IMAGE }}:latest
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.version=${{ env.VERSION }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Draft release
+        run: |
+          set -euo pipefail
+          ls -l assets
+          cat > notes.md <<NOTES
+          ## Downloads
+
+          **Launcher (Windows):** download the \`-setup.exe\` below and run it. Installed launchers update themselves from this page.
+
+          Publish this draft so existing launchers can discover the update. You can also upload this installer with its release version under **Admin Panel > Settings > Launcher updates**. About shows the installed release version; clients with panel-hosted update support check both sources.
+
+          **Game servers:** Paper, Purpur and Spigot use the single \`scopenet-paper-${VERSION}.jar\`, which works on 1.20 and newer (it only uses the stable Bukkit API). Fabric and Forge need the JAR for your Minecraft version: \`scopenet-fabric-<mc>-${VERSION}.jar\` or \`scopenet-forge-<mc>-${VERSION}.jar\` for 1.20.1, 1.21.1 or 26.3. See \`docs/server-integration.md\`.
+
+          **Phones (player panel app):** \`scopenet-player-${VERSION}.apk\` installs on Android (allow installs from your browser). \`scopenet-player-${VERSION}-unsigned.ipa\` is an unsigned iOS build: sign it with your Apple developer account or sideload it with AltStore/Sideloadly. If a file is missing, that phone build did not complete; see \`docs/mobile-apps.md\`.
+
+          **Fabric 26.3 clients:** add \`scopenet-client-fabric-26.3-${VERSION}.jar\` and Fabric API to the instance. The companion connects to the Paper plugin and uses Launcher Settings > Companion. See \`docs/companion.md\`.
+
+          **Admin panel (Docker):**
+          \`\`\`bash
+          docker pull ${IMAGE}:latest
+          \`\`\`
+          Or with Compose: set \`image: ${IMAGE}:latest\` in \`docker-compose.yml\` and run \`docker compose up -d\`.
+          NOTES
+          flags=(--draft --target "$GITHUB_SHA" --title "$TAG" --notes-file notes.md)
+          case "$VERSION" in *-*) flags+=(--prerelease) ;; esac
+          # A re-run of this job after a partial failure replaces the draft it already made.
+          old=$(gh api --paginate "repos/$GITHUB_REPOSITORY/releases" --jq ".[] | select(.tag_name == \"$TAG\" and .draft) | .id")
+          for id in $old; do gh api -X DELETE "repos/$GITHUB_REPOSITORY/releases/$id"; done
+          gh release create "$TAG" assets/* "${flags[@]}"
+          echo "### Draft release ready :package:" >> "$GITHUB_STEP_SUMMARY"
+          echo "Review and publish **$TAG** under Releases. Panel image pushed to \`$IMAGE:latest\`." >> "$GITHUB_STEP_SUMMARY"

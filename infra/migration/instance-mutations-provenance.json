@@ -1,0 +1,33 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "8cee180c8a140dc5280446e8d29ce639e4d4037c",
+  "inputs": [
+    {
+      "path": "panel/server/src/routes/admin.rs",
+      "sha256": "afa939acfa847047fa5842b21036df9520c2bb734bf94cc04896ec92c6c5d2fb"
+    },
+    {
+      "path": "panel/server/src/packs.rs",
+      "sha256": "25d078ded9dd66f9d6ac7dc4193c07f39f7d4e2df79948581f3b3d14b957bfc2"
+    }
+  ],
+  "scope": "Only original platform SQL and neutral borrowed inputs; host validation, private defaults, lifecycle, filesystem and provider code excluded",
+  "output": "crates/instances/src/mutations.rs",
+  "adaptations": [
+    "Caller supplies normalized/serialized records, platform pool and timestamps",
+    "Borrowed pack file inputs and a supplied late clock preserve transaction and time ordering",
+    "Private retirement, authorization, provider requests, files and post-commit GC remain host-owned"
+  ],
+  "destination_repository": "https://github.com/VeloraMCDev/panel",
+  "destination_revision": "9abb4b07b8c1dd552bbf1a679dd9ea97d1106c4b",
+  "compatibility_host_snapshot": "crates/panel-instances",
+  "validation": {
+    "owner_tests": 11,
+    "strict_clippy": "passed",
+    "host_units": 66,
+    "host_api": 11,
+    "host_instance_integrations": 10,
+    "public_preflight": "passed",
+    "full_service": "incomplete"
+  }
+}

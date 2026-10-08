@@ -1,0 +1,22 @@
+// Publication inventory only. Does not print credentials, addresses or file contents.
+import {execFileSync} from 'node:child_process';
+import {existsSync,readFileSync,statSync} from 'node:fs';
+import {resolve,dirname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const policy=JSON.parse(readFileSync(resolve(root,'docs/security/publication-policy.json'),'utf8'));
+if(policy.schema_version!==1||policy.source_scope!=='complete-product'||policy.gameplay_publication_authorized!==true||!Array.isArray(policy.pending_reviews)||policy.pending_reviews.some(reason=>typeof reason!=='string'||!reason.trim()))throw Error('Missing or invalid complete-product publication policy');
+const files=execFileSync('git',['ls-files','-z'],{cwd:root,encoding:'utf8'}).split('\0').filter(Boolean);
+const restricted=files.filter(f=>/^(packages\/private-(gameplay|storage)\/|java\/(gameplay|src)\/|ui\/|shared\/(casino|board|commands|experience)\/|migration\/legacy-source\/)/.test(f));
+const sensitiveNames=files.filter(f=>/(^|\/)(\.env(?:\..*)?|\.dev\.vars(?:\..*)?|id_rsa|id_ed25519|credentials(?:\..*)?|.*\.(?:sqlite3?|db(?:-wal|-shm)?|sqlite(?:-wal|-shm)|pem|p12|pfx|jks|keystore|key|bundle))$/i.test(f)&&!/(^|\/)\.env\.example$/.test(f));
+const forbiddenArtifacts=files.filter(f=>/\.(?:exe|dll|zip|7z|tar|gz)$/i.test(f)||(/\.jar$/i.test(f)&&!f.endsWith('/gradle/wrapper/gradle-wrapper.jar'))||/^infra\/evidence\/.*\.json$/.test(f)||/^migration\/legacy-source\/docs\/(images|screenshots)\//.test(f));
+const binaryReview=files.filter(f=>/\.(?:exe|dll|jar|zip|7z|tar|gz|png|jpe?g|webp|pdf)$/i.test(f));
+const lfs=files.filter(f=>existsSync(resolve(root,f))&&statSync(resolve(root,f)).size<2048&&readFileSync(resolve(root,f),'utf8').startsWith('version https://git-lfs.github.com/spec/v1'));
+const addresses=execFileSync('git',['log','--all','--format=%ae%x00%ce'],{cwd:root,encoding:'utf8'}).split(/[\0\r\n]+/).filter(Boolean);
+const emailCount=new Set(addresses.filter(e=>!e.endsWith('@users.noreply.github.com'))).size;
+const checkoutFailed=Boolean(sensitiveNames.length||forbiddenArtifacts.length||lfs.length);
+const reasons=[...(checkoutFailed?['Tracked filename, artifact or LFS policy failed']:[]),...policy.pending_reviews];
+const result={scope:'Tracked checkout filenames and fetched Git author/committer metadata plus recorded review state; this inventory does not certify file contents.',source_scope:policy.source_scope,gameplay_publication_authorized:policy.gameplay_publication_authorized,tracked_files:files.length,gameplay_and_legacy_files:restricted.length,sensitive_filenames:sensitiveNames,forbidden_artifacts:forbiddenArtifacts,binary_files_requiring_review:binaryReview,lfs_pointers:lfs,non_noreply_commit_email_count:emailCount,checkout_status:checkoutFailed?'FAIL':'PASS',publication_status:reasons.length?'BLOCKED':'REVIEWED',reasons};
+console.log(JSON.stringify(result,null,2));
+if(process.argv.includes('--public')&&reasons.length)process.exitCode=1;
+if(process.argv.includes('--checkout')&&result.checkout_status==='FAIL')process.exitCode=1;

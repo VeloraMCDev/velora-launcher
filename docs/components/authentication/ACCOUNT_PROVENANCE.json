@@ -1,0 +1,31 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "sources": [
+    {
+      "path": "panel/server/src/routes/public.rs",
+      "sha256": "706affa66fa86d77ae9d72a8de474eb6ee813146749bd8e7b55a227c536f6f73"
+    },
+    {
+      "path": "panel/server/src/auth.rs",
+      "sha256": "4046d9615bdb801bd829f97d2b7d5322267ce3f9e8727338f65a3b6be63af969"
+    },
+    {
+      "path": "panel/server/src/store.rs",
+      "sha256": "18b915d84c894934d42d04dc7e88cd189b0015e99c9b95e41b4157080b148aed"
+    }
+  ],
+  "output": {
+    "path": "crates/http/src/web.rs",
+    "sha256_lf": "3604d85ab1a66a8df5caf2fbc2325cc43268b0a22a735e54c9e8aa67da8bfe52"
+  },
+  "changes": [
+    "Split only generic launcher login/register/session/public-user workflows from mixed host files",
+    "Use typed operator-policy, live username-policy and login-audit ports; no Panel state/settings/private gameplay imports",
+    "Preserve operation/error ordering, approval/open/closed modes, admin exception, random UUIDs, email normalization and token/projection fields",
+    "Preserve supplied identity/current request pools and shared game/web guard; audit failures do not mint a new session",
+    "Own first-admin creation through the common username/hash/UUID allocation path, preserving existing administrators on restart and arbitrating concurrent attempts",
+    "Synthetic bootstrap fixtures preserve disabled administrator credentials and UUIDs, refuse player promotion and verify competing attempts against a multi-connection store",
+    "Use synthetic policy/audit/store fixtures only; standalone configuration/service cutover and deployment acceptance remain incomplete"
+  ]
+}

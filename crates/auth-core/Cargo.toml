@@ -1,0 +1,30 @@
+[package]
+name = "velora-auth-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+anyhow = "1"
+argon2 = "0.5"
+base64 = "0.22"
+rsa = { version = "0.9", features = ["sha1", "pem"] }
+sha1 = { version = "0.10", features = ["oid"] }
+tracing = "0.1"
+rand = "0.8"
+hex = "0.4"
+uuid = "1"
+image = { version = "0.25", default-features = false, features = ["png"], optional = true }
+sha2 = { version = "0.10", optional = true }
+jsonwebtoken = "9"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "sqlite", "derive"], optional = true }
+
+[features]
+sqlite = ["dep:sqlx"]
+textures = ["dep:image", "dep:sha2"]
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt"] }
+tempfile = "3"

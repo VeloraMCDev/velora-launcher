@@ -1,0 +1,13 @@
+[package]
+name = "velora-experiences-gameplay"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/VeloraMCDev/velora-launcher"
+publish = false
+
+[dependencies]
+rand = "0.8"
+serde = { version = "1", features = ["derive"] }
+
+[dev-dependencies]
+serde_json = "1"

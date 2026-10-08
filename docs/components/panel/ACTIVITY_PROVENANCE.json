@@ -1,0 +1,14 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/routes/activity.rs",
+  "source_sha256": "9484e79694af26522247ff358e572304e1883768a45ff26806fd42c9d5d6a79e",
+  "output_path": "crates/activity/src/lib.rs",
+  "output_sha256_lf": "36a5e18f60f3997a19f521d764a6e59c1a5dbacf022e3df237d6171d30ceadc0",
+  "changes": [
+    "Extract only neutral metadata writes and activity projection/query types; no mixed middleware, credential SQL or gameplay implementation",
+    "Preserve wire fields, unknown/null records, IDs, server-name joins, source/name/UUID filters, Unicode sanitation and pagination",
+    "Caller supplies authenticated identity, timestamp, live authorization and interim store projections; storage failures propagate",
+    "Independent public dependency graph and synthetic tests; owned migrations, separate-store reporting and runnable Panel remain incomplete"
+  ]
+}

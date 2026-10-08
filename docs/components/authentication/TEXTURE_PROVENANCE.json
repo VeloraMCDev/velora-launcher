@@ -1,0 +1,15 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/textures.rs",
+  "source_sha256": "e252552811aa520e297b6e1fb37bb5fa008b4b5c243136f0fae0f6f27bbc4129",
+  "output_path": "crates/core/src/textures.rs",
+  "output_sha256_lf": "18998c2771c6ecde9c5cf895b2e4158e9fd0c88c21a3846c215b8a999e384caf",
+  "changes": [
+    "Own the original skin/cape validation, content-addressed PNG storage and avatar algorithms",
+    "Replace HTTP-coupled error type with explicit validation/IO variants; compatible host preserves statuses/messages",
+    "Preserve original PNG settings, SHA256 identifiers, paths, accepted layouts, byte/size limits and hat/clamping behavior",
+    "Retain original tests and add synthetic error/legacy-layout/avatar boundary coverage",
+    "No player textures or databases copied; storage/service import, authorization and deletion ownership remain incomplete"
+  ]
+}

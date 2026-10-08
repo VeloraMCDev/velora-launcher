@@ -1,0 +1,27 @@
+plugins { id 'net.minecraftforge.gradle' version '7.0.17' }
+def mc = (providers.gradleProperty('mcVersion').orNull ?: project.findProperty('mcVersion') ?: '26.1.2').toString().trim()
+def forgeVersions = ['26.1.2': '64.1.0', '26.2': '65.1.0', '26.3': '66.0.6']
+java.sourceCompatibility = JavaVersion.VERSION_25
+java.targetCompatibility = JavaVersion.VERSION_25
+repositories {
+    minecraft.mavenizer(it)
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+}
+dependencies {
+    implementation minecraft.dependency("net.minecraftforge:forge:${mc}-${forgeVersions[mc]}")
+    implementation project(':common')
+}
+sourceSets.main.java.srcDirs += ['../minecraft/src/main/java', '../minecraft/src/26/java']
+sourceSets.main.resources.srcDirs += ['../minecraft/src/main/resources', '../minecraft/src/26/resources']
+apply from: '../minecraft/build-info.gradle'
+processResources {
+    inputs.properties(version: project.version, mc: mc)
+    filesMatching('META-INF/mods.toml') { expand(version: project.version, mc: mc, forge: forgeVersions[mc].split('\\.')[0]) }
+    filesMatching(['scopenet.mixins.json', 'scopenet.claimrules.mixins.json']) { filter { line -> line.contains('"refmap"') ? null : line } }
+}
+base.archivesName = "scopenet-forge-${mc}"
+jar {
+    from project(':common').sourceSets.main.output
+    manifest { attributes('MixinConfigs': 'scopenet.mixins.json,scopenet.claimrules.mixins.json') }
+}

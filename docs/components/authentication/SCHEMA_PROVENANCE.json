@@ -1,0 +1,17 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/db.rs",
+  "source_sha256": "bb39ae42059b2e7003e84ad5e477474bc71d27ad9970f2094b9bd44d8b3fd2bb",
+  "output_path": "crates/core/src/schema.rs",
+  "output_sha256_lf": "a230a5e87891309f80189a8c2b619a899e0ef35c51ec7fb2721e3c41126404d0",
+  "changes": [
+    "Keep version-one SQL unchanged; additive version two creates launcher admission sessions and indices after validating known intact stores",
+    "Preserve account IDs, NOCASE names, immutable UUID and historical reservations, group mappings, credential versions, email opt-out and cascading authentication records",
+    "Caller supplies a pool with foreign keys enabled; initialize never imports legacy records, generates keys, bootstraps an administrator or changes a live host pool",
+    "Reject mixed legacy, foreign/missing tables, missing named identity constraints and unsupported owned versions without implicit repair",
+    "Read-only validation returns actual supported version without initialization/upgrade; immutable asset readers use it",
+    "Synthetic tests cover fresh initialization, intact version-one upgrade, read-only non-upgrade, preserved identities/sequences/user_version, cascades and refusal paths",
+    "Panel activity/audit, mail logs and private gameplay remain host-owned; session history requires original-checkpoint import and service/single-writer cutover remain incomplete"
+  ]
+}

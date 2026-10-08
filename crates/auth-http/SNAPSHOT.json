@@ -1,0 +1,59 @@
+{
+  "repository": "https://github.com/VeloraMCDev/authentication",
+  "revision": "b6e92bb79a622f13dcc731d3c0162d4ba97807e1",
+  "files": [
+    {
+      "path": "src/account.rs",
+      "sha256": "5b632df9953e1fe522a06c6415d7199f1f12c915157480f54a93af0e76089854"
+    },
+    {
+      "path": "src/admin.rs",
+      "sha256": "e160c4358ecd3f811562ef26046fff6587af141c2ed6582c9cabb28af0b9aa3f"
+    },
+    {
+      "path": "src/auth.rs",
+      "sha256": "5f2178f518490a7ee7aa941babbc032bbed43959636601540ead1dbf20e8879e"
+    },
+    {
+      "path": "src/config.rs",
+      "sha256": "049fab52c4aa2c128dab29b17b1d4493ee25c4a33c7b0d1ccbb147c73ac7340b"
+    },
+    {
+      "path": "src/cosmetics.rs",
+      "sha256": "0a0778a683f7d9340ae3461329e45b06e76d5508fed32c44c2eb7a6e1ebb38e6"
+    },
+    {
+      "path": "src/error.rs",
+      "sha256": "c10201956341ea66d46c2b07c70ec94130b9f22100f050568faaf8edac3773a8"
+    },
+    {
+      "path": "src/lib.rs",
+      "sha256": "aef685c09a125cf6e13560ea9ae3e3a3ae5ec5c566e3830a184ff88a516ec140"
+    },
+    {
+      "path": "src/net.rs",
+      "sha256": "e498d7dd319f43bdb0a40d3f1814b9373819dc2bfe27488787eff7e4266cdc38"
+    },
+    {
+      "path": "src/oauth.rs",
+      "sha256": "66421362a711482f88be43276354b1dd8823df2a491cf52996217bfc1da8c699"
+    },
+    {
+      "path": "src/reset.rs",
+      "sha256": "c2a0fe14ecaeda6dadfe0dcc18022c48b8e15823bec598fb1a84993ae1e70d37"
+    },
+    {
+      "path": "src/state.rs",
+      "sha256": "0ed55c19af5ddab836b48932bd132aa5e7a8317c3dd4d694c3c560bd308e679a"
+    },
+    {
+      "path": "src/textures.rs",
+      "sha256": "8ff23e71fdfc1e3861bdb21bf0dc856722293a53d6c853545cb3844b0c4561e0"
+    },
+    {
+      "path": "src/web.rs",
+      "sha256": "3604d85ab1a66a8df5caf2fbc2325cc43268b0a22a735e54c9e8aa67da8bfe52"
+    }
+  ],
+  "metadata_changes": "Root version and core path retain host type identity; SDK models use an immutable public snapshot; publication disabled"
+}

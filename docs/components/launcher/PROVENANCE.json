@@ -1,0 +1,162 @@
+{
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "sdk_revision": "ba9e201667d2a352887567b6b90e904ab6016015",
+  "changes": [
+    "SDK utilities replace shared metadata/HTTP/path helpers",
+    "Package renamed velora-engine; compatibility dependency aliases retained",
+    "Install/launch, sync, Java/loaders, caches and offline fallbacks preserved"
+  ],
+  "files": [
+    {
+      "source": "crates/core/Cargo.toml",
+      "destination": "engine/Cargo.toml",
+      "source_sha256": "b60013d8616bfd4439daf59c3fb608a4fbcaf9a8f834cfb583555bca0e6e2df4",
+      "output_sha256": "426c6e43d4c1324e4e50f05dffb7a64ba0ee832badf2187289756f8accb79d1e"
+    },
+    {
+      "source": "crates/core/src/assets.rs",
+      "destination": "engine/src/assets.rs",
+      "source_sha256": "8444f684adf725ceae0f39ed6b65987856f5121747fe42f36ad418a07a63cb78",
+      "output_sha256": "8444f684adf725ceae0f39ed6b65987856f5121747fe42f36ad418a07a63cb78"
+    },
+    {
+      "source": "crates/core/src/authlib.rs",
+      "destination": "engine/src/authlib.rs",
+      "source_sha256": "c267521fdcadbfaea5a2fa285989ba7fc6191791f728b3133d0010ec50c47cee",
+      "output_sha256": "7e7193159385c160ee1bd60e8753a620078775ca5234b9cbc1eb7da0d5ee0749"
+    },
+    {
+      "source": "crates/core/src/http.rs",
+      "destination": "engine/src/http.rs",
+      "source_sha256": "34f2543d04c2ba007adf33e9c98c7c380a994065ab2dfd20f606e0d5c463156d",
+      "output_sha256": "5cbbf74e6763e76ad0f687922738bfbbd8f5dd61b51aa91535ff3fc7bae034d9"
+    },
+    {
+      "source": "crates/core/src/install.rs",
+      "destination": "engine/src/install.rs",
+      "source_sha256": "b47c683ca3eb4118b5ea875779aa62de288fcf353c156517f075169d5c0eb947",
+      "output_sha256": "b47c683ca3eb4118b5ea875779aa62de288fcf353c156517f075169d5c0eb947"
+    },
+    {
+      "source": "crates/core/src/java.rs",
+      "destination": "engine/src/java.rs",
+      "source_sha256": "bfe0ada569a60e8589ab3bb967bfe7a751954cdab33b0a5b595bddb37f1a2b41",
+      "output_sha256": "bfe0ada569a60e8589ab3bb967bfe7a751954cdab33b0a5b595bddb37f1a2b41"
+    },
+    {
+      "source": "crates/core/src/launch.rs",
+      "destination": "engine/src/launch.rs",
+      "source_sha256": "b0c88e0f13384fcfd775ad71b2a6f90bc51dbb16a2b617e3d954194e1b826013",
+      "output_sha256": "0cb000b47635436868a9ace228b690452e829056d8b65901603b3472af1fde5d"
+    },
+    {
+      "source": "crates/core/src/lib.rs",
+      "destination": "engine/src/lib.rs",
+      "source_sha256": "6e8ca24a49e748241fa651829bab857a62a6dd1e6834874a1ff358d68826fa34",
+      "output_sha256": "591547399c0c0470629de9976b2a3055be5c80f5fa290b25e4e1f997b175fabd"
+    },
+    {
+      "source": "crates/core/src/libraries.rs",
+      "destination": "engine/src/libraries.rs",
+      "source_sha256": "31d95ba3374e2414dd691dacecb51cccd407bd172e3f0c488f1e9e6174d4e7a8",
+      "output_sha256": "31d95ba3374e2414dd691dacecb51cccd407bd172e3f0c488f1e9e6174d4e7a8"
+    },
+    {
+      "source": "crates/core/src/loaders/fabric.rs",
+      "destination": "engine/src/loaders/fabric.rs",
+      "source_sha256": "6f02cccf2e4c752a8fcbda417ab8d13d0d4b3446bfd7e4373143bd4f3dae1947",
+      "output_sha256": "6f02cccf2e4c752a8fcbda417ab8d13d0d4b3446bfd7e4373143bd4f3dae1947"
+    },
+    {
+      "source": "crates/core/src/loaders/forge.rs",
+      "destination": "engine/src/loaders/forge.rs",
+      "source_sha256": "121f39de4c076cca4c2083d8562e11b2cb9652945179e499658953dcf82c251d",
+      "output_sha256": "121f39de4c076cca4c2083d8562e11b2cb9652945179e499658953dcf82c251d"
+    },
+    {
+      "source": "crates/core/src/loaders/mod.rs",
+      "destination": "engine/src/loaders/mod.rs",
+      "source_sha256": "e871db757716267cbf12a115ad860479eb083f4c7ed259f4fa7504036ed75855",
+      "output_sha256": "e871db757716267cbf12a115ad860479eb083f4c7ed259f4fa7504036ed75855"
+    },
+    {
+      "source": "crates/core/src/maven.rs",
+      "destination": "engine/src/maven.rs",
+      "source_sha256": "0fa8f60593bac1013affb89ac64d9abdac964bfe7c69573042c2337ee9defa16",
+      "output_sha256": "0fa8f60593bac1013affb89ac64d9abdac964bfe7c69573042c2337ee9defa16"
+    },
+    {
+      "source": "crates/core/src/meta.rs",
+      "destination": "engine/src/meta.rs",
+      "source_sha256": "97017c05cbc1a0e3ef177f00ec718f0100148e068f0673efcf979085edccf650",
+      "output_sha256": "961917e635b2ee9343b6c9d425ef4ab5ae0ee9c866663c8c67891a3ad235de2f"
+    },
+    {
+      "source": "crates/core/src/options.rs",
+      "destination": "engine/src/options.rs",
+      "source_sha256": "0cf7b97ef2342bf34f9179e33ffacb548301a5c0f588c331ed187da1b95b4722",
+      "output_sha256": "0cf7b97ef2342bf34f9179e33ffacb548301a5c0f588c331ed187da1b95b4722"
+    },
+    {
+      "source": "crates/core/src/paths.rs",
+      "destination": "engine/src/paths.rs",
+      "source_sha256": "a4651b5a0b28885a417cd77b7a2b9e8103e74a5995685b290ea6fa368bd8c00f",
+      "output_sha256": "7f9ea1833aabc54c7ca3c48b93ff713bb8e74ade211f95d3b23ba63e45f031a2"
+    },
+    {
+      "source": "crates/core/src/ping.rs",
+      "destination": "engine/src/ping.rs",
+      "source_sha256": "12ab8fe0d771365342a478bc37361661b720a9a5620a5deaa81b5b2e465c4bf7",
+      "output_sha256": "12ab8fe0d771365342a478bc37361661b720a9a5620a5deaa81b5b2e465c4bf7"
+    },
+    {
+      "source": "crates/core/src/progress.rs",
+      "destination": "engine/src/progress.rs",
+      "source_sha256": "4d46d1e254018c32b2eb8cf4c76fbc993db4542f729bc3ff6a9d19a813e73fd7",
+      "output_sha256": "4d46d1e254018c32b2eb8cf4c76fbc993db4542f729bc3ff6a9d19a813e73fd7"
+    },
+    {
+      "source": "crates/core/src/rules.rs",
+      "destination": "engine/src/rules.rs",
+      "source_sha256": "5922b238c6a642d45ef137046802e79639791a84e0340eb5f5fb24bbe28fc3b5",
+      "output_sha256": "5922b238c6a642d45ef137046802e79639791a84e0340eb5f5fb24bbe28fc3b5"
+    },
+    {
+      "source": "crates/core/src/servers_dat.rs",
+      "destination": "engine/src/servers_dat.rs",
+      "source_sha256": "b67a40b3641aff5f556d2532d2ab021b42c08a4e74ac1e3e38c110067659dfb7",
+      "output_sha256": "ce2c0b6138546524cda757b571d99a44b76f879e9b99f093c37e465b87da6e31"
+    },
+    {
+      "source": "crates/core/src/sync.rs",
+      "destination": "engine/src/sync.rs",
+      "source_sha256": "b5dff5fc8a3616d0700a111731e9dbbecb0a0fb546c2b27d06dd43833515bc6b",
+      "output_sha256": "757ee2fe9cfa18720c718905b02d835d34944fdc714e8fdc6b7b5a6cd288b1aa"
+    },
+    {
+      "source": "crates/core/src/sys.rs",
+      "destination": "engine/src/sys.rs",
+      "source_sha256": "4eae3f17940d908029cb2295e3a0e2f5cc41ab28bfd79f95b922acbbcf9019ff",
+      "output_sha256": "4eae3f17940d908029cb2295e3a0e2f5cc41ab28bfd79f95b922acbbcf9019ff"
+    },
+    {
+      "source": "crates/core/src/textures.rs",
+      "destination": "engine/src/textures.rs",
+      "source_sha256": "1341b71a749dfc160652e0445345eb1135939b3307bc295acdba9b7a15c272fa",
+      "output_sha256": "c4e237ac9f9f3a364684c36b4eef5504134ae9beaed3598f6e3d7354d9226ae6"
+    },
+    {
+      "source": "crates/core/src/version.rs",
+      "destination": "engine/src/version.rs",
+      "source_sha256": "b0692c6a2144fce68cf41e4593c900f23dca767fc4b76b8f6324ce98a95c24d1",
+      "output_sha256": "b0692c6a2144fce68cf41e4593c900f23dca767fc4b76b8f6324ce98a95c24d1"
+    },
+    {
+      "source": "crates/core/tests/online.rs",
+      "destination": "engine/tests/online.rs",
+      "source_sha256": "f56546fb4474515cce39091e92b14289f7c40cec6011920f76bed3dd74b44c3f",
+      "output_sha256": "8f78d8d322a61a5234bae7ab28d25aaaccfa116d5efd75f73df1b5efb751f96f"
+    }
+  ],
+  "dependency_distribution": "Verified MIT SDK code snapshot in vendor/sdk; no private Git fetch needed"
+}

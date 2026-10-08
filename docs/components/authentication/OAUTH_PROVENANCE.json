@@ -1,0 +1,33 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "sources": [
+    {
+      "path": "panel/server/src/routes/connections.rs",
+      "sha256": "8bdefd157c4b48bf41d12cab45cdd18d60ba2f3b081eaedf9fcd83719d0ecdf4"
+    },
+    {
+      "path": "panel/server/src/auth.rs",
+      "sha256": "4046d9615bdb801bd829f97d2b7d5322267ce3f9e8727338f65a3b6be63af969"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "crates/http/src/oauth.rs",
+      "sha256_lf": "66421362a711482f88be43276354b1dd8823df2a491cf52996217bfc1da8c699"
+    },
+    {
+      "path": "crates/http/src/web.rs",
+      "sha256_lf": "9a9e4a096f43a7d31cc96dce6e74365fd11fbc728bc9c17736c7b6eeb625c4ea"
+    }
+  ],
+  "changes": [
+    "Split Discord state, callback admission/allocation, linking, polling and unlinking workflows from mixed provider/admin module",
+    "Typed configuration/origin/provider-profile/allocation-policy ports retain host credentials and HTTP exchange; no provider credentials or private settings presets copied",
+    "Preserve ten-minute state lifetime, one-use callback/poll behavior, cancellation text/errors, account ownership conflicts and result/status projections",
+    "Preserve live registration/name policy, username fallback/suffix allocation, verified-email rule and original identity/pool/UUID behavior",
+    "Share authority account allocation with launcher registration; keep original hash/time/UUID ordering and supplied caller validation",
+    "Synthetic provider fixtures cover replay, ownership, login results, approval/closed policy, disabled access and outages",
+    "Provider/SMTP standalone configuration, complete account/admin workflows and schema/import/service cutover remain incomplete"
+  ]
+}

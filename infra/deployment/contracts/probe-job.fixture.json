@@ -1,0 +1,11 @@
+{
+  "public_key": "_RckOFqgx1tk-3jNYC-h2ZH96_drE8WO1wLqyDXp9hg",
+  "agent_id": "agt_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "now": 1791400000,
+  "envelope": {
+    "schema": 1,
+    "key_id": "dbc298251c51321b7266e78d1c151c2b62aff8cb95b293096d3463018544face",
+    "payload": "eyJzY2hlbWEiOjEsImlkIjoiMTExMTExMTEtMTExMS00MTExLTgxMTEtMTExMTExMTExMTExIiwiZGVwbG95bWVudF9pZCI6IjIyMjIyMjIyLTIyMjItNDIyMi04MjIyLTIyMjIyMjIyMjIyMiIsImFnZW50X2lkIjoiYWd0X2FhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEiLCJlbnZpcm9ubWVudCI6ImRldmVsb3BtZW50IiwiYWN0aW9uIjoiREVQTE9ZX1NFUlZJQ0UiLCJzZXJ2aWNlX2lkIjoiZGVwbG95bWVudC1wcm9iZSIsImltYWdlIjoiZ2hjci5pby92ZWxvcmFtY2Rldi9kZXBsb3ltZW50LXByb2JlQHNoYTI1NjpiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiYmJiIiwiZXhwZWN0ZWRfY29tbWl0IjoiY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjYyIsImlzc3VlZF9hdCI6MTc5MTQwMDAwMCwiZXhwaXJlc19hdCI6MTc5MTQwMDMwMH0",
+    "signature": "lWFqo_LeKMpgpTss5mJyqn0Dspjd_f-cynLbYw6eSe69SusUQplhjM6IRXX1EchKfxOxFsoQVnRkAByQCXnPAg"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "revision": "2db2426648574dd374f6a5a26ca16e4f92f0864c",
+  "files": [
+    {
+      "path": "package.json",
+      "source": "mobile/package.json",
+      "sha256": "824ceb62c012015871977bfb94408e6e24582f0e1675ca5cbf77f8bde5a1ad6b"
+    },
+    {
+      "path": "package-lock.json",
+      "source": "mobile/package-lock.json",
+      "sha256": "4b0ceecc741770d14a1fdfc384495147e28599b3ab4d78bd8df536833375bbe0"
+    },
+    {
+      "path": "capacitor.config.ts",
+      "source": "mobile/capacitor.config.ts",
+      "sha256": "19a024f7e7ed1bfdd6c5b24759956379b62e032118480c08b0337a95898e285b"
+    },
+    {
+      "path": "www/index.html",
+      "source": "mobile/www/index.html",
+      "sha256": "98f6006d52aa1f8e35450462ffdd634d088911a7ec608ed1cc2a222b3b970d7e"
+    }
+  ],
+  "excluded": [
+    "Private distribution artwork; use operator-supplied licensed assets"
+  ]
+}

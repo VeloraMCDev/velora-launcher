@@ -1,0 +1,18 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "556d0c06c41aa87b492db79ff24e5ec809d0da35",
+  "source_path": "panel/server/src/routes/landing.rs",
+  "source_sha256": "9a909bee1cc46f404fd018dc861a4ab68f92a8468cbc212c74a74519a6bcd7f0",
+  "scope": "Neutral hosted download/FAQ/block/theme records and repo/installer/version/display filename helpers",
+  "excluded": "Private landing defaults, pages, source URL/file identities, storage/provider requests, upload/download routes and authentication stay host-owned",
+  "changes": [
+    "Empty or non-ASCII brand display filename fallback now uses Velora; supplied brand names and real stored filenames/URLs are unchanged"
+  ],
+  "output_sha256_lf": "05f8635328a06262122f8680c72e7bbdc820a5efba97b73ab3eeb46f2c5733d6",
+  "validation": {
+    "tests": 5,
+    "formatting": "passed",
+    "strict_clippy": "passed",
+    "host_adoption": "pending"
+  }
+}

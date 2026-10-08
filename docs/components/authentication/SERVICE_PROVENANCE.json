@@ -1,0 +1,40 @@
+{
+  "kind": "new-runtime-composition",
+  "repository": "https://github.com/VeloraMCDev/authentication",
+  "base_owner_revision": "b6e92bb79a622f13dcc731d3c0162d4ba97807e1",
+  "composes": [
+    "AuthorityState and existing Yggdrasil routes",
+    "RuntimeConfig and protected bootstrap credential files",
+    "Owned schema version 2, conditional first-admin insert and existing cryptography",
+    "Trusted socket-peer proxy policy and supplied public origin",
+    "Optional explicit public account HTTP routing through mandatory platform ports"
+  ],
+  "compatibility": [
+    "No mixed private source import; existing frozen-source extraction provenance remains authoritative for libraries",
+    "No legacy credential-writer cutover, data import, path/identity rename, remote audit or no-op presence adapter",
+    "CLI service offers game-authentication routes only; library account HTTP composition requires real ports. Full web/admin/provider/gateway cutover remains incomplete"
+  ],
+  "files": [
+    {
+      "path": "crates/service/Cargo.toml",
+      "sha256_lf": "a8f8c5df2b85d45564f66308c70488a84fa072e4e5c2400ae07967a94ab2116d"
+    },
+    {
+      "path": "crates/service/src/lib.rs",
+      "sha256_lf": "d1b409d1176f3484e2dff996fee1bf42d8f71fc8f137383c3622b02d1360d50e"
+    },
+    {
+      "path": "crates/service/src/main.rs",
+      "sha256_lf": "4dd92881cf33779e2429c40a436fdd52cb0bf6b8e4ce5cf3ceaf41523246b45b"
+    },
+    {
+      "path": "crates/service/tests/runtime.rs",
+      "sha256_lf": "ec4323fd6516646de4193d50785b313277e5e322010e2bc45acc871fb76c8d6f"
+    }
+  ],
+  "validation": [
+    "Real TCP game authentication/join/profile signatures, bootstrap/restart key and UUID continuity",
+    "Writer exclusion, mixed-store and damaged signing refusal, readiness/outage and runtime shutdown",
+    "Unix-only actual executable SIGTERM test runs in independent CI; Windows tests runtime shutdown and CLI errors"
+  ]
+}

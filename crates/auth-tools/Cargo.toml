@@ -1,0 +1,21 @@
+[package]
+name = "velora-auth-tools"
+version.workspace = true
+edition.workspace = true
+license = "MIT"
+repository = "https://github.com/VeloraMCDev/velora-launcher"
+publish = false
+
+[dependencies]
+anyhow = "1"
+velora-auth-core = { workspace = true, features = ["sqlite"] }
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "sqlite"] }
+tokio = { version = "1", features = ["macros", "rt"] }
+sha2 = "0.10"
+hex = "0.4"
+serde_json = "1"
+
+[dev-dependencies]
+tempfile = "3"
+rsa = { version = "0.9", features = ["pem"] }
+rand = "0.8"

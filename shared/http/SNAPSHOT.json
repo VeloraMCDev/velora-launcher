@@ -1,0 +1,52 @@
+{
+  "repository": "https://github.com/VeloraMCDev/sdk",
+  "revision": "84a14efe130911fa62c99a56b135406149eb5c3a",
+  "path": "typescript/http-client",
+  "purpose": "Reviewed API v1 transport and fifteen typed launcher/auth/account endpoints; host supplies live session, scope and lifecycle, retains unlimited deadline",
+  "files": [
+    {
+      "path": "client.mjs",
+      "sha256": "f82d825f02d8044d0574c81bc2635c12d8785452851499eadc6f2a1fea61f06a"
+    },
+    {
+      "path": "client.d.mts",
+      "sha256": "f6bab2fce731e1399a4400c743d007be299005d25f028a407d82ee6f02c5d0b1"
+    },
+    {
+      "path": "platform.mjs",
+      "sha256": "5535ee008032104c34a0cd3928cc2c2116f6b430a038e30d7221c3ea40f850b5"
+    },
+    {
+      "path": "platform.d.mts",
+      "sha256": "0b802ac7432a441a5964ead83cba06c422ce090a3bf98b120ee94d962ff17cbb"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349"
+    },
+    {
+      "path": "PROVENANCE.json",
+      "sha256": "0330f51121d64f9cbf915a057c42a194c80f8916175989e1428cbf1837c93451"
+    },
+    {
+      "path": "PLATFORM_PROVENANCE.json",
+      "sha256": "df1399f4689f7437b0cd9e67de46a41e89b512692e80b9413748e89a2fcedaca"
+    },
+    {
+      "path": "tests/client.test.mjs",
+      "sha256": "13c840d40715a3d011f812f5e9760a36cc4d159c36fbc8258e721d816f239a94"
+    },
+    {
+      "path": "tests/legacy-fixture.mjs",
+      "sha256": "d8d0b5dc23da3bdea6e4637b2ec4bc06caaad7ccc1bab2b2174a264cd6119945"
+    },
+    {
+      "path": "tests/platform.test.mjs",
+      "sha256": "dfe0e1457a696b9dfbb6b685c4d41137320ed95e812759e72a56aeb18aea88cc"
+    },
+    {
+      "path": "tests/routes.json",
+      "sha256": "804758fa37497f512ad077139d3abe15b27c33af2a443b95ca0555f5a3db35e6"
+    }
+  ]
+}

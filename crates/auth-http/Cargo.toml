@@ -1,0 +1,30 @@
+[package]
+name = "velora-auth-http"
+version.workspace = true
+edition.workspace = true
+license = "MIT"
+repository = "https://github.com/VeloraMCDev/velora-launcher"
+publish = false
+[dependencies]
+anyhow = "1"
+velora-auth-core = { workspace = true, features = ["sqlite", "textures"] }
+velora-platform-contracts = { path = "../../packages/rust-platform-contracts" }
+axum = { version = "0.8", features = ["multipart", "macros"] }
+tokio = { version = "1", features = ["rt", "fs"] }
+sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio", "sqlite", "derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+base64 = "0.22"
+tracing = "0.1"
+uuid = { version = "1", features = ["v4"] }
+sha2 = "0.10"
+hex = "0.4"
+percent-encoding = "2"
+url = "2"
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt"] }
+tower = { version = "0.5", features = ["util"] }
+tempfile = "3"
+rsa = { version = "0.9", features = ["sha1", "pem"] }
+rand = "0.8"

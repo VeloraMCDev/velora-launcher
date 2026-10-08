@@ -1,0 +1,13 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "3b73b475a94f14c85b585ce8e6091d6c76c341b2",
+  "source_path": "panel/server/src/store.rs",
+  "source_sha256": "ce6ba30150811879b558307de77e0b5baa87222ee25a670e235e3e1f7311807c",
+  "output_path": "crates/instances/src/lib.rs",
+  "changes": [
+    "Extract neutral records, exact SQL reads/order/aggregate casts, revision update and slug reservation",
+    "Caller supplies platform pool, timestamp and reserved-storage path; absence returns Option for host error mapping",
+    "Private experience defaults/projections, visibility/authentication policy, platform schema/writers and install/import routes remain host-owned"
+  ],
+  "output_sha256_lf": "18e26523a178fa937bdc2137073e324d748835e5548cdb0d4c542b44d8c03681"
+}

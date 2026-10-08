@@ -1,0 +1,16 @@
+{
+  "files": [
+    {
+      "path": ".gitattributes",
+      "original_sha256": "d86e5621b571baf4a9d05cc10721d1121f8e00b69cffb9d4d68fad9e4030a4fa",
+      "sha256": "9521c2e0e9c892f4af4105b9753168412c062091c8b7bd49bb894919720a1547",
+      "reason": "Keep raw imported source/snapshot bytes stable within the private application subtree"
+    },
+    {
+      "path": "launcher/src-tauri/src/updater.rs",
+      "original_sha256": "6762ec59c06c69d4087314e49c5febbc9d9f32877ff1e52f37315f1b30c64497",
+      "sha256": "63d6ab4e6e223db6c8fc4485d0f33f23b97856a49d502beb357dec32085e467b",
+      "reason": "Reject installers without a valid checksum before downloading executable code"
+    }
+  ]
+}

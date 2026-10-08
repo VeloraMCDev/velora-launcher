@@ -1,0 +1,22 @@
+plugins { id 'net.fabricmc.fabric-loom' version '1.17.17' }
+def mc = (providers.gradleProperty('mcVersion').orNull ?: project.findProperty('mcVersion') ?: '26.1.2').toString().trim()
+if (providers.gradleProperty('verifyMixins').isPresent()) {
+    loom { runs { server { vmArg '-Dscopenet.verifyMixins=true' } } }
+}
+java.sourceCompatibility = JavaVersion.VERSION_25
+java.targetCompatibility = JavaVersion.VERSION_25
+dependencies {
+    minecraft "com.mojang:minecraft:${mc}"
+    implementation 'net.fabricmc:fabric-loader:0.19.5'
+    implementation project(':common')
+}
+sourceSets.main.java.srcDirs += ['../minecraft/src/main/java', '../minecraft/src/26/java']
+sourceSets.main.resources.srcDirs += ['../minecraft/src/main/resources', '../minecraft/src/26/resources']
+apply from: '../minecraft/build-info.gradle'
+processResources {
+    inputs.properties(version: project.version, mc: mc)
+    filesMatching('fabric.mod.json') { expand(version: project.version, mc: mc, java: 25) }
+    filesMatching(['scopenet.mixins.json', 'scopenet.claimrules.mixins.json']) { filter { line -> line.contains('"refmap"') ? null : line } }
+}
+base.archivesName = "scopenet-fabric-${mc}"
+jar { from project(':common').sourceSets.main.output }

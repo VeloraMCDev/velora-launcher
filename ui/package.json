@@ -1,0 +1,15 @@
+{
+  "name": "velora-private-experience-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "UNLICENSED",
+  "exports": {
+    ".": "./experience/index.ts",
+    "./components": "./experience/components.ts",
+    "./ExperienceWidgets.svelte": "./experience/ExperienceWidgets.svelte"
+  },
+  "peerDependencies": { "svelte": "^5.57.1" },
+  "devDependencies": { "svelte": "5.57.1", "svelte-check": "4.7.6", "typescript": "5.9.3" },
+  "scripts": { "test": "node --test experience/index.test.mjs", "check": "svelte-check --tsconfig tsconfig.json" }
+}

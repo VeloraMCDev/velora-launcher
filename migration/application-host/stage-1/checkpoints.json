@@ -1,0 +1,69 @@
+{
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "repositories": [
+    {
+      "repository": "VeloraMCDev/launcher",
+      "branch": "codex/stage-1-foundation",
+      "local_commit": "9cb6d42686ff179e65e2650660ae8ddb9be9bf6a",
+      "publication": "blocked_authentication",
+      "patch": "launcher.patch",
+      "sha256": "ad51788aa6f1083245d51d7a62e58ad625b45f0b2a3391aaceb00dd5c50a875c"
+    },
+    {
+      "repository": "VeloraMCDev/panel",
+      "branch": "codex/stage-1-foundation",
+      "local_commit": "d775d7b8631177df0c4e46d4ac7ea81e8fa5539c",
+      "publication": "blocked_authentication",
+      "patch": "panel.patch",
+      "sha256": "cebf736ccdd3c8d5034990a753f1c400322937e01c9e29ee075789724a556673"
+    },
+    {
+      "repository": "VeloraMCDev/minecraft-integrations",
+      "branch": "codex/stage-1-foundation",
+      "local_commit": "c5bf5f269050111a3911054f8bdd4c0580404b7c",
+      "publication": "blocked_authentication",
+      "patch": "minecraft-integrations.patch",
+      "sha256": "3fea9d1d12db36efeed5b14765a55d0ca3a26d6c1819c8556ab3af80453e9497"
+    },
+    {
+      "repository": "VeloraMCDev/authentication",
+      "branch": "codex/stage-1-foundation",
+      "local_commit": "2d5a4cd9f78345808eebd6810db8759ddd382606",
+      "publication": "blocked_authentication",
+      "patch": "authentication.patch",
+      "sha256": "7bb26d471d787a88b9fccf3788e09dde8aeecf7b715eed4efa20ec02af68e2d6"
+    },
+    {
+      "repository": "VeloraMCDev/sdk",
+      "branch": "codex/stage-1-foundation",
+      "local_commit": "a1359778ca7b7ef9b9e757ecc4970e8337cdf894",
+      "publication": "blocked_authentication",
+      "patch": "sdk.patch",
+      "sha256": "14f807c1e35bac98ede7c78df5b5911026ca217790c5417080fb4f0afc687f46"
+    },
+    {
+      "repository": "VeloraMCDev/experiences",
+      "branch": "codex/stage-1-foundation",
+      "local_commit": "13f7470cd521a6e146fbb2a50b6b5e8cbdd6b1a8",
+      "publication": "blocked_authentication",
+      "patch": "experiences.patch",
+      "sha256": "a2fe03a1ec64c725c791b0c70acdd90628524f0116ef656198b9fb5b4e0ab103"
+    },
+    {
+      "repository": "VeloraMCDev/infra",
+      "branch": "codex/stage-1-foundation",
+      "local_commit": "9db185574531177f3e94f3a5a55418c77393f094",
+      "publication": "blocked_authentication",
+      "patch": "infra.patch",
+      "sha256": "57d34a92ae0c27bb387e3b58fb4eb8cc0d67cd12e95c51045f857d14d77461d8"
+    },
+    {
+      "repository": "VeloraMCDev/docs",
+      "branch": "codex/stage-1-foundation",
+      "local_commit": "50f26c03cabdd09ddaa57b6d5c307c593e41b948",
+      "publication": "blocked_authentication",
+      "patch": "docs.patch",
+      "sha256": "892da23ccba6a6e4792274a282f8160c224292a29ebcd0337a45ec96be31eb11"
+    }
+  ]
+}

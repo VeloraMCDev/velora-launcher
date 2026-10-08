@@ -1,0 +1,26 @@
+[
+  {
+    "body": "# Hi <b>\n\nHello **world** [site](https://example.invalid/a?b=1&c=2) [button: Go](https://example.invalid)\n\n- one\n- two\n\n[bad](javascript:alert(1))",
+    "brand": "Velora <Synthetic>",
+    "accent": "#112233",
+    "footer": "Synthetic footer"
+  },
+  {
+    "body": "## Second\n  - **first**\n- <script> & \"text\"\n\nparagraph *literal italic* **unclosed\n[bad](data:text/html,evil) [upper](HTTPS://example.invalid)\n[dangling](https://example.invalid",
+    "brand": "Brand & \"name\"",
+    "accent": "red;display:none",
+    "footer": "<a href=\"https://example.invalid/optout\">Unsubscribe</a>"
+  },
+  {
+    "body": "Unicode 世界 🎮\n[button: Label & <tag>](http://example.invalid?q=\"x\"&v=2)\n\n- last",
+    "brand": "Generic",
+    "accent": "#Ab09fF",
+    "footer": ""
+  },
+  {
+    "body": "\n\n  \n",
+    "brand": "",
+    "accent": "#12",
+    "footer": "trusted <strong>footer</strong>"
+  }
+]

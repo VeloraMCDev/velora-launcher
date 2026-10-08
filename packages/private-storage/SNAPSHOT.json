@@ -1,0 +1,29 @@
+{
+  "repository": "https://github.com/VeloraMCDev/experiences",
+  "revision": "bc74336fa03f67d1dba120c27c9d5e15b61deece",
+  "path": "rust/storage",
+  "visibility": "private; no public redistribution grant",
+  "adaptation": "Source workspace supplies version/edition; explicit private owner repository. Host preserves starting-balance read, clocks and response/error facade.",
+  "files": [
+    {
+      "path": "Cargo.toml",
+      "sha256": "1c102614a7b1cf12c8e65cfb2bca059f89a5c7640bee8a8913fc59cf75172b3d"
+    },
+    {
+      "path": "src/lib.rs",
+      "sha256": "c11b70ee63141259155149ae5538507706b43950ba1e51d10c1b7a77a7d5710b"
+    },
+    {
+      "path": "src/ledger.rs",
+      "sha256": "542a27fb7b7db05b3fa568f63e3c58bb5a89dee4c6bbdc89e6bb676cedbf7c05"
+    },
+    {
+      "path": "tests/operations.rs",
+      "sha256": "6b5c7885a59ee35b87578a77231ddc385e6c299dfec42f12fa7043f9c70a2582"
+    },
+    {
+      "path": "tests/ledger.rs",
+      "sha256": "e7fa9cc9c5bfc94051547e76949f5c33ea234e5b9267fb122879b3de6e109cbf"
+    }
+  ]
+}

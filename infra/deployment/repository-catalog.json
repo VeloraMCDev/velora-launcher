@@ -1,0 +1,283 @@
+{
+  "schema": 1,
+  "repositories": [
+    {
+      "name": "experiences",
+      "stack": "Rust 1.98.1; Java 21 / target 17; Svelte 5 / Node 24",
+      "commands": [
+        {
+          "cwd": ".",
+          "build": "cargo build --workspace --locked",
+          "test": "cargo test --workspace --locked"
+        },
+        {
+          "cwd": "java",
+          "build": "bash gradlew build --no-daemon --max-workers=2",
+          "test": "bash gradlew test --no-daemon --max-workers=2"
+        },
+        {
+          "cwd": "ui",
+          "build": "npm run check",
+          "test": "npm test"
+        }
+      ],
+      "evidence_paths": [
+        "Cargo.toml",
+        "rust-toolchain.toml",
+        "java/build.gradle",
+        "ui/package.json",
+        ".github/workflows/ui.yml"
+      ],
+      "outputs": [
+        "Private gameplay libraries and UI components; frozen archive is preservation only"
+      ],
+      "deployment": "No declarative bundle release or candidate registration",
+      "gaps": [
+        "Experience/config schema and deterministic bundle",
+        "Complete private backend/UI composition",
+        "Versioned integration references"
+      ],
+      "baseline_run": 37653593305
+    },
+    {
+      "name": "infra",
+      "stack": "Node 24; Python acceptance scripts; Docker Compose recipes; Cloudflare Workers TypeScript / D1 / R2 / Workflows",
+      "commands": [
+        {
+          "cwd": ".",
+          "build": null,
+          "test": "node --test tests/public_source_preflight.test.mjs"
+        },
+        {
+          "cwd": ".",
+          "build": "npx --no-install wrangler deploy --config control-plane/wrangler.jsonc --dry-run --outdir dist/control-plane",
+          "test": "npm test"
+        }
+      ],
+      "evidence_paths": [
+        ".github/workflows/preflight.yml",
+        "tests/README.md",
+        "recipes/game-auth-gateway/compose.yaml",
+        "control-plane/README.md",
+        ".github/workflows/deployment-baseline.yml"
+      ],
+      "outputs": [
+        "Pinned component recipes and audit evidence",
+        "Compiled resource-baseline Worker with checksummed CI artifact",
+        "Immutable probe release workflow (not executed)"
+      ],
+      "deployment": "Development resource proof DONE: exact CI Worker, two remote migrations, authenticated D1/R2/Workflow read/write and cleanup; full control API/agent remain MISSING",
+      "gaps": [
+        "Worker control plane, D1, Workflows, agent, signed jobs",
+        "Immutable release publishing and candidate registration",
+        "Environment topology, approvals and operational drills"
+      ],
+      "baseline_run": 37655110595
+    },
+    {
+      "name": "docs",
+      "stack": "Markdown; Node 24 sanitized static site / Workers Static Assets",
+      "commands": [
+        {
+          "cwd": ".",
+          "build": "npm run build",
+          "test": "npm test"
+        }
+      ],
+      "evidence_paths": [
+        "README.md",
+        "migration/CURRENT_PROGRESS.md",
+        "migration/VELORA_EXECUTION_PLAN.md",
+        "scripts/build.mjs",
+        ".github/workflows/docs.yml",
+        "wrangler.jsonc"
+      ],
+      "outputs": [
+        "Sanitized static documentation site with deterministic file-checksum manifest"
+      ],
+      "deployment": "Development Workers Static Assets and Access verification DONE from exact checksummed CI artifact; durable candidate registration pending",
+      "gaps": [
+        "Generated deployment API reference",
+        "Durable release/candidate registration and public production publishing"
+      ],
+      "baseline_run": null
+    },
+    {
+      "name": "authentication",
+      "stack": "Rust 1.98.1; Axum; SQLx SQLite; Argon2; RSA/JWT; Docker",
+      "commands": [
+        {
+          "cwd": ".",
+          "build": "cargo build -p velora-auth-service -p velora-auth-tools --release --locked",
+          "test": "cargo test --workspace --all-features --locked"
+        }
+      ],
+      "evidence_paths": [
+        "Cargo.toml",
+        "rust-toolchain.toml",
+        "crates/core/Cargo.toml",
+        "Dockerfile",
+        ".github/workflows/core.yml",
+        "SERVICE.md"
+      ],
+      "outputs": [
+        "velora-auth-server",
+        "velora-auth-tools",
+        "Non-root game-auth container"
+      ],
+      "deployment": "Game routes and persistent identity/keys; optional library account composition requires real host ports",
+      "gaps": [
+        "OIDC/PKCE/passkeys and credential-class isolation",
+        "Worker/D1 feasibility and migration compatibility proof",
+        "CLI web/admin/provider ports and full account cutover",
+        "Immutable images and version/commit health evidence"
+      ],
+      "baseline_run": 37396563660
+    },
+    {
+      "name": "panel",
+      "stack": "Rust 1.98.1; Axum gateway; pool-only libraries; Svelte 5 / Node 24 login component",
+      "commands": [
+        {
+          "cwd": ".",
+          "build": "cargo build -p velora-panel-gateway --release --locked",
+          "test": "cargo test --workspace --locked"
+        },
+        {
+          "cwd": "ui",
+          "build": "npm run check",
+          "test": "npm test"
+        }
+      ],
+      "evidence_paths": [
+        "Cargo.toml",
+        "rust-toolchain.toml",
+        "Dockerfile.gateway",
+        "ui/package.json",
+        ".github/workflows/activity.yml",
+        "GATEWAY.md"
+      ],
+      "outputs": [
+        "velora-gateway",
+        "Neutral libraries and Login component"
+      ],
+      "deployment": "Non-root gateway and synthetic two-service acceptance; no complete standalone Panel app",
+      "gaps": [
+        "Deployment Panel client and static bundle",
+        "Complete admin/player/landing app",
+        "No control-plane authority in browser",
+        "Real identity/RBAC API integration"
+      ],
+      "baseline_run": 37394833412
+    },
+    {
+      "name": "sdk",
+      "stack": "Rust 1.98.1; Java 21 / target 17; Svelte 5 / Node 24; TypeScript 5.9.3",
+      "commands": [
+        {
+          "cwd": ".",
+          "build": "cargo build --workspace --locked",
+          "test": "cargo test --workspace --locked"
+        },
+        {
+          "cwd": "java",
+          "build": "bash platform-client/gradlew build --no-daemon --max-workers=2",
+          "test": "bash platform-client/gradlew test --no-daemon --max-workers=2"
+        },
+        {
+          "cwd": "typescript/http-client",
+          "build": "npm run check",
+          "test": "npm test"
+        },
+        {
+          "cwd": "ui/experience",
+          "build": "npm run check",
+          "test": "npm test"
+        },
+        {
+          "cwd": "ui/map",
+          "build": "npm run check",
+          "test": "npm test"
+        },
+        {
+          "cwd": "ui/skin",
+          "build": "npm run check",
+          "test": "npm test"
+        }
+      ],
+      "evidence_paths": [
+        "Cargo.toml",
+        "rust-toolchain.toml",
+        "java/settings.gradle",
+        "typescript/http-client/package.json",
+        ".github/workflows/contracts.yml"
+      ],
+      "outputs": [
+        "Rust and Java libraries",
+        "Typed HTTP client",
+        "Shared UI/map/skin libraries"
+      ],
+      "deployment": "Reviewed source snapshots; no public registry release required at runtime",
+      "gaps": [
+        "Canonical deployment contract consumer/client",
+        "Contract version compatibility policy",
+        "Registry/releases/checksums and package release proof"
+      ],
+      "baseline_run": 37394821916
+    },
+    {
+      "name": "minecraft-integrations",
+      "stack": "Java 21 / target 17; Gradle wrapper; JUnit",
+      "commands": [
+        {
+          "cwd": ".",
+          "build": "bash gradlew build --no-daemon --max-workers=2",
+          "test": "bash gradlew test --no-daemon --max-workers=2"
+        }
+      ],
+      "evidence_paths": [
+        "build.gradle",
+        "settings.gradle",
+        "gradle/wrapper/gradle-wrapper.properties",
+        ".github/workflows/producer.yml"
+      ],
+      "outputs": [
+        "Neutral map-producer library JAR; no loader plugin entrypoints"
+      ],
+      "deployment": "Maven publication disabled; no production plugin/mod release",
+      "gaps": [
+        "Paper/Fabric/Forge host adapters still in compatibility source",
+        "Loader/server-version compatibility matrix",
+        "Exact checksummed release artifact/config references"
+      ],
+      "baseline_run": 37364711526
+    },
+    {
+      "name": "launcher",
+      "stack": "Rust 1.98.1 engine only; Tauri v2/Svelte shell still in compatibility source",
+      "commands": [
+        {
+          "cwd": ".",
+          "build": "cargo build --workspace --locked",
+          "test": "cargo test --workspace --locked -j 2"
+        }
+      ],
+      "evidence_paths": [
+        "Cargo.toml",
+        "engine/Cargo.toml",
+        "rust-toolchain.toml",
+        ".github/workflows/engine.yml"
+      ],
+      "outputs": [
+        "Installation/launch engine library; no installer in owner repo"
+      ],
+      "deployment": "No owner Tauri shell or signed updater/release pipeline",
+      "gaps": [
+        "Tauri/UI shell extraction preserving native identities",
+        "Signed Tauri updater migration from custom installer updater",
+        "Windows/Linux/macOS packaging, signing custody and prior-version upgrade"
+      ],
+      "baseline_run": 37299006283
+    }
+  ]
+}

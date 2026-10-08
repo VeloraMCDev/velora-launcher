@@ -1,0 +1,20 @@
+{
+  "prefix": "/api/v1",
+  "routes": [
+    ["GET", "/launcher/manifest"],
+    ["GET", "/launcher/instances/{id}"],
+    ["POST", "/launcher/events"],
+    ["GET", "/launcher/update"],
+    ["POST", "/auth/login"],
+    ["POST", "/auth/register"],
+    ["GET", "/auth/me"],
+    ["POST", "/auth/forgot-password"],
+    ["POST", "/auth/reset-password"],
+    ["GET", "/account/profile"],
+    ["PUT", "/account/username"],
+    ["POST", "/account/skin"],
+    ["DELETE", "/account/skin"],
+    ["PUT", "/account/skin/model"],
+    ["PUT", "/account/cape"]
+  ]
+}

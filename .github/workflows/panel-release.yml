@@ -1,0 +1,68 @@
+name: Build immutable Panel image
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: panel-release-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  image:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      artifact-uri: ${{ steps.publish.outputs.artifact-uri }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Exact release image coordinates
+        run: |
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/velora-panel" >> "$GITHUB_ENV"
+          echo "IMAGE_TAG=sha-${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+          echo "PANEL_VERSION=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)" >> "$GITHUB_ENV"
+      - name: Build once
+        run: >
+          docker build --platform linux/amd64
+          --build-arg VELORA_BUILD_REVISION="$GITHUB_SHA"
+          --build-arg VELORA_BUILD_VERSION="$PANEL_VERSION"
+          --build-arg VELORA_BUILD_CREATED="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          --tag "$IMAGE:$IMAGE_TAG" .
+      - name: Test the exact image before publishing
+        run: node scripts/check-panel-container.mjs "$IMAGE:$IMAGE_TAG" "$GITHUB_SHA"
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish the tested bytes without rebuilding
+        id: publish
+        run: |
+          docker push "$IMAGE:$IMAGE_TAG"
+          uri=$(docker image inspect --format '{{index .RepoDigests 0}}' "$IMAGE:$IMAGE_TAG")
+          echo "ARTIFACT_URI=$uri" >> "$GITHUB_ENV"
+          echo "artifact-uri=$uri" >> "$GITHUB_OUTPUT"
+      - name: Record the candidate
+        run: |
+          node --input-type=module <<'JS'
+          import {writeFileSync} from 'node:fs';
+          const e = process.env, digest = e.ARTIFACT_URI?.split('@')[1];
+          if (!/^sha256:[a-f0-9]{64}$/.test(digest ?? '')) throw Error('No immutable digest');
+          writeFileSync('panel-candidate.json', JSON.stringify({schema: 1, repository: e.GITHUB_REPOSITORY, service_id: 'velora-panel', git_sha: e.GITHUB_SHA, git_ref: e.GITHUB_REF, build_run_id: e.GITHUB_RUN_ID, artifact_type: 'oci', artifact_uri: e.ARTIFACT_URI, sha256: digest.slice('sha256:'.length), oci_digest: digest, version: e.PANEL_VERSION, build_status: 'PASSED', test_status: 'PASSED'}, null, 2));
+          JS
+          sha256sum panel-candidate.json > panel-candidate.json.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: panel-candidate-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            panel-candidate.json
+            panel-candidate.json.sha256
+          retention-days: 30
+          if-no-files-found: error

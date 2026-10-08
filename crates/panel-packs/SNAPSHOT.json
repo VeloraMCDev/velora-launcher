@@ -1,0 +1,27 @@
+{
+  "repository": "https://github.com/VeloraMCDev/panel",
+  "revision": "c0162c5213d5c4df9cfccb0f004fd40f16a74cf4",
+  "adaptation": "Host workspace version/edition and explicit MIT/repository; public dependencies resolve inside the compatibility checkout.",
+  "files": [
+    {
+      "path": "Cargo.toml",
+      "sha256": "630ee1322e229b1e80c47a58e26d1a50ae5ef57acfe29e0dd390dae22371c1f3"
+    },
+    {
+      "path": "src/lib.rs",
+      "sha256": "20ed028bf610bd6a8d9b53e6cceee5b5bb51d76dadde9c8c283cfed02e42fae2"
+    },
+    {
+      "path": "src/error.rs",
+      "sha256": "04cf580dc503c71b7fa0a4839e36d736ab85d2691a5f88c8311ec60a8335df9b"
+    },
+    {
+      "path": "tests/imports.rs",
+      "sha256": "61b17dc51bc1d1ab63b75c3ffb85ff95b59489a6cf891e6b7436372a05dc4a84"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349"
+    }
+  ]
+}

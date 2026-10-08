@@ -1,0 +1,58 @@
+{
+  "repository": "https://github.com/VeloraMCDev/minecraft-integrations",
+  "revision": "ebd471594d07ef57d0ba93ebcd3ca8dc1b49cd58",
+  "files": [
+    {
+      "path": "src/main/java/net/scopenet/worldmap/BiomeColors.java",
+      "sha256": "168f3a9f856f7972a92da35ffc0c5cf1c628b09e9c993ee41b52b80fd061258f"
+    },
+    {
+      "path": "src/main/java/net/scopenet/worldmap/BlockColors.java",
+      "sha256": "0c00f258f29bed697f7029595d3dba0153abe863e45718443b304789f2d774a9"
+    },
+    {
+      "path": "src/main/java/net/scopenet/worldmap/ChunkSampler.java",
+      "sha256": "5ef4ad7d69641ce41e76b87828d860a577dac25228bf27be43dee16f0c5ae2ff"
+    },
+    {
+      "path": "src/main/java/net/scopenet/worldmap/MapColors.java",
+      "sha256": "a1d35e8d549a4e7dcf3b3df56d9199c9ae9b076e75dbf6fa60c0273b88208024"
+    },
+    {
+      "path": "src/main/java/net/scopenet/worldmap/Nbt.java",
+      "sha256": "630eb968ab89f46fcc8e7cedb84b7ebde8bf9bd62685b368b80202133bbe112a"
+    },
+    {
+      "path": "src/main/java/net/scopenet/worldmap/Png.java",
+      "sha256": "f41fc6ce98cd672a7b2a9b3b0c3e69c89290fd30bf7b79ab7bae93c6b5c6de10"
+    },
+    {
+      "path": "src/main/java/net/scopenet/worldmap/RegionFile.java",
+      "sha256": "bb970f2c475e7a04eb58f31b207bf16909349038435e98b30fff6cc8c01c6b9e"
+    },
+    {
+      "path": "src/main/java/net/scopenet/worldmap/RegionRenderer.java",
+      "sha256": "00272a646fb6063e8378266332a2e61bdf24101f863ad6597d32ab471ad2d280"
+    },
+    {
+      "path": "src/main/java/net/scopenet/worldmap/TileStore.java",
+      "sha256": "4561b9c8cbf3f3f4ac063ff158ae707c8dc0d4ac29ace88b251daab92dc48ea2"
+    },
+    {
+      "path": "src/main/java/net/scopenet/worldmap/WorldMapSync.java",
+      "sha256": "2bd3391d6841b135d46fef6be6c1ea1fe1d04f17f879fef0dab88ca91cd8b67d"
+    },
+    {
+      "path": "src/main/resources/net/scopenet/worldmap/block_colors.csv",
+      "sha256": "91d3cc3f8b7fc1b1a657eaad798d23cb8c93c4cead0fcf5ad41fc2311d7f49b7"
+    },
+    {
+      "path": "src/main/java/net/scopenet/worldmap/DefaultMapProducer.java",
+      "sha256": "cd5d4ca7d90fee5de66589ac3154b8ff833ef260725b2d066c3f42482119b0d7"
+    },
+    {
+      "path": "src/main/resources/META-INF/services/net.scopenet.integration.map.MapProducerFactory",
+      "sha256": "0e5d3570009ed90fe1b8b134fe430263b9adb84f341d4f5beb100c83ca2ea173"
+    }
+  ]
+}

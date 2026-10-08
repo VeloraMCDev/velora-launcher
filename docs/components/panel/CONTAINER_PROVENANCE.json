@@ -1,0 +1,34 @@
+{
+  "public_authentication_revision": "6c19518686c69f52158644c2165f233b0f71939a",
+  "canonical_repository": "https://github.com/VeloraMCDev/infra",
+  "files": [
+    {
+      "path": "Dockerfile.gateway",
+      "sha256_lf": "6d2826feafcfac507cf0584798ff575e0eb98971c29b05bbded9610ae6e571b2"
+    },
+    {
+      "path": ".dockerignore",
+      "sha256_lf": "983c4e10a4cf7649a2704dc2b8d1274c3431bdac58ce6a1a7e798834da9610a0"
+    },
+    {
+      "path": "scripts/container-compose.yaml",
+      "sha256_lf": "195b587d520c48333e0ac7672a6fb1e2d292c77b9589da8bee12bc8cb6a89f30"
+    },
+    {
+      "path": "scripts/check-container-game-auth-gateway.py",
+      "sha256_lf": "5134a1c8f4ce1f9fb9ca8780c2a3508bd2f5b22a25b5902f4b77b4ade76e67c2"
+    }
+  ],
+  "checks": [
+    "Fresh non-root/read-only synthetic two-service Compose install",
+    "Game authentication, skin bytes, RSA signatures and prefixed public URLs",
+    "Authority outage fails closed",
+    "Offline read-only source checkpoint/assets restored into separate owned volume; token/key/password/texture continuity and revocation"
+  ],
+  "passed_runs": [
+    37360361204,
+    37360132106
+  ],
+  "tested_panel_revision": "6713e9e54090ef04f98149f3f80097ed36027b4c",
+  "limits": "Development game components only; full Panel/private composition, legacy upgrades, operational rollback and release acceptance remain open"
+}

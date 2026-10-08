@@ -1,0 +1,67 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "aa662d77a5130865ca39739afbf6a5881ff9d60c",
+  "inputs": [
+    {
+      "path": "panel/server/src/routes/mod.rs",
+      "sha256": "60237f67e6a336934783a9380b881d4d621932417b8a09b88fda6682e37f525b"
+    },
+    {
+      "path": "panel/server/src/routes/public.rs",
+      "sha256": "82f147bd6d5db4c5dc6534c297f8e5080a544fcfba23eee56f7945be0b0d5de2"
+    },
+    {
+      "path": "panel/server/src/routes/account.rs",
+      "sha256": "772cb94cfe82aaac9b6e487006508412ad2245e9a32cf9206bf4debe5ca98ec5"
+    },
+    {
+      "path": "panel/server/src/routes/connections.rs",
+      "sha256": "da91ee1a221c037e93edbdf21f436a78bf0e40c6a2a4ac3c5f4c0550d0a57c1e"
+    },
+    {
+      "path": "panel/server/src/routes/launcher_updates.rs",
+      "sha256": "77f240b658343699532e920c52b4b900de88f8893c46ed87069f1ad0ecee8387"
+    }
+  ],
+  "contract_repository": "https://github.com/VeloraMCDev/sdk",
+  "contract_revision": "737f6c7e1e3aa238fb74392de14112d35f5cee3e",
+  "contract_paths": [
+    "rust/platform-contracts/src/lib.rs",
+    "rust/platform-contracts/src/experience.rs",
+    "rust/platform-contracts/src/updates.rs"
+  ],
+  "scope": "Fifteen typed API v1 launcher/auth/account endpoints with existing HTTP transport; neutral platform/opaque Experience declarations, no gameplay implementations or private defaults",
+  "excluded": "Binary/avatar/Yggdrasil APIs, OAuth, administration, gameplay clients, runtime schema validation, generated cross-language bindings and package publication remain incomplete",
+  "outputs": [
+    {
+      "path": "platform.mjs",
+      "sha256_lf": "5535ee008032104c34a0cd3928cc2c2116f6b430a038e30d7221c3ea40f850b5"
+    },
+    {
+      "path": "platform.d.mts",
+      "sha256_lf": "0b802ac7432a441a5964ead83cba06c422ce090a3bf98b120ee94d962ff17cbb"
+    },
+    {
+      "path": "tests/platform.test.mjs",
+      "sha256_lf": "dfe0e1457a696b9dfbb6b685c4d41137320ed95e812759e72a56aeb18aea88cc"
+    },
+    {
+      "path": "tests/routes.json",
+      "sha256_lf": "804758fa37497f512ad077139d3abe15b27c33af2a443b95ca0555f5a3db35e6"
+    }
+  ],
+  "destination_repository": "https://github.com/VeloraMCDev/sdk",
+  "destination_revision": "84a14efe130911fa62c99a56b135406149eb5c3a",
+  "compatibility_host_snapshot": "shared/http",
+  "validation": {
+    "tests": 23,
+    "typecheck": "passed",
+    "host_frontend_check": "passed (zero errors, 16 existing warnings)",
+    "host_frontend_build": "passed",
+    "sdk_linux_ci": [
+      37393520275,
+      37393513505
+    ],
+    "generated_clients": "incomplete"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/routes/admin.rs",
+  "source_sha256": "575d723acd1117f6b5f5b8bcfbb38592a67d545181efb5f202baf3a800cbcf10",
+  "output_path": "crates/http/src/admin.rs",
+  "output_sha256_lf": "e160c4358ecd3f811562ef26046fff6587af141c2ed6582c9cabb28af0b9aa3f",
+  "changes": [
+    "Split generic administrator account/group operations from mixed dashboard/instance/gameplay/cape module",
+    "Retain caller administrator admission; no private aggregation or purge tables copied",
+    "Preserve supplied identity/current pools, create policy/UUIDs, pending-first case-insensitive list ordering and unknown/duplicate group rules",
+    "Preserve field-update/error ordering and partial mutations; password/version/game/join revocation remains atomic",
+    "Preserve self-demotion/disable/deletion protection and legacy group defaults/SQL error mapping",
+    "Independent synthetic fixtures verify admission, rollback, groups, UUIDs, partial writes and outages",
+    "Host retains activity aggregation and full multi-experience purge; cape administration/schema/import/service cutover remain incomplete"
+  ]
+}

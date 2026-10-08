@@ -1,0 +1,71 @@
+From 13f7470cd521a6e146fbb2a50b6b5e8cbdd6b1a8 Mon Sep 17 00:00:00 2001
+From: Blade Desper <haloblade094@gmail.com>
+Date: Sun, 4 Oct 2026 05:55:06 +0000
+Subject: [PATCH] Establish Velora stage 1 migration foundation
+
+---
+ .gitignore |  7 +++++++
+ AGENTS.md  | 12 ++++++++++++
+ README.md  | 20 ++++++++++++++++++++
+ 3 files changed, 39 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 AGENTS.md
+ create mode 100644 README.md
+
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..905931c
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,7 @@
++/target/
++/node_modules/
++/dist/
++.env
++.env.*
++!.env.example
++.DS_Store
+diff --git a/AGENTS.md b/AGENTS.md
+new file mode 100644
+index 0000000..3305d5e
+--- /dev/null
++++ b/AGENTS.md
+@@ -0,0 +1,12 @@
++# Migration instructions
++
++Read the migration tracker and stage report in VeloraMCDev/docs before changing code.
++Use this checkout directly; do not create a worktree unless the user requests one.
++Do not erase existing behavior or rename persisted IDs, database paths, volume names,
++Minecraft protocol identities or updater/signing identities without compatibility tests.
++Keep shared gameplay and SMP/Frontiers implementations out of public repositories.
++Public builds must resolve no private dependency. Do not import mixed legacy files
++wholesale. Preserve source revision, checksums and attribution for each extraction.
++Do not claim a placeholder is runnable. Record validation and incomplete tasks honestly.
++Use generic, synthetic examples; never commit credentials, player data or operator URLs.
++MIT applies to platform code; artwork/trademark/private distribution terms are separate.
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..ccaaf93
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,20 @@
++# Velora experiences
++
++**Velora owns the platform. Each instance owns the experience.**
++
++Responsibility: Private gameplay modules and individual SMP/Frontiers experiences.
++
++## Migration status
++
++Stage 1 foundation branch. Application/gameplay extraction has not started; this is a repository foundation, not a deployable product.
++The existing SCOPENET-MC installation remains the functional implementation.
++Source baseline: `scopeddlol/SCOPENET-MC@57daa92cb6cb4027982d06bfa1c692ab9edb88ff` (includes the Docker temporary-directory fix).
++
++The task tracker and stage report live in [Velora docs](https://github.com/VeloraMCDev/docs/tree/codex/stage-1-foundation/migration).
++Seven platform repositories are intended to be public under MIT. Experiences and
++shared gameplay remain private; no public package may require them to build or boot.
++Repository visibility has not been changed by this branch.
++
++## Next boundary
++
++Verify private repository visibility and approved distribution terms before importing gameplay source or assets. This repository has no MIT grant.

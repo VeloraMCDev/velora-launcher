@@ -1,0 +1,266 @@
+openapi: 3.1.0
+info:
+  title: Velora Development control API
+  version: 0.1.0
+  description: Development candidate registration, scoped reads and opt-in stateless probe deployments. No production or promotion endpoints. All errors are sanitized and include request_id; all responses are no-store.
+paths:
+  /api/v1/deployments:
+    get:
+      operationId: listProbeDeployments
+      security: [{AccessApplication: []}]
+      description: Requires deployment.read and enabled Development probe API. Paginated at 25 by default, maximum 50, exclusive UUID cursor. Returns business deployment status, not Workflow runtime status.
+      responses:
+        '200': {description: Deployment page}
+        '403': {$ref: '#/components/responses/Error'}
+    post:
+      operationId: createProbeDeployment
+      security: [{AccessApplication: []}]
+      description: Requires deployment.create, same-origin X-Velora-Action header and UUID Idempotency-Key. Accepts only schema 1, candidate_id and agent_id. Approved online x86_64 target, immutable probe candidate, signing configuration and Development deployment flag required. Ten new deployments per rolling day; one lock per service, retained on uncertainty. Retries repair Workflow creation without generating a second job.
+      responses:
+        '202': {description: Deployment reserved or original reservation returned}
+        '400': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+        '503': {$ref: '#/components/responses/Error'}
+  /api/v1/deployments/{deploymentId}:
+    get:
+      operationId: readProbeDeployment
+      security: [{AccessApplication: []}]
+      description: Requires deployment.read. Returns immutable candidate/agent/job IDs, business status, timestamps and bounded receipt_json (serialized executor receipt). Never returns a signing secret.
+      parameters:
+        - {name: deploymentId, in: path, required: true, schema: {type: string, format: uuid}}
+      responses:
+        '200': {description: Deployment record}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+  /api/v1/agents/probe/poll:
+    post:
+      operationId: pollProbeJob
+      description: Ed25519 agent request protocol on the machine hostname; requires active agent and separate approved probe target. Body is exactly schema 1. Returns the same signed job on retries, or null when paused/empty/expired. Poll no faster than once per minute; no automatic heartbeat capability expansion.
+      responses:
+        '200': {description: Signed job or null}
+        '403': {$ref: '#/components/responses/Error'}
+  /api/v1/agents/probe/result:
+    post:
+      operationId: reportProbeResult
+      description: Ed25519 agent request protocol; exact schema 1 plus bounded executor receipt. Job must have been delivered to this approved agent; payload hash must match. Fresh signed retries deduplicate, nonce replay and conflicting receipts fail. Late terminal receipts can reconcile timeout locks; failed rollback retains its lock. Pausing deployment admission does not discard results.
+      responses:
+        '200': {description: Result accepted or identical result previously accepted}
+        '400': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+  /api/v1/ci/artifacts/register:
+    post:
+      operationId: registerCandidate
+      security: [{GitHubJob: []}]
+      description: Exact CI hostname, registered immutable workflow/repository/service policy and enabled registration required. Maximum 16 KiB body. Retries return original metadata.
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '../deployment/contracts/artifact.schema.json'}}}}
+      responses:
+        '201': {description: Candidate created with atomic audit, content: {application/json: {schema: {$ref: '#/components/schemas/CandidateReceipt'}}}}
+        '200': {description: Original candidate returned, content: {application/json: {schema: {$ref: '#/components/schemas/CandidateReceipt'}}}}
+        '400': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '409': {description: Registration paused, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+        '413': {$ref: '#/components/responses/Error'}
+        '415': {$ref: '#/components/responses/Error'}
+        '429': {$ref: '#/components/responses/Error'}
+        '503': {$ref: '#/components/responses/Error'}
+  /api/v1/repositories:
+    get:
+      operationId: listRepositories
+      description: Requires repository.read; exclusive cursor is repository ID.
+      security: [{AccessApplication: []}]
+      parameters: &pageParameters [{$ref: '#/components/parameters/Environment'}, {$ref: '#/components/parameters/Limit'}, {$ref: '#/components/parameters/Cursor'}]
+      responses: &pageResponses {'200': {$ref: '#/components/responses/Page'}, '400': {$ref: '#/components/responses/Error'}, '403': {$ref: '#/components/responses/Error'}, '503': {$ref: '#/components/responses/Error'}}
+  /api/v1/services:
+    get:
+      operationId: listServices
+      description: Requires service.read; exclusive cursor is service ID.
+      security: [{AccessApplication: []}]
+      parameters: *pageParameters
+      responses: *pageResponses
+  /api/v1/artifacts:
+    get:
+      operationId: listArtifacts
+      description: Requires artifact.read; exclusive cursor is art_ followed by 64 lowercase hex characters.
+      security: [{AccessApplication: []}]
+      parameters: *pageParameters
+      responses: *pageResponses
+  /api/v1/candidates:
+    get:
+      operationId: listCandidates
+      description: Requires candidate.read; exclusive cursor is rc_ followed by 64 lowercase hex characters.
+      security: [{AccessApplication: []}]
+      parameters: *pageParameters
+      responses: *pageResponses
+  /api/v1/candidates/{candidateId}:
+    get:
+      operationId: readCandidate
+      description: Requires candidate.read. Returns exact stored metadata.
+      security: [{AccessApplication: []}]
+      parameters:
+        - {name: candidateId, in: path, required: true, schema: {type: string, pattern: '^rc_[a-f0-9]{64}$'}}
+        - {$ref: '#/components/parameters/Environment'}
+      responses:
+        '200': {description: Stored candidate, content: {application/json: {schema: {type: object, required: [candidate, request_id], properties: {candidate: {$ref: '../deployment/contracts/artifact.schema.json'}, request_id: {type: string, format: uuid}}}}}}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '503': {$ref: '#/components/responses/Error'}
+  /api/v1/audit:
+    get:
+      operationId: listAudit
+      description: Requires audit.read. Development records only; exclusive cursor is a positive numeric audit ID.
+      security: [{AccessApplication: []}]
+      parameters: *pageParameters
+      responses: *pageResponses
+  /api/v1/environments:
+    get:
+      operationId: readEnvironment
+      description: Requires environment.read. Returns authorized Development environment only; cursor unsupported.
+      security: [{AccessApplication: []}]
+      parameters: &singleParameters [{$ref: '#/components/parameters/Environment'}, {$ref: '#/components/parameters/Limit'}]
+      responses: *pageResponses
+  /api/v1/automation:
+    get:
+      operationId: readAutomation
+      description: Requires automation.read; cursor unsupported.
+      security: [{AccessApplication: []}]
+      parameters: *singleParameters
+      responses: *pageResponses
+  /api/v1/automation/pause:
+    post:
+      operationId: pauseRegistration
+      description: Requires automation.registration.manage, exact same-origin header and UUID idempotency key. Deployment stays disabled.
+      security: [{AccessApplication: []}]
+      parameters: &actionParameters [{$ref: '#/components/parameters/Environment'}, {$ref: '#/components/parameters/Action'}, {$ref: '#/components/parameters/IdempotencyKey'}, {$ref: '#/components/parameters/Origin'}]
+      responses: &actionResponses {'200': {$ref: '#/components/responses/Automation'}, '400': {$ref: '#/components/responses/Error'}, '403': {$ref: '#/components/responses/Error'}, '409': {$ref: '#/components/responses/Error'}, '503': {$ref: '#/components/responses/Error'}}
+  /api/v1/automation/resume:
+    post:
+      operationId: resumeRegistration
+      description: Requires automation.registration.manage, exact same-origin header and UUID idempotency key. Registration only; deployment stays disabled.
+      security: [{AccessApplication: []}]
+      parameters: *actionParameters
+      responses: *actionResponses
+  /api/v1/github/webhooks:
+    post:
+      operationId: receiveGitHubWebhook
+      description: Disabled until configured. Original JSON bytes capped at 64 KiB. HMAC, registered repository and replay checks required. Informational only; no deployment/candidate creation. App-level ping without repository rejected.
+      security: [{GitHubWebhook: []}]
+      parameters:
+        - {name: X-GitHub-Delivery, in: header, required: true, schema: {type: string, format: uuid}}
+        - {name: X-GitHub-Event, in: header, required: true, schema: {type: string, enum: [ping, workflow_run, release]}}
+      requestBody: {required: true, content: {application/json: {schema: {type: object}}}}
+      responses:
+        '202': {description: Accepted informational event or duplicate, content: {application/json: {schema: {type: object, required: [accepted, duplicate, deployment_performed, request_id], properties: {accepted: {const: true}, duplicate: {type: boolean}, deployment_performed: {const: false}, request_id: {type: string, format: uuid}}}}}}
+        '400': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+        '503': {$ref: '#/components/responses/Error'}
+  /api/v1/agents:
+    get:
+      operationId: listAgents
+      description: Development agent.read permission required. Agent API disabled by default. Status is ONLINE through 120 seconds, STALE through 300, then OFFLINE; revocation overrides age.
+      security: [{AccessApplication: []}]
+      parameters: *pageParameters
+      responses: *pageResponses
+  /api/v1/agents/enrollment-tokens:
+    post:
+      operationId: createEnrollmentToken
+      description: Requires agent.enroll, enabled Development enrollment and same-origin action/idempotency headers. Token returned once, expires in 600 seconds, only its hash stored. No deployment capability granted. Repeated key returns conflict.
+      security: [{AccessApplication: []}]
+      parameters: *actionParameters
+      requestBody: {required: true, content: {application/json: {schema: {type: object, additionalProperties: false, required: [schema], properties: {schema: {const: 1}}}}}}
+      responses:
+        '201': {description: Sensitive one-use token; no-store; never log or persist response, content: {application/json: {schema: {type: object, required: [token, expires_at, environment, capabilities, request_id], properties: {token: {type: string, minLength: 43, maxLength: 43}, expires_at: {type: integer}, environment: {const: development}, capabilities: {const: [REPORT_HEARTBEAT]}, request_id: {type: string, format: uuid}}}}}}
+        '400': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+        '503': {$ref: '#/components/responses/Error'}
+  /api/v1/agents/enroll:
+    post:
+      operationId: enrollAgent
+      description: Machine API hostname only, enabled Development enrollment. Original JSON at most 4096 bytes. Signature proves possession of supplied public key; token consumption, identity and audit are atomic. Initial capability REPORT_HEARTBEAT only.
+      security: [{SignedAgent: []}]
+      parameters: &agentHeaders [{$ref: '#/components/parameters/AgentId'}, {$ref: '#/components/parameters/KeyId'}, {$ref: '#/components/parameters/Timestamp'}, {$ref: '#/components/parameters/Nonce'}, {$ref: '#/components/parameters/BodyHash'}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/AgentEnrollment'}}}}
+      responses:
+        '201': {description: Public agent identity receipt, content: {application/json: {schema: {type: object, required: [agent_id, key_id, environment, capabilities, request_id], properties: {agent_id: {type: string, pattern: '^agt_[a-f0-9]{64}$'}, key_id: {type: string, pattern: '^[a-f0-9]{64}$'}, environment: {const: development}, capabilities: {const: [REPORT_HEARTBEAT]}, request_id: {type: string, format: uuid}}}}}}
+        '400': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+        '503': {$ref: '#/components/responses/Error'}
+  /api/v1/agents/heartbeat:
+    post:
+      operationId: reportHeartbeat
+      description: Machine API hostname only. Active registered Ed25519 identity and REPORT_HEARTBEAT required. Original JSON at most 4096 bytes; timestamp skew at most 120 seconds. Atomic replay check; no query/compression. Workloads are never stopped by heartbeat failure.
+      security: [{SignedAgent: []}]
+      parameters: *agentHeaders
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/AgentHeartbeat'}}}}
+      responses:
+        '200': {description: Heartbeat accepted, content: {application/json: {schema: {type: object, required: [agent_id, accepted, status, heartbeat_at, request_id], properties: {agent_id: {type: string}, accepted: {const: true}, status: {const: ONLINE}, heartbeat_at: {type: integer}, request_id: {type: string, format: uuid}}}}}}
+        '400': {$ref: '#/components/responses/Error'}
+        '403': {$ref: '#/components/responses/Error'}
+        '503': {$ref: '#/components/responses/Error'}
+  /api/v1/agents/{agentId}/revoke:
+    post:
+      operationId: revokeAgent
+      description: Requires Development agent.revoke, same-origin action and UUID idempotency key. Later signatures from revoked identity are denied. Existing workloads are untouched.
+      security: [{AccessApplication: []}]
+      parameters:
+        - {name: agentId, in: path, required: true, schema: {type: string, pattern: '^agt_[a-f0-9]{64}$'}}
+        - {$ref: '#/components/parameters/Environment'}
+        - {$ref: '#/components/parameters/Action'}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+        - {$ref: '#/components/parameters/Origin'}
+      responses:
+        '200': {description: Idempotent revocation receipt, content: {application/json: {schema: {type: object, required: [agent_id, status, request_id], properties: {agent_id: {type: string}, status: {const: REVOKED}, request_id: {type: string, format: uuid}}}}}}
+        '403': {$ref: '#/components/responses/Error'}
+        '404': {$ref: '#/components/responses/Error'}
+        '409': {$ref: '#/components/responses/Error'}
+        '503': {$ref: '#/components/responses/Error'}
+components:
+  securitySchemes:
+    GitHubJob: {type: http, scheme: bearer, bearerFormat: GitHub Actions OIDC JWT}
+    AccessApplication: {type: apiKey, in: header, name: Cf-Access-Jwt-Assertion, description: Signed application JWT plus explicit active principal and scoped role.}
+    GitHubWebhook: {type: apiKey, in: header, name: X-Hub-Signature-256, description: HMAC-SHA256 of original body, sha256= followed by lowercase hex.}
+    SignedAgent: {type: apiKey, in: header, name: Velora-Signature, description: Unpadded base64url Ed25519 signature of METHOD newline PATH newline empty query newline TIMESTAMP newline NONCE newline BODY_SHA256; no trailing newline. Signature/header values never logged.}
+  parameters:
+    Environment: {name: environment, in: query, schema: {type: string, enum: [development], default: development}}
+    Limit: {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 50, default: 25}}
+    Cursor: {name: cursor, in: query, schema: {type: string}, description: Exclusive ascending cursor; format depends on endpoint.}
+    Action: {name: X-Velora-Action, in: header, required: true, schema: {type: string, const: '1'}}
+    IdempotencyKey: {name: Idempotency-Key, in: header, required: true, schema: {type: string, format: uuid, pattern: '^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$'}}
+    Origin: {name: Origin, in: header, required: true, schema: {type: string}, description: Must equal operator request URL origin exactly.}
+    AgentId: {name: Velora-Agent-ID, in: header, required: true, schema: {type: string, pattern: '^agt_[a-f0-9]{64}$'}}
+    KeyId: {name: Velora-Key-ID, in: header, required: true, schema: {type: string, pattern: '^[a-f0-9]{64}$'}, description: SHA-256 of raw Ed25519 public key; agent ID is agt_ plus this value.}
+    Timestamp: {name: Velora-Timestamp, in: header, required: true, schema: {type: string, pattern: '^[1-9][0-9]{9,10}$'}, description: Unix seconds; maximum clock skew 120 seconds.}
+    Nonce: {name: Velora-Nonce, in: header, required: true, schema: {type: string, pattern: '^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$'}}
+    BodyHash: {name: Velora-Body-SHA256, in: header, required: true, schema: {type: string, pattern: '^[a-f0-9]{64}$'}, description: SHA-256 of exact original UTF-8 JSON bytes.}
+  schemas:
+    Error: {type: object, required: [error, request_id], properties: {error: {type: string}, request_id: {type: string, format: uuid}}}
+    CandidateReceipt: {type: object, required: [candidate, created, request_id], properties: {candidate: {$ref: '../deployment/contracts/artifact.schema.json'}, created: {type: boolean}, request_id: {type: string, format: uuid}}}
+    AgentEnrollment:
+      type: object
+      additionalProperties: false
+      required: [schema, token, public_key, agent_version, build_sha]
+      properties:
+        schema: {const: 1}
+        token: {type: string, pattern: '^[A-Za-z0-9_-]{43}$'}
+        public_key: {type: string, pattern: '^[A-Za-z0-9_-]{43}$', description: Canonically encoded raw 32-byte Ed25519 public key.}
+        agent_version: {type: string, pattern: '^[0-9]{1,4}\.[0-9]{1,4}\.[0-9]{1,4}$'}
+        build_sha: {type: string, pattern: '^[a-f0-9]{40}$'}
+    AgentHeartbeat:
+      type: object
+      additionalProperties: false
+      required: [schema, agent_version, build_sha, uptime_seconds, capabilities, host]
+      properties:
+        schema: {const: 1}
+        agent_version: {type: string, pattern: '^[0-9]{1,4}\.[0-9]{1,4}\.[0-9]{1,4}$'}
+        build_sha: {type: string, pattern: '^[a-f0-9]{40}$'}
+        uptime_seconds: {type: integer, minimum: 0, maximum: 9007199254740991}
+        capabilities: {const: [REPORT_HEARTBEAT]}
+        host: {type: object, additionalProperties: false, required: [os, arch], properties: {os: {const: linux}, arch: {type: string, enum: [x86_64, aarch64]}}}
+  responses:
+    Error: {description: Sanitized error with request ID, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    Page: {description: Bounded list and exclusive next_cursor when supported, content: {application/json: {schema: {type: object, required: [items, request_id], properties: {items: {type: array, maxItems: 50, items: {type: object}}, next_cursor: {type: [string, 'null']}, request_id: {type: string, format: uuid}}}}}}
+    Automation: {description: Idempotent registration flag receipt, content: {application/json: {schema: {type: object, required: [registration_enabled, deployment_enabled, request_id], properties: {registration_enabled: {type: boolean}, deployment_enabled: {const: false}, request_id: {type: string, format: uuid}}}}}}

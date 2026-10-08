@@ -1,0 +1,35 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "velora-control-plane-development",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-07",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": {
+    "ENVIRONMENT": "development",
+    "BUILD_SHA": "UNBUILT",
+    "BOOTSTRAP_ENABLED": "0",
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUD": "",
+    "BOOTSTRAP_OPERATOR_EMAIL": "",
+    "CONTROL_API_ENABLED": "0",
+    "CI_OIDC_AUDIENCE": "velora-control-plane",
+    "CI_API_HOST": "",
+    "OPERATOR_API_HOST": "",
+    "WEBHOOKS_ENABLED": "0",
+    "AGENTS_ENABLED": "0",
+    "PROBE_DEPLOYMENTS_ENABLED": "0",
+    "PROBE_SIGNING_PUBLIC_KEY": ""
+  },
+  "observability": {"enabled": true, "head_sampling_rate": 0.1},
+  "d1_databases": [
+    {"binding": "HARNESS_DB", "database_name": "velora-harness-development", "migrations_dir": "migrations/harness"},
+    {"binding": "IDENTITY_DB", "database_name": "velora-identity-development", "migrations_dir": "migrations/identity"}
+  ],
+  "r2_buckets": [{"binding": "OPERATIONS", "bucket_name": "velora-operations-development"}],
+  "workflows": [
+    {"binding": "BINDING_CHECK", "name": "velora-binding-check-development", "class_name": "BindingCheckWorkflow"},
+    {"binding": "PROBE_DEPLOYMENT", "name": "velora-probe-deployment-development", "class_name": "ProbeDeploymentWorkflow", "default_retention": {"success_retention": "1 day", "error_retention": "1 day"}}
+  ]
+}

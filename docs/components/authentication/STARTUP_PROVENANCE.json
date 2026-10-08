@@ -1,0 +1,41 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "sources": [
+    {
+      "path": "panel/server/src/lib.rs",
+      "sha256": "e14ae3663efef575352b3578da853ffa036db6c05c79d3c96e6588e877edaf06"
+    },
+    {
+      "path": "panel/server/src/yggdrasil/keys.rs",
+      "sha256": "2bebb69cb369dc85d47dc346319c032a718aa8841ab12081839062e5e1fd8a52"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "crates/core/src/keys.rs",
+      "sha256_lf": "4ae016bf2ad6f0eff85fd7d0119c9edc841da57fa026f72ca9f19d6af6b21d02"
+    },
+    {
+      "path": "crates/core/src/secrets.rs",
+      "sha256_lf": "f24e7118afb12e2b2532fb904810b22d976472d9b6c042f92efa160b44576b36"
+    },
+    {
+      "path": "crates/core/src/identity_store.rs",
+      "sha256_lf": "a8ca687457f8dbb81ea46b104918918fb552d326639b9a4f9acb9c6d0c8765c7"
+    },
+    {
+      "path": "crates/http/src/web.rs",
+      "sha256_lf": "3604d85ab1a66a8df5caf2fbc2325cc43268b0a22a735e54c9e8aa67da8bfe52"
+    }
+  ],
+  "changes": [
+    "Preserve valid persisted RSA/JWT bytes and configured legacy JWT bytes exactly",
+    "Refuse automatic replacement for unreadable/invalid RSA or unreadable/short persisted JWT material; report actionable startup errors",
+    "New material uses exclusive file creation, sync and Unix owner-only permissions; concurrent creators never overwrite existing material",
+    "First-admin library workflow reuses common username policy/hash/UUID creation and conditional SQL insertion",
+    "Existing administrators including disabled accounts are unchanged; conflicting players are never promoted",
+    "Synthetic tests verify byte/signature continuity, invalid/unreadable files, restart preservation and competing bootstrap attempts",
+    "Standalone config/entrypoint, first-admin delivery, asset checkpoint/restore and full writer cutover remain incomplete"
+  ]
+}

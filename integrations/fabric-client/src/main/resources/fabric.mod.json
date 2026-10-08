@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "scopenet_client",
+  "version": "${version}",
+  "name": "Velora Client",
+  "description": "HUD widgets, claim borders, and market window for Velora servers. Display only: the server stays in charge of money, claims and permissions.",
+  "environment": "client",
+  "entrypoints": { "client": ["net.scopenet.client.ScopenetClient"] },
+  "depends": { "fabricloader": ">=0.16.10", "minecraft": "1.20.1", "java": ">=17", "fabric-api": "*" }
+}

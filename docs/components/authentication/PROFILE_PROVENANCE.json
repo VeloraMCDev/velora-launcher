@@ -1,0 +1,35 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "sources": [
+    {
+      "path": "panel/server/src/yggdrasil/mod.rs",
+      "sha256": "a0051f44f7f6fcfe7c61aeb02966fe29f5236237d531f46591b429f09de7d039"
+    },
+    {
+      "path": "panel/server/src/routes/account.rs",
+      "sha256": "2000dca1d3743d3e39a3426826d3a1538aa7de3180701cc427df2855225f6a7d"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "crates/core/src/capes.rs",
+      "sha256_lf": "0a14be67fd5369fa3bbd485ff04214d1ecdc11ca0738140e647c1413ac2dcf5b"
+    },
+    {
+      "path": "crates/core/src/identity_store.rs",
+      "sha256_lf": "857d087f702b60e4245bcecebf034934d000511df6edf17fe0a5eb67ebf37ce1"
+    }
+  ],
+  "changes": [
+    "Own cape records/lookup/order and unchanged public/groups/admin selection policy",
+    "Preserve malformed group JSON behavior and case-insensitive group matching",
+    "Own original UUID/email-or-name lookups and skin/cape UPDATE SQL with supplied validated inputs",
+    "Own skin-model-only UPDATE, username/auth-version UPDATE and game-session revocation inside a supplied open transaction",
+    "Host keeps online-server checks and launcher-session/audit cleanup in the same transaction; mutation failures keep legacy conflict/error mapping",
+    "Host still fetches live groups through its original pool, guards routes and supplies existing cape/identity pools",
+    "Host keeps canonical wire projections, UUID normalization and image/model validation",
+    "Synthetic identity/cape fixtures cover selection, field updates, stable UUIDs and unavailable-store errors",
+    "Admin CRUD, owned schema/import, standalone service and cross-domain cleanup cutover are incomplete"
+  ]
+}

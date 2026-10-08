@@ -1,0 +1,18 @@
+{
+  "repository": "https://github.com/VeloraMCDev/sdk",
+  "revision": "b6c8297ae334a8dece78d2c1957d561e7cc624ad",
+  "files": [
+    {
+      "path": "src/lib.rs",
+      "sha256": "b9b4e629d0f71a06cec34ddc694c23bfba4310018541249c1954e30cfc38e9cb"
+    },
+    {
+      "path": "src/experience.rs",
+      "sha256": "71f7e9fd8149673b63006855a09181f79274a64a53999a57a2f80729b06686f5"
+    },
+    {
+      "path": "src/updates.rs",
+      "sha256": "574346a6c21b3b70d79c5f3622937d396c6d20c26dd4fd685c31cf5d6a74b040"
+    }
+  ]
+}

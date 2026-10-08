@@ -1,0 +1,15 @@
+/target/
+/node_modules/
+/dist/
+/.runtime-checks/
+/.wrangler/
+**/.wrangler/
+.dev.vars
+.dev.vars.*
+__pycache__/
+.env
+.env.*
+!.env.example
+.DS_Store
+
+/control-plane/dist/

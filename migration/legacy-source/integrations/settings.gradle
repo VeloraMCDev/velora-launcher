@@ -1,0 +1,20 @@
+pluginManagement {
+    repositories {
+        maven { url = 'https://maven.fabricmc.net/' }
+        maven { url = 'https://maven.minecraftforge.net/' }
+        gradlePluginPortal()
+    }
+}
+rootProject.name = 'scopenet-integrations'
+include 'common', 'api', 'paper'
+// Build loaders separately: Forge and Loom use different Gradle generations.
+if (providers.gradleProperty('loader').orNull == 'fabric') include 'fabric'
+if (providers.gradleProperty('loader').orNull == 'forge') include 'forge'
+// Optional client companion; defaults to Fabric 26.3. Pass -PmcVersion=1.20.1 for the legacy client.
+if (providers.gradleProperty('loader').orNull == 'fabric-client') include 'fabric-client'
+def mcVer = (providers.gradleProperty('mcVersion').orNull ?: startParameter.projectProperties['mcVersion'] ?: '').toString()
+if (mcVer.startsWith('26.') || mcVer == '26.x') {
+    if (findProject(':fabric') != null) project(':fabric').buildFileName = 'modern.gradle'
+    if (findProject(':forge') != null) project(':forge').buildFileName = 'modern.gradle'
+}
+if (findProject(':fabric-client') != null && mcVer != '1.20.1') project(':fabric-client').buildFileName = 'modern.gradle'

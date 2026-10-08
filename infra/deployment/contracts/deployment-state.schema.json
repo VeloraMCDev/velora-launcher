@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://velora.invalid/contracts/deployment-state-v1",
+  "title": "Canonical deployment states from deployment guide section 14",
+  "enum": ["CREATED","VALIDATING","AWAITING_APPROVAL","QUEUED","ASSIGNED","PREFLIGHT","BACKING_UP","PULLING_OR_STAGING","MIGRATING","ACTIVATING","HEALTH_CHECK","STABILIZING","SUCCEEDED","FAILED","ROLLING_BACK","ROLLED_BACK","ROLLBACK_FAILED","CANCELLED","BLOCKED"]
+}

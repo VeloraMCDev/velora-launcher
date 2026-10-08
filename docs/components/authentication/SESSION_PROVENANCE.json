@@ -1,0 +1,16 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/yggdrasil/mod.rs",
+  "source_sha256": "a0051f44f7f6fcfe7c61aeb02966fe29f5236237d531f46591b429f09de7d039",
+  "output_path": "crates/core/src/ygg_store.rs",
+  "output_sha256_lf": "1cfb30d31698310ede6b679cf439cedec9677c362210d6c5b8b1f6a416ec544e",
+  "changes": [
+    "Extract original token issuance/lookup with identical random bytes, client-token policy, expiry and cap SQL",
+    "Own invalidation/signout and short-lived join storage behind pool-only functions",
+    "Retain route/profile/signature/IP/server-ID checks and clock cutoff policy in compatible host",
+    "Preserve live active-account checks and propagate unavailable-store errors",
+    "Use synthetic in-memory accounts and token/session tables; never read production records",
+    "HTTP/key/texture/schema/import/service ownership and credential-writer cutover remain incomplete"
+  ]
+}

@@ -1,0 +1,10 @@
+dependencies {
+    implementation 'com.google.code.gson:gson:2.10.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+// Reviewed public SDK snapshot; no private repository is fetched by this build.
+sourceSets.main.java.srcDir(rootProject.file('../packages/java-platform-client/src/main/java'))
+sourceSets.main.java.srcDir(rootProject.file('../packages/java-map-producer/src/main/java'))
+sourceSets.main.resources.srcDir(rootProject.file('../packages/java-map-producer/src/main/resources'))

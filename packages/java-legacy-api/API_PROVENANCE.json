@@ -1,0 +1,96 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "files": [
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/GuildSummary.java",
+      "source_sha256": "8ca506972f30491eb4f6185e42e6c9f9b8a21ae8521b769b4254eb93e95c2e4e",
+      "destination": "java/api/src/main/java/net/scopenet/api/GuildSummary.java",
+      "output_sha256_lf": "8ca506972f30491eb4f6185e42e6c9f9b8a21ae8521b769b4254eb93e95c2e4e"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/QuestProgress.java",
+      "source_sha256": "c0894d7f1e93ba979fa3bc9a8577f3850c2adffa57ecb125427ff1bc3dd7133d",
+      "destination": "java/api/src/main/java/net/scopenet/api/QuestProgress.java",
+      "output_sha256_lf": "c0894d7f1e93ba979fa3bc9a8577f3850c2adffa57ecb125427ff1bc3dd7133d"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/ScopenetApi.java",
+      "source_sha256": "fbba882955cafdcde9b0c809592afa1860544e427558e87882cae160caad142a",
+      "destination": "java/api/src/main/java/net/scopenet/api/ScopenetApi.java",
+      "output_sha256_lf": "01d3d647549cd4e79f0dc43816bd88213ac6df4233c32d4ce763abcc1c867ae9"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/ScopenetApiProvider.java",
+      "source_sha256": "6fc42dbfaecf4d5da21ceea8434abe5bb85c69b0d41f7970cd2e989d4702d8a5",
+      "destination": "java/api/src/main/java/net/scopenet/api/ScopenetApiProvider.java",
+      "output_sha256_lf": "f00415604b6f74ee532ddb9001665c2e2ae12d48fc58d2a18f9e3b7de2b769bb"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/ScopenetFriend.java",
+      "source_sha256": "5b0835e3df1540daf7b273f19cac850c125092e95e3e2a61eb7cd018211d6f53",
+      "destination": "java/api/src/main/java/net/scopenet/api/ScopenetFriend.java",
+      "output_sha256_lf": "5b0835e3df1540daf7b273f19cac850c125092e95e3e2a61eb7cd018211d6f53"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/ScopenetGuild.java",
+      "source_sha256": "b3857f2721317ac2780942d2175e4502d38d0e88cd12f5ec2a7a1e52f1bf598c",
+      "destination": "java/api/src/main/java/net/scopenet/api/ScopenetGuild.java",
+      "output_sha256_lf": "b3857f2721317ac2780942d2175e4502d38d0e88cd12f5ec2a7a1e52f1bf598c"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/ScopenetPlayer.java",
+      "source_sha256": "7c990edd6cfd0f7597f71d2e6436830e86db11447c5984b0d4331efc05f1027d",
+      "destination": "java/api/src/main/java/net/scopenet/api/ScopenetPlayer.java",
+      "output_sha256_lf": "80f2bec1f6895e8da9615240ec427f6887fea7c95790f5fb4eee072dd9b80096"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/XpResult.java",
+      "source_sha256": "fcfd08dc738617ba179757bdfac4de9d157ee1d072d7b4d9723ca1aa69900ae8",
+      "destination": "java/api/src/main/java/net/scopenet/api/XpResult.java",
+      "output_sha256_lf": "fcfd08dc738617ba179757bdfac4de9d157ee1d072d7b4d9723ca1aa69900ae8"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/XpScope.java",
+      "source_sha256": "f31ea791905eab8dca66a0a1c3039a2d8b4e79dd1f9b04e0b263f15e288613a1",
+      "destination": "java/api/src/main/java/net/scopenet/api/XpScope.java",
+      "output_sha256_lf": "a65581cad801a5158f36265ec9309bbeabbb303220c5c27d2a6c42e7886442dc"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/event/AchievementUnlockEvent.java",
+      "source_sha256": "fdca1b0ed46c0176df32ded1bb28cc455d65313bd28c5e12848f8b595550cf52",
+      "destination": "java/bukkit-api/src/main/java/net/scopenet/api/event/AchievementUnlockEvent.java",
+      "output_sha256_lf": "c2cd367db89286f58b303937bfe07433c74fbe9b4f8a1129e077597a22a76690"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/event/GuildJoinEvent.java",
+      "source_sha256": "c64437439e767ed8b75c5647db8e6c5e89602479b176954ac6d4a9df04253517",
+      "destination": "java/bukkit-api/src/main/java/net/scopenet/api/event/GuildJoinEvent.java",
+      "output_sha256_lf": "c64437439e767ed8b75c5647db8e6c5e89602479b176954ac6d4a9df04253517"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/event/GuildLeaveEvent.java",
+      "source_sha256": "af649151bd77edbba4467610227287b993586ca076af9a5210b33efced858fb3",
+      "destination": "java/bukkit-api/src/main/java/net/scopenet/api/event/GuildLeaveEvent.java",
+      "output_sha256_lf": "af649151bd77edbba4467610227287b993586ca076af9a5210b33efced858fb3"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/event/ScopenetEvent.java",
+      "source_sha256": "95e141f58fc8a20b807509706fed8006458b302e47412da071a1c648e2484c05",
+      "destination": "java/bukkit-api/src/main/java/net/scopenet/api/event/ScopenetEvent.java",
+      "output_sha256_lf": "86c084dbed5f401e25f0462a738f2ac3d10e824b6248bcd3d23ff5216bda5251"
+    },
+    {
+      "source_path": "integrations/api/src/main/java/net/scopenet/api/event/ScopenetLevelUpEvent.java",
+      "source_sha256": "556d9274bc6c996214d83b0e3fd7750ff27296b85b2e237c719387c30937da90",
+      "destination": "java/bukkit-api/src/main/java/net/scopenet/api/event/ScopenetLevelUpEvent.java",
+      "output_sha256_lf": "556d9274bc6c996214d83b0e3fd7750ff27296b85b2e237c719387c30937da90"
+    }
+  ],
+  "changes": [
+    "Separate optional Bukkit events from neutral Java API",
+    "Retain public packages, classes, records, method signatures and provider registry",
+    "Rebrand display/documentation text",
+    "No Panel implementation, gameplay rules, configuration or catalogs copied"
+  ]
+}

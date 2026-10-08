@@ -1,0 +1,13 @@
+{
+  "files": [
+    {
+      "path": "gradle/wrapper/gradle-wrapper.jar",
+      "sha256": "2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046",
+      "license": "Apache-2.0",
+      "license_path": "third-party/gradle-wrapper/LICENSE",
+      "upstream": "https://github.com/gradle/gradle/tree/v8.10.2",
+      "checksum_reference": "https://gradle.org/release-checksums/",
+      "purpose": "Unmodified public build bootstrap; not a gameplay distribution"
+    }
+  ]
+}

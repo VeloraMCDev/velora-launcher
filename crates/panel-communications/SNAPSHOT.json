@@ -1,0 +1,63 @@
+{
+  "repository": "https://github.com/VeloraMCDev/panel",
+  "revision": "bcd6aee87422d0ba5741ba59e49e3f36dde10ff5",
+  "adaptation": "Version/edition use compatibility host workspace; MIT/public repository coordinates explicit; no private dependencies",
+  "files": [
+    {
+      "path": "src/discord.rs",
+      "sha256": "28ea24fd4a1526b21b1a2c10d0639e2d0cd12081662bc99f568c4e36f81ea828"
+    },
+    {
+      "path": "src/lib.rs",
+      "sha256": "804a00fb490fb6900e7834db6ca117491b93134a181befd4cc90caaa04c48679"
+    },
+    {
+      "path": "src/mail.rs",
+      "sha256": "13682da2820d82c89952f8d6edb6e411a6cf565929697c5d54a52d467b450c96"
+    },
+    {
+      "path": "src/render.rs",
+      "sha256": "c348fa4f2b758348584cbe33929eb9e626066f87bfb9a1807e77a5dbbae93c92"
+    },
+    {
+      "path": "src/settings.rs",
+      "sha256": "40835a7958edd929a69133487147dc9ec6ab4f17110cfe10183479007a922b23"
+    },
+    {
+      "path": "src/templates.rs",
+      "sha256": "cce786bd7254a42494bb07e5b4915958960589fec6ad276eb63498f70ade711c"
+    },
+    {
+      "path": "tests/fixtures/render-0.html",
+      "sha256": "1c86631e83138f689d0390248f2846276030054476e4c909cf7cfa366d0caa46"
+    },
+    {
+      "path": "tests/fixtures/render-1.html",
+      "sha256": "0c0546804ff0b08473ad6d59b506c9a672a76d941c151712bb5f208aace30b03"
+    },
+    {
+      "path": "tests/fixtures/render-2.html",
+      "sha256": "6474520982581fbbeeb1680f560449fa055fa29efb4f14610579b62b9167f134"
+    },
+    {
+      "path": "tests/fixtures/render-3.html",
+      "sha256": "f0f313610f02073c5d663d9b751a06ea8e353f26b5be87b72ecd22e303b750e6"
+    },
+    {
+      "path": "tests/fixtures/render-inputs.json",
+      "sha256": "59bacf6320bd787b4609277c5c41e64ee1e2e74bac511fe788772d97e85dd999"
+    },
+    {
+      "path": "tests/render.rs",
+      "sha256": "2cde7fe6f4d26affba0883e339ea6ebdafada47424c8c7fd608ea7d71427f1e4"
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "7089186e7879462ec43c4ce8680ae830f3e602368466f931217aab20609f0e03"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349"
+    }
+  ]
+}

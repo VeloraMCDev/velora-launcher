@@ -1,0 +1,35 @@
+{
+  "repository": "https://github.com/VeloraMCDev/sdk",
+  "revision": "737f6c7e1e3aa238fb74392de14112d35f5cee3e",
+  "adaptation": "Fixed SDK package version; host workspace dependency metadata and existing public contract snapshot; source unchanged. Standalone dependency metadata avoids the legacy utility package name collision.",
+  "files": [
+    {
+      "path": "Cargo.toml",
+      "sha256": "ce34363d9bfa60c40e8b052d303d028ee6a496b371e495e5cc519a78d487e82b"
+    },
+    {
+      "path": "src/authlib.rs",
+      "sha256": "b5c3df9bccb2cdf9ea8ffc861837dc923d13dbc48213fa48cfabcac9d97ec079"
+    },
+    {
+      "path": "src/http.rs",
+      "sha256": "cf28dd21fe74c81caf8f33e6becaaa53232644640632b9d9ed3cbfe6e831883d"
+    },
+    {
+      "path": "src/lib.rs",
+      "sha256": "91e6efe94c42d27258d37ae5fea225fdca5164988baf139ecebefc1720aad472"
+    },
+    {
+      "path": "src/meta.rs",
+      "sha256": "97017c05cbc1a0e3ef177f00ec718f0100148e068f0673efcf979085edccf650"
+    },
+    {
+      "path": "src/paths.rs",
+      "sha256": "96f29a37019cc1183869e2600ea2440e774096aad7afa6806c7c66b5f7609acf"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "b7552be2f6c6c5fc519efad1871d89ff612cd006114a85a74e8c7561968b0349"
+    }
+  ]
+}

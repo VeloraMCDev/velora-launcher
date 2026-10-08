@@ -1,0 +1,17 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "776252dd9e30fe28e86ab6f1f856aa4edd571168",
+  "inputs": [
+    {
+      "path": "panel/web/src/components/SkinView.svelte",
+      "sha256": "8fb82d8f2ad4ae39d5577f2c813814330bc6a4b64e50e66dcaf68a0f1d91c4ef"
+    },
+    {
+      "path": "launcher/src/components/SkinView.svelte",
+      "sha256": "4292cac73f3565c7ad50598f2a1ebf21e09c41a76e119c4fdc13e7e1f330528d"
+    }
+  ],
+  "scope": "Original neutral flat Minecraft skin/cape renderer; original geometry, overlays, mirroring, loading and stale-effect cancellation",
+  "adaptation": "Inject placeholder opacity, default 0.07 for Panel; Launcher supplies its original 0.08. No private gameplay, account storage or URL selection moved.",
+  "output_sha256_lf": "4d1e11f2cd7323bd2be6602bd7864574b7e959e21d79bc9e07111617c2fc2c61"
+}

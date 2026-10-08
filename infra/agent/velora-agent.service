@@ -1,0 +1,31 @@
+[Unit]
+Description=Velora Development heartbeat agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=velora-agent
+Group=velora-agent
+ExecStart=/usr/local/lib/velora-agent/velora-agent daemon --config /etc/velora-agent/config.toml
+Restart=on-failure
+RestartPreventExitStatus=78
+RestartSec=15
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+LockPersonality=true
+ReadOnlyPaths=/etc/velora-agent
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

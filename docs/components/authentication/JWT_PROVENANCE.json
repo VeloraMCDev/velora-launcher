@@ -1,0 +1,13 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/auth.rs",
+  "source_sha256": "4046d9615bdb801bd829f97d2b7d5322267ce3f9e8727338f65a3b6be63af969",
+  "output_path": "crates/core/src/tokens.rs",
+  "output_sha256_lf": "f8fb7c904612b07c3116c9653dfc5e5ab71446147f5f6a0048a4fee6bebbf7e6",
+  "changes": [
+    "Borrowed subject instead of Panel UserRow",
+    "Preserve HS256, 30-day expiry, all claim fields and default legacy version zero",
+    "Live account status/version admission remains required in host; no database/state dependency"
+  ]
+}

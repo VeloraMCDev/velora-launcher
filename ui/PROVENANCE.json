@@ -1,0 +1,47 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "publication_decision": {
+    "owner_approved_on": "2026-10-08",
+    "scope": "complete-product-source",
+    "license_change": false
+  },
+  "sdk_ui_revision": "4fef4db0cddd9116b2c8ddc2a6fdbf8b45a98f0d",
+  "changes": [
+    "Generic rendering moved to SDK",
+    "Private component registry injected into SDK host",
+    "Legacy SMP/Frontiers presets, navigation and fallback capabilities preserved"
+  ],
+  "files": [
+    {
+      "source": "shared/experience/branding.ts",
+      "destination": "ui/experience/branding.ts",
+      "output_sha256": "26dda6662c5ce107a9963e7cf32174fda3097c07aca6a39bbc5b8ccfe2997154"
+    },
+    {
+      "source": "shared/experience/components.ts",
+      "destination": "ui/experience/components.ts",
+      "output_sha256": "e5bdce2c76a26c573bd75bd96777cbc583ff3fccf655d27561486f327985cfa2"
+    },
+    {
+      "source": "shared/experience/ExperienceWidgets.svelte",
+      "destination": "ui/experience/ExperienceWidgets.svelte",
+      "output_sha256": "b02ca275cd8a01e459c16b2b09c08657cf88b9b839db87bd128e10194d94b037"
+    },
+    {
+      "source": "shared/experience/FrontiersOverview.svelte",
+      "destination": "ui/experience/FrontiersOverview.svelte",
+      "output_sha256": "24b5442de7a7bd11d73f17d0460797257ae7108c4e2ee4c3d7b28a13bc74b954"
+    },
+    {
+      "source": "shared/experience/index.test.mjs",
+      "destination": "ui/experience/index.test.mjs",
+      "output_sha256": "99315ee07e7d0b311b45ffc5e9ae3d28c7d199a220a15f67552cc9d854309af6"
+    },
+    {
+      "source": "shared/experience/index.ts",
+      "destination": "ui/experience/index.ts",
+      "output_sha256": "59518f477eb1d5a1dd9d0a403cd99f790718805eed77fdf457ab9d0b2212679e"
+    }
+  ]
+}

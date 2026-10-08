@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "module": "ESNext", "moduleResolution": "bundler",
+    "strict": true, "skipLibCheck": true, "verbatimModuleSyntax": true,
+    "types": ["svelte"], "noEmit": true, "baseUrl": ".",
+    "paths": { "svelte": ["./node_modules/svelte"], "svelte/*": ["./node_modules/svelte/*"] }
+  },
+  "include": ["experience/*.ts", "experience/*.svelte", "../packages/platform-ui/*.ts", "../packages/platform-ui/*.svelte"]
+}

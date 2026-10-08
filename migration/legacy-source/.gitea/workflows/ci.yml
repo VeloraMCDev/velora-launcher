@@ -1,0 +1,103 @@
+name: CI
+on:
+  push:
+    branches: ['**']
+    tags-ignore: ['**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ gitea.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  verify:
+    name: Rust, web and container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            panel/web/package-lock.json
+            launcher/package-lock.json
+      - name: Install Linux build dependencies
+        run: bash scripts/ci/install-linux.sh rust
+      - uses: Swatinem/rust-cache@v2
+      - name: Check Rust
+        run: |
+          mkdir -p launcher/dist
+          echo '<!doctype html>' > launcher/dist/index.html
+          cargo fmt --all --check
+          cargo clippy --workspace --all-targets --locked -- -D warnings
+          cargo test --workspace --locked
+      - name: Check panel and launcher UI
+        run: |
+          for app in panel/web launcher; do
+            (cd "$app" && npm ci --no-audit --no-fund && npm run check && npm run build)
+          done
+      - id: docker
+        run: |
+          if command -v docker >/dev/null && docker info >/dev/null 2>&1; then
+            echo 'ready=true' >> "$GITEA_OUTPUT"
+          else
+            echo 'ready=false' >> "$GITEA_OUTPUT"
+          fi
+      - uses: docker/setup-docker-action@v5
+        if: steps.docker.outputs.ready != 'true'
+      - uses: docker/setup-buildx-action@v3
+      - name: Build panel container
+        run: |
+          bash scripts/ci/install-linux.sh image
+          docker build -t scopenet-panel:ci .
+
+  launcher-windows:
+    name: Windows launcher
+    runs-on: scopenet
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install Windows build dependencies
+        shell: powershell
+        run: .\scripts\ci\install-windows.ps1
+      - uses: Swatinem/rust-cache@v2
+      - run: npm ci --no-audit --no-fund
+        working-directory: launcher
+      - run: npm run build
+        working-directory: launcher
+      - name: Build NSIS installer
+        working-directory: launcher
+        shell: pwsh
+        env:
+          SCOPENET_PANEL_URL: ${{ vars.PANEL_URL }}
+          SCOPENET_LOCK_PANEL: ${{ vars.LOCK_PANEL }}
+          SCOPENET_REPO: ${{ gitea.server_url }}/${{ gitea.repository }}
+        run: |
+          npx tauri build --bundles nsis
+          if ($LASTEXITCODE -ne 0) { throw "NSIS build failed with exit code $LASTEXITCODE" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer-ci
+          path: target/release/bundle/nsis/*-setup.exe
+          if-no-files-found: error
+      - run: cargo clippy -p scopenet-launcher --locked -- -D warnings
+      - run: cargo test -p scopenet-launcher -p scopenet-core -p scopenet-shared --locked
+
+  engine-online:
+    name: Real Minecraft installs (manual)
+    if: ${{ gitea.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Linux build dependencies
+        run: bash scripts/ci/install-linux.sh rust
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test -p scopenet-core --test online --locked -- --ignored --test-threads=2 --nocapture

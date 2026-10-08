@@ -1,0 +1,22 @@
+{
+  "name": "velora-documentation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "node scripts/check-links.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "marked": "18.1.0",
+    "sanitize-html": "2.18.0"
+  },
+  "devDependencies": {
+    "wrangler": "4.148.0"
+  }
+}

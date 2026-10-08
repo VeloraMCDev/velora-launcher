@@ -1,0 +1,53 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/yggdrasil/mod.rs",
+  "source_sha256": "a0051f44f7f6fcfe7c61aeb02966fe29f5236237d531f46591b429f09de7d039",
+  "reviewed_host_revision": "ba0a5f81998c8b55c5887d79e1e1d492e2a9e020",
+  "outputs": [
+    {
+      "path": "crates/http/src/auth.rs",
+      "sha256_lf": "5f2178f518490a7ee7aa941babbc032bbed43959636601540ead1dbf20e8879e"
+    },
+    {
+      "path": "crates/http/src/error.rs",
+      "sha256_lf": "39a5531f3377da93814f7f77de45b1e1edb2fe45c6ec8c456425f72087f0ec99"
+    },
+    {
+      "path": "crates/http/src/lib.rs",
+      "sha256_lf": "dcf2c2a1b56ae613896e67a527031f11c69ecbc1623a5124745323f23764a6f4"
+    },
+    {
+      "path": "crates/http/src/net.rs",
+      "sha256_lf": "df1745f2c3ba779afcc3faf96c3644adbbfa3c89e2a9992acacc993e2c8c2d2b"
+    },
+    {
+      "path": "crates/http/src/oauth.rs",
+      "sha256_lf": "66421362a711482f88be43276354b1dd8823df2a491cf52996217bfc1da8c699"
+    },
+    {
+      "path": "crates/http/src/reset.rs",
+      "sha256_lf": "c2a0fe14ecaeda6dadfe0dcc18022c48b8e15823bec598fb1a84993ae1e70d37"
+    },
+    {
+      "path": "crates/http/src/state.rs",
+      "sha256_lf": "0ed55c19af5ddab836b48932bd132aa5e7a8317c3dd4d694c3c560bd308e679a"
+    },
+    {
+      "path": "crates/http/src/textures.rs",
+      "sha256_lf": "8ff23e71fdfc1e3861bdb21bf0dc856722293a53d6c853545cb3844b0c4561e0"
+    },
+    {
+      "path": "crates/http/src/web.rs",
+      "sha256_lf": "9a9e4a096f43a7d31cc96dce6e74365fd11fbc728bc9c17736c7b6eeb625c4ea"
+    }
+  ],
+  "changes": [
+    "Own original Yggdrasil routes/profile/signature/multipart/certificate/texture behavior using authority-local state",
+    "Retain game-token-only protected Yggdrasil endpoints, error/status shapes and UUID/client/profile semantics",
+    "Use the reviewed public SDK wire contract snapshot; internal credential records remain separate",
+    "Host ports supply public origin, branding and trusted client address without importing Panel state/config/settings",
+    "Keep pool/key/guard/texture-path injection; no production records, assets, keys or host URLs copied",
+    "Independent router fixtures are synthetic; owned schema/import, standalone daemon and full account workflows remain incomplete"
+  ]
+}

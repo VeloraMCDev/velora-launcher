@@ -1,0 +1,17 @@
+{
+  "repository": "VeloraMCDev/velora-launcher",
+  "purpose": "Repository README banner",
+  "source": "VeloraMCDev/sdk:branding/originals/velora2.png",
+  "source_sha256": "cec8fe83bfb43f0c66f77b8acd5b5ab73fc7b9fe59aac03a722134d6dceb3e89",
+  "licensing": "Velora artwork and trademarks are excluded from the platform MIT license; no separate artwork reuse grant.",
+  "files": [
+    {
+      "path": "banner.svg",
+      "sha256": "b024f6f33b431235e51ee284466548e1ea0bf6fd765d4a7bd6f9590b720e1fa5"
+    },
+    {
+      "path": "banner.png",
+      "sha256": "e2a33de045f83aeaf24b3ecab30c132424d0e9f2fb034d876fb14f6f2bdfddd3"
+    }
+  ]
+}

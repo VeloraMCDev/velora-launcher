@@ -1,0 +1,62 @@
+{
+  "repository": "https://github.com/VeloraMCDev/sdk",
+  "revision": "434380ca090e4767b2cfbdb81156c5324f64adfd",
+  "files": [
+    {
+      "path": "api/src/main/java/net/scopenet/api/GuildSummary.java",
+      "sha256": "8ca506972f30491eb4f6185e42e6c9f9b8a21ae8521b769b4254eb93e95c2e4e"
+    },
+    {
+      "path": "api/src/main/java/net/scopenet/api/QuestProgress.java",
+      "sha256": "c0894d7f1e93ba979fa3bc9a8577f3850c2adffa57ecb125427ff1bc3dd7133d"
+    },
+    {
+      "path": "api/src/main/java/net/scopenet/api/ScopenetApi.java",
+      "sha256": "01d3d647549cd4e79f0dc43816bd88213ac6df4233c32d4ce763abcc1c867ae9"
+    },
+    {
+      "path": "api/src/main/java/net/scopenet/api/ScopenetApiProvider.java",
+      "sha256": "f00415604b6f74ee532ddb9001665c2e2ae12d48fc58d2a18f9e3b7de2b769bb"
+    },
+    {
+      "path": "api/src/main/java/net/scopenet/api/ScopenetFriend.java",
+      "sha256": "5b0835e3df1540daf7b273f19cac850c125092e95e3e2a61eb7cd018211d6f53"
+    },
+    {
+      "path": "api/src/main/java/net/scopenet/api/ScopenetGuild.java",
+      "sha256": "b3857f2721317ac2780942d2175e4502d38d0e88cd12f5ec2a7a1e52f1bf598c"
+    },
+    {
+      "path": "api/src/main/java/net/scopenet/api/ScopenetPlayer.java",
+      "sha256": "80f2bec1f6895e8da9615240ec427f6887fea7c95790f5fb4eee072dd9b80096"
+    },
+    {
+      "path": "api/src/main/java/net/scopenet/api/XpResult.java",
+      "sha256": "fcfd08dc738617ba179757bdfac4de9d157ee1d072d7b4d9723ca1aa69900ae8"
+    },
+    {
+      "path": "api/src/main/java/net/scopenet/api/XpScope.java",
+      "sha256": "a65581cad801a5158f36265ec9309bbeabbb303220c5c27d2a6c42e7886442dc"
+    },
+    {
+      "path": "bukkit-api/src/main/java/net/scopenet/api/event/AchievementUnlockEvent.java",
+      "sha256": "c2cd367db89286f58b303937bfe07433c74fbe9b4f8a1129e077597a22a76690"
+    },
+    {
+      "path": "bukkit-api/src/main/java/net/scopenet/api/event/GuildJoinEvent.java",
+      "sha256": "c64437439e767ed8b75c5647db8e6c5e89602479b176954ac6d4a9df04253517"
+    },
+    {
+      "path": "bukkit-api/src/main/java/net/scopenet/api/event/GuildLeaveEvent.java",
+      "sha256": "af649151bd77edbba4467610227287b993586ca076af9a5210b33efced858fb3"
+    },
+    {
+      "path": "bukkit-api/src/main/java/net/scopenet/api/event/ScopenetEvent.java",
+      "sha256": "86c084dbed5f401e25f0462a738f2ac3d10e824b6248bcd3d23ff5216bda5251"
+    },
+    {
+      "path": "bukkit-api/src/main/java/net/scopenet/api/event/ScopenetLevelUpEvent.java",
+      "sha256": "556d9274bc6c996214d83b0e3fd7750ff27296b85b2e237c719387c30937da90"
+    }
+  ]
+}

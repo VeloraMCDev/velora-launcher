@@ -1,0 +1,13 @@
+[package]
+name = "velora-experiences-storage"
+version.workspace = true
+edition.workspace = true
+repository = "https://github.com/VeloraMCDev/velora-launcher"
+publish = false
+description = "Economy transaction and operation storage for the complete Velora product"
+[dependencies]
+sqlx = {version="0.8",default-features=false,features=["runtime-tokio","sqlite"]}
+serde_json = "1"
+[dev-dependencies]
+tokio = {version="1",features=["macros","rt-multi-thread"]}
+tempfile = "3"

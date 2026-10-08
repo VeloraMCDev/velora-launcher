@@ -1,0 +1,20 @@
+# Current repository owner. Replace individual areas with confirmed teams as needed.
+* @scopeddlol
+
+# Explicit segment boundaries
+/crates/auth-*/ @scopeddlol
+/crates/panel-*/ @scopeddlol
+/crates/core/ @scopeddlol
+/crates/shared/ @scopeddlol
+/crates/platform-utils/ @scopeddlol
+/panel/ @scopeddlol
+/launcher/ @scopeddlol
+/integrations/ @scopeddlol
+/packages/ @scopeddlol
+/shared/ @scopeddlol
+/java/ @scopeddlol
+/ui/ @scopeddlol
+/infra/ @scopeddlol
+/docs/ @scopeddlol
+/migration/ @scopeddlol
+/.github/ @scopeddlol

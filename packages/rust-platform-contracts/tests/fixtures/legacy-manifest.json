@@ -1,0 +1,158 @@
+{
+  "api_version": 1,
+  "panel_version": "0.6.0",
+  "branding": {
+    "name": "Example Community",
+    "tagline": "Your worlds, one click away.",
+    "logo_url": null,
+    "icon_url": null,
+    "background": {
+      "kind": "gradient",
+      "url": null,
+      "blur": 0,
+      "dim": 55
+    },
+    "colors": {
+      "accent": "#6d6af5",
+      "accent_2": "#8b88f8",
+      "background": "#0d0e12",
+      "surface": "#16181e",
+      "text": "#ecedf1",
+      "muted": "#8b8f9a",
+      "success": "#3fb97c",
+      "danger": "#e5484d"
+    },
+    "font": "Inter",
+    "radius": 10,
+    "glass": false,
+    "version_label": "Example Community",
+    "news": [],
+    "links": [],
+    "about": {
+      "title": "",
+      "icon_url": null,
+      "body": "",
+      "links": []
+    },
+    "features": {
+      "news": true,
+      "server_status": true,
+      "allow_user_theme": true,
+      "allow_advanced_java": true
+    },
+    "custom_css": ""
+  },
+  "auth": {
+    "panel_accounts": true,
+    "registration": "closed",
+    "offline_local": true,
+    "yggdrasil_url": null
+  },
+  "instances": [
+    {
+      "experience": {
+        "kind": "sample",
+        "branding": {
+          "name": "Example Community",
+          "tagline": "Your worlds, one click away.",
+          "logo_url": null,
+          "icon_url": null,
+          "background": {
+            "kind": "gradient",
+            "url": null,
+            "blur": 0,
+            "dim": 55
+          },
+          "colors": {
+            "accent": "#6d6af5",
+            "accent_2": "#8b88f8",
+            "background": "#0d0e12",
+            "surface": "#16181e",
+            "text": "#ecedf1",
+            "muted": "#8b8f9a",
+            "success": "#3fb97c",
+            "danger": "#e5484d"
+          },
+          "font": "Inter",
+          "radius": 10,
+          "glass": false,
+          "version_label": "Example Community",
+          "news": [],
+          "links": [],
+          "about": {
+            "title": "",
+            "icon_url": null,
+            "body": "",
+            "links": []
+          },
+          "features": {
+            "news": true,
+            "server_status": true,
+            "allow_user_theme": true,
+            "allow_advanced_java": true
+          },
+          "custom_css": ""
+        },
+        "features": [
+          "example-feature"
+        ],
+        "navigation": [
+          {
+            "id": "sample-home",
+            "label": "Sample home"
+          }
+        ],
+        "widgets": [
+          {
+            "id": "sample-widget",
+            "component": "text",
+            "title": "",
+            "body": "",
+            "config": {
+              "example": [
+                1,
+                true,
+                "value"
+              ]
+            }
+          }
+        ],
+        "modules": {
+          "sample-module": {
+            "custom": {
+              "enabled": true
+            }
+          }
+        }
+      },
+      "id": "sample-instance",
+      "name": "Example Instance",
+      "description": "",
+      "icon_url": null,
+      "banner_url": null,
+      "logo_url": null,
+      "mc_version": "1.20.1",
+      "loader": "fabric",
+      "loader_version": null,
+      "revision": 7,
+      "clean_epoch": 2,
+      "server": {
+        "name": "",
+        "address": "minecraft.example.test",
+        "port": 25565,
+        "auto_join": false,
+        "inject": true
+      },
+      "memory": {
+        "min_mb": 1024,
+        "max_mb": 4096
+      },
+      "jvm_args": "",
+      "featured": false,
+      "source_label": "",
+      "file_count": 0,
+      "total_size": 0
+    }
+  ],
+  "user": null
+}

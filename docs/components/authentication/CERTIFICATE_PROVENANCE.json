@@ -1,0 +1,16 @@
+{
+  "source_repository": "https://github.com/scopeddlol/SCOPENET-MC",
+  "source_revision": "57daa92cb6cb4027982d06bfa1c692ab9edb88ff",
+  "source_path": "panel/server/src/yggdrasil/mod.rs",
+  "source_sha256": "a0051f44f7f6fcfe7c61aeb02966fe29f5236237d531f46591b429f09de7d039",
+  "output_path": "crates/core/src/certificates.rs",
+  "output_sha256_lf": "07875f166fb51d8fc758d90231fea4d378793e8bffa773ba894e5aab95517726",
+  "changes": [
+    "Own original 2048-bit player key generation, Mojang PEM and V1/V2 signing payloads",
+    "Keep 48-hour expiry, 40-hour refresh, millisecond timestamps and strict cache refresh boundary",
+    "Own identical player-key SELECT/INSERT OR REPLACE SQL through optional pool-only functions",
+    "Host retains blocking worker, authenticated HTTP projection and exact bad-request/SQL error mapping",
+    "Tests use generated synthetic keys and in-memory rows; no stored player keys or signing assets copied",
+    "Protected key/assets migration, independent HTTP service and backup/restore continuity remain incomplete"
+  ]
+}
