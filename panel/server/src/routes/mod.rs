@@ -29,6 +29,8 @@ pub mod guilds;
 pub mod icon_library;
 pub mod integrations;
 pub mod landing;
+pub mod launcher_releases;
+pub mod operations;
 pub mod launcher_updates;
 pub mod ledger;
 pub mod leveling;
@@ -66,6 +68,7 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .route("/mobile-apps/altstore.json", get(mobile_apps::altstore))
         .route("/mobile-apps/{platform}/download", get(mobile_apps::download))
         .route("/launcher/updates/{digest}/setup.exe", get(launcher_updates::download))
+        .route("/launcher/updates/{digest}/{name}", get(launcher_updates::download_file))
         .route("/launcher/instances/{id}", get(public::instance_manifest))
         .route("/launcher/events", post(public::event))
         .route("/instances", get(admin::list_instances))
@@ -244,6 +247,7 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .route("/connections/test-email", post(connections::admin_test_email))
         .route("/activity", get(activity::list))
         .route("/stats", get(admin::stats))
+        .route("/operations/summary", get(operations::summary))
         .route("/chat", get(chat::get).put(chat::put))
         .route("/utilities", get(utilities::get).put(utilities::put))
         .route("/custom-items", get(utilities::list_items))
@@ -288,6 +292,8 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .route("/landing/upload-launcher", post(landing::upload_launcher))
         .route("/landing/launcher/{platform}", delete(landing::remove_launcher))
         .route("/launcher/update", get(launcher_updates::admin_get).post(launcher_updates::upload).delete(launcher_updates::admin_remove))
+        .route("/launcher/releases", get(launcher_releases::list))
+        .route("/launcher/releases/{tag}/approve", post(launcher_releases::approve))
         .route("/mobile-apps", get(mobile_apps::admin_get).post(mobile_apps::upload))
         .route("/mobile-apps/{platform}", delete(mobile_apps::remove))
         .route("/instances", get(admin::list_instances).post(admin::create_instance))

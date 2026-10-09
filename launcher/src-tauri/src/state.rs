@@ -16,12 +16,13 @@ pub mod build {
             _ => None,
         },
     };
-    /// Full repository URL used to check releases for updates.
+    /// Repository whose latest release is checked for updates directly. Unset by default:
+    /// official builds update only from releases an admin approved onto the panel.
     pub const REPO: Option<&str> = match option_env!("VELORA_REPO") {
         Some(r) if !r.is_empty() => Some(r),
         _ => match option_env!("SCOPENET_REPO") {
             Some(r) if !r.is_empty() => Some(r),
-            _ => Some("https://github.com/VeloraMCDev/launcher"),
+            _ => None,
         },
     };
     /// When set to "1", players can't change the panel URL.

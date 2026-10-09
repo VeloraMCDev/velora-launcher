@@ -1,32 +1,40 @@
 # Deployment targets and minimum-cost approach
 
-Reuse existing Cloudflare resources and host capacity. Do not provision paid plans,
-duplicate environment resources or new VPS machines during source consolidation.
-Source CI is enabled. Packaging and deployment require explicit manual promotion;
-these assignments describe the code, not live deployment proof.
-
-| Component | Current implementation / intended home | Domain requirement |
-|---|---|---|
-| Deployment authority | `infra/control-plane`: Worker, D1, R2, Workflows | Protected operator/API hostname; preserve Access and machine ingress separation |
-| Deployment Panel | `panel/deployment-ui`: protected static assets | Share the operator hostname; no additional server |
-| Documentation | `docs`: generated static bundle | Optional docs hostname after content review; no dedicated VPS |
-| Complete Panel backend | `panel/server`: native Rust/Axum, SQLite, filesystem | HTTPS API origin; native host/VPS until a reviewed Workers/storage port exists |
-| Panel web apps | `panel/web`: static frontend | Share Panel origin or use selected Cloudflare static origins; review CORS/cookies/paths before splitting |
-| Standalone Authentication | `crates/auth-service`: native Rust, owned SQLite/keys | Reachable auth origin, possibly gateway paths on a shared hostname |
-| Minecraft servers | Long-running Java workloads | Reachable host/IP and port; friendly DNS/SRV optional |
-| Native deployment agent | `infra/agent`: outbound HTTPS service | No inbound public listener or domain |
-| Launcher/integrations | Desktop installers and Java artifacts | Share existing Panel/R2 download origin |
-| SDK/private libraries | Build inputs | No independent hosting/domain |
-
-The complete Rust Panel/Authentication is not yet a Workers/D1 implementation.
-Do not substitute D1 for owned stores without migration and continuity tests.
-Cloudflare already runs the separate deployment authority.
-
-Development uses an existing operator-managed host. Beta and Production hosts
-and final domains remain unresolved. Keep live addresses, resource IDs, keys and enrollment details
+Reuse existing host capacity and avoid duplicate paid resources. Packaging and
+deployment stay manual: release workflows build and test images, and an operator
+deploys them from the operations dashboard. Live hostnames, addresses and keys stay
 in ignored operator configuration.
 
-Before promotion: validate exact images on Docker, register the canonical source
-and immutable workflow policy, verify service/schema/backup contracts, prove
-agent job transport, test failed rollback and restore, and confirm host/domain
-assignments. Successful Development probe evidence does not complete these gates.
+## Production: single VPS
+
+Production runs on one existing VPS behind its Traefik reverse proxy, described by
+[infra/vps](https://github.com/VeloraMCDev/velora-launcher/blob/main/infra/vps/README.md).
+
+| Component | Implementation | Hosting |
+|---|---|---|
+| Complete Panel | `panel/server` + `panel/web` image from the Panel release workflow | Docker on the VPS; persistent `panel-data` |
+| Documentation | `docs` static bundle served by unprivileged nginx | Docker on the VPS; rebuilt from `main` by the dashboard |
+| Operations dashboard | `panel/operations` image from the Operations release workflow | Docker on the VPS; SSO in front, Velora admin sign-in |
+| Backups | `infra/vps/velora-backup.sh` (systemd timer) | Nightly cold archive, kept locally and copied offsite |
+| Launcher installers | Launcher release workflow → GitHub release | Published to players by the Panel only after admin approval |
+| Minecraft servers | Long-running Java workloads | Existing game hosts; plugins talk to the Panel URL |
+| SDK/private libraries | Build inputs | No hosting |
+
+The Panel keeps native Rust/SQLite storage; do not replace it with D1 without a
+reviewed data/continuity conversion. The legacy SCOPENET Panel 1.2.2 store was
+migrated unchanged (schema 46); its signing key and session secret were preserved.
+
+## Optional: multi-host control plane
+
+`infra/control-plane` (Cloudflare Workers, D1, R2 and Workflows) and `infra/agent`
+remain the design for coordinating several hosts. They are not required for the
+single-VPS deployment and are not currently in use.
+
+## Release gates
+
+Before deploying a build: pass source CI, build the exact image with its release
+workflow (which runs the image acceptance tests, including cold backup/restore),
+and deploy the pinned digest from the dashboard, which backs up first and rolls back
+automatically if the new build is unhealthy. Launcher releases additionally need a
+valid release signature and an explicit admin approval before reaching players.
+Restore drills from offsite archives should be repeated after storage changes.

@@ -685,6 +685,12 @@
                   <input bind:value={panelInput} placeholder="panel.yourserver.com" />
                   <button class="sm" disabled={panelBusy || !panelInput || panelInput === app.panelUrl} onclick={changePanel}>{#if panelBusy}<LoaderCircle class="spin" size={14} />{:else}<Link2 size={14} />{/if} Connect</button>
                 </div>
+                {#if app.boot?.app.default_panel_url && app.panelUrl !== app.boot.app.default_panel_url}
+                  {@const home = app.boot.app.default_panel_url}
+                  <button class="sm link-btn" disabled={panelBusy} onclick={() => { panelInput = home; changePanel(); }}>
+                    <RefreshCw size={14} /> Use the default panel ({home.replace(/^https?:\/\//, '')})
+                  </button>
+                {/if}
               {/if}
             </label>
             <button class="sm link-btn" onclick={() => refresh().then(() => toast('Refreshed')).catch((e) => toast(errorText(e), 'error'))}><RefreshCw size={14} /> Refresh from server</button>

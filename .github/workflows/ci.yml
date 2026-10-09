@@ -26,6 +26,7 @@ jobs:
           cache-dependency-path: |
             infra/package-lock.json
             docs/package-lock.json
+            panel/operations/package-lock.json
       - run: node scripts/verify-identity.mjs
       - run: node scripts/check-publication.mjs --checkout
       - name: Install verified secret scanner
@@ -39,10 +40,13 @@ jobs:
       - run: npm ci --no-audit --no-fund
         working-directory: infra
       - run: node infra/scripts/check-workflows.mjs .
-      - name: Check Deployment Panel controls
-        run: |
-          node --test panel/deployment-ui/client.test.mjs panel/deployment-ui/probe-plan.test.mjs
-          node --check panel/deployment-ui/app.mjs
+      - name: Launcher release signing
+        run: node --test scripts/sign-launcher-release.test.mjs
+      - run: npm ci --no-audit --no-fund
+        working-directory: panel/operations
+      - name: Operations dashboard
+        working-directory: panel/operations
+        run: npm test && npm run check && npm run check:runes && npm run build
       - run: npm test
         working-directory: infra
       - run: npx --no-install tsc -p control-plane/tsconfig.json

@@ -1,0 +1,9 @@
+[Unit]
+Description=Run a Velora backup when the operations dashboard requests one
+
+[Path]
+PathExists=/var/lib/velora-backup/request
+Unit=velora-backup.service
+
+[Install]
+WantedBy=multi-user.target

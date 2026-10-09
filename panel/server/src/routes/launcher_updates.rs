@@ -8,7 +8,7 @@ use crate::{
 };
 use axum::{
     body::Body,
-    extract::{Multipart, Path},
+    extract::{Multipart, Path, Query},
     http::header,
     response::{IntoResponse, Response},
     Json,
@@ -19,7 +19,7 @@ use sha2::{Digest, Sha256};
 use tokio::io::AsyncReadExt;
 
 pub const MAX_INSTALLER: usize = 256 * 1024 * 1024;
-const KEY: &str = "launcher_installer_release";
+pub const KEY: &str = "launcher_installer_release";
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct PublishedInstaller {
@@ -44,8 +44,22 @@ pub async fn admin_remove(_: AdminUser, State(state): State<AppState>) -> AppRes
     }
     Ok(Json(None))
 }
-pub async fn latest(State(state): State<AppState>) -> AppResult<Response> {
-    let published: Option<PublishedInstaller> = store::kv_get(&state, KEY).await?;
+#[derive(Deserialize)]
+pub struct FeedQuery {
+    platform: Option<String>,
+}
+/// `GET /api/v1/launcher/update[?platform=windows|macos|linux]`. Launchers that predate the
+/// parameter are Windows builds, so its absence means Windows.
+pub async fn latest(State(state): State<AppState>, Query(q): Query<FeedQuery>) -> AppResult<Response> {
+    let published: Option<PublishedInstaller> = match q.platform.as_deref().unwrap_or("windows") {
+        "windows" => store::kv_get(&state, KEY).await?,
+        platform @ ("mac" | "macos" | "linux") => {
+            let platforms: std::collections::BTreeMap<String, PublishedInstaller> =
+                store::kv_get(&state, super::launcher_releases::PLATFORM_KEY).await?;
+            platforms.get(if platform == "linux" { "linux" } else { "mac" }).cloned()
+        }
+        _ => return Err(AppError::bad_request("Unknown platform")),
+    };
     Ok(([(header::CACHE_CONTROL, "no-store")], Json(published.map(|p| p.update))).into_response())
 }
 
@@ -114,6 +128,8 @@ pub async fn upload(_: AdminUser, State(state): State<AppState>, mut form: Multi
             url: format!("/api/v1/launcher/updates/{digest}/setup.exe"),
             size: bytes.len() as u64,
             sha256: Some(digest),
+            // Manual uploads are unsigned: launchers that verify release signatures ignore them.
+            signature: None,
         },
         filename: name,
         published_at: published_at.clone(),
@@ -144,6 +160,17 @@ fn is_pe(bytes: &[u8]) -> bool {
     offset >= 64 && offset.checked_add(4).is_some_and(|end| bytes.get(offset..end) == Some(b"PE\0\0"))
 }
 
+/// `GET /api/v1/launcher/updates/{digest}/{name}`: an approved macOS or Linux installer.
+pub async fn download_file(State(state): State<AppState>, Path((digest, name)): Path<(String, String)>) -> AppResult<Response> {
+    if digest.len() != 64 || !digest.bytes().all(|b| b.is_ascii_hexdigit()) {
+        return Err(AppError::not_found("Installer not found"));
+    }
+    let (name, path) =
+        super::launcher_releases::published_file(&state, &digest, &name).await?.ok_or_else(|| AppError::not_found("Installer not found"))?;
+    let file = tokio::fs::File::open(path).await.map_err(|_| AppError::not_found("Installer not found"))?;
+    stream_file(file, &name).await
+}
+
 pub async fn download(State(state): State<AppState>, Path(digest): Path<String>) -> AppResult<Response> {
     if digest.len() != 64 || !digest.bytes().all(|b| b.is_ascii_hexdigit()) {
         return Err(AppError::not_found("Installer not found"));
@@ -151,13 +178,17 @@ pub async fn download(State(state): State<AppState>, Path(digest): Path<String>)
     let file = tokio::fs::File::open(state.cfg.downloads_dir().join(format!("{digest}-setup.exe")))
         .await
         .map_err(|_| AppError::not_found("Installer not found"))?;
-    let size = file.metadata().await?.len();
     // The file on disk is named after its checksum; players get a tidy name.
     let published: Option<PublishedInstaller> = store::kv_get(&state, KEY).await?;
     let brand = store::branding(&state).await.map(|b| b.name).unwrap_or_default();
     let (version, original) = published.map(|p| (p.update.version, p.filename)).unwrap_or_default();
     let name = super::landing::short_name(&brand, "windows", &original, "", &version);
     let name = if name.to_ascii_lowercase().ends_with(".exe") { name } else { format!("{name}.exe") };
+    stream_file(file, &name).await
+}
+
+async fn stream_file(file: tokio::fs::File, name: &str) -> AppResult<Response> {
+    let size = file.metadata().await?.len();
     let disposition = format!("attachment; filename=\"{name}\"");
     let stream = futures::stream::try_unfold(file, |mut file| async {
         let mut bytes = vec![0; 64 * 1024];

@@ -14,7 +14,7 @@ See [publication policy](security/PUBLICATION_STATUS.md).
 | SDK | `packages/platform-*`, `packages/rust-platform-contracts`, `packages/java-platform-client`, `packages/java-legacy-api`, `shared/http` | Neutral contracts and public registry dependencies |
 | Minecraft integration | `integrations`, `packages/java-map-producer` | SDK; gameplay only through explicitly composed host integration |
 | Gameplay | `packages/private-*`, `java`, `ui`, gameplay frontend modules under `shared` | Platform ports and SDK; never a dependency of reusable platform libraries |
-| Deployment | `infra`, `panel/deployment-ui` | Versioned service/artifact contracts; separate build and operational lifecycle |
+| Deployment | `infra`, `panel/operations` | Versioned service/artifact contracts; separate build and operational lifecycle |
 | Documentation | `docs` | Build independently; review the selected content before publishing |
 
 `node scripts/check-boundaries.mjs` enforces the reusable Rust dependency boundary,

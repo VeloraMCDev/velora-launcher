@@ -4022,7 +4022,7 @@ dependencies = [
 
 [[package]]
 name = "scopenet-launcher"
-version = "0.5.0"
+version = "1.3.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -4099,7 +4099,9 @@ dependencies = [
 name = "scopenet-shared"
 version = "0.5.0"
 dependencies = [
+ "base64 0.22.1",
  "md-5",
+ "ring",
  "semver",
  "serde",
  "serde_json",
