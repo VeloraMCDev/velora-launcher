@@ -58,7 +58,7 @@ export function searchRecords(page) {
   for (const part of parts) {
     const match = part.match(/^<h([1-3]) id="([^"]+)">([\s\S]*?)<\/h\1>/);
     const heading = match ? plain(match[3].replace(/<a class="anchor"[\s\S]*?<\/a>/,'')) : page.title;
-    const text = plain(match ? part.slice(match[0].length) : part).slice(0, 1200);
+    const text = plain(match ? part.slice(match[0].length) : part);
     if (!text && !match) continue;
     const anchor = match && match[1] !== '1' ? '#' + match[2] : '';
     records.push({ u: '/' + page.dest + anchor, p: page.title, h: heading, t: text, s: page.section });

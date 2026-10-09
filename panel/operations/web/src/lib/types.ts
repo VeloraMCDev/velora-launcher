@@ -52,6 +52,7 @@ export interface ImageRelease { tag: string; commit: string; run: number; digest
 export interface ContainerUpdate { name: string; project: string | null; service: string | null; image: string; status: 'current' | 'update-available' | 'pinned' | 'local-build' | 'unknown'; error?: string }
 export interface Updates {
   checked: string | null;
+  dashboard_update?: 'running' | 'succeeded' | 'rolled-back' | 'rollback-failed' | null;
   errors?: string[];
   launcher?: { releases: Release[] };
   launcher_served?: string | null;

@@ -1,6 +1,6 @@
 // Operator actions on the Velora stack. Each runs as a tracked job with a live log and an audit entry.
 import { randomUUID } from 'node:crypto';
-import { readFileSync, renameSync, writeFileSync, unlinkSync } from 'node:fs';
+import { existsSync, readFileSync, renameSync, writeFileSync, unlinkSync } from 'node:fs';
 import { join } from 'node:path';
 import { runHelper, startDetachedHelper, inspectContainer, listContainers } from './docker.mjs';
 import { audit } from './store.mjs';
@@ -17,6 +17,13 @@ const jobs = new Map();
 export const listJobs = () => [...jobs.values()].sort((a, b) => b.started.localeCompare(a.started)).slice(0, 30).map(({ log, ...j }) => ({ ...j, lines: log.length }));
 export const getJob = id => jobs.get(id) ?? null;
 export const busy = () => [...jobs.values()].some(j => j.status === 'running');
+
+export function dashboardUpdateStatus(directory = STACK_DIR) {
+  try {
+    const status = readFileSync(join(directory, '.ops-update-result'), 'utf8').trim();
+    return ['running', 'succeeded', 'rolled-back', 'rollback-failed'].includes(status) ? status : null;
+  } catch { return null; }
+}
 
 export function startJob(kind, user, target, fn, { notify } = {}) {
   if (busy()) throw Object.assign(new Error('Another operation is still running. Wait for it to finish.'), { status: 409 });
@@ -124,10 +131,20 @@ export const updateImage = (name, image) => async log => {
   const updated = setImageDigest(original, name, image);
   if (service === 'ops') {
     // The dashboard cannot supervise its own restart: hand the update to a helper that outlives it.
-    writeFileSync(file + '.tmp', updated); renameSync(file + '.tmp', file);
-    log(`.env now pins ${image}. Restarting the dashboard; reload the page in a minute.`);
-    await startDetachedHelper({ image: CLI_IMAGE, cmd: ['sh', '-c', `sleep 3 && docker compose -p ${STACK_PROJECT} up -d ops`], binds: stackBinds(), workingDir: STACK_DIR });
-    return 'Self-update handed off.';
+    const rollback = file + '.ops-rollback';
+    if (existsSync(rollback)) throw new Error('A dashboard update is already pending; inspect .env.ops-rollback on the host.');
+    writeFileSync(rollback, original, { mode: 0o600 });
+    try {
+      writeFileSync(file + '.tmp', updated); renameSync(file + '.tmp', file);
+      const script = readFileSync(new URL('./self-update.sh', import.meta.url), 'utf8');
+      await startDetachedHelper({ image: CLI_IMAGE, cmd: ['sh', '-c', script, '--', STACK_PROJECT, file, rollback], binds: stackBinds(), workingDir: STACK_DIR });
+    } catch (e) {
+      writeFileSync(file + '.tmp', original); renameSync(file + '.tmp', file);
+      unlinkSync(rollback);
+      throw e;
+    }
+    log(`.env now pins ${image}. A helper will check dashboard health and roll back on failure; reload the page in a minute.`);
+    return 'Self-update handed off; the final result is recorded in .ops-update-result on the host.';
   }
   await requestBackup(log);
   writeFileSync(file + '.tmp', updated); renameSync(file + '.tmp', file);
@@ -163,7 +180,8 @@ export const rebuildDocs = (ref = 'main') => async log => {
     binds: [`${STACK_DIR}:${STACK_DIR}`], workingDir: src, onLog: log,
   });
   if (r.code) throw new Error('documentation build failed');
-  await compose(['restart', 'docs'], log);
+  // Replacing docs-site changes its inode: restart would retain the old bind mount.
+  await compose(['up', '-d', '--force-recreate', '--no-deps', 'docs'], log);
   return 'Documentation rebuilt and published.';
 };
 

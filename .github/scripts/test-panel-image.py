@@ -81,6 +81,10 @@ def main(image):
                                {"name": "Smoke " + name_suffix, "mc_version": "1.21.1", "loader": "vanilla"}, token)["id"]
             request("/api/admin/progression", "PUT", {"level_base": level_base}, token, instance)
             instances.append((instance, level_base))
+        # Account and audit totals are platform-wide even with multiple instances.
+        summary = request("/api/admin/operations/summary", token=token)
+        assert summary["users"] == 1 and summary["admins"] == 1, summary
+        assert summary["logins_24h"] == 1, summary
         # Opening scoped stores exercises SQLite TEMP views and legacy import.
         # A restart also exercises startup workers against persistent instances.
         for _ in range(2):

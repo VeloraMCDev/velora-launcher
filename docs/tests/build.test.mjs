@@ -37,13 +37,14 @@ test('search index covers every section and the sitemap lists every page', async
   try {
     writeFileSync(join(root,'README.md'),'# Home\nWelcome.\n## Install the launcher\nDownload the **installer** & run it.\n### Linux\nUse the AppImage.');
     mkdirSync(join(root,'deployment'));
-    writeFileSync(join(root,'deployment/README.md'),'# Deploy\n## Backups\nNightly <script>x</script> archives.');
+    writeFileSync(join(root,'deployment/README.md'),'# Deploy\n## Backups\nNightly <script>x</script> archives. ' + 'Archive detail. '.repeat(150) + 'Offsite restore procedure.');
     buildSite(root,join(root,'dist'),'a'.repeat(40),{siteUrl:'https://docs.example.org'});
     const index = JSON.parse(readFileSync(join(root,'dist/search-index.json'),'utf8'));
     const install = index.find(r => r.h === 'Install the launcher');
     assert.equal(install.u,'/index.html#install-the-launcher');
     assert.match(install.t,/Download the installer & run it/);
     assert.ok(index.some(r => r.u === '/deployment/README.html#backups' && r.s === 'Deployment' && !r.t.includes('script')));
+    assert.match(index.find(r => r.h === 'Backups').t, /Offsite restore procedure/);
     const sitemap = readFileSync(join(root,'dist/sitemap.xml'),'utf8');
     assert.match(sitemap,/<loc>https:\/\/docs\.example\.org\/<\/loc>/);
     assert.match(sitemap,/deployment\/README\.html/);

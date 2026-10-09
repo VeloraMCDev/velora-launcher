@@ -90,8 +90,8 @@ route('GET', '/api/containers/([A-Za-z0-9_.-]+)/logs', async (req, res, session,
 });
 
 // ----- updates & releases -----
-route('GET', '/api/updates', (req, res) => send(res, 200, monitor.state.updates));
-route('POST', '/api/updates/check', async (req, res) => send(res, 200, await monitor.checkUpdates(true)));
+route('GET', '/api/updates', (req, res) => send(res, 200, { ...monitor.state.updates, dashboard_update: actions.dashboardUpdateStatus() }));
+route('POST', '/api/updates/check', async (req, res) => send(res, 200, { ...await monitor.checkUpdates(true), dashboard_update: actions.dashboardUpdateStatus() }));
 
 // ----- actions -----
 const job = (res, session, kind, target, fn) => send(res, 202, actions.startJob(kind, session.username, target, fn, { notify: monitor.notify }));

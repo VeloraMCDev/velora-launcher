@@ -327,6 +327,10 @@ pub fn feature_for_path(path: &str) -> Option<&'static str> {
 }
 
 pub fn platform_path(path: &str) -> bool {
+    // Operations aggregates the shared account and audit store across instances.
+    if path == "/api/admin/operations/summary" {
+        return true;
+    }
     if path.starts_with("/api/yggdrasil") {
         return true;
     }

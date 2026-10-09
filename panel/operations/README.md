@@ -24,6 +24,12 @@ also update itself. Panel updates request a backup first, pin the new digest in 
 wait for the health check and roll back automatically on failure. Only services in
 the Velora compose project can be changed.
 
+Dashboard self-updates run in a detached helper that pulls the pinned image,
+checks container health and restores the previous `.env` and image on failure.
+The helper records `running`, `succeeded`, `rolled-back` or `rollback-failed` in
+`.ops-update-result` in the deployment directory. A failed rollback retains
+`.env.ops-rollback` for operator recovery and blocks another self-update.
+
 ## Development
 
 ```sh
