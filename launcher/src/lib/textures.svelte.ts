@@ -18,6 +18,7 @@ function apply(s: { ready: boolean; count: number; version: string | null }) {
   textures.checked = true;
   if (changed) {
     cache.clear();
+    spriteCache.clear();
     texVersion.n++;
   }
 }
@@ -57,5 +58,38 @@ export function itemTexture(id: string): Promise<string | null> {
     set.add(resolve);
     waiting.set(id, set);
     timer ??= setTimeout(flush, 16);
+  });
+}
+
+const spriteCache = new Map<string, string | null>();
+const spriteWaiting = new Map<string, Set<(uri: string | null) => void>>();
+let spriteTimer: ReturnType<typeof setTimeout> | null = null;
+
+async function flushSprites() {
+  spriteTimer = null;
+  const names = [...spriteWaiting.keys()];
+  let found: Record<string, string> = {};
+  try {
+    found = await invoke<Record<string, string>>('mc_sprites', { names });
+  } catch {
+    /* sprites are decoration only */
+  }
+  for (const n of names) {
+    const uri = found[n] ?? null;
+    spriteCache.set(n, uri);
+    spriteWaiting.get(n)?.forEach((cb) => cb(uri));
+    spriteWaiting.delete(n);
+  }
+}
+
+/** A GUI sprite such as `gui/hud/heart/full.png` or `effect/speed.png` as a data URI (null until the game has been installed). */
+export function sprite(name: string): Promise<string | null> {
+  if (!textures.ready) return Promise.resolve(null);
+  if (spriteCache.has(name)) return Promise.resolve(spriteCache.get(name) ?? null);
+  return new Promise((resolve) => {
+    const set = spriteWaiting.get(name) ?? new Set();
+    set.add(resolve);
+    spriteWaiting.set(name, set);
+    spriteTimer ??= setTimeout(flushSprites, 16);
   });
 }

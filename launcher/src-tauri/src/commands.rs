@@ -1649,6 +1649,21 @@ pub fn item_textures(state: State<'_, AppState>, names: Vec<String>) -> std::col
         .collect()
 }
 
+/// Other Minecraft sprites (HUD hearts, effect icons, panorama…) as data URIs. Names are `kind/path.png`, e.g. `gui/hud/heart/full.png`.
+#[tauri::command]
+pub fn mc_sprites(state: State<'_, AppState>, names: Vec<String>) -> std::collections::HashMap<String, String> {
+    use base64::Engine;
+    names
+        .into_iter()
+        .take(200)
+        .filter_map(|n| {
+            let (kind, rel) = n.split_once('/')?;
+            let png = velora_launcher_core::textures::find_sprite(&state.layout, kind, rel)?;
+            Some((n, format!("data:image/png;base64,{}", base64::engine::general_purpose::STANDARD.encode(png))))
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod casino_path_tests {
     use super::casino_path;

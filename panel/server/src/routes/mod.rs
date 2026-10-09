@@ -35,6 +35,7 @@ pub mod launcher_updates;
 pub mod ledger;
 pub mod leveling;
 pub mod luckperms;
+pub mod mc_assets;
 pub mod map;
 pub mod market;
 pub mod meta;
@@ -62,6 +63,8 @@ pub fn api(state: &AppState) -> Router<AppState> {
     let launcher = Router::new()
         .route("/resource-pack.zip", get(resource_assets::download))
         .route("/icons/{pack}/{file}", get(icon_library::svg))
+        .route("/mc/status", get(mc_assets::status))
+        .route("/mc/{kind}/{*file}", get(mc_assets::texture))
         .route("/launcher/manifest", get(public::manifest))
         .route("/launcher/update", get(launcher_updates::latest))
         .route("/mobile-apps", get(mobile_apps::public_get))
@@ -230,6 +233,9 @@ pub fn api(state: &AppState) -> Router<AppState> {
     let admin = Router::new()
         .route("/instances/{id}/experience", axum::routing::put(crate::experience::configure))
         .route("/icons/packs", get(icon_library::packs))
+        .route("/mc-textures", get(mc_assets::admin_get).delete(mc_assets::admin_clear))
+        .route("/mc-textures/fetch", post(mc_assets::admin_fetch))
+        .route("/mc-textures/upload", post(mc_assets::admin_upload).layer(DefaultBodyLimit::max(mc_assets::MAX_JAR as usize + 1024 * 1024)))
         .route("/icons/search", get(icon_library::search))
         .route("/resource-assets", get(resource_assets::list).post(resource_assets::upload).layer(DefaultBodyLimit::max(4 * 1024 * 1024)))
         .route("/content", get(content::list))

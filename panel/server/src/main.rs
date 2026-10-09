@@ -23,6 +23,7 @@ async fn main() -> anyhow::Result<()> {
     let state = build_state(cfg, pool).await?;
     bootstrap_admin(&state).await?;
     state.experiences.enable_workers(&state).await.map_err(|e| anyhow::anyhow!(e.message))?;
+    tokio::spawn(velora_panel::routes::mc_assets::ensure_on_startup(state.clone()));
 
     let listener = tokio::net::TcpListener::bind(&bind).await?;
     tracing::info!("Velora panel v{} listening on http://{bind}", env!("CARGO_PKG_VERSION"));

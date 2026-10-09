@@ -1,40 +1,25 @@
-//! Item and block textures, taken from the player's own Minecraft client jar.
+//! Minecraft textures (items, blocks, HUD sprites, effects), taken from the player's own Minecraft client jar.
 //!
-//! The launcher already downloads the client to run the game. Its jar holds every item and block texture, so the launcher copies
-//! those out once into `<data>/minecraft/textures/` — nothing from Mojang is shipped with or redistributed by Velora. The folder
-//! lives outside the version folders and the launcher's own files, so it survives launcher updates; `ensure` only does work when
-//! the folder is missing or was built from a different jar.
+//! The launcher already downloads the client to run the game. Its jar holds every texture, so the launcher copies them out once
+//! into `<data>/minecraft/textures/` — nothing from Mojang is shipped with or redistributed by Velora. The folder lives outside
+//! the version folders and the launcher's own files, so it survives launcher updates; `ensure` only does work when the folder is
+//! missing or was built from a different jar. The extraction itself is shared with the panel (`velora_platform_utils::mc_textures`).
 
 use crate::paths::Layout;
-use anyhow::{Context, Result};
-use std::fs::{self, File};
-use std::io::{Read, Write};
-use std::path::{Path, PathBuf};
+use anyhow::Result;
+use std::fs;
+use std::path::PathBuf;
+use velora_platform_utils::mc_textures as shared;
 
-const KINDS: [&str; 2] = ["item", "block"];
-const MARKER: &str = ".source";
-/// Never extract a single file bigger than this (real textures are a few KB).
-const MAX_FILE: u64 = 512 * 1024;
+pub use shared::Status;
 
 pub fn dir(layout: &Layout) -> PathBuf {
     layout.root.join("textures")
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
-pub struct Status {
-    pub ready: bool,
-    pub count: usize,
-    /// The version the textures came from, e.g. `1.21.1`.
-    pub version: Option<String>,
-}
-
 /// What the textures folder holds right now.
 pub fn status(layout: &Layout) -> Status {
-    let root = dir(layout);
-    let marker = fs::read_to_string(root.join(MARKER)).ok();
-    let count = KINDS.iter().map(|k| fs::read_dir(root.join(k)).map(|d| d.count()).unwrap_or(0)).sum();
-    let version = marker.as_deref().and_then(|m| m.split(':').next()).map(str::to_string);
-    Status { ready: count > 0 && marker.is_some(), count, version }
+    shared::status(&dir(layout))
 }
 
 /// `1.21.1` or `1.20` style ids: the plain vanilla client of a release.
@@ -70,82 +55,25 @@ fn newest_client(layout: &Layout) -> Option<(String, PathBuf, u64)> {
 /// Extract the textures if they are missing or come from another jar. Returns true when it did work.
 pub fn ensure(layout: &Layout) -> Result<bool> {
     let Some((id, jar, size)) = newest_client(layout) else { return Ok(false) };
-    let want = format!("{id}:{size}");
-    let root = dir(layout);
-    if fs::read_to_string(root.join(MARKER)).ok().as_deref() == Some(want.as_str()) && status(layout).ready {
-        return Ok(false);
-    }
-    extract(&jar, &root).with_context(|| format!("reading textures from {}", jar.display()))?;
-    fs::write(root.join(MARKER), want)?;
-    Ok(true)
+    shared::ensure(&dir(layout), &id, &jar, size, None)
 }
 
-/// Copy `assets/minecraft/textures/{item,block}/<name>.png` out of the jar into `out/{item,block}/`.
-pub fn extract(jar: &Path, out: &Path) -> Result<usize> {
-    let mut zip = zip::ZipArchive::new(File::open(jar)?)?;
-    // Build next to the final folder and swap in, so a crash can't leave half a set behind.
-    let staging = out.with_extension("building");
-    let _ = fs::remove_dir_all(&staging);
-    for k in KINDS {
-        fs::create_dir_all(staging.join(k))?;
-    }
-    let mut n = 0;
-    for i in 0..zip.len() {
-        let mut file = zip.by_index(i)?;
-        let name = file.name().to_string();
-        let Some(rest) = name.strip_prefix("assets/minecraft/textures/") else { continue };
-        let Some((kind, leaf)) = rest.split_once('/') else { continue };
-        if !KINDS.contains(&kind) || leaf.contains('/') || !leaf.ends_with(".png") || file.size() > MAX_FILE {
-            continue;
-        }
-        if !leaf.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || matches!(b, b'_' | b'.' | b'-')) {
-            continue;
-        }
-        let mut bytes = Vec::with_capacity(file.size() as usize);
-        file.read_to_end(&mut bytes)?;
-        File::create(staging.join(kind).join(leaf))?.write_all(&bytes)?;
-        n += 1;
-    }
-    if n == 0 {
-        let _ = fs::remove_dir_all(&staging);
-        anyhow::bail!("that jar has no item textures");
-    }
-    let _ = fs::remove_dir_all(out);
-    fs::rename(&staging, out)?;
-    Ok(n)
-}
-
-/// A texture as PNG bytes. Item ids are written like `minecraft:diamond_sword`, `DIAMOND_SWORD` or `diamond_sword`; a few names
-/// differ between the item id and the texture file, and blocks without an item texture (stone, oak_log…) use their block texture.
+/// An item or block texture as PNG bytes (`minecraft:diamond_sword`, `DIAMOND_SWORD`, `stone`…).
 pub fn find(layout: &Layout, id: &str) -> Option<Vec<u8>> {
-    let name = id.rsplit(':').next()?.to_ascii_lowercase();
-    if name.is_empty() || !name.bytes().all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_') {
-        return None;
-    }
-    let root = dir(layout);
-    let candidates = [
-        root.join("item").join(format!("{name}.png")),
-        root.join("block").join(format!("{name}.png")),
-        root.join("block").join(format!("{name}_front.png")),
-        root.join("block").join(format!("{name}_side.png")),
-        root.join("block").join(format!("{name}_top.png")),
-        root.join("item").join(format!("{}.png", alias(&name))),
-    ];
-    candidates.iter().find_map(|p| fs::read(p).ok())
+    shared::find_item(&dir(layout), id)
 }
 
-fn alias(name: &str) -> String {
-    match name {
-        "oak_log" => "oak_log".into(),
-        "grass_block" => "grass_block_side".into(),
-        other => other.to_string(),
-    }
+/// Any other extracted sprite as PNG bytes, e.g. `("gui", "hud/heart/full.png")` or `("effect", "speed.png")`.
+pub fn find_sprite(layout: &Layout, kind: &str, rel: &str) -> Option<Vec<u8>> {
+    fs::read(shared::file(&dir(layout), kind, rel)?).ok()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::fs::File;
     use std::io::Write as _;
+    use std::path::Path;
 
     fn fake_jar(path: &Path, files: &[(&str, &[u8])]) {
         let mut zip = zip::ZipWriter::new(File::create(path).unwrap());

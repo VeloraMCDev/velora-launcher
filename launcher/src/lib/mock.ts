@@ -190,6 +190,18 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
       }
       return out;
     }
+    case 'mc_sprites': {
+      const out: Record<string, string> = {};
+      for (const n of args.names as string[]) {
+        const c = document.createElement('canvas');
+        c.width = c.height = 9;
+        const g = c.getContext('2d')!;
+        g.fillStyle = n.includes('container') ? '#2a0f12' : n.includes('food') ? '#c8793a' : '#d4262c';
+        g.fillRect(1, 1, 7, 6); g.fillRect(2, 7, 5, 1);
+        out[n] = c.toDataURL();
+      }
+      return out;
+    }
     case 'get_public_servers':
       return { servers: [{ id: 1, name: 'Survival SMP', instance_id: 'survival-smp', map: true, online: true, players_online: 42, players_max: 100 }] };
     case 'get_map_info':

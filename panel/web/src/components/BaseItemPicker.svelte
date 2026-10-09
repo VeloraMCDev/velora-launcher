@@ -2,7 +2,8 @@
   import { Search, ChevronRight } from '@lucide/svelte';
   import Modal from './Modal.svelte';
   import { BASE_GROUPS, itemLabel } from '../lib/mcData';
-  import { resolveIcon } from '../lib/achievementIcons';
+  import McItem from './McItem.svelte';
+  import { loadMcItems, mcItems } from '../lib/mc.svelte';
 
   let { value = $bindable('minecraft:paper'), label = 'Base item' }: { value: string; label?: string } = $props();
 
@@ -10,9 +11,11 @@
   let q = $state('');
   let group = $state('weapons');
   let custom = $state('');
-  const emoji = (id: string) => resolveIcon({ icon_item: id.replace('minecraft:', '') }).emoji;
+  $effect(() => { if (open) loadMcItems(); });
   const all = BASE_GROUPS.flatMap((g) => g.items);
-  const shown = $derived(q ? all.filter((i) => itemLabel(i).toLowerCase().includes(q.toLowerCase())) : (BASE_GROUPS.find((g) => g.id === group)?.items ?? []));
+  // Searching covers every item that has a texture, not just the curated groups.
+  const searchable = $derived([...new Set([...all, ...mcItems.list.map((n) => 'minecraft:' + n)])]);
+  const shown = $derived(q ? searchable.filter((i) => itemLabel(i).toLowerCase().includes(q.toLowerCase())).slice(0, 150) : (BASE_GROUPS.find((g) => g.id === group)?.items ?? []));
   function pick(id: string) { value = id; open = false; }
   function useCustom() {
     const id = custom.trim().toLowerCase();
@@ -24,7 +27,7 @@
 <div class="bip">
   <span class="lbl">{label}</span>
   <button type="button" class="cur" onclick={() => (open = true)}>
-    <span class="tile">{emoji(value)}</span>
+    <McItem id={value} size={42} slot />
     <span class="txt"><b>{itemLabel(value)}</b><small>{value}</small></span>
     <span class="chg">Change <ChevronRight size={14} /></span>
   </button>
@@ -39,7 +42,7 @@
   {/if}
   <div class="grid">
     {#each shown as id (id)}
-      <button class="t" class:on={value === id} onclick={() => pick(id)}><span class="tile big">{emoji(id)}</span><span>{itemLabel(id)}</span></button>
+      <button class="t" class:on={value === id} onclick={() => pick(id)}><McItem {id} size={52} slot /><span>{itemLabel(id)}</span></button>
     {/each}
     {#if !shown.length}<p class="none">No match. Type the item id below.</p>{/if}
   </div>
@@ -59,8 +62,6 @@
   .txt { display: grid; flex: 1; min-width: 0; }
   .txt small { color: var(--muted); font-family: var(--mono); font-size: 0.7rem; }
   .chg { display: inline-flex; align-items: center; color: var(--accent-2); font-size: 0.8rem; }
-  .tile { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 9px; background: #8b8b8b; box-shadow: inset 2px 2px 0 #373737, inset -2px -2px 0 #fff8; font-size: 22px; }
-  .tile.big { width: 52px; height: 52px; font-size: 26px; }
   .search { display: flex; align-items: center; gap: 8px; padding: 0 11px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); margin-bottom: 10px; }
   .search input { border: 0; background: none; padding: 9px 0; outline: none; flex: 1; color: inherit; }
   .seg { margin-bottom: 10px; }

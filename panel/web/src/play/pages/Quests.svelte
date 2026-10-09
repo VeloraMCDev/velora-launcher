@@ -1,4 +1,5 @@
 <script lang="ts">
+  import McItem from '../../components/McItem.svelte';
   import { onMount } from 'svelte';
   import {
     Target, Trophy, Clock, Check, Gift, Pickaxe, Swords, Hammer, Wheat, Users, Compass, RefreshCw, LoaderCircle, Flame, Star, Lock, Crown, Sparkles, ChevronsUp, Layers, Search
@@ -236,7 +237,7 @@
                 {/if}
                 <div class="qtop">
                   <div class="qic" class:done={u.completed}>
-                    {#if imageIcon(q.icon)}<img src={imageIcon(q.icon)} alt="" />{:else if q.icon && !questIcons[q.icon] && !catIcons[q.icon]}<span class="emoji">{resolveIcon({ icon_item: q.icon }).emoji}</span>{:else}<QI size={22} />{/if}
+                    {#if imageIcon(q.icon)}<img src={imageIcon(q.icon)} alt="" />{:else if q.icon && !questIcons[q.icon] && !catIcons[q.icon]}<McItem id={q.icon} size={28} emoji={resolveIcon({ icon_item: q.icon }).emoji} />{:else}<QI size={22} />{/if}
                   </div>
                   <div class="grow">
                     <div class="qtitle"><b>{q.title}</b><span class="pl-chip">{q.category}</span></div>
@@ -401,7 +402,6 @@
   .qic { width: 46px; height: 46px; border-radius: 14px; flex-shrink: 0; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 20%, transparent); color: var(--accent-2); }
   .qic.done { background: color-mix(in srgb, var(--good) 22%, transparent); color: var(--good); }
   .qic img { width: 30px; height: 30px; object-fit: contain; }
-  .emoji { font-size: 1.4rem; }
   .qtitle { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .qtitle .pl-chip { text-transform: capitalize; font-size: 0.68rem; }
   .qtop p, .ach p { color: var(--muted); font-size: 0.86rem; margin-top: 3px; line-height: 1.4; }

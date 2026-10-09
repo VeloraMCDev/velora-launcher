@@ -33,6 +33,15 @@ Docker image acceptance is a separate release gate.
 
 For fictional players and sample content, use [the isolated demo](https://github.com/VeloraMCDev/velora-launcher/blob/main/scripts/demo/README.md).
 
+### Minecraft textures
+
+The panel and launcher draw real Minecraft item, block, HUD and effect textures, but none are committed to this repository or
+shipped in images; they remain Mojang's property. The launcher unpacks them from the client jar the player already downloaded.
+The panel downloads the official vanilla client from Mojang on first start (SHA-1 verified), keeps the extracted PNGs in
+`<data>/mc-textures/`, and serves them from `/api/v1/mc/...`. Hosts without internet access can upload a `client.jar` in
+**Settings → Launcher & apps → Minecraft textures**. Set `VELORA_MC_TEXTURES=off` to stop the automatic download. Until textures
+exist every page keeps its built-in icons. The shared extraction code is `crates/platform-utils/src/mc_textures.rs`.
+
 ## Desktop launcher
 
 From launcher/:
