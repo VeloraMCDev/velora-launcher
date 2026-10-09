@@ -19,7 +19,7 @@ healthy() {
 }
 restore() {
   trap - EXIT
-  cp "$rollback_file" "$env_file.tmp" && mv "$env_file.tmp" "$env_file"
+  cp -p "$rollback_file" "$env_file.tmp" && mv "$env_file.tmp" "$env_file"
   if compose up -d --no-deps ops && healthy; then
     printf '%s\n' rolled-back > "$result_file"
     rm -f "$rollback_file"

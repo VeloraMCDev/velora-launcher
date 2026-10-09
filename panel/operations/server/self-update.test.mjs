@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { chownSync, existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -19,6 +19,9 @@ for (const scenario of ['success', 'pull-failed', 'unhealthy', 'rollback-failed'
       mkdirSync(bin);
       writeFileSync(join(root, '.env'), 'OPS_IMAGE=new\n');
       writeFileSync(join(root, '.env.ops-rollback'), 'OPS_IMAGE=previous\n');
+      // Production helpers run as root, restoring a file owned by the dashboard UID.
+      const rootHelper = process.platform !== 'win32' && process.getuid() === 0;
+      if (rootHelper) chownSync(join(root, '.env.ops-rollback'), 1000, 1000);
       writeFileSync(join(bin, 'sleep'), '#!/bin/sh\nexit 0\n', { mode: 0o755 });
       writeFileSync(join(bin, 'seq'), '#!/bin/sh\nprintf "1\\n2\\n3\\n"\n', { mode: 0o755 });
       writeFileSync(join(bin, 'docker'), `#!/bin/sh
@@ -54,6 +57,11 @@ exit 1
       assert.equal(dashboardUpdateStatus(root), expected);
       assert.equal(readFileSync(join(root, '.env'), 'utf8'), scenario === 'success' ? 'OPS_IMAGE=new\n' : 'OPS_IMAGE=previous\n');
       assert.equal(existsSync(join(root, '.env.ops-rollback')), scenario === 'rollback-failed');
+      if (rootHelper && scenario !== 'success') {
+        const restored = statSync(join(root, '.env'));
+        assert.equal(restored.uid, 1000, 'Rollback must remain readable by the dashboard');
+        assert.equal(restored.gid, 1000);
+      }
     } finally { rmSync(root, { recursive: true, force: true }); }
   });
 }
