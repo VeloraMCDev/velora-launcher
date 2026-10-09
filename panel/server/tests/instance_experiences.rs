@@ -57,6 +57,34 @@ impl Platform {
 }
 
 #[tokio::test]
+async fn operations_summary_is_global_and_admin_only_with_multiple_instances() {
+    let p = Platform::new().await;
+    let first = p.instance("First operations experience").await;
+    p.instance("Second operations experience").await;
+    let (status, body) = p.call("POST", "/api/admin/users", None, &p.token,
+        Some(json!({"username":"OperationsReader","password":"fixture-player-pass"}))).await;
+    assert_eq!(status, StatusCode::OK, "{body}");
+    let (status, login) = p.call("POST", "/api/v1/auth/login", None, "",
+        Some(json!({"username":"OperationsReader","password":"fixture-player-pass"}))).await;
+    assert_eq!(status, StatusCode::OK, "{login}");
+
+    for instance in [None, Some(first.as_str())] {
+        let (status, summary) = p.call("GET", "/api/admin/operations/summary", instance, &p.token, None).await;
+        assert_eq!(status, StatusCode::OK, "{summary}");
+        assert_eq!(summary["users"], 2);
+        assert_eq!(summary["admins"], 1);
+        assert_eq!(summary["logins_24h"], 1);
+        assert_eq!(summary["unique_logins_7d"], 1);
+    }
+    let (status, _) = p.call("GET", "/api/admin/operations/summary", None, "", None).await;
+    assert_eq!(status, StatusCode::UNAUTHORIZED);
+    let (status, _) = p.call("GET", "/api/admin/operations/summary", None, login["token"].as_str().unwrap(), None).await;
+    assert_eq!(status, StatusCode::FORBIDDEN);
+    let (status, _) = p.call("GET", "/api/admin/progression", None, &p.token, None).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST, "Gameplay must still require an instance");
+}
+
+#[tokio::test]
 async fn profile_posts_use_shared_platform_storage_from_persistent_instances() {
     let p = Platform::new().await;
     let first = p.instance("First social experience").await;
