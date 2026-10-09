@@ -11,7 +11,7 @@ use crate::store::{self, AdminInstance, Settings};
 pub use authority::{Group, UserInput};
 use axum::extract::{Multipart, Path, Query};
 use axum::Json;
-use scopenet_shared::{Branding, Loader, MemoryDefaults, ServerEntry};
+use velora_shared::{Branding, Loader, MemoryDefaults, ServerEntry};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use velora_auth_http::admin as authority;

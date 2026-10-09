@@ -1,4 +1,4 @@
-import { PLATFORM_PAGES } from '@scopenet/experience';
+import { PLATFORM_PAGES } from '@velora/experience';
 // Tiny hash router: #/instances/abc → { name: 'instances', params: ['abc'] }
 function parse() {
   const parts = location.hash.replace(/^#\/?/, '').split('?')[0].split('/').filter(Boolean).map(decodeURIComponent);

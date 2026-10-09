@@ -1,5 +1,5 @@
 //! The Casino in the launcher: Slots, Wheel, Plinko, Mines, the daily free spin, bounties on players' heads and bets on what
-//! players will do. Everything is paid from and to the SCOPENET economy, so winnings show up in game right away.
+//! players will do. Everything is paid from and to the Velora economy, so winnings show up in game right away.
 //!
 //! Every money-moving request runs in one transaction that starts with an idempotency row (like the market does), so a bet is never
 //! half taken: either the bet, the result and the payout are all saved, or nothing is.

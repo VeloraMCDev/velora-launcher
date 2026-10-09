@@ -184,12 +184,12 @@ mod release_tests {
     #[test]
     fn downloads_get_short_tidy_names() {
         let hex = "11a905016bae9dca8818b4c67bbdabc936ac58f4b83f933c1b9e7979ee9deb5f-setup.exe";
-        assert_eq!(short_name("SCOPENET", "windows", hex, "Windows · 1.0.1", ""), "SCOPENET-Setup-1.0.1.exe");
-        assert_eq!(short_name("SCOPENET", "windows", "SCOPENET Launcher_1.0.1_x64-setup.exe", "", ""), "SCOPENET-Setup-1.0.1.exe");
-        assert_eq!(short_name("My Server!", "mac", "scopenet-launcher-1.2.3-macos-universal.dmg", "", ""), "MyServer-1.2.3-macOS.dmg");
-        assert_eq!(short_name("SCOPENET", "linux", "x.AppImage", "", "2.0.0"), "SCOPENET-2.0.0-Linux.AppImage");
-        assert_eq!(short_name("SCOPENET", "linux", "pack.tar.gz", "", ""), "SCOPENET-Linux.tar.gz");
-        assert_eq!(short_name("SCOPENET", "android", "scopenet-player-1.0.1.apk", "", ""), "SCOPENET-1.0.1.apk");
+        assert_eq!(short_name("Velora", "windows", hex, "Windows · 1.0.1", ""), "Velora-Setup-1.0.1.exe");
+        assert_eq!(short_name("Velora", "windows", "Velora Launcher_1.0.1_x64-setup.exe", "", ""), "Velora-Setup-1.0.1.exe");
+        assert_eq!(short_name("My Server!", "mac", "velora-launcher-1.2.3-macos-universal.dmg", "", ""), "MyServer-1.2.3-macOS.dmg");
+        assert_eq!(short_name("Velora", "linux", "x.AppImage", "", "2.0.0"), "Velora-2.0.0-Linux.AppImage");
+        assert_eq!(short_name("Velora", "linux", "pack.tar.gz", "", ""), "Velora-Linux.tar.gz");
+        assert_eq!(short_name("Velora", "android", "scopenet-player-1.0.1.apk", "", ""), "Velora-1.0.1.apk");
         assert_eq!(short_name("", "ios", "a.ipa", "", "1.0.0-beta.1"), "Velora-1.0.0-beta.1.ipa");
         assert_eq!(find_version("v1.2.3-rc.1_x64").as_deref(), Some("1.2.3"));
         assert_eq!(find_version("build 12"), None);
@@ -197,14 +197,14 @@ mod release_tests {
 
     #[test]
     fn finds_the_repo_and_sorts_installers() {
-        assert_eq!(github_repo("https://github.com/scopeddlol/SCOPENET-MC/releases"), Some(("scopeddlol".into(), "SCOPENET-MC".into())));
+        assert_eq!(github_repo("https://github.com/VeloraMCDev/velora-launcher/releases"), Some(("VeloraMCDev".into(), "velora-launcher".into())));
         assert_eq!(github_repo("https://github.com/a/b.git"), Some(("a".into(), "b".into())));
         assert_eq!(github_repo("https://evil.test/a/b"), None);
         assert_eq!(github_repo("https://github.com/a"), None);
-        assert_eq!(classify_installer("SCOPENET Launcher_1.0.0_x64-setup.exe"), Some(("windows", "Windows")));
-        assert_eq!(classify_installer("scopenet-launcher-1.0.0-macos-universal.dmg").map(|c| c.0), Some("mac"));
-        assert_eq!(classify_installer("scopenet-launcher-1.0.0-linux-x64.AppImage").map(|c| c.0), Some("linux"));
-        assert_eq!(classify_installer("scopenet-launcher-1.0.0-linux-x64.deb").map(|c| c.1), Some("Linux (.deb)"));
+        assert_eq!(classify_installer("Velora Launcher_1.0.0_x64-setup.exe"), Some(("windows", "Windows")));
+        assert_eq!(classify_installer("velora-launcher-1.0.0-macos-universal.dmg").map(|c| c.0), Some("mac"));
+        assert_eq!(classify_installer("velora-launcher-1.0.0-linux-x64.AppImage").map(|c| c.0), Some("linux"));
+        assert_eq!(classify_installer("velora-launcher-1.0.0-linux-x64.deb").map(|c| c.1), Some("Linux (.deb)"));
         assert_eq!(classify_installer("scopenet-paper-1.0.0.jar"), None);
     }
 }
@@ -223,7 +223,7 @@ mod boundaries {
         assert_eq!(short_name("你好", "mac", "old.dmg", "", ""), "Velora-macOS.dmg");
         assert_eq!(original.filename, "saved-artifact.msi");
         assert_eq!(original.file_url, "/downloads/saved-artifact.msi");
-        assert_eq!(short_name("SCOPENET", "linux", "old.AppImage", "", ""), "SCOPENET-Linux.AppImage");
+        assert_eq!(short_name("Velora", "linux", "old.AppImage", "", ""), "Velora-Linux.AppImage");
     }
     #[test]
     fn opaque_block_options_and_default_wire_fields_stay_compatible() {

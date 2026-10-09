@@ -7,7 +7,7 @@ import {randomBytes} from 'node:crypto';
 import {createServer} from 'node:net';
 
 const application=resolve(import.meta.dirname,'../..');
-const binary=resolve(process.argv[2] ?? `target/debug/scopenet-panel${process.platform==='win32'?'.exe':''}`);
+const binary=resolve(process.argv[2] ?? `target/debug/velora-panel${process.platform==='win32'?'.exe':''}`);
 const web=resolve(process.argv[3] ?? 'panel/web/dist');
 if(!existsSync(binary)||!existsSync(join(web,'index.html')))throw Error('Build the Panel backend and frontend first; optionally supply binary and web directory paths.');
 const data=mkdtempSync(join(tmpdir(),'velora-synthetic-demo-'));

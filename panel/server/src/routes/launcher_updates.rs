@@ -13,7 +13,7 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use scopenet_shared::{release_version, LauncherUpdate};
+use velora_shared::{release_version, LauncherUpdate};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use tokio::io::AsyncReadExt;

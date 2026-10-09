@@ -1,7 +1,7 @@
 //! Item and block textures, taken from the player's own Minecraft client jar.
 //!
 //! The launcher already downloads the client to run the game. Its jar holds every item and block texture, so the launcher copies
-//! those out once into `<data>/minecraft/textures/` — nothing from Mojang is shipped with or redistributed by SCOPENET. The folder
+//! those out once into `<data>/minecraft/textures/` — nothing from Mojang is shipped with or redistributed by Velora. The folder
 //! lives outside the version folders and the launcher's own files, so it survives launcher updates; `ensure` only does work when
 //! the folder is missing or was built from a different jar.
 

@@ -1,5 +1,5 @@
-//! SCOPENET launcher (Tauri shell). The heavy lifting lives in
-//! `scopenet-core`; this crate wires it to the UI.
+//! Velora launcher (Tauri shell). The heavy lifting lives in
+//! `velora-launcher-core`; this crate wires it to the UI.
 
 mod accounts;
 mod commands;

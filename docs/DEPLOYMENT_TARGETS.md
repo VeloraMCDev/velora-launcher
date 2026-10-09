@@ -21,7 +21,7 @@ Production runs on one existing VPS behind its Traefik reverse proxy, described 
 | SDK/private libraries | Build inputs | No hosting |
 
 The Panel keeps native Rust/SQLite storage; do not replace it with D1 without a
-reviewed data/continuity conversion. The legacy SCOPENET Panel 1.2.2 store was
+reviewed data/continuity conversion. The legacy Velora Panel 1.2.2 store was
 migrated unchanged (schema 46); its signing key and session secret were preserved.
 
 ## Optional: multi-host control plane

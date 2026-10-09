@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Terminal, Search, Copy, Check } from '@lucide/svelte';
 
-  import { COMMAND_GROUPS as groups, COMMAND_TIPS as tips, type Cmd } from '@scopenet/commands';
+  import { COMMAND_GROUPS as groups, COMMAND_TIPS as tips, type Cmd } from '@velora/commands';
 
   let query = $state('');
   let copied = $state('');

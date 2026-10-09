@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { Map as MapIcon, RefreshCw, RotateCcw, Image as ImageIcon, Users } from '@lucide/svelte';
-  import MapViewer from '@scopenet/map/MapViewer.svelte';
-  import { startFeed, type LivePlayer, type MapInfo, type MapOverlay } from '@scopenet/map';
+  import MapViewer from '@velora/map/MapViewer.svelte';
+  import { startFeed, type LivePlayer, type MapInfo, type MapOverlay } from '@velora/map';
   import Avatar from './Avatar.svelte';
   import PlayerLink from './PlayerLink.svelte';
   import Modal from './Modal.svelte';

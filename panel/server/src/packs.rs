@@ -1,7 +1,7 @@
 //! Compatibility ports for the independently maintained public pack pipeline.
 use crate::error::{AppError, AppResult};
 use crate::state::AppState;
-use scopenet_shared::Loader;
+use velora_shared::Loader;
 use serde::Deserialize;
 use velora_panel_packs as owned;
 pub use owned::{NewFile, MrVersion, MrVersionFile, files_url, detect_root};

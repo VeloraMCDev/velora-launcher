@@ -125,7 +125,7 @@ pub async fn request(GameServer(server): GameServer, State(state): State<AppStat
 async fn dispatch(server: super::servers::ServerRow, state: AppState, auth: AuthUser, p: &Request) -> AppResult<Json<Value>> {
     if let Some(instance) = &state.instance_id {
         let row = crate::store::get_instance(&state, instance).await?;
-        let experience: scopenet_shared::Experience = serde_json::from_str(&row.experience)?;
+        let experience: velora_shared::Experience = serde_json::from_str(&row.experience)?;
         let feature = if p.operation.starts_with("casino_") || p.operation.starts_with("bounty_") || p.operation.starts_with("bet_") {
             Some("casino")
         } else if p.operation.starts_with("quest") {

@@ -9,7 +9,7 @@ use crate::state::AppState;
 use axum::extract::{Path, Query};
 use axum::Json;
 use velora_platform_utils::meta::{self, LoaderVersion};
-use scopenet_shared::Loader;
+use velora_shared::Loader;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize)]

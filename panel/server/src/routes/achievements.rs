@@ -6,7 +6,7 @@ use crate::error::AppResult;
 use crate::state::AppState;
 use axum::extract::{Path};
 use axum::Json;
-use scopenet_shared::Achievement;
+use velora_shared::Achievement;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 

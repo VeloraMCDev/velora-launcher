@@ -137,7 +137,7 @@
     <header class="top">
       <div>
         <h1><Dice5 size={26} /> Casino</h1>
-        <p class="lead">Play with your SCOPENET balance. Winnings land in your account straight away, in the launcher and in game.</p>
+        <p class="lead">Play with your Velora balance. Winnings land in your account straight away, in the launcher and in game.</p>
       </div>
       <div class="right">
         {#if servers.length > 1}<select aria-label="Server" bind:value={serverId}>{#each servers as s}<option value={s.id}>{s.name}</option>{/each}</select>{/if}

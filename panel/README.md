@@ -5,7 +5,7 @@ server is the compatibility backend; web contains admin, player and landing apps
 ## Local checks
 
 ```sh
-cargo test --locked -j 1 -p scopenet-panel
+cargo test --locked -j 1 -p velora-panel
 cd panel/web
 npm ci --no-audit --no-fund
 npm run check

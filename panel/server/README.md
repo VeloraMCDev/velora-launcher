@@ -5,7 +5,7 @@ Axum compatibility host backed by owned SQLite files. Runtime configuration and 
 ## Local checks
 
 ```sh
-cargo test --locked -j 1 -p scopenet-panel
+cargo test --locked -j 1 -p velora-panel
 ```
 
 Runs as a native/container service; it is not currently a Workers/D1 application. Never start a second credential writer against an existing live store.

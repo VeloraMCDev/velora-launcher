@@ -27,7 +27,8 @@ jobs:
           version=$(node -p "require('./launcher/src-tauri/tauri.conf.json').version")
           cargo_version=$(sed -n 's/^version = "\(.*\)"/\1/p' launcher/src-tauri/Cargo.toml | head -1)
           npm_version=$(node -p "require('./launcher/package.json').version")
-          if [ "$version" != "$cargo_version" ] || [ "$version" != "$npm_version" ]; then
+          mobile_version=$(node -p "require('./panel/mobile/package.json').version")
+          if [ "$version" != "$cargo_version" ] || [ "$version" != "$npm_version" ] || [ "$version" != "$mobile_version" ]; then
             echo "::error::Launcher versions differ: tauri $version, Cargo $cargo_version, npm $npm_version"; exit 1
           fi
           if gh release view "launcher-v$version" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
@@ -73,8 +74,22 @@ jobs:
           if [ "${{ matrix.name }}" = mac ]; then rustup target add aarch64-apple-darwin x86_64-apple-darwin --toolchain 1.98.1; fi
       - run: npm ci --no-audit --no-fund
       - run: npm run check
-      - run: cargo test --locked -j 2 -p scopenet-launcher
+      - run: cargo test --locked -j 2 -p velora-launcher
       - run: npm run tauri build -- --bundles ${{ matrix.bundles }} ${{ matrix.args }} -- --locked
+      - name: Verify macOS installed product identity
+        if: matrix.name == 'mac'
+        run: |
+          app="../target/universal-apple-darwin/release/bundle/macos/Velora Launcher.app"
+          test -d "$app"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleName' "$app/Contents/Info.plist")" = 'Velora Launcher'
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist")" = 'net.scopenet.launcher'
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")" = 'velora-launcher'
+      - name: Verify Windows upgrade from the installed product
+        if: matrix.name == 'windows'
+        shell: pwsh
+        run: |
+          $taskInstaller=(Get-ChildItem ../target/release/bundle/nsis/*-setup.exe).FullName
+          & ../.github/scripts/test-windows-launcher-upgrade.ps1 -Installer $taskInstaller
       - name: Collect installers with release names
         env:
           VERSION: ${{ needs.version.outputs.version }}
@@ -96,8 +111,12 @@ jobs:
           path: dist-release/
           if-no-files-found: error
           retention-days: 3
+  mobile:
+    needs: version
+    uses: ./.github/workflows/mobile-release.yml
+    secrets: inherit
   publish:
-    needs: [version, build]
+    needs: [version, build, mobile]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -109,9 +128,10 @@ jobs:
           persist-credentials: false
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          pattern: launcher-*
+          pattern: '*'
           path: release
           merge-multiple: true
+          # Includes the independent mobile workflow's APK and IPA artifacts.
       - name: Checksum and sign every installer
         env:
           VERSION: ${{ needs.version.outputs.version }}
@@ -127,6 +147,7 @@ jobs:
 
           Installers are signed with the Velora release key (see release-manifest.json).
           Players receive this release after an admin approves it in the operations dashboard.
+          Includes Android (persistent release signing key) and iOS (personal AltStore signing).
           EOF
           gh release create "launcher-v${VERSION}" release/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
             --title "Velora Launcher ${VERSION}" --notes-file notes.md --latest

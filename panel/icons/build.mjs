@@ -1,5 +1,5 @@
 // Packs the Iconify icon sets for the panel: `npm install && node build.mjs` writes dist/<pack>.json.gz and dist/packs.json.
-// The panel reads them from SCOPENET_ICONS_DIR (default ./panel/icons/dist). Icons stay on the server; clients fetch one SVG at a time.
+// The panel reads them from VELORA_ICONS_DIR (default ./panel/icons/dist). Icons stay on the server; clients fetch one SVG at a time.
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, rmSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { join, dirname } from 'node:path';

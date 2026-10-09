@@ -22,6 +22,12 @@ test('workflow guard catches floating actions, checkout credentials and unbounde
   for (const unsafe of [valid.replace('a'.repeat(40),'v4'),valid.replace('persist-credentials: false','persist-credentials: true'),valid.replace('timeout-minutes: 10','timeout-minutes: 0'),valid.replace('ubuntu-latest','self-hosted'),valid.replace('permissions:\n  contents: read','permissions: write-all')]) assert.ok(workflowFindings(unsafe).length);
 });
 
+test('reusable jobs must refer to a locally reviewed workflow', () => {
+  const call = `on: workflow_dispatch\npermissions:\n  contents: read\njobs:\n  mobile:\n    uses: ./.github/workflows/mobile-release.yml\n`;
+  assert.deepEqual(workflowFindings(call), []);
+  assert.ok(workflowFindings(call.replace('./.github/workflows/mobile-release.yml', 'other/repo/.github/workflows/mobile.yml@main')).length);
+});
+
 test('elevated release job requires main gate and transient assets require finite retention', () => {
   const elevated = valid.replace('    steps:',"    permissions:\n      packages: write\n    if: github.ref == 'refs/heads/main'\n    steps:");
   assert.deepEqual(workflowFindings(elevated),[]);

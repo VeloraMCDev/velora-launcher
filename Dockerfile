@@ -9,7 +9,7 @@ FROM --platform=$BUILDPLATFORM node:24-alpine AS web
 WORKDIR /src/panel/web
 COPY panel/web/package.json panel/web/package-lock.json ./
 RUN npm ci --no-audit --no-fund
-# The map viewer is shared with the launcher (imported as @scopenet/map).
+# The map viewer is shared with the launcher (imported as @velora/map).
 COPY shared/ /src/shared/
 COPY packages/platform-ui/ /src/packages/platform-ui/
 COPY packages/platform-map/ /src/packages/platform-map/
@@ -45,8 +45,8 @@ ENV VELORA_BUILD_REVISION=$VELORA_BUILD_REVISION
 # Release identity is supplied through build arguments; dependency resolution stays locked.
 RUN --mount=type=cache,target=/usr/local/cargo/registry,id=cargo-registry,sharing=locked \
     --mount=type=cache,target=/src/target,id=scopenet-target-$TARGETARCH \
-    cargo zigbuild --locked --release -p scopenet-panel --target "$(cat /rust-target)" \
- && cp "target/$(cat /rust-target)/release/scopenet-panel" /scopenet-panel
+    cargo zigbuild --locked --release -p velora-panel --target "$(cat /rust-target)" \
+ && cp "target/$(cat /rust-target)/release/velora-panel" /velora-panel
 # Data dir owned by the non-root runtime user.
 RUN mkdir -p /out/data && chown 65532:65532 /out/data
 
@@ -57,13 +57,13 @@ RUN mkdir -p /out/tmp && chmod 1777 /out/tmp
 
 # ---- 3a. Runtime from a binary built outside Docker ---------------------------
 # Used by the release workflow, which compiles the panel natively (with a warm Cargo cache) and only packages it here:
-#   docker build --target prebuilt <context holding scopenet-panel, web/ and data/.keep>
+#   docker build --target prebuilt <context holding velora-panel, web/ and data/.keep>
 # Build this file without --target (docker compose does) to compile everything inside Docker instead.
 FROM scratch AS prebuilt
 LABEL org.opencontainers.image.title="Velora Panel" \
       org.opencontainers.image.description="Admin panel for the Velora Minecraft launcher" \
       org.opencontainers.image.source="https://github.com/VeloraMCDev/velora-launcher"
-COPY scopenet-panel /scopenet-panel
+COPY velora-panel /velora-panel
 COPY web /web
 COPY icons /icons
 COPY --chown=65532:65532 data /data
@@ -77,8 +77,8 @@ ENV SCOPENET_BIND=0.0.0.0:8080 \
 USER 65532:65532
 VOLUME ["/data"]
 EXPOSE 8080
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["/scopenet-panel", "healthcheck"]
-ENTRYPOINT ["/scopenet-panel"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["/velora-panel", "healthcheck"]
+ENTRYPOINT ["/velora-panel"]
 
 # ---- 3b. Runtime --------------------------------------------------------------
 FROM scratch
@@ -91,7 +91,7 @@ LABEL org.opencontainers.image.title="Velora Panel" \
       org.opencontainers.image.revision=$VELORA_BUILD_REVISION \
       org.opencontainers.image.version=$VELORA_BUILD_VERSION \
       org.opencontainers.image.created=$VELORA_BUILD_CREATED
-COPY --from=build /scopenet-panel /scopenet-panel
+COPY --from=build /velora-panel /velora-panel
 COPY --from=web /src/panel/web/dist /web
 COPY --from=icons /src/panel/icons/dist /icons
 COPY --from=build --chown=65532:65532 /out/data /data
@@ -105,5 +105,5 @@ ENV SCOPENET_BIND=0.0.0.0:8080 \
 USER 65532:65532
 VOLUME ["/data"]
 EXPOSE 8080
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["/scopenet-panel", "healthcheck"]
-ENTRYPOINT ["/scopenet-panel"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["/velora-panel", "healthcheck"]
+ENTRYPOINT ["/velora-panel"]

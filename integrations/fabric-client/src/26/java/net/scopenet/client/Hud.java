@@ -53,7 +53,7 @@ final class Hud {
         return switch (id) {
             case "level" -> new Content("Level 12", "64% to next level", "", .64, "minecraft:experience_bottle");
             case "balance" -> new Content("Wallet", "$1,250.00", "", -1, "minecraft:gold_ingot");
-            case "guild" -> new Content("Guild", "[SCP] Scopenet", "", -1, "minecraft:shield");
+            case "guild" -> new Content("Guild", "[Velora] Velora", "", -1, "minecraft:shield");
             case "claim" -> new Content("Territory", "Wilderness", "", -1, "minecraft:grass_block");
             case "quests" -> new Content("Quest · 12 / 50", "Skeleton Slayer", "Defeat 50 skeletons.", .24, "minecraft:book");
             default -> content(id);

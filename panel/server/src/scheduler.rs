@@ -252,7 +252,7 @@ async fn available(state: &AppState, id: &str) -> bool {
     let Ok(row) = crate::store::get_instance(state, instance).await else {
         return false;
     };
-    serde_json::from_str::<scopenet_shared::Experience>(&row.experience).is_ok_and(|e| e.enabled(feature))
+    serde_json::from_str::<velora_shared::Experience>(&row.experience).is_ok_and(|e| e.enabled(feature))
 }
 
 /// Run one driven task now and record the result.

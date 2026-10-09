@@ -1,6 +1,6 @@
 [package]
-name = "scopenet-shared"
-description = "Types shared between the SCOPENET launcher and admin panel"
+name = "velora-shared"
+description = "Types shared between the Velora launcher and admin panel"
 version.workspace = true
 edition.workspace = true
 

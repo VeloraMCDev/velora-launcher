@@ -396,7 +396,7 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .route("/guilds/{id}", delete(guilds::admin_delete_guild).put(guilds::admin_rename_guild))
         .layer(DefaultBodyLimit::max(upload_limit));
 
-    // Called by the SCOPENET Paper plugin and Fabric/Forge mods.
+    // Called by the Velora Paper plugin and Fabric/Forge mods.
     let game = Router::new()
         .route("/resource-pack", post(resource_assets::game_config))
         .route("/kits/create", post(utilities::game_create_kit))

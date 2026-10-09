@@ -1,6 +1,6 @@
 // In-browser stand-in for the Rust backend, used by `npm run dev` outside
 // Tauri and for UI screenshots. Scenario via ?mock=setup|login|main|update.
-import { preset } from '@scopenet/experience';
+import { preset } from '@velora/experience';
 import launcherPackage from '../../package.json';
 import { mockEmit } from './tauri';
 import type { Account, Bootstrap, Manifest, PlayerProfile, Settings } from './types';

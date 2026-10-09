@@ -3,7 +3,7 @@
 use crate::auth::UserRow;
 use crate::error::{AppError, AppResult};
 use crate::state::AppState;
-use scopenet_shared::{AuthConfig, Branding, Experience, FileEntry, InstanceSummary, Loader, MemoryDefaults, ServerEntry};
+use velora_shared::{AuthConfig, Branding, Experience, FileEntry, InstanceSummary, Loader, MemoryDefaults, ServerEntry};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 pub async fn kv_get<T: DeserializeOwned + Default>(state: &AppState, key: &str) -> AppResult<T> {
@@ -54,7 +54,7 @@ pub async fn settings(state: &AppState) -> AppResult<Settings> {
 pub async fn branding(state: &AppState) -> AppResult<Branding> {
     if let Some(id) = &state.instance_id {
         let row = get_instance(state, id).await?;
-        let experience: scopenet_shared::Experience = serde_json::from_str(&row.experience)?;
+        let experience: velora_shared::Experience = serde_json::from_str(&row.experience)?;
         if let Some(branding) = experience.branding {
             return Ok(branding);
         }

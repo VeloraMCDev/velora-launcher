@@ -4,7 +4,7 @@
 use crate::secrets::Secret;
 use crate::state::AppState;
 use anyhow::{anyhow, bail, Context, Result};
-use scopenet_shared::{offline_uuid, valid_username, AuthResponse, LoginRequest, RegisterRequest};
+use velora_shared::{offline_uuid, valid_username, AuthResponse, LoginRequest, RegisterRequest};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::path::Path;
@@ -230,8 +230,8 @@ async fn ensure_session(state: &AppState, account: &Account, api: &str) -> Resul
 
 /// Credentials passed to the game, plus the auth server URL for
 /// authlib-injector (panel accounts only).
-pub async fn game_auth(state: &AppState, account: &Account) -> Result<(scopenet_core::launch::Auth, Option<String>)> {
-    use scopenet_core::launch::Auth;
+pub async fn game_auth(state: &AppState, account: &Account) -> Result<(velora_launcher_core::launch::Auth, Option<String>)> {
+    use velora_launcher_core::launch::Auth;
     match account.kind.as_str() {
         "panel" => {
             let api = yggdrasil_url(state, account).ok_or_else(|| anyhow!("account has no server"))?;
@@ -288,7 +288,7 @@ mod tests {
 
     #[test]
     fn drops_microsoft_accounts_on_load() {
-        let dir = std::env::temp_dir().join(format!("scopenet-acc-{}", uuid::Uuid::new_v4()));
+        let dir = std::env::temp_dir().join(format!("velora-acc-{}", uuid::Uuid::new_v4()));
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("accounts.json");
         std::fs::write(

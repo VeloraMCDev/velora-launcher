@@ -1,5 +1,5 @@
 import { route } from '../lib/router.svelte';
-import type { Experience } from '@scopenet/experience';
+import type { Experience } from '@velora/experience';
 import { get } from '../lib/api';
 
 export type PlayServer = {

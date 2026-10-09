@@ -1,7 +1,7 @@
 # ==============================================================================
-# SCOPENET Minecraft Server Configuration
+# Velora Minecraft Server Configuration
 # ==============================================================================
-# Connect to your SCOPENET Panel instance by pasting your server token below.
+# Connect to your Velora Panel instance by pasting your server token below.
 # Create a server under 'Servers' in the web panel to generate a token.
 
 panel-url: "https://panel.example.com"
@@ -72,7 +72,7 @@ essentials:
     warp: 0
 
 map:
-  # The SCOPENET Map: this server renders its world to map tiles in the background and sends only what changed,
+  # The Velora Map: this server renders its world to map tiles in the background and sends only what changed,
   # with player positions, guild claims and pins, to the panel. Players see it in the launcher; admins in the panel.
   # It also needs the map switched on for this server in the panel (it is by default).
   enabled: true
@@ -88,7 +88,7 @@ economy:
 
 # ==============================================================================
 # Plugin integrations
-# SCOPENET detects these plugins by itself; switch any of them off here.
+# Velora detects these plugins by itself; switch any of them off here.
 # ==============================================================================
 integrations:
   luckperms:
@@ -107,7 +107,7 @@ integrations:
     # %scopenet_level%, %scopenet_guild%, %scopenet_balance%, %scopenet_playtime%, %scopenet_quest_progress% ...
     enabled: true
   vault:
-    # Use the SCOPENET economy as Vault's economy, so other plugins' shops and jobs pay into it.
+    # Use the Velora economy as Vault's economy, so other plugins' shops and jobs pay into it.
     enabled: true
   coreprotect:
     enabled: true
@@ -149,7 +149,7 @@ cosmetics:
 
 # ==============================================================================
 # Client mod link
-# Sends balance, level, guild and claim info to players who have the optional SCOPENET
+# Sends balance, level, guild and claim info to players who have the optional Velora
 # client mod (HUD widgets, claim overlay, shop and market windows). Players without it
 # are unaffected. Display only: everything the client does is an ordinary command.
 # ==============================================================================

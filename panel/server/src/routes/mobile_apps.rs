@@ -15,12 +15,12 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use scopenet_shared::release_version;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use sha2::{Digest, Sha256};
 use std::io::Cursor;
 use tokio::io::AsyncReadExt;
+use velora_shared::release_version;
 
 const KEY: &str = "mobile_apps";
 const MAX_APP: usize = 512 * 1024 * 1024;
@@ -117,7 +117,7 @@ fn valid_bundle_id(id: &str) -> bool {
 }
 
 /// An `.apk` has `AndroidManifest.xml` at its root; an `.ipa` has `Payload/<name>.app/Info.plist`.
-fn looks_right(platform: &str, bytes: &[u8]) -> bool {
+pub(crate) fn looks_right(platform: &str, bytes: &[u8]) -> bool {
     let Ok(zip) = zip::ZipArchive::new(Cursor::new(bytes)) else { return false };
     let names: Vec<&str> = zip.file_names().collect();
     if platform == "android" {
@@ -161,7 +161,11 @@ pub async fn upload(_: AdminUser, State(state): State<AppState>, headers: Header
         return Err(AppError::bad_request(if platform == "android" { "Upload an Android .apk file" } else { "Upload an iOS .ipa file" }));
     }
     if !looks_right(&platform, &bytes) {
-        return Err(AppError::bad_request(if platform == "android" { "That file is not a valid Android app (.apk)" } else { "That file is not a valid iOS app (.ipa)" }));
+        return Err(AppError::bad_request(if platform == "android" {
+            "That file is not a valid Android app (.apk)"
+        } else {
+            "That file is not a valid iOS app (.ipa)"
+        }));
     }
     let bundle_id = if bundle_id.trim().is_empty() { DEFAULT_BUNDLE_ID.to_string() } else { bundle_id.trim().to_string() };
     if !valid_bundle_id(&bundle_id) {
@@ -178,7 +182,16 @@ pub async fn upload(_: AdminUser, State(state): State<AppState>, headers: Header
         return Err(error.into());
     }
     let published_at = crate::db::now();
-    let app = PublishedApp { version, notes, filename: name, stored: stored.clone(), size: bytes.len() as u64, sha256: digest, published_at: published_at.clone(), bundle_id };
+    let app = PublishedApp {
+        version,
+        notes,
+        filename: name,
+        stored: stored.clone(),
+        size: bytes.len() as u64,
+        sha256: digest,
+        published_at: published_at.clone(),
+        bundle_id,
+    };
     let mut apps = load(&state).await?;
     let previous = if platform == "android" { apps.android.replace(app.clone()) } else { apps.ios.replace(app.clone()) };
     store::kv_set(&state, KEY, &apps).await?;
@@ -190,7 +203,24 @@ pub async fn upload(_: AdminUser, State(state): State<AppState>, headers: Header
     Ok(Json(describe(&apps, &base)))
 }
 
-pub async fn remove(_: AdminUser, State(state): State<AppState>, headers: HeaderMap, Path(platform): Path<String>) -> AppResult<Json<Value>> {
+/// Publishes a release-key-verified archive already downloaded by the approval route.
+pub(crate) async fn publish_release_app(state: &AppState, platform: &str, app: PublishedApp) -> AppResult<()> {
+    let mut apps = load(state).await?;
+    match platform {
+        "android" => apps.android = Some(app.clone()),
+        "ios" => apps.ios = Some(app.clone()),
+        _ => return Err(AppError::bad_request("Unknown mobile platform")),
+    }
+    store::kv_set(state, KEY, &apps).await?;
+    set_landing(state, platform, Some((&app, app.published_at.clone()))).await
+}
+
+pub async fn remove(
+    _: AdminUser,
+    State(state): State<AppState>,
+    headers: HeaderMap,
+    Path(platform): Path<String>,
+) -> AppResult<Json<Value>> {
     let mut apps = load(&state).await?;
     let old = match platform.as_str() {
         "android" => apps.android.take(),
@@ -228,7 +258,9 @@ async fn set_landing(state: &AppState, platform: &str, app: Option<(&PublishedAp
 pub async fn download(State(state): State<AppState>, Path(platform): Path<String>) -> AppResult<Response> {
     let apps = load(&state).await?;
     let app = apps.get(&platform).ok_or_else(|| AppError::not_found("That app has not been published"))?;
-    let file = tokio::fs::File::open(state.cfg.downloads_dir().join(&app.stored)).await.map_err(|_| AppError::not_found("That app has not been published"))?;
+    let file = tokio::fs::File::open(state.cfg.downloads_dir().join(&app.stored))
+        .await
+        .map_err(|_| AppError::not_found("That app has not been published"))?;
     let size = file.metadata().await?.len();
     let stream = futures::stream::try_unfold(file, |mut file| async {
         let mut bytes = vec![0; 64 * 1024];

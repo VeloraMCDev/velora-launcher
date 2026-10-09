@@ -1,4 +1,4 @@
-import { pageEnabled } from '@scopenet/experience';
+import { pageEnabled } from '@velora/experience';
 import { errorText, invoke, listen, setExperienceContext } from './tauri';
 import { applyTheme } from './theme';
 import type { Account, Bootstrap, Instance, Manifest, ProgressEvent, Settings, Stage, UpdateInfo } from './types';

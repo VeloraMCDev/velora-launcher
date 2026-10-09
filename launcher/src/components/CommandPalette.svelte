@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { pageEnabled, enabled } from '@scopenet/experience';
+  import { pageEnabled, enabled } from '@velora/experience';
   import { selectedInstance } from '../lib/store.svelte';
   import { tick } from 'svelte';
   import { Search, Home, Target, Shield, Store, Dice5, Users, Terminal, Trophy, Settings, CornerDownLeft, Smartphone, Play, RefreshCw } from '@lucide/svelte';
-  import { COMMAND_GROUPS } from '@scopenet/commands';
+  import { COMMAND_GROUPS } from '@velora/commands';
   import { app, instances, refresh, selectInstance, toast } from '../lib/store.svelte';
   import { openUrl } from '../lib/tauri';
 

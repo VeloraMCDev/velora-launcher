@@ -1,6 +1,6 @@
-import type { Branding } from '@scopenet/experience/branding';
-export type { Branding, NewsItem, SocialLink } from '@scopenet/experience/branding';
-import type { Experience } from '@scopenet/experience';
+import type { Branding } from '@velora/experience/branding';
+export type { Branding, NewsItem, SocialLink } from '@velora/experience/branding';
+import type { Experience } from '@velora/experience';
 export type Loader = 'vanilla' | 'fabric' | 'quilt' | 'forge' | 'neoforge';
 
 export interface ServerEntry { name: string; address: string; port: number; auto_join: boolean; inject: boolean }

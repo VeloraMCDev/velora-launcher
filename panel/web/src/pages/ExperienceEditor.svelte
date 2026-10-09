@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { FEATURES, defaultExperience, preset, type Experience, type Feature } from '@scopenet/experience';
+  import { FEATURES, defaultExperience, preset, type Experience, type Feature } from '@velora/experience';
   import { experienceContext } from '../lib/experience.svelte';
   import { get, put } from '../lib/api';
   import { toast, toastError } from '../lib/toast.svelte';

@@ -3,7 +3,7 @@
 
 pub use axum::body::Body;
 pub use axum::http::{Request, StatusCode};
-use scopenet_panel::{app, bootstrap_admin, build_state_with_keys, config::Config, db, yggdrasil::keys::Keys};
+use velora_panel::{app, bootstrap_admin, build_state_with_keys, config::Config, db, yggdrasil::keys::Keys};
 pub use serde_json::{json, Value};
 use std::io::Write;
 use std::sync::{Arc, OnceLock};

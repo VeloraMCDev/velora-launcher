@@ -312,7 +312,7 @@ async fn mac_and_linux_installers_are_uploaded_listed_with_short_names_and_remov
     assert_eq!(s, StatusCode::BAD_REQUEST, "a Windows file is not a macOS installer");
     let (s, _) = post("windows", "a.dmg", b"x".to_vec()).await;
     assert_eq!(s, StatusCode::BAD_REQUEST, "Windows has its own publish step");
-    let (s, v) = post("mac", "SCOPENET Launcher_1.0.1_universal.dmg", b"disk image".to_vec()).await;
+    let (s, v) = post("mac", "Velora Launcher_1.0.1_universal.dmg", b"disk image".to_vec()).await;
     assert_eq!(s, StatusCode::OK, "{v}");
     let (s, _) = post("linux", "Launcher_1.0.1_amd64.AppImage", b"appimage".to_vec()).await;
     assert_eq!(s, StatusCode::OK);

@@ -6,7 +6,7 @@ use crate::state::AppState;
 use axum::extract::FromRequestParts;
 use axum::http::{request::Parts, HeaderMap};
 use axum::Router;
-use scopenet_shared::{CapeInfo, PlayerProfile};
+use velora_shared::{CapeInfo, PlayerProfile};
 use serde_json::Value;
 use std::sync::Arc;
 pub use velora_auth_core::capes::CapeRow;

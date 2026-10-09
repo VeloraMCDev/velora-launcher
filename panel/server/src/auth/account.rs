@@ -35,11 +35,11 @@ impl AccountHost for Host {
 pub(crate) fn context(state: &AppState) -> AccountState {
     AccountState { authority: crate::yggdrasil::context(state), tokens: state.keys.authority_keys(), host: Arc::new(Host(state.clone())) }
 }
-pub(crate) fn response(response: sdk::AuthResponse) -> scopenet_shared::AuthResponse {
-    scopenet_shared::AuthResponse {
+pub(crate) fn response(response: sdk::AuthResponse) -> velora_shared::AuthResponse {
+    velora_shared::AuthResponse {
         token: response.token,
         pending: response.pending,
-        user: scopenet_shared::PublicUser {
+        user: velora_shared::PublicUser {
             id: response.user.id,
             username: response.user.username,
             uuid: response.user.uuid,
@@ -48,16 +48,16 @@ pub(crate) fn response(response: sdk::AuthResponse) -> scopenet_shared::AuthResp
         },
         yggdrasil: response
             .yggdrasil
-            .map(|tokens| scopenet_shared::YggdrasilTokens { access_token: tokens.access_token, client_token: tokens.client_token }),
+            .map(|tokens| velora_shared::YggdrasilTokens { access_token: tokens.access_token, client_token: tokens.client_token }),
     }
 }
-pub(crate) async fn login(state: &AppState, request: scopenet_shared::LoginRequest) -> AppResult<scopenet_shared::AuthResponse> {
+pub(crate) async fn login(state: &AppState, request: velora_shared::LoginRequest) -> AppResult<velora_shared::AuthResponse> {
     velora_auth_http::web::login(&context(state), sdk::LoginRequest { username: request.username, password: request.password })
         .await
         .map(response)
         .map_err(host_error)
 }
-pub(crate) async fn register(state: &AppState, request: scopenet_shared::RegisterRequest) -> AppResult<scopenet_shared::AuthResponse> {
+pub(crate) async fn register(state: &AppState, request: velora_shared::RegisterRequest) -> AppResult<velora_shared::AuthResponse> {
     velora_auth_http::web::register(
         &context(state),
         sdk::RegisterRequest { username: request.username, password: request.password, email: request.email },
@@ -67,11 +67,11 @@ pub(crate) async fn register(state: &AppState, request: scopenet_shared::Registe
     .map_err(host_error)
 }
 
-pub(crate) fn registration(mode: scopenet_shared::RegistrationMode) -> sdk::RegistrationMode {
+pub(crate) fn registration(mode: velora_shared::RegistrationMode) -> sdk::RegistrationMode {
     match mode {
-        scopenet_shared::RegistrationMode::Closed => sdk::RegistrationMode::Closed,
-        scopenet_shared::RegistrationMode::Open => sdk::RegistrationMode::Open,
-        scopenet_shared::RegistrationMode::Approval => sdk::RegistrationMode::Approval,
+        velora_shared::RegistrationMode::Closed => sdk::RegistrationMode::Closed,
+        velora_shared::RegistrationMode::Open => sdk::RegistrationMode::Open,
+        velora_shared::RegistrationMode::Approval => sdk::RegistrationMode::Approval,
     }
 }
 pub(crate) async fn create_account(

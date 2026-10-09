@@ -7,10 +7,10 @@
 services:
   panel:
     # Tag the image built from this checkout so an older GHCR release is not used.
-    image: scopenet-panel:local
+    image: velora-panel:local
     build:
       context: .
-    container_name: scopenet-panel
+    container_name: velora-panel
     restart: unless-stopped
     ports:
       - "${PANEL_PORT:-8080}:8080"

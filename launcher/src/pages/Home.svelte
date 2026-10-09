@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SlidersHorizontal, SquareTerminal, Package, MessageCircle, Globe, ShoppingBag, CirclePlay, Tv, Code, AtSign, Link, Trophy, Eye, EyeOff, Map as MapIcon } from '@lucide/svelte';
-  import ExperienceWidgets from '@scopenet/experience/ExperienceWidgets.svelte';
-  import { enabled } from '@scopenet/experience';
+  import ExperienceWidgets from '@velora/experience/ExperienceWidgets.svelte';
+  import { enabled } from '@velora/experience';
   import PlayButton from '../components/PlayButton.svelte';
   import ServerStatus from '../components/ServerStatus.svelte';
   import NewsFeed from '../components/NewsFeed.svelte';

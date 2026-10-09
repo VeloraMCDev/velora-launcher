@@ -2,7 +2,7 @@
   import { experienceContext } from '../lib/experience.svelte';
   import { adminGroups } from '../lib/adminNav';
   import { route, go } from '../lib/router.svelte';
-  import ExperienceWidgets from '@scopenet/experience/ExperienceWidgets.svelte';
+  import ExperienceWidgets from '@velora/experience/ExperienceWidgets.svelte';
   const instance = $derived(experienceContext.instance);
   const groups = $derived(adminGroups(route.instanceId, instance?.experience).filter(g => !['platform', 'control'].includes(g.id)));
 </script>

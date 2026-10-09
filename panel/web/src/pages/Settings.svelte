@@ -210,7 +210,7 @@
         {/if}
       </label>
       <label class="field">Launcher download link
-        <input bind:value={s.launcher_download_url} placeholder="https://github.com/scopeddlol/SCOPENET-MC/releases/latest" />
+        <input bind:value={s.launcher_download_url} placeholder="https://github.com/VeloraMCDev/velora-launcher/releases/latest" />
         <span class="help">Shown on the dashboard so you can share it easily.</span>
       </label>
     </section>

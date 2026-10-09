@@ -58,7 +58,7 @@ jobs:
       - run: rustup toolchain install 1.98.1 --profile minimal
       - run: npm ci --no-audit --no-fund && npm run build
         working-directory: panel/web
-      - run: cargo test --locked -j 2 -p scopenet-panel -p scopenet-core -p
+      - run: cargo test --locked -j 2 -p velora-panel -p velora-launcher-core -p
           velora-experiences-gameplay -p velora-experiences-storage
           --no-fail-fast
       - run: docker build --target web --progress=plain .
@@ -94,7 +94,7 @@ jobs:
       - run: rustup toolchain install 1.98.1 --profile minimal
       - run: npm ci --no-audit --no-fund
       - run: npm run build
-      - run: cargo test --locked -j 2 -p scopenet-launcher
+      - run: cargo test --locked -j 2 -p velora-launcher
       - run: npm run tauri build -- --bundles ${{ matrix.bundles }} -- --locked
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

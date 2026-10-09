@@ -3,11 +3,11 @@
 use crate::accounts;
 use crate::state::{AppState, RunningGame};
 use anyhow::{anyhow, Context, Result};
-use scopenet_core::install::{self, InstallSpec};
-use scopenet_core::launch::{self, LaunchOptions};
-use scopenet_core::progress::{Event, Reporter, Stage};
-use scopenet_core::{options, servers_dat, sync};
-use scopenet_shared::InstanceManifest;
+use velora_launcher_core::install::{self, InstallSpec};
+use velora_launcher_core::launch::{self, LaunchOptions};
+use velora_launcher_core::progress::{Event, Reporter, Stage};
+use velora_launcher_core::{options, servers_dat, sync};
+use velora_shared::InstanceManifest;
 use serde::Serialize;
 use std::collections::VecDeque;
 use std::path::PathBuf;
@@ -41,12 +41,12 @@ pub fn refresh_textures(app: &AppHandle) {
     let app = app.clone();
     std::thread::spawn(move || {
         let layout = app.state::<AppState>().layout.clone();
-        match scopenet_core::textures::ensure(&layout) {
+        match velora_launcher_core::textures::ensure(&layout) {
             Ok(true) => tracing::info!("extracted item textures from the client jar"),
             Ok(false) => {}
             Err(e) => tracing::warn!("couldn't read textures from the client jar: {e:#}"),
         }
-        app.emit("textures://status", scopenet_core::textures::status(&layout)).ok();
+        app.emit("textures://status", velora_launcher_core::textures::status(&layout)).ok();
     });
 }
 
@@ -153,7 +153,7 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
     if !already_running {
         sync::sync(&state.http, &panel, &game_dir, inst.revision, inst.clean_epoch, &manifest.files, spec.concurrency, deep, &report).await?;
         options::apply(&game_dir, &mut saved_options)?;
-        if inst.mc_version == "26.3" && inst.loader == scopenet_shared::Loader::Fabric {
+        if inst.mc_version == "26.3" && inst.loader == velora_shared::Loader::Fabric {
             let branding = state.manifest.read().unwrap().as_ref().map(|m| m.branding.clone()).unwrap_or_default();
             write_companion_preferences(&game_dir, &settings, &branding)?;
         }
@@ -190,9 +190,9 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
         Some(api) => {
             report(Event::Stage { stage: Stage::Launching, label: "Preparing sign-in".into() });
             let jar =
-                scopenet_core::authlib::ensure(&state.http, &state.layout, Some(&panel)).await.context("setting up authlib-injector")?;
-            let prefetched = scopenet_core::authlib::prefetch_metadata(&state.http, api).await.ok();
-            scopenet_core::authlib::jvm_args(&jar, api, prefetched.as_deref())
+                velora_launcher_core::authlib::ensure(&state.http, &state.layout, Some(&panel)).await.context("setting up authlib-injector")?;
+            let prefetched = velora_launcher_core::authlib::prefetch_metadata(&state.http, api).await.ok();
+            velora_launcher_core::authlib::jvm_args(&jar, api, prefetched.as_deref())
         }
         None => vec![],
     };
@@ -227,7 +227,7 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
         fullscreen: settings.fullscreen,
         join_server: inst.server.as_ref().filter(|s| s.auto_join && !s.address.is_empty()).map(|s| (s.address.clone(), s.port)),
         version_label: if branding.version_label.is_empty() { branding.name.clone() } else { branding.version_label.clone() },
-        launcher_name: "scopenet".into(),
+        launcher_name: "Velora".into(),
         launcher_version: env!("CARGO_PKG_VERSION").into(),
     };
     let cmd = launch::build(&installed, &state.layout, &opts);
@@ -374,7 +374,7 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
 }
 
 /// Launcher-owned presentation data. Contains no authentication tokens or URLs.
-fn write_companion_preferences(game_dir: &std::path::Path, settings: &crate::settings::Settings, branding: &scopenet_shared::Branding) -> Result<()> {
+fn write_companion_preferences(game_dir: &std::path::Path, settings: &crate::settings::Settings, branding: &velora_shared::Branding) -> Result<()> {
     let mut prefs = serde_json::to_value(&settings.companion)?;
     prefs["brand"] = serde_json::json!(branding.name);
     prefs["accent"] = serde_json::json!(if settings.theme_mode == "custom" { settings.accent.as_ref().unwrap_or(&branding.colors.accent) } else { &branding.colors.accent });

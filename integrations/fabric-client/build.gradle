@@ -1,5 +1,5 @@
 plugins { id 'fabric-loom' version '1.8.13' }
-// Client-only companion to the SCOPENET plugin / Fabric server mod. Fabric 1.20.1.
+// Client-only companion to the Velora plugin / Fabric server mod. Fabric 1.20.1.
 // It needs nothing from `common`: the messages are plain JSON inside a Minecraft UTF string.
 java.sourceCompatibility = JavaVersion.VERSION_17
 java.targetCompatibility = JavaVersion.VERSION_17

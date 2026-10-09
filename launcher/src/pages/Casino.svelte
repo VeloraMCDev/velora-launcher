@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import CasinoPage, { type CasinoServer } from '@scopenet/casino/CasinoPage.svelte';
-  import { setCasinoHost } from '@scopenet/casino';
+  import CasinoPage, { type CasinoServer } from '@velora/casino/CasinoPage.svelte';
+  import { setCasinoHost } from '@velora/casino';
   import { app, selectedInstance, toast } from '../lib/store.svelte';
   import { errorText, invoke } from '../lib/tauri';
 

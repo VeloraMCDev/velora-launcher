@@ -5,7 +5,7 @@ use crate::meta::{FABRIC_META, QUILT_META};
 use crate::paths::Layout;
 use crate::version::VersionJson;
 use anyhow::{Context, Result};
-use scopenet_shared::Loader;
+use velora_shared::Loader;
 
 pub async fn profile(client: &reqwest::Client, layout: &Layout, loader: Loader, mc: &str, loader_version: &str) -> Result<VersionJson> {
     let url = match loader {

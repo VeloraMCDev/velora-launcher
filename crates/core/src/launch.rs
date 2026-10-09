@@ -347,8 +347,8 @@ mod tests {
             resolution: Some((1280, 720)),
             fullscreen: false,
             join_server: join.then(|| ("play.example.net".to_string(), 25565)),
-            version_label: "SCOPENET".into(),
-            launcher_name: "scopenet".into(),
+            version_label: "Velora".into(),
+            launcher_name: "Velora".into(),
             launcher_version: "0.1.0".into(),
         }
     }
@@ -369,7 +369,7 @@ mod tests {
         assert!(a.contains("--width 1280 --height 720"));
         assert!(a.contains("--quickPlayMultiplayer play.example.net:25565"));
         assert!(!a.contains("--server"));
-        assert!(a.contains("--versionType SCOPENET"));
+        assert!(a.contains("--versionType Velora"));
         assert!(a.contains("-Djava.library.path=/n"));
     }
 

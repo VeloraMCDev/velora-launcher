@@ -54,7 +54,7 @@
 <div class="card">
   <div class="card-head"><Rocket size={18} /><h2>Launcher releases</h2><span class="spacer"></span>
     <span class="tiny muted">Players currently receive <b>{updates?.launcher_served ? `v${updates.launcher_served}` : 'no signed release'}</b></span></div>
-  <p class="muted small intro">Releases built by the <code>Launcher release</code> workflow wait here. Nothing reaches players until you approve it.</p>
+    <p class="muted small intro">Desktop installers and Android/iOS apps built by the <code>Launcher release</code> workflow wait here. Nothing reaches players until you approve it.</p>
   <div class="col">
     {#each updates?.launcher?.releases ?? [] as r}
       <div class="release" class:current={r.approved}>

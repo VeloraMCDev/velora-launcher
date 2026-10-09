@@ -9,7 +9,10 @@ export function workflowFindings(source) {
   if (!workflow || typeof workflow !== 'object' || !workflow.on || !workflow.jobs) return ['Missing workflow trigger/jobs'];
   if (workflow.permissions?.contents !== 'read' || workflow.permissions === 'write-all') findings.push('Default token must have contents: read');
   for (const [id, job] of Object.entries(workflow.jobs)) {
-    if (!Number.isInteger(job['timeout-minutes']) || job['timeout-minutes'] < 1 || job['timeout-minutes'] > 60) findings.push(`${id}: bounded job timeout required`);
+    // Reusable jobs inherit their bounded native jobs from a separately checked local workflow.
+    if (job.uses) {
+      if (!/^\.\/\.github\/workflows\/[\w-]+\.ya?ml$/.test(job.uses)) findings.push(`${id}: only local reusable workflows are allowed`);
+    } else if (!Number.isInteger(job['timeout-minutes']) || job['timeout-minutes'] < 1 || job['timeout-minutes'] > 60) findings.push(`${id}: bounded job timeout required`);
     if (job.permissions === 'write-all') findings.push(`${id}: write-all prohibited`);
     const developmentRegistration=id==='register-development'
       && job.if==="github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.VELORA_DEVELOPMENT_REGISTRATION_ENABLED == 'true'"
@@ -21,7 +24,7 @@ export function workflowFindings(source) {
       && Object.keys(job.permissions).every(key=>['contents','id-token'].includes(key));
     if(id==='register-development' && !developmentRegistration) findings.push(`${id}: exact opt-in Development registration policy required`);
     if (job.permissions && Object.values(job.permissions).includes('write') && job.if !== "github.ref == 'refs/heads/main'" && !developmentRegistration) findings.push(`${id}: elevated token job requires main or the exact reviewed Development OIDC registration policy`);
-    if (JSON.stringify(job['runs-on']).includes('self-hosted')) findings.push(`${id}: self-hosted trust isolation requires separate reviewed policy`);
+    if (JSON.stringify(job['runs-on'] ?? '').includes('self-hosted')) findings.push(`${id}: self-hosted trust isolation requires separate reviewed policy`);
     for (const step of job.steps ?? []) {
       if (!step.uses) continue;
       if (!step.uses.startsWith('./') && !/^[\w.-]+\/[\w./-]+@[a-f0-9]{40}$/.test(step.uses)) findings.push(`${id}: action must use a full commit SHA`);

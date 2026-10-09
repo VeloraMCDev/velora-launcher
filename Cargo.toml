@@ -11,8 +11,8 @@ repository = "https://github.com/VeloraMCDev/velora-launcher"
 [workspace.dependencies]
 velora-experiences-storage = { path = "packages/private-storage" }
 velora-experiences-gameplay = { path = "packages/private-gameplay" }
-scopenet-shared = { path = "crates/shared" }
-scopenet-core = { path = "crates/core" }
+velora-shared = { path = "crates/shared" }
+velora-launcher-core = { path = "crates/core" }
 velora-platform-utils = { path = "crates/platform-utils" }
 velora-auth-core = { path = "crates/auth-core" }
 velora-auth-http = { path = "crates/auth-http" }

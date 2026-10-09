@@ -2,7 +2,7 @@
 use crate::state::build;
 use anyhow::{anyhow, bail, Context, Result};
 use futures::StreamExt;
-pub use scopenet_shared::LauncherUpdate as UpdateInfo;
+pub use velora_shared::LauncherUpdate as UpdateInfo;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 use std::{path::Path, time::Duration};
@@ -29,7 +29,7 @@ struct Asset {
     digest: Option<String>,
 }
 pub fn is_newer(candidate: &str, current: &str) -> bool {
-    scopenet_shared::newer_release(candidate, current)
+    velora_shared::newer_release(candidate, current)
 }
 fn latest_release_api(repo: &reqwest::Url) -> String {
     let path = repo.path().trim_end_matches('/').trim_end_matches(".git");
@@ -79,7 +79,7 @@ async fn panel_update(http: &reqwest::Client, panel: Option<&str>) -> Result<Opt
         bail!("Unexpected panel installer URL");
     }
     // Only releases signed by the Velora release key (and approved onto the panel) are installed.
-    if !info.signature.as_deref().is_some_and(|sig| scopenet_shared::verify_release_signature(&info.version, digest, sig)) {
+    if !info.signature.as_deref().is_some_and(|sig| velora_shared::verify_release_signature(&info.version, digest, sig)) {
         bail!("Panel installer is not signed by the Velora release key");
     }
     info.url = format!("{}{}", panel.trim_end_matches('/'), info.url);
@@ -209,7 +209,7 @@ pub async fn download_and_run(http: &reqwest::Client, info: &UpdateInfo) -> Resu
     } else {
         "AppImage"
     };
-    let dest = std::env::temp_dir().join(format!("scopenet-{}-{ext}", uuid::Uuid::new_v4()));
+    let dest = std::env::temp_dir().join(format!("velora-{}-{ext}", uuid::Uuid::new_v4()));
     download_installer(http, info, &dest).await.context("downloading update")?;
     if cfg!(windows) {
         std::process::Command::new(&dest).args(["/P", "/R"]).spawn().context("starting the installer")?;
@@ -284,7 +284,7 @@ mod tests {
     async fn download_verifies_checksum_and_size_before_creating_installer() {
         let http = reqwest::Client::new();
         let bytes = b"installer fixture".to_vec();
-        let dir = std::env::temp_dir().join(format!("scopenet-updater-test-{}", uuid::Uuid::new_v4()));
+        let dir = std::env::temp_dir().join(format!("velora-updater-test-{}", uuid::Uuid::new_v4()));
         tokio::fs::create_dir(&dir).await.unwrap();
         let dest = dir.join("setup.exe");
         let mut info = update("99.0.0");
@@ -334,8 +334,8 @@ mod tests {
     fn release_api_follows_the_host() {
         let url = |s| reqwest::Url::parse(s).unwrap();
         assert_eq!(
-            latest_release_api(&url("https://github.com/scopeddlol/SCOPENET-MC.git/")),
-            "https://api.github.com/repos/scopeddlol/SCOPENET-MC/releases/latest"
+            latest_release_api(&url("https://github.com/VeloraMCDev/velora-launcher.git/")),
+            "https://api.github.com/repos/VeloraMCDev/velora-launcher/releases/latest"
         );
         assert_eq!(latest_release_api(&url("https://git.example.com/me/mc")), "https://git.example.com/api/v1/repos/me/mc/releases/latest");
     }

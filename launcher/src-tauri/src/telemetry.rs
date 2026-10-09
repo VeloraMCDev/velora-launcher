@@ -1,6 +1,6 @@
 //! Account-attributed activity only; no passwords, game logs, chat, or local paths.
 use crate::{accounts, state::AppState};
-use scopenet_shared::LaunchEvent;
+use velora_shared::LaunchEvent;
 use std::time::Duration;
 
 /// Capture the identity when work starts, so switching accounts cannot
