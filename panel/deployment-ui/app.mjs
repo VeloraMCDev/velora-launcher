@@ -10,7 +10,7 @@ function updateProbeChoices(){
     const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent=name==='candidates'?'Select a tested probe image':'Select a connected machine';select.append(placeholder);
     for(const item of choices[name]){
       if(name==='candidates' && (item.service_id!=='deployment-probe' || item.repository!=='veloramcdev/velora-launcher'))continue;
-      if(name==='agents' && item.status!=='ACTIVE')continue;
+      if(name==='agents' && (item.status!=='ONLINE' || item.environment!=='development'))continue;
       const option=document.createElement('option');option.value=item.candidate_id??item.id;option.textContent=name==='candidates'?item.git_sha+' · '+item.sha256:item.id;select.append(option);
     }
     select.value=previous;select.disabled=sessionLost;
