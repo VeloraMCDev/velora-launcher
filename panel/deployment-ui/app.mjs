@@ -1,8 +1,24 @@
 import {ControlClient,SessionUnavailable} from './client.mjs';
+import {probeRequest} from './probe-plan.mjs';
 const el=id=>document.getElementById(id),collections=['repositories','candidates','agents','audit'];
 let codeTimer,refreshing=false,sessionLost=false;const cursors={};
+const choices={candidates:[],agents:[]};let pendingProbe;
+function updateProbeChoices(){
+  if(pendingProbe)return;
+  for(const [name,id] of [['candidates','probe-candidate'],['agents','probe-agent']]){
+    const select=el(id),previous=select.value;select.replaceChildren();
+    const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent=name==='candidates'?'Select a tested probe image':'Select a connected machine';select.append(placeholder);
+    for(const item of choices[name]){
+      if(name==='candidates' && (item.service_id!=='deployment-probe' || item.repository!=='veloramcdev/velora-launcher'))continue;
+      if(name==='agents' && item.status!=='ACTIVE')continue;
+      const option=document.createElement('option');option.value=item.candidate_id??item.id;option.textContent=name==='candidates'?item.git_sha+' · '+item.sha256:item.id;select.append(option);
+    }
+    select.value=previous;select.disabled=sessionLost;
+  }
+  el('start-probe').disabled=sessionLost || !el('probe-candidate').value || !el('probe-agent').value;
+}
 function clearCode(){clearTimeout(codeTimer);el('enrollment-code').value='';el('code-expiry').textContent='';el('code-box').hidden=true;}
-function clearSession(){sessionLost=true;clearCode();for(const name of [...collections,'deployments']){el(name).replaceChildren();el('next-'+name).hidden=true;cursors[name]=null;}for(const id of ['repository-count','candidate-count','agent-count','deployment-count'])el(id).textContent='—';el('enroll').disabled=true;}
+function clearSession(){sessionLost=true;clearCode();pendingProbe=undefined;choices.candidates=[];choices.agents=[];updateProbeChoices();for(const name of [...collections,'deployments']){el(name).replaceChildren();el('next-'+name).hidden=true;cursors[name]=null;}for(const id of ['repository-count','candidate-count','agent-count','deployment-count'])el(id).textContent='—';el('enroll').disabled=true;}
 const client=new ControlClient(fetch,clearSession);
 function notice(message){el('notice').textContent=message;}
 function row(title,detail,badge){const node=document.createElement('div');node.className='row';const heading=document.createElement('strong');heading.textContent=title;node.append(heading);if(badge){const state=document.createElement('p');state.className='badge';state.textContent=badge;node.append(state);}const text=document.createElement('p');text.textContent=detail;node.append(text);return node;}
@@ -34,6 +50,7 @@ async function load(name,cursor=''){
   const result=await client.request('/api/v1/'+name+'?environment=development&limit=20'+(cursor?'&cursor='+encodeURIComponent(cursor):''));
   if(sessionLost)return;
   if(!Array.isArray(result.items))throw Error('Unexpected response. Refresh to try again.');
+  if(Object.hasOwn(choices,name)){if(!cursor)choices[name]=[];const seen=new Map(choices[name].map(item=>[item.candidate_id??item.id,item]));for(const item of result.items)seen.set(item.candidate_id??item.id,item);choices[name]=[...seen.values()];updateProbeChoices();}
   const nodes=result.items.map(item=>{
     if(name==='deployments'){
       if(typeof item.id!=='string' || !/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(item.id) || !Object.hasOwn(deploymentStates,item.status))throw Error('Unexpected deployment record.');
@@ -58,6 +75,19 @@ async function refresh(){if(refreshing)return;refreshing=true;sessionLost=false;
   catch(error){if(error instanceof SessionUnavailable)clearSession();notice(error.message);}finally{refreshing=false;el('refresh').disabled=false;}
 }
 el('refresh').onclick=refresh;el('dismiss-code').onclick=clearCode;
+for(const id of ['probe-candidate','probe-agent'])el(id).onchange=updateProbeChoices;
+el('probe-form').onsubmit=async event=>{
+  event.preventDefault();if(sessionLost)return;
+  const button=el('start-probe');button.disabled=true;
+  try{
+    if(!pendingProbe){const body=probeRequest(choices.candidates.find(item=>item.candidate_id===el('probe-candidate').value),choices.agents.find(item=>item.id===el('probe-agent').value));pendingProbe={body,idempotencyKey:crypto.randomUUID()};}
+    el('probe-candidate').disabled=true;el('probe-agent').disabled=true;
+    const result=await client.request('/api/v1/deployments',pendingProbe.body,{idempotencyKey:pendingProbe.idempotencyKey});
+    if(sessionLost)return;
+    if(!/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(result.deployment_id??'') || !Object.hasOwn(deploymentStates,result.status))throw Error('Unconfirmed deployment response. Retry this action to reconcile it.');
+    pendingProbe=undefined;button.textContent='Start Development probe';updateProbeChoices();notice('Development probe reserved. Load its timeline for the confirmed execution result.');await load('deployments');
+  }catch(error){notice(error.message);if(!sessionLost){button.disabled=false;if(pendingProbe)button.textContent='Retry the same probe request';}}
+};
 for(const name of [...collections,'deployments'])el('next-'+name).onclick=()=>load(name,cursors[name]).catch(error=>notice(error.message));
 el('refresh-deployments').onclick=async()=>{if(sessionLost){notice('Refresh your protected session before loading deployments.');return;}el('refresh-deployments').disabled=true;try{await load('deployments');if(!sessionLost)notice('Deployment history updated.');}catch(error){notice(error.message);}finally{el('refresh-deployments').disabled=false;}};
 el('enroll').onclick=async()=>{el('enroll').disabled=true;clearCode();try{

@@ -57,6 +57,69 @@ impl Platform {
 }
 
 #[tokio::test]
+async fn profile_posts_use_shared_platform_storage_from_persistent_instances() {
+    let p = Platform::new().await;
+    let first = p.instance("First social experience").await;
+    let second = p.instance("Second social experience").await;
+    let (status, body) = p.call("POST", "/api/admin/users", None, &p.token,
+        Some(json!({"username":"SocialReader","password":"fixture-player-pass"}))).await;
+    assert_eq!(status, StatusCode::OK, "{body}");
+    let (status, login) = p.call("POST", "/api/v1/auth/login", None, "",
+        Some(json!({"username":"SocialReader","password":"fixture-player-pass"}))).await;
+    assert_eq!(status, StatusCode::OK, "{login}");
+    let reader = login["token"].as_str().unwrap();
+    let owner = auth::find_user_by_name(&p.state, "admin").await.unwrap().unwrap();
+
+    let (status, _) = p.call("POST", "/api/v1/profiles/me/posts", Some(&first), &p.token,
+        Some(json!({"content":"   "}))).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+    let mut ids = Vec::new();
+    for instance in [&first, &second] {
+        let (status, post) = p.call("POST", "/api/v1/profiles/me/posts", Some(instance), &p.token,
+            Some(json!({"content":"  Shared profile post  "}))).await;
+        assert_eq!(status, StatusCode::OK, "{post}");
+        assert_eq!(post["content"], "Shared profile post");
+        assert_eq!(post["user_uuid"], owner.uuid);
+        ids.push(post["id"].as_i64().unwrap());
+    }
+    assert_ne!(ids[0], ids[1], "Post IDs belong to the shared platform store");
+    let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM user_posts").fetch_one(&p.state.platform_db).await.unwrap();
+    assert_eq!(count, 2);
+    for instance in [&first, &second] {
+        let scoped = p.state.experiences.state(&p.state, instance).await.unwrap();
+        let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM main.user_posts").fetch_one(&scoped.db).await.unwrap();
+        assert_eq!(count, 0, "No duplicate profile history in an experience database");
+        let (status, profile) = p.call("GET", &format!("/api/v1/profiles/{}", owner.uuid), Some(instance), reader, None).await;
+        assert_eq!(status, StatusCode::OK, "{profile}");
+        assert_eq!(profile["posts"].as_array().unwrap().len(), 2);
+    }
+    let like = format!("/api/v1/posts/{}/like", ids[0]);
+    for (instance, expected) in [(&second, true), (&first, false)] {
+        let (status, body) = p.call("POST", &like, Some(instance), reader, None).await;
+        assert_eq!(status, StatusCode::OK, "{body}");
+        assert_eq!(body["liked"], expected);
+    }
+    let count: i64 = sqlx::query_scalar("SELECT likes_count FROM user_posts WHERE id=?").bind(ids[0])
+        .fetch_one(&p.state.platform_db).await.unwrap();
+    assert_eq!(count, 1);
+    let delete = format!("/api/v1/profiles/me/posts/{}", ids[0]);
+    let (status, body) = p.call("DELETE", &delete, Some(&second), reader, None).await;
+    assert_eq!(status, StatusCode::OK, "{body}");
+    let exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM user_posts WHERE id=?)").bind(ids[0])
+        .fetch_one(&p.state.platform_db).await.unwrap();
+    assert!(exists, "Another account cannot delete the author's post");
+    let (status, body) = p.call("DELETE", &delete, Some(&second), &p.token, None).await;
+    assert_eq!(status, StatusCode::OK, "{body}");
+    let likes: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM user_post_likes WHERE post_id=?").bind(ids[0])
+        .fetch_one(&p.state.platform_db).await.unwrap();
+    assert_eq!(likes, 0, "Deletion cascades shared likes");
+    p.state.experiences.retire(&first).await;
+    let (status, profile) = p.call("GET", &format!("/api/v1/profiles/{}", owner.uuid), Some(&first), reader, None).await;
+    assert_eq!(status, StatusCode::OK, "{profile}");
+    assert_eq!(profile["posts"].as_array().unwrap().len(), 1);
+}
+
+#[tokio::test]
 async fn velora_and_legacy_instance_headers_select_the_same_store_and_conflicts_fail_closed() {
     let p = Platform::new().await;
     let a = p.instance("First operator instance").await;

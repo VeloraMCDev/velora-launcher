@@ -5,7 +5,7 @@
 # build machine's native arch, so no slow QEMU emulation is needed.
 
 # ---- 1. Web UI ---------------------------------------------------------------
-FROM --platform=$BUILDPLATFORM node:22-alpine AS web
+FROM --platform=$BUILDPLATFORM node:24-alpine AS web
 WORKDIR /src/panel/web
 COPY panel/web/package.json panel/web/package-lock.json ./
 RUN npm ci --no-audit --no-fund
@@ -19,13 +19,13 @@ COPY panel/web/ ./
 RUN npm run build
 
 # ---- 1b. Icon library ---------------------------------------------------------
-FROM --platform=$BUILDPLATFORM node:22-alpine AS icons
+FROM --platform=$BUILDPLATFORM node:24-alpine AS icons
 WORKDIR /src/panel/icons
 COPY panel/icons/package.json panel/icons/package-lock.json panel/icons/build.mjs ./
 RUN npm ci --no-audit --no-fund && node build.mjs
 
 # ---- 2. Server binary --------------------------------------------------------
-FROM --platform=$BUILDPLATFORM rust:1-slim-bookworm AS build
+FROM --platform=$BUILDPLATFORM rust:1.98.1-slim-bookworm AS build
 ARG TARGETARCH
 # zig (via the cargo-zigbuild wheel) is the cross C toolchain for musl targets.
 RUN apt-get update && apt-get install -y --no-install-recommends python3-pip \
@@ -62,7 +62,7 @@ RUN mkdir -p /out/tmp && chmod 1777 /out/tmp
 FROM scratch AS prebuilt
 LABEL org.opencontainers.image.title="Velora Panel" \
       org.opencontainers.image.description="Admin panel for the Velora Minecraft launcher" \
-      org.opencontainers.image.source="https://github.com/VeloraMCDev/experiences"
+      org.opencontainers.image.source="https://github.com/VeloraMCDev/velora-launcher"
 COPY scopenet-panel /scopenet-panel
 COPY web /web
 COPY icons /icons
@@ -87,7 +87,7 @@ ARG VELORA_BUILD_VERSION=0.0.0
 ARG VELORA_BUILD_CREATED=unknown
 LABEL org.opencontainers.image.title="Velora Panel" \
       org.opencontainers.image.description="Admin panel for the Velora Minecraft launcher" \
-      org.opencontainers.image.source="https://github.com/VeloraMCDev/experiences" \
+      org.opencontainers.image.source="https://github.com/VeloraMCDev/velora-launcher" \
       org.opencontainers.image.revision=$VELORA_BUILD_REVISION \
       org.opencontainers.image.version=$VELORA_BUILD_VERSION \
       org.opencontainers.image.created=$VELORA_BUILD_CREATED

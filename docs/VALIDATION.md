@@ -42,7 +42,9 @@ It uses read-only permissions, pinned actions, one bounded Ubuntu runner, no
 deployment secrets and no artifact upload. Packaging, native application acceptance
 and release workflows remain manual to keep compute/storage costs low.
 
-Workflow templates inside Infra are references, not active monorepo workflows.
-They require canonical source-policy and working-directory review before activation.
+The root deployment-baseline, release-probe and panel-release workflows are manual.
+Their registration jobs require successful artifact validation, main, a repository
+opt-in variable and an exact immutable workflow policy in the control plane.
+Workflow templates inside Infra remain historical references.
 No local test substitutes for exact-image Docker acceptance, native desktop/game
 upgrade testing or production rollout/restore validation.

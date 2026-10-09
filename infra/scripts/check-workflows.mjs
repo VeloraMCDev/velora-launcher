@@ -13,8 +13,10 @@ export function workflowFindings(source) {
     if (job.permissions === 'write-all') findings.push(`${id}: write-all prohibited`);
     const developmentRegistration=id==='register-development'
       && job.if==="github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.VELORA_DEVELOPMENT_REGISTRATION_ENABLED == 'true'"
-      && job.needs===(workflow.jobs['contracts-and-container']?'contracts-and-container':'candidate')
+      && job.needs===(workflow.jobs['contracts-and-container']?'contracts-and-container':workflow.jobs.candidate?'candidate':'image')
       && Boolean(workflow.jobs[job.needs]) && job['runs-on']==='ubuntu-latest'
+      && (job.needs!=='image' || ['scripts/check-panel-container.mjs','.github/scripts/test-panel-image.py']
+        .every(check=>(workflow.jobs.image.steps ?? []).some(step=>step.run?.includes(check))))
       && job.permissions?.['id-token']==='write' && job.permissions?.contents==='read'
       && Object.keys(job.permissions).every(key=>['contents','id-token'].includes(key));
     if(id==='register-development' && !developmentRegistration) findings.push(`${id}: exact opt-in Development registration policy required`);
