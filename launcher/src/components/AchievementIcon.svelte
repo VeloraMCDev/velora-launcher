@@ -1,6 +1,7 @@
 <script lang="ts">
   import { abs } from '../lib/store.svelte';
   import { resolveIcon } from '../lib/achievementIcons';
+  import McItem from './McItem.svelte';
 
   let { ach, size = 2.8, locked = false }: {
     ach: { icon_item?: string | null; icon_bg?: string | null; icon_border?: string | null; frame_type?: string | null };
@@ -21,7 +22,7 @@
   style:--glow={icon.glow}
   aria-hidden="true"
 >
-  <span class="inner" style:background={icon.background}>{#if icon.image}<img src={abs(icon.image)} alt="" />{:else}<span class="glyph">{icon.emoji}</span>{/if}</span>
+  <span class="inner" style:background={icon.background}>{#if icon.image}<img src={abs(icon.image)} alt="" />{:else}<McItem id={ach.icon_item ?? ''} size={size * 0.52} emoji={icon.emoji} />{/if}</span>
 </span>
 
 <style>

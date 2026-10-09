@@ -1,4 +1,5 @@
 <script lang="ts">
+  import McItem from '../components/McItem.svelte';
   import { onMount } from 'svelte';
   import { Plus, Pencil, Trash2, Trophy, Sparkles, Shield, Swords, Pickaxe, Compass, Users } from '@lucide/svelte';
   import ImageInput from '../components/ImageInput.svelte';
@@ -229,7 +230,7 @@
               style="border-color: {getBorderColor(a.icon_border)}; box-shadow: {getBorderGlow(a.icon_border)};"
             >
               <div class="mc-frame-inner" style="background: {getBgPattern(a.icon_bg)};">
-                {#if resolveIcon(a).image}<img src={resolveIcon(a).image} alt="" style="width: 32px; height: 32px; object-fit: contain; image-rendering: pixelated" />{:else}<span class="mc-icon">{getItemEmoji(a.icon_item)}</span>{/if}
+                {#if resolveIcon(a).image}<img src={resolveIcon(a).image} alt="" style="width: 32px; height: 32px; object-fit: contain; image-rendering: pixelated" />{:else}<McItem id={a.icon_item ?? ''} size={32} emoji={getItemEmoji(a.icon_item)} />{/if}
               </div>
             </div>
           </div>
@@ -277,7 +278,7 @@
             style="border-color: {getBorderColor(draft.icon_border)}; box-shadow: {getBorderGlow(draft.icon_border)};"
           >
             <div class="mc-frame-inner" style="background: {getBgPattern(draft.icon_bg)};">
-              {#if resolveIcon(draft).image}<img src={resolveIcon(draft).image} alt="" style="width: 32px; height: 32px; object-fit: contain; image-rendering: pixelated" />{:else}<span class="mc-icon">{getItemEmoji(draft.icon_item)}</span>{/if}
+              {#if resolveIcon(draft).image}<img src={resolveIcon(draft).image} alt="" style="width: 32px; height: 32px; object-fit: contain; image-rendering: pixelated" />{:else}<McItem id={draft.icon_item ?? ''} size={32} emoji={getItemEmoji(draft.icon_item)} />{/if}
             </div>
           </div>
           <div class="mc-toast-body">

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import McItem from '../components/McItem.svelte';
   import { onMount } from 'svelte';
   import {
     Target, Trophy, Clock, Sparkles, Check, Gift, Pickaxe, Swords, Hammer,
@@ -284,7 +285,7 @@
             <div class="quest-card glass" class:completed={uq.completed} class:claimed={uq.claimed}>
               <div class="quest-top">
                 <div class="quest-icon-wrapper">
-                  {#if imageIcon(q.icon)}<img src={abs(imageIcon(q.icon))} alt="" style="width: 32px; height: 32px; object-fit: contain" />{:else if q.icon && !questIcons[q.icon]}<span>{resolveIcon({ icon_item: q.icon }).emoji}</span>{:else}<IconComponent size={20} class="cat-icon" />{/if}
+                  {#if imageIcon(q.icon)}<img src={abs(imageIcon(q.icon))} alt="" style="width: 32px; height: 32px; object-fit: contain" />{:else if q.icon && !questIcons[q.icon]}<McItem id={q.icon} size={1.8} emoji={resolveIcon({ icon_item: q.icon }).emoji} />{:else}<IconComponent size={20} class="cat-icon" />{/if}
                 </div>
                 <div class="quest-meta">
                   <div class="quest-title-row">

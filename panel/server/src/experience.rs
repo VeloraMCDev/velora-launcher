@@ -348,7 +348,7 @@ pub fn platform_path(path: &str) -> bool {
         Some(
             "auth" | "auth-server" | "account" | "profile" | "social" | "friends" | "messages" | "invites" | "members" | "users" | "groups"
             | "capes" | "instances" | "branding" | "settings" | "landing" | "uploads" | "avatar" | "email" | "email-templates" | "meta"
-            | "icons" | "launcher" | "launcher-updates" | "mobile-apps" | "connections" | "emails" | "activity",
+            | "icons" | "mc" | "mc-textures" | "launcher" | "launcher-updates" | "mobile-apps" | "connections" | "emails" | "activity",
         ) => true,
         _ => !path.starts_with("/api/"),
     }
@@ -555,4 +555,14 @@ fn start_workers(state: AppState) {
             }
         }
     });
+}
+
+#[cfg(test)]
+mod platform_path_tests {
+    #[test]
+    fn minecraft_textures_need_no_instance_selection() {
+        for path in ["/api/v1/mc/status", "/api/v1/mc/item/diamond_sword.png", "/api/v1/mc/gui/hud/heart/full.png", "/api/admin/mc-textures", "/api/admin/mc-textures/upload"] {
+            assert!(super::platform_path(path), "{path}");
+        }
+    }
 }

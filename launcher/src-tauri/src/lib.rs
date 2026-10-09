@@ -74,6 +74,7 @@ pub fn run() {
             commands::board_post,
             commands::textures_status,
             commands::item_textures,
+            commands::mc_sprites,
             commands::notifications_list,
             commands::notifications_mark,
             commands::respond_guild_invite,

@@ -5,6 +5,8 @@
   import { ChevronDown, Command, Ellipsis, LogOut, Search, ShieldCheck, Check, ExternalLink } from '@lucide/svelte';
   import { COMMAND_GROUPS } from '@velora/commands';
   import Avatar from '../components/Avatar.svelte';
+  import McIcon from '../components/McIcon.svelte';
+  import { NAV_ITEMS } from '../lib/mcNav';
   import NotificationBell from '../components/NotificationBell.svelte';
   import Palette, { type PaletteItem } from '../components/Palette.svelte';
   import Sheet from './ui/Sheet.svelte';
@@ -72,7 +74,7 @@
       </a>
       <nav class="pl-links">
         {#each PAGES as p (p.id)}
-          <a class="pl-link" class:on={page.id === p.id} href={`#/play/instance/${encodeURIComponent(route.instanceId ?? '')}/${p.id}`} aria-current={page.id === p.id ? 'page' : undefined}><p.icon size={18} /> <span>{p.label}</span></a>
+          <a class="pl-link" class:on={page.id === p.id} href={`#/play/instance/${encodeURIComponent(route.instanceId ?? '')}/${p.id}`} aria-current={page.id === p.id ? 'page' : undefined}><McIcon item={NAV_ITEMS[p.id]} fallback={p.icon} size={20} /> <span>{p.label}</span></a>
         {/each}
       </nav>
       <div class="pl-rail-foot">
@@ -133,7 +135,7 @@
 
   <nav class="pl-tabbar" aria-label="Main">
     {#each primary as p (p.id)}
-      <a class="pl-tab" class:on={page.id === p.id} href={`#/play/instance/${encodeURIComponent(route.instanceId ?? '')}/${p.id}`} aria-current={page.id === p.id ? 'page' : undefined}><p.icon size={22} /><span>{p.label}</span></a>
+      <a class="pl-tab" class:on={page.id === p.id} href={`#/play/instance/${encodeURIComponent(route.instanceId ?? '')}/${p.id}`} aria-current={page.id === p.id ? 'page' : undefined}><McIcon item={NAV_ITEMS[p.id]} fallback={p.icon} size={24} /><span>{p.label}</span></a>
     {/each}
     <button class="pl-tab" class:on={more.some((p) => p.id === page.id)} onclick={() => (moreOpen = true)} aria-label="More pages"><Ellipsis size={22} /><span>More</span></button>
   </nav>
@@ -141,7 +143,7 @@
   <Sheet bind:open={moreOpen} title="More">
     <div class="more-grid">
       {#each more as p (p.id)}
-        <a class="more-item" class:on={page.id === p.id} href={`#/play/instance/${encodeURIComponent(route.instanceId ?? '')}/${p.id}`}><span class="ic"><p.icon size={22} /></span><b>{p.label}</b><small>{p.blurb}</small></a>
+        <a class="more-item" class:on={page.id === p.id} href={`#/play/instance/${encodeURIComponent(route.instanceId ?? '')}/${p.id}`}><span class="ic"><McIcon item={NAV_ITEMS[p.id]} fallback={p.icon} size={28} /></span><b>{p.label}</b><small>{p.blurb}</small></a>
       {/each}
     </div>
     <button class="pl-btn block" onclick={() => { moreOpen = false; paletteOpen = true; }}><Search size={16} /> Quick search</button>

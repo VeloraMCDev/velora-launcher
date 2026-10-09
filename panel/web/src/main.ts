@@ -8,5 +8,8 @@ import './app.css';
 import './lib/nozoom';
 import { mount } from 'svelte';
 import App from './App.svelte';
+import { loadMc } from './lib/mc.svelte';
+
+loadMc();
 
 mount(App, { target: document.getElementById('app')! });

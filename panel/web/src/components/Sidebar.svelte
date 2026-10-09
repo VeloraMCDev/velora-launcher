@@ -6,6 +6,8 @@
   import { route } from '../lib/router.svelte';
   import { logout, session } from '../lib/session.svelte';
   import Avatar from './Avatar.svelte';
+  import McIcon from './McIcon.svelte';
+  import { NAV_ITEMS } from '../lib/mcNav';
 
   let { brandName = 'Velora', logo = null, open = $bindable(false), onsearch }: { brandName?: string; logo?: string | null; open?: boolean; onsearch?: () => void } = $props();
 
@@ -53,7 +55,7 @@
           <div class="items">
             {#each g.items as item (item.id)}
               <a href={route.instanceId && !PLATFORM_PAGES.has(item.id) ? `#/instance/${encodeURIComponent(route.instanceId)}/${item.id}` : `#/${item.id}`} class:active={route.name === item.id} aria-current={route.name === item.id ? 'page' : undefined}>
-                <item.icon size={17} />
+                <McIcon item={NAV_ITEMS[item.id]} fallback={item.icon} size={20} />
                 <span>{item.label}</span>
               </a>
             {/each}

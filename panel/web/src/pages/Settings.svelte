@@ -2,6 +2,7 @@
   import { Save, LoaderCircle, KeyRound, UserRound, WifiOff, Download, CircleCheck, Copy, Plug } from '@lucide/svelte';
   import Toggle from '../components/Toggle.svelte';
   import DownloadsManager from '../components/DownloadsManager.svelte';
+  import McTextures from '../components/McTextures.svelte';
     import ChannelPicker from '../components/ChannelPicker.svelte';
   import { copy, get, post, put } from '../lib/api';
   import { toast, toastError } from '../lib/toast.svelte';
@@ -132,7 +133,7 @@
       <button role="tab" aria-selected={tab === 'launcher'} class:active={tab === 'launcher'} onclick={() => (tab = 'launcher')}><Download size={15} /> Launcher &amp; apps</button>
     </div>
 
-    {#if tab === 'launcher'}<DownloadsManager />{/if}
+    {#if tab === 'launcher'}<DownloadsManager /><McTextures />{/if}
 
     {#if tab === 'signin'}
     <section class="card col">

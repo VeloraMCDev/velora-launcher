@@ -1,5 +1,6 @@
 <script lang="ts">
   import { resolveIcon } from '../../lib/achievementIcons';
+  import McItem from '../../components/McItem.svelte';
 
   // Minecraft-style achievement frame: square (task), round (goal) or notched (challenge).
   let { ach, size = 52, locked = false }: {
@@ -14,7 +15,7 @@
 
 <span class="frame {frame}" class:locked style:--size="{size}px" style:--rim={icon.borderColor} style:--glow={icon.glow} aria-hidden="true">
   <span class="inner" style:background={icon.background}>
-    {#if icon.image}<img src={icon.image} alt="" />{:else}<span class="glyph">{icon.emoji}</span>{/if}
+    {#if icon.image}<img src={icon.image} alt="" />{:else}<McItem id={ach.icon_item ?? ''} size={Math.round(size * 0.52)} emoji={icon.emoji} />{/if}
   </span>
 </span>
 

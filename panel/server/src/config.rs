@@ -58,6 +58,10 @@ impl Config {
     pub fn textures_dir(&self) -> PathBuf {
         self.data_dir.join("textures")
     }
+    /// Minecraft textures extracted from a vanilla client jar (see `routes::mc_assets`).
+    pub fn mc_textures_dir(&self) -> PathBuf {
+        self.data_dir.join("mc-textures")
+    }
     pub fn downloads_dir(&self) -> PathBuf {
         self.data_dir.join("downloads")
     }

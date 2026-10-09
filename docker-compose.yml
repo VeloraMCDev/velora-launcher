@@ -27,6 +27,8 @@ services:
       PUBLIC_URL: ${PUBLIC_URL:-}
       SCOPENET_TRUSTED_PROXIES: ${SCOPENET_TRUSTED_PROXIES:-}
       VELORA_TRUSTED_PROXIES: ${VELORA_TRUSTED_PROXIES:-}
+      # Set to "off" to stop the panel downloading Minecraft's textures from Mojang on its own (see docs/APPLICATION.md).
+      VELORA_MC_TEXTURES: ${VELORA_MC_TEXTURES:-}
       RUST_LOG: ${RUST_LOG:-info}
     volumes:
       - panel-data:/data

@@ -8,6 +8,10 @@
   import { session } from '../lib/session.svelte';
   import LandingMap from '../components/LandingMap.svelte';
   import PlatformIcon from '../components/PlatformIcon.svelte';
+  import McItem from '../components/McItem.svelte';
+  import McIcon from '../components/McIcon.svelte';
+  import McMeter from '../components/McMeter.svelte';
+  import { mc, blockUrl } from '../lib/mc.svelte';
   import type { LandingConfig, HostedDownload, BlockType, FaqItem } from '../lib/types';
 
   let config = $state<LandingConfig | null>(null);
@@ -32,6 +36,9 @@
     if (!isPreview || event.origin !== location.origin || event.data?.type !== 'scopenet-landing-preview') return;
     config = event.data.config as LandingConfig;
   }
+
+  // A tiled deepslate wall stands in for the hero background when no image or video is configured and textures are installed.
+  const heroPano = $derived(config && !mediaUrl(config.hero_bg_url) ? blockUrl('deepslate_bricks') : null);
 
   function safeLink(value: string | undefined | null): string {
     if (!value) return '#';
@@ -242,6 +249,7 @@
           <!-- Hero Section -->
           <section class="hero-block" id={sectionId(block)}>
             {#if config.hero_bg_type === 'video' && mediaUrl(config.hero_bg_url) && (!block.options?.background || block.options.background === 'default')}<video class="hero-video" src={mediaUrl(config.hero_bg_url)} autoplay muted loop playsinline aria-hidden="true"></video>{/if}
+            {#if heroPano}<div class="hero-pano" style:background-image="url({heroPano})" aria-hidden="true"></div>{/if}
             <div class="hero-bg-glow"></div>
             <div class="hero-orb orb-a" aria-hidden="true"></div><div class="hero-orb orb-b" aria-hidden="true"></div><div class="hero-grid" aria-hidden="true"></div>
             <div class="container hero-content">
@@ -292,9 +300,9 @@
               </div>
               {#if block.options?.show_stats !== false && (totalOnline || publicServers.length || totalPlayers)}
                 <div class="hero-stats">
-                  <div><strong>{formatNumber(totalOnline)}</strong><span>Online now</span></div>
-                  <div><strong>{formatNumber(publicServers.length)}</strong><span>{publicServers.length === 1 ? 'Server' : 'Servers'}</span></div>
-                  <div><strong>{formatNumber(totalPlayers)}</strong><span>Players</span></div>
+                  <div>{#if mc.ready}<div class="stat-ic"><McItem id="armor_stand" size={28} /></div>{/if}<strong>{formatNumber(totalOnline)}</strong><span>Online now</span></div>
+                  <div>{#if mc.ready}<div class="stat-ic"><McItem id="grass_block" size={28} /></div>{/if}<strong>{formatNumber(publicServers.length)}</strong><span>{publicServers.length === 1 ? 'Server' : 'Servers'}</span></div>
+                  <div>{#if mc.ready}<div class="stat-ic"><McItem id="name_tag" size={28} /></div>{/if}<strong>{formatNumber(totalPlayers)}</strong><span>Players</span></div>
                 </div>
               {/if}
               {#if mediaUrl(block.options?.image_url)}<img class="hero-image" src={mediaUrl(block.options?.image_url)} alt="" />{/if}
@@ -388,6 +396,7 @@
                       </div>
 
                       <h3 class="server-card-title">{s.name}</h3>
+                      {#if s.online && s.players_max}<McMeter value={s.players_online} max={s.players_max} />{/if}
                       <div class="server-card-bottom">
                         <button class="server-copy-btn" onclick={() => copyIp(config?.server_ip ?? '')}>
                           <span>{block.options?.cta_label || config?.server_ip || 'play.server.com'}</span>
@@ -417,15 +426,14 @@
 
               <div class="sort-chips-bar">
                 {#each [
-                  { id: 'playtime_secs', label: 'Playtime', icon: Clock },
-                  { id: 'global_level', label: 'Global Level', icon: Crown },
-                  { id: 'player_kills', label: 'Player Kills', icon: Swords },
-                  { id: 'mob_kills', label: 'Mob Kills', icon: Flame },
-                  { id: 'blocks_broken', label: 'Blocks Mined', icon: Pickaxe },
+                  { id: 'playtime_secs', label: 'Playtime', icon: Clock, item: 'clock' },
+                  { id: 'global_level', label: 'Global Level', icon: Crown, item: 'experience_bottle' },
+                  { id: 'player_kills', label: 'Player Kills', icon: Swords, item: 'diamond_sword' },
+                  { id: 'mob_kills', label: 'Mob Kills', icon: Flame, item: 'bone' },
+                  { id: 'blocks_broken', label: 'Blocks Mined', icon: Pickaxe, item: 'diamond_pickaxe' },
                 ] as opt}
-                  {@const Icon = opt.icon}
                   <button class="sort-chip" class:active={lbSort === opt.id} onclick={() => (lbSort = opt.id)}>
-                    <Icon size={14} /> {opt.label}
+                    <McIcon item={opt.item} fallback={opt.icon} size={16} /> {opt.label}
                   </button>
                 {/each}
               </div>
@@ -455,7 +463,7 @@
                   <div class="podium-row">
                     {#if top3[1]}
                       <div class="podium-item silver">
-                        <span class="medal">🥈</span>
+                        <span class="medal"><McItem id="iron_ingot" size={32} emoji="🥈" /></span>
                         <strong>{top3[1].name}</strong>
                         <span class="podium-val">
                           {lbSort === 'playtime_secs' ? formatTime(top3[1].playtime_secs) : formatNumber(top3[1][lbSort as keyof typeof top3[1]] as number)}
@@ -464,7 +472,7 @@
                     {/if}
                     {#if top3[0]}
                       <div class="podium-item gold">
-                        <span class="medal">👑</span>
+                        <span class="medal"><McItem id="gold_ingot" size={40} emoji="👑" /></span>
                         <strong>{top3[0].name}</strong>
                         <span class="podium-val">
                           {lbSort === 'playtime_secs' ? formatTime(top3[0].playtime_secs) : formatNumber(top3[0][lbSort as keyof typeof top3[0]] as number)}
@@ -473,7 +481,7 @@
                     {/if}
                     {#if top3[2]}
                       <div class="podium-item bronze">
-                        <span class="medal">🥉</span>
+                        <span class="medal"><McItem id="copper_ingot" size={32} emoji="🥉" /></span>
                         <strong>{top3[2].name}</strong>
                         <span class="podium-val">
                           {lbSort === 'playtime_secs' ? formatTime(top3[2].playtime_secs) : formatNumber(top3[2][lbSort as keyof typeof top3[2]] as number)}
@@ -524,7 +532,7 @@
                           <img src={g.icon_url} alt="" style="width: 44px; height: 44px; border-radius: 8px; object-fit: cover;" />
                         {:else}
                           <div style="width: 44px; height: 44px; border-radius: 8px; background: rgba(99,102,241,0.15); display: flex; align-items: center; justify-content: center; color: var(--accent);">
-                            <Shield size={22} />
+                            <McIcon item="shield" fallback={Shield} size={32} />
                           </div>
                         {/if}
                         <div style="flex: 1; min-width: 0;">
@@ -986,6 +994,8 @@
   .hero-stats { display: flex; gap: 0; margin-top: 30px; border-radius: 18px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.04); backdrop-filter: blur(10px); box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 24px 60px -30px rgba(0,0,0,.8); }
   .hero-stats > div { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 16px 34px; min-width: 130px; }
   .hero-stats > div + div { border-left: 1px solid rgba(255,255,255,.08); }
+  .stat-ic { display: grid; place-items: center; margin-bottom: 2px; }
+  .hero-pano { position: absolute; inset: 0; background-size: 128px; background-repeat: repeat; image-rendering: pixelated; opacity: .22; filter: saturate(.8); mask-image: linear-gradient(#000 55%, transparent); -webkit-mask-image: linear-gradient(#000 55%, transparent); pointer-events: none; }
   .hero-stats strong { font-size: 26px; font-weight: 800; letter-spacing: -.02em; background: linear-gradient(180deg, #fff, color-mix(in srgb, var(--landing-accent) 45%, #fff)); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .hero-stats span { font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--landing-muted); }
 

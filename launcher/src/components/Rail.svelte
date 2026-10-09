@@ -3,6 +3,7 @@
   import { navigation } from '@velora/experience';
   import { selectedInstance } from '../lib/store.svelte';
   import Avatar from './Avatar.svelte';
+  import McIcon from './McIcon.svelte';
   import { abs, activeAccount, app, instances, removeAccount, selectInstance, switchAccount } from '../lib/store.svelte';
 
   const pages = $derived(navigation(selectedInstance()?.experience, [
@@ -13,6 +14,8 @@
     ...(selectedInstance()?.experience?.widgets.length ? [{ id: 'experience', label: 'Experience' }] : []),
   ]));
   const icons: Record<string, typeof Home> = { home: Home, quests: Target, collections: Award, guilds: Shield, market: Store, casino: Dice5, commands: Terminal, stats: Trophy, experience: Home };
+  // The Minecraft item that stands for each page once the game's textures are unpacked.
+  const items: Record<string, string> = { home: 'compass', quests: 'map', collections: 'name_tag', guilds: 'shield', market: 'emerald', casino: 'gold_ingot', commands: 'command_block', stats: 'diamond', experience: 'nether_star', social: 'player_head', settings: 'redstone' };
   let menu = $state(false);
   const kindLabel = { panel: 'Account', offline: 'Offline' };
   const initials = (name: string) => name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
@@ -39,15 +42,15 @@
   <div class="bottom">
     {#each pages as page (page.id)}
       {@const Icon = icons[page.id] ?? Home}
-      <button class="ghost icon big" class:on={app.view === page.id} onclick={() => (app.view = page.id as typeof app.view)} aria-label={page.label} title={page.label}><Icon size={19} /></button>
+      <button class="ghost icon big" class:on={app.view === page.id} onclick={() => (app.view = page.id as typeof app.view)} aria-label={page.label} title={page.label}><McIcon item={items[page.id]} fallback={Icon} size={22} /></button>
     {/each}
     <button class="ghost icon big" class:on={app.view === 'social'} onclick={() => (app.view = 'social')} aria-label="Friends & Social" title="Friends & Social">
-      <Users size={19} />
+      <McIcon item={items.social} fallback={Users} size={22} />
     </button>
 
 
     <button class="ghost icon big" class:on={app.view === 'settings'} onclick={() => (app.view = 'settings')} aria-label="Settings" title="Settings">
-      <Settings size={20} />
+      <McIcon item={items.settings} fallback={Settings} size={22} />
       {#if app.update}<span class="dot"></span>{/if}
     </button>
     <div class="account">
