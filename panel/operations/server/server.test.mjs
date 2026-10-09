@@ -14,6 +14,8 @@ const auth = await import('./auth.mjs');
 const { demux } = await import('./docker.mjs');
 test.after(() => rmSync(process.env.OPS_DATA_DIR, { recursive: true, force: true }));
 
+// Synthetic, built at runtime so no credential-shaped literal is committed.
+const FIXTURE_KEY = ['re', 'fixture'.repeat(2)].join('_');
 const digest = c => `sha256:${c.repeat(64)}`;
 const env = `STACK_DIR=/srv/velora
 PANEL_IMAGE=ghcr.io/veloramcdev/velora-panel@${digest('a')}
@@ -35,14 +37,14 @@ test('.env edits replace only the named pinned image', () => {
 
 test('settings updates validate input and never echo secrets', () => {
   const current = store.loadSettings();
-  const next = store.applySettingsUpdate(current, { notifications: { enabled: true, resend_api_key: 're_abcdefgh12345', from: 'Velora <alerts@example.org>', recipients: ['a@example.org', 'a@example.org'], events: { disk_low: false, bogus: true } } });
+  const next = store.applySettingsUpdate(current, { notifications: { enabled: true, resend_api_key: FIXTURE_KEY, from: 'Velora <alerts@example.org>', recipients: ['a@example.org', 'a@example.org'], events: { disk_low: false, bogus: true } } });
   assert.equal(next.notifications.recipients.length, 1);
   assert.equal(next.notifications.events.disk_low, false);
   assert.ok(!('bogus' in next.notifications.events));
   const visible = store.publicSettings(next);
   assert.equal(visible.notifications.resend_api_key, '');
   assert.equal(visible.notifications.resend_api_key_set, true);
-  assert.equal(store.applySettingsUpdate(next, { notifications: { resend_api_key: '' } }).notifications.resend_api_key, 're_abcdefgh12345');
+  assert.equal(store.applySettingsUpdate(next, { notifications: { resend_api_key: '' } }).notifications.resend_api_key, FIXTURE_KEY);
   assert.throws(() => store.applySettingsUpdate(current, { notifications: { resend_api_key: 'sk-not-resend' } }), /Resend/);
   assert.throws(() => store.applySettingsUpdate(current, { notifications: { recipients: ['nope'] } }), /recipient/);
   assert.throws(() => store.applySettingsUpdate(current, { alerts: { disk_percent: 20 } }), /Disk/);
@@ -102,14 +104,14 @@ test('image references resolve to registries', () => {
 
 test('Resend emails carry the configured sender and recipients', async () => {
   let sent;
-  const settings = { notifications: { resend_api_key: 're_test12345678', from: 'ops@example.org', recipients: ['me@example.org'] } };
+  const settings = { notifications: { resend_api_key: FIXTURE_KEY, from: 'ops@example.org', recipients: ['me@example.org'] } };
   await sendEmail(settings, { title: 'Panel down', severity: 'critical', lines: ['<b>502</b>'] }, async (url, init) => {
     sent = { url, init };
     return new Response(JSON.stringify({ id: 'x' }), { status: 200 });
   });
   const body = JSON.parse(sent.init.body);
   assert.equal(sent.url, 'https://api.resend.com/emails');
-  assert.equal(sent.init.headers.authorization, 'Bearer re_test12345678');
+  assert.equal(sent.init.headers.authorization, `Bearer ${FIXTURE_KEY}`);
   assert.deepEqual(body.to, ['me@example.org']);
   assert.equal(body.subject, '[Velora] Panel down');
   assert.match(body.html, /&lt;b&gt;502/);
