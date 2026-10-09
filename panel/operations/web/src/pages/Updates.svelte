@@ -26,7 +26,7 @@
   async function deploy(name: string, image: string, commit: string) {
     const self = name === 'velora-operations';
     const ok = await ask(`Deploy ${name} build ${commit.slice(0, 7)}?`,
-      self ? 'The dashboard restarts itself with this build. Reload the page after a minute.'
+      self ? 'The dashboard restarts itself with this build. A helper checks its health and restores the previous build on failure. Reload the page after a minute to see the result.'
         : 'A fresh backup runs first. If the new build does not become healthy, the previous build is restored automatically.', 'Deploy', !self);
     if (ok && (await runAction('/api/actions/update-image', { name, image }))?.status === 'succeeded') load();
   }
@@ -41,6 +41,15 @@
 </div>
 
 {#each updates?.errors ?? [] as error}<div class="warnline small">{error}</div>{/each}
+
+{#if updates?.dashboard_update}
+  <div class="card small" role="status">
+    {#if updates.dashboard_update === 'running'}Dashboard self-update is running. Reload this page after a minute.
+    {:else if updates.dashboard_update === 'succeeded'}The latest dashboard self-update passed its health check.
+    {:else if updates.dashboard_update === 'rolled-back'}The latest dashboard self-update failed; the previous build was restored and is healthy.
+    {:else}Dashboard rollback failed. Inspect the deployment host and recover using <code>.env.ops-rollback</code> before attempting another update.{/if}
+  </div>
+{/if}
 
 <div class="card">
   <div class="card-head"><Rocket size={18} /><h2>Launcher releases</h2><span class="spacer"></span>
