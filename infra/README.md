@@ -6,7 +6,8 @@ sharing the repository does not couple service promotions.
 
 | Component | Purpose |
 |---|---|
-| [Control plane](control-plane/README.md) | Worker coordination with D1, R2 and Workflows |
+| [Single host (VPS)](vps/README.md) | Production compose, backups and routing for one Docker host |
+| [Control plane](control-plane/README.md) | Optional multi-host coordination with Workers, D1, R2 and Workflows |
 | [Native agent](agent/README.md) | Outbound jobs on personally hosted machines and VPS hosts |
 | [Targets](../docs/DEPLOYMENT_TARGETS.md) | Hosting/domain assignments and remaining gates |
 | [Deployment guide](../docs/deployment/DEPLOYMENT_GUIDE.md) | Preparation, promotion and recovery |

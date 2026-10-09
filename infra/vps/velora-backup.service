@@ -1,0 +1,11 @@
+[Unit]
+Description=Velora Panel backup (local + offsite)
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/velora-backup
+Nice=10
+IOSchedulingClass=idle

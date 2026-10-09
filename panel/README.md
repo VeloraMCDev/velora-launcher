@@ -1,6 +1,6 @@
 # Panel
 
-server is the compatibility backend; web contains admin, player and landing apps; deployment-ui controls the multi-target deployment system; mobile contains the companion shell.
+server is the compatibility backend; web contains admin, player and landing apps; [operations](operations/README.md) is the dashboard for health, backups, updates and launcher release approval; mobile contains the companion shell.
 
 ## Local checks
 

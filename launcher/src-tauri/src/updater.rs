@@ -61,8 +61,11 @@ async fn panel_update(http: &reqwest::Client, panel: Option<&str>) -> Result<Opt
     {
         bail!("Invalid panel update URL");
     }
-    let response =
-        http.get(format!("{}/api/v1/launcher/update", panel.trim_end_matches('/'))).timeout(Duration::from_secs(10)).send().await?;
+    let response = http
+        .get(format!("{}/api/v1/launcher/update?platform={}", panel.trim_end_matches('/'), feed_platform()))
+        .timeout(Duration::from_secs(10))
+        .send()
+        .await?;
     if response.status() == reqwest::StatusCode::NOT_FOUND {
         return Ok(None);
     }
@@ -72,11 +75,34 @@ async fn panel_update(http: &reqwest::Client, panel: Option<&str>) -> Result<Opt
     }
     validate_size(info.size)?;
     let digest = info.sha256.as_deref().filter(|s| valid_digest(s)).ok_or_else(|| anyhow!("Panel installer has no valid checksum"))?;
-    if info.url != format!("/api/v1/launcher/updates/{digest}/setup.exe") {
+    if !panel_url_ok(&info.url, digest) {
         bail!("Unexpected panel installer URL");
+    }
+    // Only releases signed by the Velora release key (and approved onto the panel) are installed.
+    if !info.signature.as_deref().is_some_and(|sig| scopenet_shared::verify_release_signature(&info.version, digest, sig)) {
+        bail!("Panel installer is not signed by the Velora release key");
     }
     info.url = format!("{}{}", panel.trim_end_matches('/'), info.url);
     Ok(Some(info))
+}
+fn feed_platform() -> &'static str {
+    if cfg!(windows) {
+        "windows"
+    } else if cfg!(target_os = "macos") {
+        "macos"
+    } else {
+        "linux"
+    }
+}
+/// The panel serves approved installers from content-addressed paths only.
+fn panel_url_ok(url: &str, digest: &str) -> bool {
+    if cfg!(windows) {
+        return url == format!("/api/v1/launcher/updates/{digest}/setup.exe");
+    }
+    let Some(name) = url.strip_prefix(&format!("/api/v1/launcher/updates/{digest}/")) else { return false };
+    !name.is_empty()
+        && name.bytes().all(|b| b.is_ascii_alphanumeric() || b"-_.+".contains(&b))
+        && name.to_ascii_lowercase().ends_with(installer_suffix())
 }
 /// The installer asset this platform downloads from a release: the NSIS setup on Windows, the disk image on macOS, the AppImage on Linux.
 fn installer_suffix() -> &'static str {
@@ -118,6 +144,7 @@ async fn repository_update(http: &reqwest::Client) -> Result<Option<UpdateInfo>>
         url: url.to_string(),
         size: asset.size,
         sha256: asset.digest.as_deref().and_then(|s| s.strip_prefix("sha256:")).filter(|s| valid_digest(s)).map(str::to_owned),
+        signature: None,
     }))
 }
 fn select_update(panel: Result<Option<UpdateInfo>>, repository: Result<Option<UpdateInfo>>) -> Result<Option<UpdateInfo>> {
@@ -130,17 +157,7 @@ fn select_update(panel: Result<Option<UpdateInfo>>, repository: Result<Option<Up
     }
 }
 pub async fn check(http: &reqwest::Client, panel: Option<&str>) -> Result<Option<UpdateInfo>> {
-    let (hosted, repository) = tokio::join!(
-        async {
-            // The panel hosts the Windows installer only; macOS and Linux builds update from the release page.
-            if cfg!(windows) {
-                panel_update(http, panel).await
-            } else {
-                Ok(None)
-            }
-        },
-        repository_update(http)
-    );
+    let (hosted, repository) = tokio::join!(panel_update(http, panel), repository_update(http));
     select_update(hosted, repository)
 }
 /// Bounded download and verification, separated from execution for testing.
@@ -237,15 +254,23 @@ mod tests {
         format!("http://{address}")
     }
     #[tokio::test]
-    async fn panel_feed_accepts_only_its_checksummed_downloads_and_handles_old_panels() {
+    async fn panel_feed_requires_signed_checksummed_downloads_and_handles_old_panels() {
         let http = reqwest::Client::new();
         let digest = "ab".repeat(32);
         let mut info = update("99.0.0");
         info.sha256 = Some(digest.clone());
-        info.url = format!("/api/v1/launcher/updates/{digest}/setup.exe");
-        let base = serve(serde_json::to_vec(&info).unwrap(), "200 OK").await;
-        let found = panel_update(&http, Some(&base)).await.unwrap().unwrap();
-        assert_eq!(found.url, format!("{base}{}", info.url));
+        info.url = if cfg!(windows) {
+            format!("/api/v1/launcher/updates/{digest}/setup.exe")
+        } else {
+            format!("/api/v1/launcher/updates/{digest}/Velora{}", installer_suffix())
+        };
+        // Manually uploaded (unsigned) or forged installers are refused.
+        for signature in [None, Some("AAAA".to_owned())] {
+            info.signature = signature;
+            let base = serve(serde_json::to_vec(&info).unwrap(), "200 OK").await;
+            let error = panel_update(&http, Some(&base)).await.unwrap_err().to_string();
+            assert!(error.contains("not signed"), "{error}");
+        }
         info.url = "https://other.test/setup.exe".into();
         let base = serve(serde_json::to_vec(&info).unwrap(), "200 OK").await;
         assert!(panel_update(&http, Some(&base)).await.is_err());
@@ -282,7 +307,7 @@ mod tests {
         tokio::fs::remove_dir(&dir).await.unwrap();
     }
     fn update(v: &str) -> UpdateInfo {
-        UpdateInfo { version: v.into(), notes: String::new(), url: "https://panel.test/setup.exe".into(), size: 100, sha256: None }
+        UpdateInfo { version: v.into(), notes: String::new(), url: "https://panel.test/setup.exe".into(), size: 100, sha256: None, signature: None }
     }
     #[tokio::test]
     async fn installer_without_checksum_cannot_be_downloaded_or_executed() {

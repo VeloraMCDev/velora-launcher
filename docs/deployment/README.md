@@ -1,15 +1,15 @@
 # Deployment
 
-Velora supports Cloudflare, personally hosted machines and VPS deployments through
-a shared deployment authority and independent service/artifact contracts.
+Velora production runs on a single Docker host: the Panel, the documentation site and
+the operations dashboard, with nightly offsite backups. See
+[targets](../DEPLOYMENT_TARGETS.md), the [deployment guide](DEPLOYMENT_GUIDE.md) and the
+[single-host setup](https://github.com/VeloraMCDev/velora-launcher/blob/main/infra/vps/README.md).
 
-Start with [targets and domains](../DEPLOYMENT_TARGETS.md) and the
-[deployment guide](DEPLOYMENT_GUIDE.md). The [Cloudflare control plane](https://github.com/VeloraMCDev/velora-launcher/blob/main/infra/control-plane/README.md)
-owns coordination; the [native agent](https://github.com/VeloraMCDev/velora-launcher/blob/main/infra/agent/README.md) runs outbound
-jobs on native hosts. The [Deployment Panel](https://github.com/VeloraMCDev/velora-launcher/blob/main/panel/deployment-ui/README.md)
-provides the protected operator interface.
+The [operations dashboard](https://github.com/VeloraMCDev/velora-launcher/blob/main/panel/operations/README.md)
+shows health and activity, takes backups, deploys new builds and approves launcher
+releases. The [Cloudflare control plane](https://github.com/VeloraMCDev/velora-launcher/blob/main/infra/control-plane/README.md)
+and [native agent](https://github.com/VeloraMCDev/velora-launcher/blob/main/infra/agent/README.md)
+remain an optional multi-host design.
 
-Keep live resource IDs, host addresses, enrollment output, credentials and backups
-in ignored operator state. Public examples are synthetic. Source CI is enabled;
-deployment promotion remains manual until source policies and production gates
-have been reviewed for this repository.
+Keep live hostnames, addresses, credentials and backups in ignored operator
+configuration. Public examples are synthetic.

@@ -1,0 +1,132 @@
+name: Launcher release
+# Manual: builds signed installers for every desktop platform and publishes a
+# GitHub release tagged launcher-v<version>. Players receive it only after an
+# admin approves the release in the operations dashboard (or Panel API).
+on:
+  workflow_dispatch: null
+permissions:
+  contents: read
+concurrency:
+  group: launcher-release
+  cancel-in-progress: false
+jobs:
+  version:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.read.outputs.version }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - id: read
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(node -p "require('./launcher/src-tauri/tauri.conf.json').version")
+          cargo_version=$(sed -n 's/^version = "\(.*\)"/\1/p' launcher/src-tauri/Cargo.toml | head -1)
+          npm_version=$(node -p "require('./launcher/package.json').version")
+          if [ "$version" != "$cargo_version" ] || [ "$version" != "$npm_version" ]; then
+            echo "::error::Launcher versions differ: tauri $version, Cargo $cargo_version, npm $npm_version"; exit 1
+          fi
+          if gh release view "launcher-v$version" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error::launcher-v$version is already released; bump the launcher version first"; exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+  build:
+    needs: version
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { runner: windows-latest, name: windows, bundles: nsis, args: '' }
+          - { runner: ubuntu-22.04, name: linux, bundles: 'appimage,deb', args: '' }
+          - { runner: macos-latest, name: mac, bundles: dmg, args: '--target universal-apple-darwin' }
+    env:
+      CARGO_INCREMENTAL: '0'
+      # Opens the community's Panel on first start; players can still switch panels.
+      VELORA_PANEL_URL: ${{ vars.VELORA_DEFAULT_PANEL_URL }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: launcher
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: launcher/package-lock.json
+      - name: Linux desktop dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends
+          libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev
+          librsvg2-dev libssl-dev libxdo-dev
+      - name: Rust toolchain
+        run: |
+          rustup toolchain install 1.98.1 --profile minimal
+          if [ "${{ matrix.name }}" = mac ]; then rustup target add aarch64-apple-darwin x86_64-apple-darwin --toolchain 1.98.1; fi
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - run: cargo test --locked -j 2 -p scopenet-launcher
+      - run: npm run tauri build -- --bundles ${{ matrix.bundles }} ${{ matrix.args }} -- --locked
+      - name: Collect installers with release names
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          mkdir -p ../dist-release
+          shopt -s nullglob
+          case "${{ matrix.name }}" in
+            windows) for f in ../target/release/bundle/nsis/*-setup.exe; do cp "$f" "../dist-release/Velora-Launcher_${VERSION}_x64-setup.exe"; done ;;
+            linux)
+              for f in ../target/release/bundle/appimage/*.AppImage; do cp "$f" "../dist-release/Velora-Launcher_${VERSION}_amd64.AppImage"; done
+              for f in ../target/release/bundle/deb/*.deb; do cp "$f" "../dist-release/Velora-Launcher_${VERSION}_amd64.deb"; done ;;
+            mac) for f in ../target/universal-apple-darwin/release/bundle/dmg/*.dmg; do cp "$f" "../dist-release/Velora-Launcher_${VERSION}_universal.dmg"; done ;;
+          esac
+          ls -la ../dist-release
+          test -n "$(ls ../dist-release)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: launcher-${{ matrix.name }}
+          path: dist-release/
+          if-no-files-found: error
+          retention-days: 3
+  publish:
+    needs: [version, build]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: launcher-*
+          path: release
+          merge-multiple: true
+      - name: Checksum and sign every installer
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+          VELORA_RELEASE_SIGNING_KEY: ${{ secrets.VELORA_RELEASE_SIGNING_KEY }}
+        run: node scripts/sign-launcher-release.mjs release "$VERSION" "$GITHUB_SHA"
+      - name: Publish the GitHub release (awaits approval before reaching players)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          cat > notes.md <<EOF
+          Velora Launcher ${VERSION}, built from ${GITHUB_SHA}.
+
+          Installers are signed with the Velora release key (see release-manifest.json).
+          Players receive this release after an admin approves it in the operations dashboard.
+          EOF
+          gh release create "launcher-v${VERSION}" release/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "Velora Launcher ${VERSION}" --notes-file notes.md --latest

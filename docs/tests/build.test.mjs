@@ -30,3 +30,27 @@ test('bundle is reproducible, source-bound and fails on broken links', () => {
     assert.throws(() => buildSite(root,join(root,'dist'),'a'.repeat(40)),/Broken/);
   } finally { rmSync(root,{recursive:true,force:true}); }
 });
+
+test('search index covers every section and the sitemap lists every page', async () => {
+  const { searchRecords } = await import('../scripts/build.mjs');
+  const root = mkdtempSync(join(tmpdir(),'velora-docs-search-'));
+  try {
+    writeFileSync(join(root,'README.md'),'# Home\nWelcome.\n## Install the launcher\nDownload the **installer** & run it.\n### Linux\nUse the AppImage.');
+    mkdirSync(join(root,'deployment'));
+    writeFileSync(join(root,'deployment/README.md'),'# Deploy\n## Backups\nNightly <script>x</script> archives.');
+    buildSite(root,join(root,'dist'),'a'.repeat(40),{siteUrl:'https://docs.example.org'});
+    const index = JSON.parse(readFileSync(join(root,'dist/search-index.json'),'utf8'));
+    const install = index.find(r => r.h === 'Install the launcher');
+    assert.equal(install.u,'/index.html#install-the-launcher');
+    assert.match(install.t,/Download the installer & run it/);
+    assert.ok(index.some(r => r.u === '/deployment/README.html#backups' && r.s === 'Deployment' && !r.t.includes('script')));
+    const sitemap = readFileSync(join(root,'dist/sitemap.xml'),'utf8');
+    assert.match(sitemap,/<loc>https:\/\/docs\.example\.org\/<\/loc>/);
+    assert.match(sitemap,/deployment\/README\.html/);
+    const page = readFileSync(join(root,'dist/deployment/README.html'),'utf8');
+    assert.match(page,/aria-current="page">Deploy</);
+    assert.match(page,/<script src="\/assets\/search\.js" defer>/);
+    assert.throws(() => buildSite(root,join(root,'dist'),'a'.repeat(40),{siteUrl:'http://insecure.example'}),/https/);
+    assert.equal(searchRecords({html:'<h1 id="t">T</h1><p>x</p>',title:'T',dest:'t.html',section:'S'})[0].u,'/t.html');
+  } finally { rmSync(root,{recursive:true,force:true}); }
+});

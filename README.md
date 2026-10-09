@@ -6,7 +6,7 @@
   <a href="https://github.com/VeloraMCDev/velora-launcher/actions/workflows/ci.yml"><img src="https://github.com/VeloraMCDev/velora-launcher/actions/workflows/ci.yml/badge.svg" alt="Source CI" /></a>
   <img src="https://img.shields.io/badge/Rust-1.98.1-9564df?style=flat-square" alt="Rust 1.98.1" />
   <img src="https://img.shields.io/badge/Svelte-5-f17b5c?style=flat-square" alt="Svelte 5" />
-  <img src="https://img.shields.io/badge/Cloudflare-Workers-f6a04d?style=flat-square" alt="Cloudflare Workers" />
+  <img src="https://img.shields.io/badge/Docker-single_host-2496ed?style=flat-square" alt="Single-host Docker deployment" />
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-per_package-637089?style=flat-square" alt="Licensing varies by package" /></a>
 </p>
 
@@ -34,7 +34,7 @@ an independent build and release lifecycle.
 |---|---|---|
 | Instance-aware desktop launcher | Instance control center and branding | Reusable Rust, TypeScript and Java libraries |
 | Quests, guilds, friends and player markets | Server credentials, progression and content tools | Paper, Fabric and Forge integrations |
-| Player website and companion shells | Deployment across Cloudflare and native hosts | Shared UI modules and SMP/Frontiers gameplay |
+| Player website and companion shells | Operations dashboard, signed releases and backups | Shared UI modules and SMP/Frontiers gameplay |
 
 ## See Velora
 
@@ -82,29 +82,29 @@ For a populated local instance, use [the synthetic demo](scripts/demo/README.md)
 | Segment | What's inside |
 |---|---|
 | [Launcher](launcher/README.md) | Tauri desktop app, instances and client settings |
-| [Panel](panel/README.md) | Rust backend, admin/player sites, mobile and Deployment Panel |
+| [Panel](panel/README.md) | Rust backend, admin/player sites, mobile and the operations dashboard |
 | [Authentication & Rust libraries](crates/README.md) | Identity, sessions, gateway and reusable platform services |
 | [Minecraft integrations](integrations/README.md) | Loader-specific mods and server plugins |
 | [SDK & packages](packages/README.md) | Contracts, clients, platform utilities and gameplay packages |
 | [Shared frontend](shared/README.md) | HTTP client, map, board, commands and experience modules |
 | [Java gameplay](java/README.md) | Gameplay systems and server composition |
 | [Experience UI](ui/README.md) | Instance interfaces and presentation |
-| [Infrastructure](infra/README.md) | Cloudflare authority, outbound native agent and deployment contracts |
+| [Infrastructure](infra/README.md) | Single-host deployment and backups, optional Cloudflare control plane |
 | [Documentation](docs/README.md) | Development, architecture, operations and security |
 | [Branding](branding/README.md) | Original artwork, platform icons and rights |
 
-## Cloudflare first, native where needed
+## One host, fully operated
 
-The deployment authority uses **Workers, D1, R2 and Workflows**, with Access for
-protected operator access. Static sites can share existing Cloudflare hosting.
-The Deployment Panel coordinates Cloudflare, personally hosted machines and VPS
-targets through independent service contracts.
+Production runs on a single Docker host: the Panel, the searchable documentation and
+the **operations dashboard**, which shows service health, sign-ins and audit logs,
+takes backups, deploys tested builds with automatic rollback and approves launcher
+releases before players receive them. Nightly cold backups are verified and copied
+offsite, and alerts arrive by email through Resend.
 
-The complete Rust/SQLite Panel and long-running Minecraft servers currently need
-native hosting. Libraries and outbound agents need no separate public domain.
-Reuse existing resources, keep expensive packaging manual and avoid idle capacity.
-Final Beta/Production hosts, domains and promotion gates remain tracked in
-[deployment targets](docs/DEPLOYMENT_TARGETS.md).
+Every artifact comes from a manual release workflow that tests the exact image or
+installer before publishing it; launcher installers are signed. The Cloudflare
+control plane remains an optional multi-host design. See
+[deployment targets](docs/DEPLOYMENT_TARGETS.md) and [infra/vps](infra/vps/README.md).
 
 ## Contribute with confidence
 
