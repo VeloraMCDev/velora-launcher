@@ -40,7 +40,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - { runner: windows-latest, name: windows, bundles: nsis, args: '' }
@@ -79,11 +79,23 @@ jobs:
       - name: Verify macOS installed product identity
         if: matrix.name == 'mac'
         run: |
-          app="../target/universal-apple-darwin/release/bundle/macos/Velora Launcher.app"
+          # Tauri removes its staging .app when only the DMG bundle is requested.
+          # Check the installer contents that users actually copy to Applications.
+          images=(../target/universal-apple-darwin/release/bundle/dmg/*.dmg)
+          test "${#images[@]}" = 1
+          mount="$RUNNER_TEMP/velora-mac-product"
+          mkdir -p "$mount"
+          hdiutil attach "${images[0]}" -readonly -nobrowse -mountpoint "$mount"
+          trap 'hdiutil detach "$mount"' EXIT
+          app="$mount/Velora Launcher.app"
           test -d "$app"
+          for field in CFBundleName CFBundleIdentifier CFBundleExecutable CFBundleShortVersionString; do
+            /usr/libexec/PlistBuddy -c "Print :$field" "$app/Contents/Info.plist"
+          done
           test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleName' "$app/Contents/Info.plist")" = 'Velora Launcher'
           test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist")" = 'net.scopenet.launcher'
           test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")" = 'velora-launcher'
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app/Contents/Info.plist")" = '${{ needs.version.outputs.version }}'
       - name: Verify Windows upgrade from the installed product
         if: matrix.name == 'windows'
         shell: pwsh
