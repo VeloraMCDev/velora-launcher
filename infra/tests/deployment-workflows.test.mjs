@@ -32,16 +32,18 @@ test('elevated release job requires main gate and transient assets require finit
 });
 
 test('Development OIDC exception requires the exact opt-in, branch, dependencies and narrow permissions',()=>{
-  for(const file of ['deployment-baseline.yml','release-probe.yml']){
-  const source=readFileSync(new URL('../.github/workflows/'+file,import.meta.url),'utf8');
+  for(const file of ['deployment-baseline.yml','release-probe.yml','panel-release.yml']){
+  const source=readFileSync(new URL('../../.github/workflows/'+file,import.meta.url),'utf8');
   assert.deepEqual(workflowFindings(source),[]);
   for(const unsafe of [
     source.replace("github.event_name != 'pull_request' && ",''),
     source.replaceAll('refs/heads/main','refs/heads/other'),
     source.replace(" && vars.VELORA_DEVELOPMENT_REGISTRATION_ENABLED == 'true'",''),
-    source.replace(/needs: (contracts-and-container|candidate)/,'needs: unverified'),
+    source.replace(/needs: (contracts-and-container|candidate|image)/,'needs: unverified'),
     source.replace("github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.VELORA_DEVELOPMENT_REGISTRATION_ENABLED == 'true'","github.ref == 'refs/heads/main'"),
     source.replace('id-token: write','id-token: write\n      packages: write')
   ])assert.ok(workflowFindings(unsafe).length);
+  if(file==='panel-release.yml')for(const check of ['scripts/check-panel-container.mjs','.github/scripts/test-panel-image.py'])
+    assert.ok(workflowFindings(source.replace(check,'unverified-check')).length,'Panel OIDC requires both image checks');
   }
 });

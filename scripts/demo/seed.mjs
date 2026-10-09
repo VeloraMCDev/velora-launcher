@@ -607,7 +607,25 @@ async function seedSocial() {
   // Reading marks messages read; mark all of Alex's threads as read except Dave's and Luna's last.
   for (const other of ['Steve_Builds', 'Redstone_Rae', 'Cobble_Cleo']) await quiet(() => api('GET', `/api/v1/messages/${P[other].uuid}?mark_read=true`, { token: tok(MAIN) }));
   log(`${dm.length} direct messages`);
-  warn('Profile posts skipped: current scoped user_posts view has no write path; see docs/KNOWN_ISSUES.md');
+  // Profile posts
+  const posts = [
+    [MAIN, 'Just hit level 17 and finally found my first ancient debris vein. Y=15 is the way.'], [MAIN, 'Selling a Netherite Pickaxe (Eff V, Unbreaking III) on the auction house. Starting bid 2,500$.'], [MAIN, 'Build night this Saturday at the Iron Pickaxe guild hall. Everyone welcome!'],
+    ['Steve_Builds', 'Castle wall finished! Took 14 hours and approximately 9,000 stone bricks.'], ['Steve_Builds', 'Taking commissions again. Medieval, rustic or modern - DM me.'],
+    ['LunaMC', 'Sunday market this weekend! Bring your best items and bring a friend.'], ['LunaMC', 'Reminder: be nice in chat. We are all here to have fun. 💚'],
+    ['CreeperSlayer', 'Dragon down again. The elytra drops are getting out of hand.'], ['NetherNinja', 'Fortress count: 14. Wither skeleton skulls: 3. Luck: questionable.'],
+    ['PixelPaige', 'New mural is up on Creative Build - come take a look and tell me what to add!'], ['Redstone_Rae', 'Auto-sorter v2 is out. Schematic in the guild chest.'], ['TNT_Tommy', 'Do not ask what happened to the village.'],
+    ['EnderEmma', 'Found a shulker box with 27 diamonds in an end city. Today is a good day.'], ['Cobble_Cleo', 'Cobblestone, stone, deepslate - bulk discounts at the Sunday market.'],
+  ];
+  const created = [];
+  for (const [n, content] of posts) {
+    const r = await quiet(() => api('POST', '/api/v1/profiles/me/posts', { token: tok(n), body: { content } }));
+    if (r) created.push({ id: r.id, by: n });
+  }
+  for (const c of created) {
+    const likers = names.filter((n) => n !== c.by && Math.random() < (c.by === MAIN || c.by === 'LunaMC' ? 0.6 : 0.3));
+    for (const l of likers) await quiet(() => api('POST', `/api/v1/posts/${c.id}/like`, { token: tok(l) }));
+  }
+  log(`${created.length} profile posts with likes`);
 }
 
 async function seedMarket() {

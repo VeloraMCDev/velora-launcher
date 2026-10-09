@@ -18,10 +18,16 @@ def docker(*args):
 def main(image):
     name = "scopenet-image-test-" + uuid.uuid4().hex[:12]
     volume = name + "-data"
+    original_name = name
+    restored_name = name + "-restore"
+    loader_name = name + "-loader"
+    restored_volume = volume + "-restore"
     password = uuid.uuid4().hex
     docker("volume", "create", volume)
     try:
         docker("run", "--detach", "--name", name,
+               "--read-only", "--tmpfs", "/tmp:rw,mode=1777,size=64m",
+               "--cap-drop", "ALL", "--security-opt", "no-new-privileges:true",
                "--publish", "127.0.0.1::8080", "--volume", volume + ":/data",
                "--env", "ADMIN_PASSWORD=" + password, image)
         port = json.loads(docker("inspect", name))[0]["NetworkSettings"]["Ports"]["8080/tcp"][0]["HostPort"]
@@ -84,13 +90,54 @@ def main(image):
             for instance, expected in instances:
                 actual = request("/api/admin/progression", token=token, instance=instance)
                 assert actual["settings"]["level_base"] == expected, actual
-        print("Image passed: instance storage, isolation, and two persistent-volume restarts")
+        # Create a platform post while scoped to an actual persistent experience.
+        post = request("/api/v1/profiles/me/posts", "POST", {"content": "Cold restore fixture"}, token, instances[0][0])
+        assert isinstance(post["id"], int), post
+        owner = request("/api/v1/auth/me", token=token)["uuid"]
+        signed_identity = request("/api/yggdrasil")["signaturePublickey"]
+        # Capture a cold archive from only this disposable volume. Never back up
+        # a running credential writer or import data from an operator installation.
+        docker("stop", name)
+        archive = subprocess.check_output(["docker", "cp", name + ":/data", "-"])
+        with tarfile.open(fileobj=io.BytesIO(archive)) as files:
+            for member in files:
+                parts = member.name.split("/")
+                assert parts[0] == "data" and ".." not in parts, "backup path escapes disposable data"
+                assert member.isfile() or member.isdir(), "backup must contain only ordinary files/directories"
+        docker("volume", "create", restored_volume)
+        # Docker refuses copies into a read-only container, even onto a volume.
+        # A never-started, networkless helper writes the archive into the volume.
+        docker("create", "--name", loader_name, "--network", "none",
+               "--volume", restored_volume + ":/data", image)
+        subprocess.run(["docker", "cp", "--archive", "-", loader_name + ":/"], input=archive, check=True)
+        docker("rm", loader_name)
+        docker("create", "--name", restored_name,
+               "--read-only", "--tmpfs", "/tmp:rw,mode=1777,size=64m",
+               "--cap-drop", "ALL", "--security-opt", "no-new-privileges:true",
+               "--publish", "127.0.0.1::8080", "--volume", restored_volume + ":/data",
+               "--env", "ADMIN_PASSWORD=" + uuid.uuid4().hex, image)
+        name = restored_name
+        docker("start", name)
+        ready()
+        # Stored credentials and signing material survive the cold restore, even
+        # with different bootstrap settings. Existing sessions must still verify.
+        assert request("/api/v1/auth/me", token=token)["uuid"] == owner
+        assert request("/api/yggdrasil")["signaturePublickey"] == signed_identity
+        token = login()
+        for instance, expected in instances:
+            actual = request("/api/admin/progression", token=token, instance=instance)
+            assert actual["settings"]["level_base"] == expected, actual
+            profile = request("/api/v1/profiles/" + owner, token=token, instance=instance)
+            assert any(row["id"] == post["id"] and row["content"] == post["content"] for row in profile["posts"]), profile
+        print("Image passed: instance isolation, platform posts, two restarts, cold restore, credentials and signing continuity")
     except Exception:
         subprocess.run(["docker", "logs", name], check=False)
         raise
     finally:
-        subprocess.run(["docker", "rm", "--force", name], check=False, stdout=subprocess.DEVNULL)
-        subprocess.run(["docker", "volume", "rm", volume], check=False, stdout=subprocess.DEVNULL)
+        for container in [original_name, loader_name, restored_name]:
+            subprocess.run(["docker", "rm", "--force", container], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        for owned_volume in [volume, restored_volume]:
+            subprocess.run(["docker", "volume", "rm", owned_volume], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,16 @@ test('browser transport uses its global receiver rather than the client instance
   const client=new ControlClient(function(){assert.equal(this,globalThis);return Promise.resolve(Response.json({items:[]}));});
   assert.deepEqual(await client.request('/api/v1/repositories'),{items:[]});
 });
+
+test('an ambiguous deployment response can retry the same action ID without creating a new request identity',async()=>{
+  const requests=[];const client=new ControlClient(async(path,init)=>{requests.push(init);if(requests.length===1)throw Error('Response lost');return Response.json({accepted:true});});
+  const body={schema:1,candidate_id:'synthetic',agent_id:'synthetic'},idempotencyKey=crypto.randomUUID();
+  await assert.rejects(client.request('/api/v1/deployments',body,{idempotencyKey}),/Connection unavailable/);
+  await client.request('/api/v1/deployments',body,{idempotencyKey});
+  assert.equal(requests[0].headers['idempotency-key'],requests[1].headers['idempotency-key']);
+  assert.equal(requests[0].body,requests[1].body);
+  await assert.rejects(client.request('/api/v1/deployments',body,{idempotencyKey:'bad'}),/Invalid action ID/);
+});
 test('permission loss invalidates concurrent reads and clears session through the host callback',async()=>{
   let release,cleared=0;
   const client=new ControlClient(path=>path.endsWith('agents')?Promise.resolve(new Response('{}',{status:403})):new Promise(resolve=>release=resolve),()=>cleared++);

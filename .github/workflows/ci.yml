@@ -39,6 +39,10 @@ jobs:
       - run: npm ci --no-audit --no-fund
         working-directory: infra
       - run: node infra/scripts/check-workflows.mjs .
+      - name: Check Deployment Panel controls
+        run: |
+          node --test panel/deployment-ui/client.test.mjs panel/deployment-ui/probe-plan.test.mjs
+          node --check panel/deployment-ui/app.mjs
       - run: npm test
         working-directory: infra
       - run: npx --no-install tsc -p control-plane/tsconfig.json

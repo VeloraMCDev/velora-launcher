@@ -21,8 +21,11 @@ npx --no-install tsc -p control-plane/tsconfig.json
 cargo test --locked --workspace -j 1
 ```
 
-Root source CI runs automatically. Nested .github/workflows contains reference
-templates and does not execute here; review canonical source policies and monorepo
-paths before enabling any of them. Native acceptance requires its documented
+Root source CI runs automatically. The root deployment-baseline, release-probe and
+panel-release workflows are manual, with short artifact retention and separately
+gated OIDC registration. Registration requires an exact monorepo repository ID,
+main workflow path and reviewed source SHA in the control-plane registry. Nested
+.github/workflows contains historical references and does not execute here.
+Native acceptance requires its documented
 toolchain/runtime prerequisites. Live keys and operator state stay ignored.
 Runtime D1 SQL migrations are maintained service inputs, not migration archives.

@@ -796,7 +796,9 @@ pub async fn create_user_post(
     .bind(content)
     .bind(payload.image_url.as_deref())
     .bind(&now)
-    .fetch_one(&state.db)
+    // Profiles and posts belong to the shared account store. Instance pools
+    // expose these tables through read-only views of the platform database.
+    .fetch_one(&state.platform_db)
     .await?;
 
     Ok(Json(UserPost {
