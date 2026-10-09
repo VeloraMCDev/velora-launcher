@@ -1,5 +1,18 @@
-# Experiences presentation assets
+# README visual assets
 
-The banner uses the project owner's original Velora wordmark, resized proportionally and composited with an editable SVG background and repository-specific text. Original artwork is preserved in the SDK branding directory. The manifest records source and output SHA-256 hashes.
+hero.svg combines the original owner-supplied Velora wordmark with an editable
+SVG background, typography and platform description. The original raster art is
+preserved under branding/originals; the composition does not redraw that artwork.
 
-Velora artwork and trademarks are excluded from the platform MIT license; no separate reuse grant is provided.
+screenshots/ contains fresh, unmodified captures of the maintained product:
+launcher browser demo, Panel instance control center and player dashboard.
+All displayed accounts, activity, balances and servers are synthetic fixtures.
+No operator data, browser chrome, credentials or live host addresses are shown.
+These previews do not certify native packaging or production deployments.
+
+manifest.json records asset hashes and capture context. Re-capture with the
+isolated scripts/demo runner and the launcher mock scenario after UI changes.
+Review the rendered images before committing them. Keep screenshots small and
+purposeful; do not check in installers or runtime stores.
+
+Velora artwork and trademarks retain their separate rights; see LICENSE.md.

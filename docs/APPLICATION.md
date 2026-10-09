@@ -1,52 +1,66 @@
-# Maintained Velora application composition
+# Local application development
 
-This private workspace contains the complete current admin/player website,
-backend, desktop launcher and Minecraft host composition. It preserves private
-gameplay while the reusable packages are maintained by their public owners.
-The frozen archive is separate and unchanged. This is maintained application
-source, not an archive or placeholder. No SCOPENET-MC checkout is needed to build.
+The complete public source includes the Panel backend, admin/player websites,
+desktop launcher, gameplay and Minecraft integrations. No private source checkout
+is required. Use Rust 1.98.1 and Node 24; see segment READMEs for Java and mobile
+toolchains.
 
-The original-source import record and adaptations are kept in
-`migration/application-host/` for reference. Run from the repository root:
+## Panel
+
+From the repository root:
 
 ```sh
-node scripts/verify-identity.mjs
 cd panel/web
 npm ci --no-audit --no-fund
 npm run check
+npm run check:runes
 npm run build
+cd ../..
+cargo build --locked -p scopenet-panel
 ```
 
-Then, from the repository root, `cargo run --locked -p scopenet-panel` starts the complete
-site at port 8080. Set the admin bootstrap password through the process environment,
-and use a fresh development data directory. For existing installations explicitly
-supply their existing data directory; do not open two credential writers on it.
-Legacy environment names, API routes, SQLite schema/data paths and volume names
-remain compatible. `VELORA_*` aliases continue to work. `docker compose up --build`
-builds the same full application with a non-root runtime and persistent storage.
+Before running the backend, set ADMIN_PASSWORD to a local development password,
+VELORA_BIND to 127.0.0.1:8080 and VELORA_DATA_DIR to a fresh ignored development
+directory. Then run `cargo run --locked -p scopenet-panel` and open
+http://localhost:8080. Supply a private JWT_SECRET for a persistent installation.
+The public-safe examples intentionally contain no production credentials.
 
-For desktop development, run `npm ci` and `npm run tauri dev` inside `launcher/`.
-`npm run tauri build` uses Windows NSIS, Linux AppImage/deb, or macOS app/DMG bundles
-on the corresponding OS. Installed application/credential-store IDs remain stable.
-Cross-platform build validation does not replace real desktop/game upgrade tests.
-Installers are built without paid signing accounts. OS trust prompts and the
-custom updater's checksum validation remain distinct from a signed updater trust
-chain; do not claim production updater signing/notarization is configured.
+Only one credential writer may open a store. Existing installations must explicitly
+retain their existing data directory and signing material. VELORA_* aliases and
+legacy environment names, API routes and SQLite/volume identities remain supported.
+The root Dockerfile and Compose definition build the same complete application;
+Docker image acceptance is a separate release gate.
 
-Android/iOS player shell source belongs to the independent Panel repository in
-`mobile/`. Supply the deployed HTTPS origin there; the complete player site here
-provides its routes and features. Android direct distribution uses a persistent
-self-signed key at no certificate/store cost. Users can sign the iOS IPA locally
-with their free Apple Account using AltStore Classic on Windows or macOS, refreshing
-free provisioning within seven days. See the Panel mobile instructions; no paid
-developer membership or store publication is required for this sideloading route.
+For fictional players and sample content, use [the isolated demo](https://github.com/VeloraMCDev/velora-launcher/blob/main/scripts/demo/README.md).
 
-From the repository root, after building the backend and web assets, run
-`node scripts/application-acceptance.mjs target/debug/scopenet-panel`
-(use the `.exe` suffix on Windows). This uses fresh local temporary data only and
-checks cold backup/restore, preserved credentials/roles and point-in-time state.
-It never opens an operator data directory or restores an existing installation.
+## Desktop launcher
 
-Public application separation is still in progress. This private composition can
-preserve all current features now; it does not make private gameplay public or
-certify live data cutover, full release parity or production deployment.
+From launcher/:
+
+```sh
+npm ci --no-audit --no-fund
+npm run dev
+```
+
+Open http://localhost:1420/?mock=main for the browser demo. It uses in-memory
+fixtures; launching Minecraft and native OS integration require Tauri.
+Use `npm run tauri dev` for desktop development and `npm run tauri build`
+for packaging on the target OS. See [launcher](https://github.com/VeloraMCDev/velora-launcher/blob/main/launcher/README.md).
+Installed app and credential-store IDs remain stable. Production updater signing
+and notarization must be configured and tested before claiming trusted releases.
+
+## Player mobile shells and acceptance
+
+Mobile shell source is under [panel/mobile](https://github.com/VeloraMCDev/velora-launcher/blob/main/panel/mobile/README.md). Supply the
+deployed HTTPS player origin; platform packaging has its own prerequisites.
+
+After building the backend and web assets, run from the repository root:
+
+```sh
+node scripts/application-acceptance.mjs target/debug/scopenet-panel
+```
+
+On Windows add the .exe suffix. The check uses fresh temporary stores and verifies
+cold backup/restore, credentials, roles and point-in-time state. It never restores
+an operator installation. Passing it does not certify production hosting or desktop
+upgrade behavior. See [deployment gates](DEPLOYMENT_TARGETS.md).

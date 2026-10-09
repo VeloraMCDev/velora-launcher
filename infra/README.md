@@ -1,6 +1,16 @@
 # Deployment infrastructure
 
-Independent deployment authority inside the Velora monorepo: Cloudflare control plane, D1/R2/Workflows, native outbound agent, service/artifact contracts and recovery recipes. It retains its own npm/Cargo lockfiles and operational lifecycle.
+Cloudflare deployment authority, native outbound agent, immutable service/artifact
+contracts and recovery recipes. Infra has its own npm/Cargo workspaces and lockfiles;
+sharing the repository does not couple service promotions.
+
+| Component | Purpose |
+|---|---|
+| [Control plane](control-plane/README.md) | Worker coordination with D1, R2 and Workflows |
+| [Native agent](agent/README.md) | Outbound jobs on personally hosted machines and VPS hosts |
+| [Targets](../docs/DEPLOYMENT_TARGETS.md) | Hosting/domain assignments and remaining gates |
+| [Deployment guide](../docs/deployment/DEPLOYMENT_GUIDE.md) | Preparation, promotion and recovery |
+| [Tests](tests/README.md) | Synthetic protocol and acceptance checks |
 
 From this directory:
 
@@ -11,8 +21,8 @@ npx --no-install tsc -p control-plane/tsconfig.json
 cargo test --locked --workspace -j 1
 ```
 
-The Node suite uses synthetic local Worker/D1 stores. Live configuration and private keys stay in ignored operator state. Never substitute a synthetic test for Production acceptance. Root Actions is disabled; nested .github/workflows files are retained reference and do not execute automatically in this monorepo.
-
-Start with [the control plane](control-plane/README.md), [the native agent](agent/README.md), [implementation evidence](deployment/IMPLEMENTATION.md) and [current target assignments](../docs/DEPLOYMENT_TARGETS.md). Legacy recipes/catalogs refer to the former owner repos and remain historical; canonical candidate repository/workflow policies must be registered before release.
-
-[Historical introduction](HISTORICAL_README.md) preserves previous evidence and recipes. [Publication audit](../docs/security/PUBLICATION_AUDIT.md) applies to this segment too.
+Root source CI runs automatically. Nested .github/workflows contains reference
+templates and does not execute here; review canonical source policies and monorepo
+paths before enabling any of them. Native acceptance requires its documented
+toolchain/runtime prerequisites. Live keys and operator state stay ignored.
+Runtime D1 SQL migrations are maintained service inputs, not migration archives.

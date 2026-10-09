@@ -6,4 +6,4 @@ Maintained Rust Panel platform segment in the root Cargo workspace.
 cargo test --locked -j 1 -p velora-panel-communications
 ```
 
-Run from the repository root. Reusable libraries must not depend on private gameplay or the complete Panel host. See ../../docs/BOUNDARIES.md and docs/components for preserved extraction evidence.
+Run from the repository root. Reusable libraries must not depend on private gameplay or the complete Panel host. See ../../docs/BOUNDARIES.md and docs/components for component contracts and source attribution.

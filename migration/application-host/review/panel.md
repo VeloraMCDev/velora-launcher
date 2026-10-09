@@ -1,9 +1,0 @@
-Independently package the reviewed public control-plane mechanisms while the complete application remains in the private compatibility host. The streaming gateway preserves original method/query/body/header/status/cache/range behavior and fixed game-authority ownership; outages never fall back to Panel credentials.
-
-Own activity/reporting, communications/provider transport, pool-only instance/file records and mutation SQL, complete Modrinth/CurseForge/plain-zip pack pipeline, generic settings/KV validation and neutral distribution records/helpers. Explicit ports retain caller authorization, exact read/write pools, lazy provider keys, private projections, clock ordering and post-commit file cleanup. Raw-hashed public SDK inputs remove private/sibling build dependencies.
-
-Package the original neutral login/registration/approval/recovery/reset/Discord page with injected typed SDK client and token lifecycle callback. Retain original strings, markup/CSS, field rules, hash navigation, popup identity and bounded polling. The host supplies shared styling and session persistence; no private gameplay or defaults are imported.
-
-Validation: instance metadata/mutations 11 tests; pack pipeline 12; settings five; distribution five; login seven actual-script/render tests plus zero-error/warning typecheck. Focused source host regressions and frontend builds pass. Full Linux native/container fresh bootstrap, authority outage and offline restore acceptance pass at fd87aea (37392326551, 37392321388); both full UI owner CI runs pass at 578e8f2 (37394833412, 37394827372). Extraction provenance, snapshots and public-source audits are retained.
-
-Draft: complete platform backend/admin/player/landing UI and private extension composition, independent storage/writer cutover, web/provider gateway ownership and whole-product fresh/upgrade/rollback/release gates remain incomplete. No deployment/publication or production data import is performed.

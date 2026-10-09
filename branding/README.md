@@ -4,4 +4,4 @@ The project owner supplied the V emblem (`velora1.png`) and Velora wordmark (`ve
 
 Artwork and trademarks are excluded from the platform MIT license. These assets identify the official Velora distribution; no separate reuse license has been granted.
 
-In the source host, run `node scripts/migration/import-brand.mjs`, then `node scripts/icons/build.mjs` to regenerate web, desktop, mobile and companion icons. Keep the original artwork unchanged.
+Generated platform assets are tracked alongside their owning applications. Keep the original artwork unchanged; update generated icons together when changing the brand. README presentation assets and screenshot provenance live under .github/assets.

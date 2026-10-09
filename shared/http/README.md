@@ -1,3 +1,16 @@
-# Reviewed Velora HTTP transport
+# Browser HTTP transport
 
-Pinned public SDK runtime/declarations with raw-byte drift checks. The compatibility Panel supplies live session, instance and logout ports and sets timeoutMs=0 to retain its original deadline. Uploads, formatting, navigation, credentials and private page/catalog state remain application contributions. Refresh only from the reviewed owner revision using scripts/migration/refresh-http-client.mjs.
+Neutral TypeScript client for platform APIs. Authentication/session transport and
+wire contracts belong here; gameplay UI and policy remain outside this package.
+The maintained source is consumed locally by the applications, without fetching
+another repository. Snapshot/provenance metadata retains its original attribution.
+
+From this directory with Node 24:
+
+```sh
+npm ci --no-audit --no-fund
+npm test
+```
+
+This is a library, so it needs no independent host or domain. Keep wire compatibility
+and instance scoping when updating it; validate affected application consumers.

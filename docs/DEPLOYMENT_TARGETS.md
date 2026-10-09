@@ -2,7 +2,8 @@
 
 Reuse existing Cloudflare resources and host capacity. Do not provision paid plans,
 duplicate environment resources or new VPS machines during source consolidation.
-Actions is currently disabled. These are code-based assignments, not deployment proof.
+Source CI is enabled. Packaging and deployment require explicit manual promotion;
+these assignments describe the code, not live deployment proof.
 
 | Component | Current implementation / intended home | Domain requirement |
 |---|---|---|
@@ -21,9 +22,8 @@ The complete Rust Panel/Authentication is not yet a Workers/D1 implementation.
 Do not substitute D1 for owned stores without migration and continuity tests.
 Cloudflare already runs the separate deployment authority.
 
-Hermes is the recorded Development agent host. Possible Beta use in historical
-records does not confirm workload placement. Production hosts and final domains
-remain unresolved. Keep live addresses, resource IDs, keys and enrollment details
+Development uses an existing operator-managed host. Beta and Production hosts
+and final domains remain unresolved. Keep live addresses, resource IDs, keys and enrollment details
 in ignored operator configuration.
 
 Before promotion: validate exact images on Docker, register the canonical source

@@ -4,7 +4,7 @@ This maintained extraction preserves shared gameplay commands, guild/shop/econom
 utility/reward/chat rules, private settings, claims, retry batches and operation
 receipts. The owner approved implementation and fixtures for source publication
 with the complete product; no platform MIT grant applies. Historical source
-preservation remains separate, with publication cleanup documented in migration/.
+preservation remains separate from the maintained product source.
 
 Run `gradlew build`
 with Java 21 (Java 17 bytecode). Only neutral SDK contracts are required to compile;

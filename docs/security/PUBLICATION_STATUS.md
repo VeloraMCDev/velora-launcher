@@ -13,7 +13,7 @@ No original branch, tag, PR, Actions artifact, secret or environment was importe
 Historical provenance links and hashes retain their original attribution.
 
 Current-tree filename checks and the tracked-source credential scan pass. The
-nine exact reviewed matches are synthetic fixtures, the generated-key-header
+exact reviewed matches are synthetic fixtures, the generated-key-header
 assertion and provenance hashes. Wrapper binaries match official Gradle checksums;
 branding metadata and source were reviewed. Source publication changes no package
 license, signing identity, protocol namespace, database path or persistent volume.

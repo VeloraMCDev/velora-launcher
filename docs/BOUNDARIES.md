@@ -3,7 +3,7 @@
 The single source of truth is the public `VeloraMCDev/velora-launcher`. The owner approved public access
 to the complete product source, including gameplay. Directory and dependency
 boundaries remain in place; publication does not change package licenses.
-See [security/PUBLICATION_AUDIT.md](security/PUBLICATION_AUDIT.md).
+See [publication policy](security/PUBLICATION_STATUS.md).
 
 | Segment | Maintained locations | Allowed relationships |
 |---|---|---|
@@ -16,7 +16,6 @@ See [security/PUBLICATION_AUDIT.md](security/PUBLICATION_AUDIT.md).
 | Gameplay | `packages/private-*`, `java`, `ui`, gameplay frontend modules under `shared` | Platform ports and SDK; never a dependency of reusable platform libraries |
 | Deployment | `infra`, `panel/deployment-ui` | Versioned service/artifact contracts; separate build and operational lifecycle |
 | Documentation | `docs` | Build independently; review the selected content before publishing |
-| Frozen evidence | `migration` | Reference only; never add a runtime dependency on archived implementations |
 
 `node scripts/check-boundaries.mjs` enforces the reusable Rust dependency boundary,
 workspace isolation for Infra and installed-client identity checks. It is a

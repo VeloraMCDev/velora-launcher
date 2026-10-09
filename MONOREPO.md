@@ -1,24 +1,24 @@
-# Velora monorepo
+# One repository, independent boundaries
 
-`VeloraMCDev/velora-launcher` is the canonical public repository. Auth, Panel,
-Launcher, SDK, integrations, gameplay, Docs and Infra belong here. The owner
-approved public access to the complete product source, including gameplay.
-Infra retains a separate workspace, lockfile and operational lifecycle.
+VeloraMCDev/velora-launcher contains the complete product. The repository name
+does not limit it to the desktop launcher. Each maintained segment has its own
+README, build inputs and deployment lifecycle.
 
-See [the actual boundaries](docs/BOUNDARIES.md) and segment READMEs. Existing
-directory names and separate frontend lockfiles are deliberate build boundaries.
-Installed identities, SQLite paths, volume names and signing continuity stay stable.
+Reusable authentication, SDK and Panel libraries cannot depend on gameplay or
+the complete Panel application. The complete application currently composes
+gameplay directly; a formal extension interface remains future work.
 
-Remaining work: Panel/gameplay extension seam, exact per-service image acceptance,
-canonical candidate source policies, native deployment transport, backup/restore,
-and Production acceptance. Historical migration records certify their stated
-checkpoints only. GitHub Actions is enabled on the canonical repository; Source
-CI runs automatically on public PRs and main pushes. Release/packaging remains manual,
-and Actions stays disabled on the deprecated source repositories.
+The root Rust workspace owns the applications and reusable crates. Infra retains
+an excluded nested workspace and lockfile. Frontends keep their own npm lockfiles;
+Java integration builds remain separated by loader and toolchain.
 
-Other project repositories are preservation sources pending retirement. Keep
-history custody before archiving; do not delete them as part of consolidation.
-The complete source is published from one reviewed root commit. Original private
-history is preserved separately; no old refs, PRs or artifacts were imported.
-See [publication status](docs/security/PUBLICATION_STATUS.md). Deployment policy
-must explicitly admit the new repository identity before registration resumes.
+Start with [segment boundaries](docs/BOUNDARIES.md), [local development](docs/APPLICATION.md),
+[validation](docs/VALIDATION.md) and [deployment targets](docs/DEPLOYMENT_TARGETS.md).
+Historical duplicate source and project migration reports have been removed from
+the maintained tree. Component API contracts and attribution remain under
+docs/components and package provenance files. Runtime SQL schema migrations stay
+in place because they are required to create and upgrade service databases.
+
+Installed launcher IDs, signing/credential identities, Minecraft namespaces,
+database paths and persistent volume names remain compatible. Source organization
+does not silently promote releases, change live state or provision paid capacity.

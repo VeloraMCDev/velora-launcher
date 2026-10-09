@@ -1,10 +1,10 @@
 # Security and publication
 
 This repository publishes the reviewed complete product source. See
-[PUBLICATION_STATUS.md](PUBLICATION_STATUS.md) for its clean-history custody and
-[PUBLICATION_AUDIT.md](PUBLICATION_AUDIT.md) for the historical audit.
-
-See [publication preparation](PUBLICATION_PREPARATION.md) for cleanup and CI changes.
+[publication status](PUBLICATION_STATUS.md) for source/history custody,
+[build artifact provenance](BUILD_ARTIFACT_PROVENANCE.md) for wrapper review,
+and the tracked publication-policy.json for the approved scope. Superseded
+publication proposals and migration audit reports remain in retained history.
 
 `node scripts/check-publication.mjs` inventories tracked sensitive filenames,
 restricted paths, binaries, Git LFS pointers and commit-email exposure without
