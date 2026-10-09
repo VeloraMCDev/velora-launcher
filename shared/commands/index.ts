@@ -87,16 +87,16 @@ export const COMMAND_GROUPS: CommandGroup[] = [
     { usage: '/playtime', does: 'Check your total and session playtime.', perm: 'scopenet.command.playtime', aliases: ['ontime'] },
     { usage: '/hand', does: 'Share your held item as an inspectable chat link.', perm: 'scopenet.command.hand' },
     { usage: '/nick <name|off>', does: 'Set or remove your chat nickname.', perm: 'scopenet.command.nick' },
-    { usage: '/scopenet help', does: 'List the Velora commands you can use.', perm: 'scopenet.command.scopenet.help', aliases: ['sn'] },
-    { usage: '/scopenet panel', does: 'Get the link to the player panel: market, casino, friends, guilds and quests in any browser or phone. Sign in with your launcher account.', perm: 'scopenet.command.scopenet.panel', aliases: ['/scopenet web', '/scopenet app'] },
-    { usage: '/scopenet status', does: 'Panel connection, features and plugin integrations (admins).', perm: 'scopenet.command.scopenet.status' },
-    { usage: '/scopenet reload', does: 'Reload the plugin config (admins).', perm: 'scopenet.command.scopenet.reload' },
+    { usage: '/velora help', does: 'List the Velora commands you can use.', perm: 'scopenet.command.scopenet.help', aliases: ['sn'] },
+    { usage: '/velora panel', does: 'Get the link to the player panel: market, casino, friends, guilds and quests in any browser or phone. Sign in with your launcher account.', perm: 'scopenet.command.scopenet.panel', aliases: ['/velora web', '/velora app'] },
+    { usage: '/velora status', does: 'Panel connection, features and plugin integrations (admins).', perm: 'scopenet.command.scopenet.status' },
+    { usage: '/velora reload', does: 'Reload the plugin config (admins).', perm: 'scopenet.command.scopenet.reload' },
   ] },
 ];
 
 export const COMMAND_TIPS = [
   'Press Ctrl+K in the launcher, the player panel or the admin panel to jump anywhere or find a command instantly.',
-  'The player panel works on your phone: market, casino, friends, guilds, quests, leaderboards and the live map. Type /scopenet panel in game for the link, then use “Add to Home Screen”.',
+  'The player panel works on your phone: market, casino, friends, guilds, quests, leaderboards and the live map. Type /velora panel in game for the link, then use “Add to Home Screen”.',
   'Placeholders: use %scopenet_level%, %scopenet_guild%, %scopenet_balance% and more in scoreboards, tab and chat.',
   'Walking into claimed land shows the guild (or the server area and its description) above your hotbar. Your bell in the title bar collects guild, auction and quest news.',
   'Right-click a shop point (a marked block) to open the market or shop. On a server with the Velora client mod it opens the shop window.',

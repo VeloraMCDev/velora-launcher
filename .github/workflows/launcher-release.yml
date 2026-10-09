@@ -76,6 +76,20 @@ jobs:
       - run: npm run check
       - run: cargo test --locked -j 2 -p velora-launcher
       - run: npm run tauri build -- --bundles ${{ matrix.bundles }} ${{ matrix.args }} -- --locked
+      - name: Verify macOS installed product identity
+        if: matrix.name == 'mac'
+        run: |
+          app="../target/universal-apple-darwin/release/bundle/macos/Velora Launcher.app"
+          test -d "$app"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleName' "$app/Contents/Info.plist")" = 'Velora Launcher'
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist")" = 'net.scopenet.launcher'
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")" = 'velora-launcher'
+      - name: Verify Windows upgrade from the installed product
+        if: matrix.name == 'windows'
+        shell: pwsh
+        run: |
+          $taskInstaller=(Get-ChildItem ../target/release/bundle/nsis/*-setup.exe).FullName
+          & ../.github/scripts/test-windows-launcher-upgrade.ps1 -Installer $taskInstaller
       - name: Collect installers with release names
         env:
           VERSION: ${{ needs.version.outputs.version }}
