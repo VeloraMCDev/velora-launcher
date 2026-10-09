@@ -16,12 +16,12 @@ npm run check
 npm run check:runes
 npm run build
 cd ../..
-cargo build --locked -p scopenet-panel
+cargo build --locked -p velora-panel
 ```
 
 Before running the backend, set ADMIN_PASSWORD to a local development password,
 VELORA_BIND to 127.0.0.1:8080 and VELORA_DATA_DIR to a fresh ignored development
-directory. Then run `cargo run --locked -p scopenet-panel` and open
+directory. Then run `cargo run --locked -p velora-panel` and open
 http://localhost:8080. Supply a private JWT_SECRET for a persistent installation.
 The public-safe examples intentionally contain no production credentials.
 
@@ -57,7 +57,7 @@ deployed HTTPS player origin; platform packaging has its own prerequisites.
 After building the backend and web assets, run from the repository root:
 
 ```sh
-node scripts/application-acceptance.mjs target/debug/scopenet-panel
+node scripts/application-acceptance.mjs target/debug/velora-panel
 ```
 
 On Windows add the .exe suffix. The check uses fresh temporary stores and verifies

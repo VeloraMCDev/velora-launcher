@@ -212,7 +212,7 @@
       </div>
     {:else if tab === 'downloads'}
       <div class="settings-grid card"><h2>Launcher downloads</h2><p>Upload an installer for each platform, or link to your GitHub releases and anything you have not uploaded is picked up from the latest release. Windows installers also reach installed launchers as updates.</p>
-        <label>External download URL<input type="url" bind:value={config.external_download_url} placeholder="https://github.com/scopeddlol/SCOPENET-MC/releases" /></label>
+        <label>External download URL<input type="url" bind:value={config.external_download_url} placeholder="https://github.com/VeloraMCDev/velora-launcher/releases" /></label>
         <DownloadsManager compact />
       </div>
     {:else if tab === 'faq'}

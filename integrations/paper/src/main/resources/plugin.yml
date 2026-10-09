@@ -1,4 +1,5 @@
 name: SCOPENET
+prefix: Velora
 version: '${version}'
 main: net.scopenet.paper.ScopenetPlugin
 api-version: '1.20'

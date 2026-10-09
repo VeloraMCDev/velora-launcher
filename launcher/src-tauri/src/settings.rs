@@ -1,6 +1,6 @@
 //! Player settings, stored as JSON in the app data directory.
 
-use scopenet_core::launch::GcPreset;
+use velora_launcher_core::launch::GcPreset;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
 use std::path::Path;

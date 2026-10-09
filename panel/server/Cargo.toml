@@ -1,5 +1,5 @@
 [package]
-name = "scopenet-panel"
+name = "velora-panel"
 description = "Velora admin panel: manages instances, branding and players for the launcher"
 version.workspace = true
 edition.workspace = true
@@ -7,7 +7,7 @@ edition.workspace = true
 [dependencies]
 velora-experiences-storage.workspace = true
 velora-experiences-gameplay.workspace = true
-scopenet-shared.workspace = true
+velora-shared.workspace = true
 velora-platform-utils.workspace = true
 velora-auth-core = { workspace = true, features = ["sqlite", "textures"] }
 velora-auth-http.workspace = true

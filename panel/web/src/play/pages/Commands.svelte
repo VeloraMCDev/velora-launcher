@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Check, Copy, Search, Terminal } from '@lucide/svelte';
-  import { COMMAND_GROUPS, COMMAND_TIPS, type Cmd } from '@scopenet/commands';
+  import { COMMAND_GROUPS, COMMAND_TIPS, type Cmd } from '@velora/commands';
 
   let query = $state((() => { try { const q = sessionStorage.getItem('scopenet.play.cmdq') ?? ''; sessionStorage.removeItem('scopenet.play.cmdq'); return q; } catch { return ''; } })());
   let group = $state('all');

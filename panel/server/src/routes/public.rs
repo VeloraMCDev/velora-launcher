@@ -11,7 +11,7 @@ use crate::yggdrasil;
 use axum::extract::Path;
 use axum::http::HeaderMap;
 use axum::Json;
-use scopenet_shared::*;
+use velora_shared::*;
 
 pub async fn health() -> &'static str {
     "ok"

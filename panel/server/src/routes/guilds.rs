@@ -7,7 +7,7 @@ use crate::routes::servers::GameServer;
 use crate::state::AppState;
 use axum::extract::{Path, Query};
 use axum::Json;
-use scopenet_shared::{Guild, GuildClaim, GuildMember, GuildPost};
+use velora_shared::{Guild, GuildClaim, GuildMember, GuildPost};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 

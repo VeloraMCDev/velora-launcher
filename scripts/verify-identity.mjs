@@ -6,6 +6,7 @@ for (const path of ['panel/web/package-lock.json', 'launcher/package-lock.json',
   if (!existsSync(resolve(root, path))) throw Error(`Missing application input: ${path}`);
 }
 const config = JSON.parse(readFileSync(resolve(root, 'launcher/src-tauri/tauri.conf.json')));
+if (config.productName !== 'Velora Launcher' || config.bundle.publisher !== 'Velora') throw Error('Launcher packaging must use Velora branding');
 if (config.identifier !== 'net.scopenet.launcher') throw Error('Installed launcher identity must remain compatible');
 const secrets = readFileSync(resolve(root, 'launcher/src-tauri/src/secrets.rs'), 'utf8');
 if (!secrets.includes('const SERVICE: &str = "net.scopenet.launcher";')) throw Error('Credential store identity changed');

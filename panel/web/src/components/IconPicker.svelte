@@ -54,7 +54,7 @@
 
 <Modal bind:open title="Icon library" width={820}>
   {#if packs.length === 0 && !busy}
-    <p class="muted">The icon library isn't installed on this panel. Build it with <code>cd panel/icons &amp;&amp; npm ci &amp;&amp; node build.mjs</code> (the Docker image does this for you) and set <code>SCOPENET_ICONS_DIR</code>.</p>
+    <p class="muted">The icon library isn't installed on this panel. Build it with <code>cd panel/icons &amp;&amp; npm ci &amp;&amp; node build.mjs</code> (the Docker image does this for you) and set <code>VELORA_ICONS_DIR</code>.</p>
   {/if}
   <div class="bar">
     <label class="search"><Search size={15} /><input bind:value={q} oninput={later} placeholder={total ? `Search ${total.toLocaleString()} icons — sword, heart, crown…` : 'Search icons'} /></label>

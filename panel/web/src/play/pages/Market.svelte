@@ -4,9 +4,9 @@
   import { get, post } from '../../lib/api';
   import { toast, toastError } from '../../lib/toast.svelte';
   import { balanceChanged, currentServer, money, play } from '../store.svelte';
-  import Orders from '@scopenet/board/Orders.svelte';
-  import Contracts from '@scopenet/board/Contracts.svelte';
-  import { setBoardHost } from '@scopenet/board';
+  import Orders from '@velora/board/Orders.svelte';
+  import Contracts from '@velora/board/Contracts.svelte';
+  import { setBoardHost } from '@velora/board';
   import Sheet from '../ui/Sheet.svelte';
   import Empty from '../ui/Empty.svelte';
   import Count from '../ui/Count.svelte';

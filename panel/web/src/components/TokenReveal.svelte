@@ -23,7 +23,7 @@
   <li>
     <strong>Install the Velora integration</strong>
     <span class="muted small">Use scopenet-paper for Paper, Purpur or Spigot. Fabric and Forge need the JAR for the exact Minecraft version: 1.20.1, 1.21.1, 26.1.2, 26.2 or 26.3.</span>
-    <a class="dl" href="https://github.com/scopeddlol/SCOPENET-MC/releases/latest" target="_blank" rel="noreferrer"><Download size={14} /> Download from Releases</a>
+    <a class="dl" href="https://github.com/VeloraMCDev/velora-launcher/releases/latest" target="_blank" rel="noreferrer"><Download size={14} /> Download from Releases</a>
   </li>
   <li>
     <strong>Configure it</strong>

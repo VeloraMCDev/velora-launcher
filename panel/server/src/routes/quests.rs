@@ -6,7 +6,7 @@ use crate::state::AppState;
 use crate::state::RequestState as State;
 use axum::extract::Path;
 use axum::Json;
-use scopenet_shared::{Quest, UserQuest};
+use velora_shared::{Quest, UserQuest};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 

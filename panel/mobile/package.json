@@ -1,23 +1,23 @@
 {
-    "name":  "velora-player-app",
-    "private":  true,
-    "version":  "0.5.0",
-    "description":  "Velora player panel for Android and iOS",
-    "scripts":  {
-                    "assets":  "capacitor-assets generate",
-                    "sync":  "cap sync",
-                    "test":  "node --test *.test.mjs",
-                    "prepare:android":  "node prepare.mjs android",
-                    "prepare:ios":  "node prepare.mjs ios"
-                },
-    "dependencies":  {
-                         "@capacitor/android":  "^7.4.0",
-                         "@capacitor/core":  "^7.4.0",
-                         "@capacitor/ios":  "^7.4.0"
-                     },
-    "devDependencies":  {
-                            "@capacitor/assets":  "^3.0.5",
-                            "@capacitor/cli":  "^7.4.0",
-                            "typescript":  "~5.9.0"
-                        }
+    "name": "velora-player-app",
+    "private": true,
+    "version": "1.3.1",
+    "description": "Velora player panel for Android and iOS",
+    "scripts": {
+        "assets": "capacitor-assets generate",
+        "sync": "cap sync",
+        "test": "node --test *.test.mjs",
+        "prepare:android": "node prepare.mjs android",
+        "prepare:ios": "node prepare.mjs ios"
+    },
+    "dependencies": {
+        "@capacitor/android": "^7.4.0",
+        "@capacitor/core": "^7.4.0",
+        "@capacitor/ios": "^7.4.0"
+    },
+    "devDependencies": {
+        "@capacitor/assets": "^3.0.5",
+        "@capacitor/cli": "^7.4.0",
+        "typescript": "~5.9.0"
+    }
 }

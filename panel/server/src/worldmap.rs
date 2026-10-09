@@ -1,4 +1,4 @@
-//! The SCOPENET Map.
+//! The Velora Map.
 //!
 //! Game servers draw their own world: the plugin/mod renders top-down map tiles from the region files and uploads only
 //! the small PNGs that changed. The panel just stores them and serves them, together with live player positions and an
@@ -514,7 +514,7 @@ mod tests {
 
     #[test]
     fn tiles_are_stored_summarised_and_reset() {
-        let dir = std::env::temp_dir().join(format!("scopenet-map-{}", rand::random::<u64>()));
+        let dir = std::env::temp_dir().join(format!("velora-map-{}", rand::random::<u64>()));
         let map = WorldMap::new(&dir);
         let tiles = parse_tiles(&[record(0, -1, 2, b"a"), record(0, 3, 4, b"bb"), record(1, 0, 0, b"c")].concat()).unwrap();
         assert_eq!(map.store_tiles(5, "overworld", &tiles).unwrap(), 3);
@@ -547,7 +547,7 @@ mod tests {
 
     #[test]
     fn missing_zoom_levels_are_built_from_full_resolution_tiles() {
-        let dir = std::env::temp_dir().join(format!("scopenet-map-{}", rand::random::<u64>()));
+        let dir = std::env::temp_dir().join(format!("velora-map-{}", rand::random::<u64>()));
         let map = WorldMap::new(&dir);
         // Only zoom 0 ever arrived: a viewer zoomed out would otherwise find nothing at all.
         let tiles = vec![

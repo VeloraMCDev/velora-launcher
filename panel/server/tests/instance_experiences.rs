@@ -1,6 +1,6 @@
 mod common;
 use common::{json, Body, Request, ServiceExt, StatusCode, Value};
-use scopenet_panel::{app, auth, bootstrap_admin, build_state_with_keys, config::Config, db, state::AppState};
+use velora_panel::{app, auth, bootstrap_admin, build_state_with_keys, config::Config, db, state::AppState};
 
 struct Platform {
     state: AppState,
@@ -172,8 +172,8 @@ async fn velora_and_legacy_instance_headers_select_the_same_store_and_conflicts_
 #[tokio::test]
 async fn instance_settings_history_and_capabilities_are_isolated_but_identity_is_shared() {
     let p = Platform::new().await;
-    let smp = p.instance("SCOPENET SMP").await;
-    let frontiers = p.instance("SCOPENET Frontiers").await;
+    let smp = p.instance("Velora SMP").await;
+    let frontiers = p.instance("Velora Frontiers").await;
     let (status, _) = p.call("GET", "/api/admin/progression", None, &p.token, None).await;
     assert_eq!(status, StatusCode::BAD_REQUEST, "ambiguous scope must never expose a global gameplay store");
     let (status, body) = p.call("PUT", "/api/admin/progression", Some(&smp), &p.token, Some(json!({"level_base":300.0}))).await;
@@ -373,11 +373,11 @@ async fn legacy_maps_and_servers_survive_adoption_and_deleted_storage_is_not_reu
     let owner: String =
         sqlx::query_scalar("SELECT instance_id FROM game_servers WHERE id=?").bind(sid).fetch_one(&p.state.db).await.unwrap();
     assert_eq!(owner, a);
-    scopenet_panel::store::kv_set(&scoped, "custom", &json!({"version":2})).await.unwrap();
+    velora_panel::store::kv_set(&scoped, "custom", &json!({"version":2})).await.unwrap();
     let mut restarted = p.state.clone();
-    restarted.experiences = Arc::new(scopenet_panel::experience::ExperienceStores::default());
+    restarted.experiences = Arc::new(velora_panel::experience::ExperienceStores::default());
     let reopened = restarted.experiences.state(&restarted, &a).await.unwrap();
-    let custom: Value = scopenet_panel::store::kv_get(&reopened, "custom").await.unwrap();
+    let custom: Value = velora_panel::store::kv_get(&reopened, "custom").await.unwrap();
     assert_eq!(custom["version"], 2, "restarts do not replay legacy configuration");
     restarted.experiences.retire(&a).await;
     let (status, body) = p.call("DELETE", &format!("/api/admin/instances/{a}"), None, &p.token, None).await;
@@ -420,7 +420,7 @@ async fn immutable_resource_pack_downloads_keep_legacy_minecraft_urls() {
     let a = p.instance("Alpha").await;
     p.instance("Beta").await;
     let scoped = p.state.experiences.state(&p.state, &a).await.unwrap();
-    scopenet_panel::store::kv_set(&scoped, "resource_pack", &json!({"enabled":true,"required":false,"pack_format":84})).await.unwrap();
+    velora_panel::store::kv_set(&scoped, "resource_pack", &json!({"enabled":true,"required":false,"pack_format":84})).await.unwrap();
     let (_, server) = p.call("POST", "/api/admin/servers", Some(&a), &p.token, Some(json!({"name":"Alpha"}))).await;
     let token = server["token"].as_str().unwrap();
     let (status, pack) = p.call("POST", "/api/server/v1/resource-pack", None, token, None).await;

@@ -5,8 +5,8 @@ use crate::game;
 use crate::settings::Settings;
 use crate::state::{build, AppState};
 use crate::updater;
-use scopenet_core::ping::ServerStatus;
-use scopenet_shared::{
+use velora_launcher_core::ping::ServerStatus;
+use velora_shared::{
     Achievement, BaltopEntry, DirectMessage, EconomyTransaction, FriendInfo, GameInvite, Guild, GuildClaim, GuildMember, GuildPost,
     LauncherManifest, MemberProfile, PlayerProfile, ServerEconomyBalance, SkinProfile, UserLevelInfo, UserPost, UserProfileView, UserQuest,
 };
@@ -71,7 +71,7 @@ pub fn bootstrap(state: State<'_, AppState>) -> Bootstrap {
             repo: build::REPO.map(String::from),
             os: std::env::consts::OS.into(),
             arch: std::env::consts::ARCH.into(),
-            total_ram_mb: scopenet_core::sys::total_memory_mb(),
+            total_ram_mb: velora_launcher_core::sys::total_memory_mb(),
             data_dir: state.data_dir.to_string_lossy().into_owned(),
         },
         panel_url: state.panel_url(),
@@ -98,7 +98,7 @@ async fn fetch_manifest(state: &AppState, panel: &str) -> anyhow::Result<Launche
     if !resp.status().is_success() {
         anyhow::bail!("{panel} returned {}", resp.status());
     }
-    let m: LauncherManifest = resp.json().await.map_err(|_| anyhow::anyhow!("{panel} doesn't look like a SCOPENET panel"))?;
+    let m: LauncherManifest = resp.json().await.map_err(|_| anyhow::anyhow!("{panel} doesn't look like a Velora panel"))?;
     Ok(m)
 }
 
@@ -152,7 +152,7 @@ pub fn save_instance_options(state: State<'_, AppState>, instance_id: String) ->
     if state.game.lock().unwrap().iter().any(|g| g.instance_id == instance_id) {
         return Err("close this instance before saving its game settings".into());
     }
-    let options = scopenet_core::options::read_vanilla_preferences(&state.layout.instance_dir(&instance_id)).map_err(aerr)?;
+    let options = velora_launcher_core::options::read_vanilla_preferences(&state.layout.instance_dir(&instance_id)).map_err(aerr)?;
     if options.is_empty() {
         return Err("no vanilla options.txt settings found yet".into());
     }
@@ -310,7 +310,7 @@ async fn account_api(state: &AppState, method: reqwest::Method, path: &str) -> R
     let token = accounts::panel_token(state).ok_or("sign in with a server account to change your skin")?;
     let mut request = state.http.request(method, format!("{panel}/api/v1{path}")).bearer_auth(token);
     if let Some(id) = &state.settings.read().unwrap().selected_instance {
-        request = request.header("X-SCOPENET-Instance", id);
+        request = request.header("X-Velora-Instance", id);
     }
     Ok(request)
 }
@@ -520,14 +520,14 @@ pub struct InstanceLocal {
 #[tauri::command]
 pub async fn instance_local(state: State<'_, AppState>, instance_id: String) -> Res<InstanceLocal> {
     let dir = state.layout.instance_dir(&instance_id);
-    let s = scopenet_core::sync::load_state(&dir);
-    let size = tokio::task::spawn_blocking(move || scopenet_core::sys::dir_size(&dir)).await.unwrap_or(0);
+    let s = velora_launcher_core::sync::load_state(&dir);
+    let size = tokio::task::spawn_blocking(move || velora_launcher_core::sys::dir_size(&dir)).await.unwrap_or(0);
     Ok(InstanceLocal { installed: s.revision > 0, revision: s.revision, size })
 }
 
 #[tauri::command]
 pub async fn ping_server(host: String, port: u16) -> Res<ServerStatus> {
-    scopenet_core::ping::ping(&host, port).await.map_err(aerr)
+    velora_launcher_core::ping::ping(&host, port).await.map_err(aerr)
 }
 
 #[tauri::command]
@@ -561,7 +561,7 @@ pub struct Storage {
 pub async fn storage_info(state: State<'_, AppState>) -> Res<Storage> {
     let layout = state.layout.clone();
     tokio::task::spawn_blocking(move || {
-        use scopenet_core::sys::dir_size;
+        use velora_launcher_core::sys::dir_size;
         let shared = dir_size(&layout.libraries()) + dir_size(&layout.assets()) + dir_size(&layout.versions());
         let runtimes = dir_size(&layout.runtimes());
         let instances = std::fs::read_dir(layout.instances())
@@ -591,7 +591,7 @@ pub async fn clear_cache(state: State<'_, AppState>) -> Res<()> {
 
 #[tauri::command]
 pub async fn detect_java(path: String) -> Option<u32> {
-    scopenet_core::java::detect_major(std::path::Path::new(&path)).await
+    velora_launcher_core::java::detect_major(std::path::Path::new(&path)).await
 }
 
 #[tauri::command]
@@ -641,7 +641,7 @@ pub async fn get_leaderboard(state: State<'_, AppState>, server_id: Option<i64>,
     };
     let mut request = state.http.get(&url);
     if let Some(id) = &state.settings.read().unwrap().selected_instance {
-        request = request.header("X-SCOPENET-Instance", id);
+        request = request.header("X-Velora-Instance", id);
     }
     if let Some(token) = accounts::panel_token(&state) {
         request = request.bearer_auth(token);
@@ -658,7 +658,7 @@ pub async fn get_public_servers(state: State<'_, AppState>) -> Res<serde_json::V
     let panel = state.panel_url().ok_or("no panel configured")?;
     let mut request = state.http.get(format!("{panel}/api/v1/servers/public"));
     if let Some(id) = &state.settings.read().unwrap().selected_instance {
-        request = request.header("X-SCOPENET-Instance", id);
+        request = request.header("X-Velora-Instance", id);
     }
     if let Some(token) = accounts::panel_token(&state) {
         request = request.bearer_auth(token);
@@ -670,7 +670,7 @@ pub async fn get_public_servers(state: State<'_, AppState>) -> Res<serde_json::V
     resp.json().await.map_err(err)
 }
 
-/// What the SCOPENET Map needs for one game server: which dimensions have tiles, the tile key, and where tiles live (made absolute,
+/// What the Velora Map needs for one game server: which dimensions have tiles, the tile key, and where tiles live (made absolute,
 /// because the map loads them straight from the panel as images).
 #[tauri::command]
 pub async fn get_map_info(state: State<'_, AppState>, server_id: i64) -> Res<serde_json::Value> {
@@ -1631,8 +1631,8 @@ pub async fn respond_guild_invite(state: State<'_, AppState>, invite_id: i64, ac
 }
 
 #[tauri::command]
-pub fn textures_status(state: State<'_, AppState>) -> scopenet_core::textures::Status {
-    scopenet_core::textures::status(&state.layout)
+pub fn textures_status(state: State<'_, AppState>) -> velora_launcher_core::textures::Status {
+    velora_launcher_core::textures::status(&state.layout)
 }
 
 /// Item textures as data URIs, keyed by the name asked for. Names with no texture are left out.
@@ -1643,7 +1643,7 @@ pub fn item_textures(state: State<'_, AppState>, names: Vec<String>) -> std::col
         .into_iter()
         .take(400)
         .filter_map(|n| {
-            let png = scopenet_core::textures::find(&state.layout, &n)?;
+            let png = velora_launcher_core::textures::find(&state.layout, &n)?;
             Some((n, format!("data:image/png;base64,{}", base64::engine::general_purpose::STANDARD.encode(png))))
         })
         .collect()

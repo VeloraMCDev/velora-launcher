@@ -76,9 +76,9 @@ mod tests {
     fn upserts_without_losing_player_servers() {
         let dir = tempfile::tempdir().unwrap();
         upsert(dir.path(), "Friend", "friend.net").unwrap();
-        upsert(dir.path(), "SCOPENET", "play.scopenet.gg").unwrap();
-        upsert(dir.path(), "SCOPENET SMP", "play.scopenet.gg").unwrap();
-        assert_eq!(names(dir.path()), vec![("SCOPENET SMP".into(), "play.scopenet.gg".into()), ("Friend".into(), "friend.net".into())]);
+        upsert(dir.path(), "Velora", "play.scopenet.gg").unwrap();
+        upsert(dir.path(), "Velora SMP", "play.scopenet.gg").unwrap();
+        assert_eq!(names(dir.path()), vec![("Velora SMP".into(), "play.scopenet.gg".into()), ("Friend".into(), "friend.net".into())]);
         assert_eq!(format_address("a.b", 25565), "a.b");
         assert_eq!(format_address("a.b", 25570), "a.b:25570");
     }

@@ -9,7 +9,7 @@
   import { api, del, get, post, put, timeAgo } from '../lib/api';
   import { toast, toastError } from '../lib/toast.svelte';
   import { spans } from '../lib/mccolor';
-  import { OTHER_NODES, SCOPENET_NODES } from '../lib/lpNodes';
+  import { OTHER_NODES, VELORA_NODES } from '../lib/lpNodes';
 
   type Perm = { key: string; value: boolean; server?: string; world?: string; temporary?: boolean };
   type LpGroup = { name: string; display?: string; weight: number; prefix: string; suffix: string; parents: string[]; permissions: Perm[]; members?: number };
@@ -127,7 +127,7 @@
 
   let perm = $state({ permission: '', value: true, server: '', world: '' });
   let permAdvanced = $state(false);
-  const permHints = $derived([...SCOPENET_NODES, ...OTHER_NODES].filter((n) => !perm.permission || n.includes(perm.permission.toLowerCase())).slice(0, 8));
+  const permHints = $derived([...VELORA_NODES, ...OTHER_NODES].filter((n) => !perm.permission || n.includes(perm.permission.toLowerCase())).slice(0, 8));
   async function addPermission() {
     if (!current || !perm.permission.trim()) return;
     if (await send(`${perm.value ? 'Allowed' : 'Denied'} ${perm.permission.trim()}`, () => post(`/api/admin/luckperms/groups/${current.name}/permissions`, { ...sid(), ...perm, permission: perm.permission.trim() }))) {

@@ -9,7 +9,7 @@ import { buildManifest, platformOf, signedMessage } from './sign-launcher-releas
 const commit = 'a'.repeat(40);
 function fixture() {
   const dir = mkdtempSync(join(tmpdir(), 'velora-release-'));
-  for (const name of ['Velora-Launcher_1.3.0_x64-setup.exe', 'Velora-Launcher_1.3.0_universal.dmg', 'Velora-Launcher_1.3.0_amd64.AppImage', 'notes.txt']) {
+  for (const name of ['Velora-Launcher_1.3.0_x64-setup.exe', 'Velora-Launcher_1.3.0_universal.dmg', 'Velora-Launcher_1.3.0_amd64.AppImage', 'Velora-Player_1.3.0_android.apk', 'Velora-Player_1.3.0_ios.ipa', 'notes.txt']) {
     writeFileSync(join(dir, name), `fixture ${name}`);
   }
   return dir;
@@ -22,7 +22,7 @@ test('signs each installer for exactly its version and checksum', () => {
   const dir = fixture();
   try {
     const manifest = buildManifest(dir, '1.3.0', commit, pem, pub);
-    assert.deepEqual(manifest.assets.map((a) => a.platform).sort(), ['linux', 'mac', 'windows']);
+    assert.deepEqual(manifest.assets.map((a) => a.platform).sort(), ['android', 'ios', 'linux', 'mac', 'windows']);
     for (const asset of manifest.assets) {
       const sig = Buffer.from(asset.signature, 'base64');
       assert.ok(verify(null, Buffer.from(signedMessage('1.3.0', asset.sha256)), publicKey, sig));

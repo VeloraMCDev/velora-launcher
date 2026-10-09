@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Dices } from '@lucide/svelte';
-  import CasinoPage from '@scopenet/casino/CasinoPage.svelte';
-  import { setCasinoHost } from '@scopenet/casino';
+  import CasinoPage from '@velora/casino/CasinoPage.svelte';
+  import { setCasinoHost } from '@velora/casino';
   import Empty from '../ui/Empty.svelte';
   import { get, post } from '../../lib/api';
   import { toast } from '../../lib/toast.svelte';

@@ -13,11 +13,11 @@ use crate::{
 };
 use axum::{extract::Path, Json};
 use futures::StreamExt;
-use scopenet_shared::{release_version, verify_release_signature, LauncherUpdate};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::{collections::BTreeMap, time::Duration};
 use tokio::io::AsyncWriteExt;
+use velora_shared::{release_version, verify_release_signature, LauncherUpdate};
 
 /// Desktop installers other than Windows, keyed by platform ("mac", "linux").
 pub const PLATFORM_KEY: &str = "launcher_platform_releases";
@@ -169,7 +169,7 @@ pub fn validate_manifest(manifest: &ReleaseManifest, tag: &str) -> Result<(), St
     }
     let mut seen = std::collections::HashSet::new();
     for asset in &manifest.assets {
-        if !["windows", "mac", "linux"].contains(&asset.platform.as_str()) {
+        if !["windows", "mac", "linux", "android", "ios"].contains(&asset.platform.as_str()) {
             return Err(format!("unknown platform {}", asset.platform));
         }
         if !installer_name_ok(&asset.platform, &asset.name) || !seen.insert(asset.name.clone()) {
@@ -192,7 +192,10 @@ fn installer_name_ok(platform: &str, name: &str) -> bool {
     let suffix_ok = match platform {
         "windows" => lower.ends_with("-setup.exe"),
         "mac" => lower.ends_with(".dmg"),
-        _ => lower.ends_with(".appimage") || lower.ends_with(".deb"),
+        "linux" => lower.ends_with(".appimage") || lower.ends_with(".deb"),
+        "android" => lower.ends_with(".apk"),
+        "ios" => lower.ends_with(".ipa"),
+        _ => false,
     };
     suffix_ok && name.len() <= 160 && name.bytes().all(|b| b.is_ascii_alphanumeric() || b"-_.+".contains(&b)) && !name.starts_with('.')
 }
@@ -309,9 +312,34 @@ pub async fn approve(admin: AdminUser, State(state): State<AppState>, Path(tag):
         }
         fetch_installer(&state, asset, expected, &dest).await.map_err(AppError::bad_request)?;
     }
+    // Check mobile archive structure before publishing any part of the release.
+    for a in manifest.assets.iter().filter(|a| matches!(a.platform.as_str(), "android" | "ios")) {
+        let file = dir.join(stored_name(&a.platform, &a.sha256.to_ascii_lowercase(), &a.name));
+        let bytes = tokio::fs::read(file).await?;
+        if !super::mobile_apps::looks_right(&a.platform, &bytes) {
+            return Err(AppError::bad_request(format!("{} is not a valid mobile app archive", a.name)));
+        }
+    }
 
     let now = crate::db::now();
     let notes = release.body.clone().unwrap_or_default();
+    for a in manifest.assets.iter().filter(|a| matches!(a.platform.as_str(), "android" | "ios")) {
+        super::mobile_apps::publish_release_app(
+            &state,
+            &a.platform,
+            super::mobile_apps::PublishedApp {
+                version: version.clone(),
+                notes: notes.chars().take(8192).collect(),
+                filename: a.name.clone(),
+                stored: stored_name(&a.platform, &a.sha256.to_ascii_lowercase(), &a.name),
+                size: a.size,
+                sha256: a.sha256.to_ascii_lowercase(),
+                published_at: now.clone(),
+                bundle_id: "net.scopenet.player".into(),
+            },
+        )
+        .await?;
+    }
     let update = |a: &ManifestAsset| LauncherUpdate {
         version: version.clone(),
         notes: notes.chars().take(8192).collect(),
@@ -340,7 +368,7 @@ pub async fn approve(admin: AdminUser, State(state): State<AppState>, Path(tag):
     // The website offers every approved installer, replacing earlier desktop downloads.
     let mut landing = super::landing::get_config(&state).await?;
     landing.hosted_downloads.retain(|d| !["windows", "mac", "linux"].contains(&d.platform.as_str()));
-    for a in &manifest.assets {
+    for a in manifest.assets.iter().filter(|a| matches!(a.platform.as_str(), "windows" | "mac" | "linux")) {
         let label = match a.platform.as_str() {
             "windows" => "Windows",
             "mac" => "macOS",
@@ -408,6 +436,10 @@ mod tests {
         assert!(!installer_name_ok("windows", "Velora_1.3.0_x64.msi"));
         assert!(installer_name_ok("linux", "velora_1.3.0_amd64.AppImage"));
         assert!(!installer_name_ok("linux", "a b.deb"));
+        assert!(installer_name_ok("android", "Velora-Player_1.3.1_android.apk"));
+        assert!(installer_name_ok("ios", "Velora-Player_1.3.1_ios.ipa"));
+        assert!(!installer_name_ok("android", "Velora.ipa"));
+        assert!(!installer_name_ok("ios", "Velora.apk"));
         let d = "ab".repeat(32);
         assert_eq!(installer_url("windows", &d, "x-setup.exe"), format!("/api/v1/launcher/updates/{d}/setup.exe"));
         assert_eq!(stored_name("mac", &d, "V.dmg"), format!("{d}-V.dmg"));

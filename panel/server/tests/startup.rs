@@ -1,5 +1,5 @@
 mod common;
-use scopenet_panel::{auth, bootstrap_admin, build_state_with_keys, config::Config, db};
+use velora_panel::{auth, bootstrap_admin, build_state_with_keys, config::Config, db};
 
 fn config(path: &std::path::Path) -> Config {
     Config {

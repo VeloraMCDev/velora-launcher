@@ -18,6 +18,8 @@ export function platformOf(name) {
   if (lower.endsWith('-setup.exe')) return 'windows';
   if (lower.endsWith('.dmg')) return 'mac';
   if (lower.endsWith('.appimage') || lower.endsWith('.deb')) return 'linux';
+  if (lower.endsWith('.apk')) return 'android';
+  if (lower.endsWith('.ipa')) return 'ios';
   return null;
 }
 

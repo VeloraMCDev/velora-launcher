@@ -17,8 +17,8 @@
   import Casino from './pages/Casino.svelte';
   import Collections from './pages/Collections.svelte';
   import SocialSidebar from './components/SocialSidebar.svelte';
-  import { pageEnabled } from '@scopenet/experience';
-  import ExperienceWidgets from '@scopenet/experience/ExperienceWidgets.svelte';
+  import { pageEnabled } from '@velora/experience';
+  import ExperienceWidgets from '@velora/experience/ExperienceWidgets.svelte';
   import { selectedInstance } from './lib/store.svelte';
   import Home from './pages/Home.svelte';
   import Settings from './pages/Settings.svelte';

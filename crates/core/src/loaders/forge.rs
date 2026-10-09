@@ -11,7 +11,7 @@ use crate::progress::{self, Event, Reporter, Stage};
 use crate::rules::Env;
 use crate::version::{Library, VersionJson};
 use anyhow::{anyhow, bail, Context, Result};
-use scopenet_shared::Loader;
+use velora_shared::Loader;
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::io::Read;

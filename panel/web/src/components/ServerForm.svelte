@@ -1,6 +1,6 @@
 <script lang="ts">
   import { route } from '../lib/router.svelte';
-  import { enabled } from '@scopenet/experience';
+  import { enabled } from '@velora/experience';
   import { experienceContext } from '../lib/experience.svelte';
   import { Globe, UserRound, Tag } from '@lucide/svelte';
   import { onMount } from 'svelte';

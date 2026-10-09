@@ -1,4 +1,4 @@
-//! SCOPENET admin panel.
+//! Velora admin panel.
 // SQLx maps several multi-column queries directly to tuples; aliases would
 // obscure the selected column order without simplifying the query boundary.
 #![allow(clippy::type_complexity)]

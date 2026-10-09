@@ -1,4 +1,4 @@
-//! Game server integration: the SCOPENET Paper plugin and Fabric/Forge mods
+//! Game server integration: the Velora Paper plugin and Fabric/Forge mods
 //! report to these endpoints with a per-server token, and admins manage the
 //! servers (and read the stats they collect) from the panel.
 
@@ -62,7 +62,7 @@ fn clip(s: &str, max: usize) -> String {
 #[derive(Debug, Clone, sqlx::FromRow, Serialize)]
 pub struct ServerRow {
     pub instance_id: String,
-    /// Whether this server draws the SCOPENET Map (stored in the old `live_map_enabled` column).
+    /// Whether this server draws the Velora Map (stored in the old `live_map_enabled` column).
     #[sqlx(rename = "live_map_enabled")]
     pub map_enabled: bool,
     /// Servers with the same non-empty name share player balances and guild banks.
@@ -194,10 +194,10 @@ pub async fn hello(
 
     let base = net::public_base(&state, &headers).await;
     let branding = store::branding(&state).await?;
-    let experience: scopenet_shared::Experience = if let Some(id) = &state.instance_id {
+    let experience: velora_shared::Experience = if let Some(id) = &state.instance_id {
         serde_json::from_str(&store::get_instance(&state, id).await?.experience)?
     } else {
-        scopenet_shared::Experience::default()
+        velora_shared::Experience::default()
     };
     Ok(Json(json!({
         "server_id": server.id,
@@ -391,7 +391,7 @@ pub async fn sync(GameServer(server): GameServer, State(state): State<AppState>,
     let mut economy_on = true;
     if let Some(instance) = &state.instance_id {
         let row = store::get_instance(&state, instance).await?;
-        let experience: scopenet_shared::Experience = serde_json::from_str(&row.experience)?;
+        let experience: velora_shared::Experience = serde_json::from_str(&row.experience)?;
         casino_on = experience.enabled("casino");
         economy_on = experience.enabled("economy");
         let features = s.features.get_or_insert_with(FeatureToggles::default);
@@ -913,7 +913,7 @@ pub struct ServerInput {
     allowed_groups: Vec<String>,
     #[serde(default)]
     require_launcher: bool,
-    /// Draw this server on the SCOPENET Map. On unless switched off.
+    /// Draw this server on the Velora Map. On unless switched off.
     #[serde(default = "yes")]
     map_enabled: bool,
     #[serde(default)]

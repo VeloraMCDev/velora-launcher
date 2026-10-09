@@ -1,4 +1,4 @@
-//! The SCOPENET Map: tiles in from a game server, tiles and overlay out to signed-in viewers.
+//! The Velora Map: tiles in from a game server, tiles and overlay out to signed-in viewers.
 
 mod common;
 use common::*;

@@ -5,7 +5,7 @@ use crate::error::{AppError, AppResult};
 use crate::state::AppState;
 use axum::extract::FromRequestParts;
 use axum::http::request::Parts;
-use scopenet_shared::PublicUser;
+use velora_shared::PublicUser;
 pub(crate) mod account;
 
 pub fn hash_password(password: &str) -> AppResult<String> {

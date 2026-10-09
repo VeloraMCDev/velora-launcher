@@ -12,7 +12,7 @@ use crate::progress::{self, Reporter, Stage};
 use crate::rules::Env;
 use crate::version::{self, VersionJson};
 use anyhow::{anyhow, bail, Context, Result};
-use scopenet_shared::Loader;
+use velora_shared::Loader;
 use std::path::PathBuf;
 
 #[derive(Debug, Clone)]

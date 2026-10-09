@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { X, RefreshCw } from '@lucide/svelte';
-  import MapViewer from '@scopenet/map/MapViewer.svelte';
-  import { startFeed, type LivePlayer, type MapInfo, type MapOverlay } from '@scopenet/map';
+  import MapViewer from '@velora/map/MapViewer.svelte';
+  import { startFeed, type LivePlayer, type MapInfo, type MapOverlay } from '@velora/map';
   import { invoke } from '../lib/tauri';
   import { activeAccount, app } from '../lib/store.svelte';
   import MapPlayerPanel from './MapPlayerPanel.svelte';

@@ -2,7 +2,7 @@
 //!
 //! Both plugins ship a normal resource pack (`assets/<namespace>/…`, in ItemsAdder's case under `contents/<pack>/resourcepack/`,
 //! in Oraxen's under `pack/`) plus YAML files that describe each item. This module reads a zip of either, keeps every texture,
-//! model, sound, font and language file, and turns the item definitions into SCOPENET custom items (a vanilla base item, a
+//! model, sound, font and language file, and turns the item definitions into Velora custom items (a vanilla base item, a
 //! Custom Model Data number and a texture or model reference). It is pure — the route decides what to store.
 
 use serde_json::{json, Value};

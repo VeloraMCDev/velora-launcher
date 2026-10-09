@@ -2,7 +2,7 @@
   import { ChevronDown, ExternalLink, Globe, LogOut, Search, Smartphone, X } from '@lucide/svelte';
   import { adminGroups } from '../lib/adminNav';
   import { experienceContext } from '../lib/experience.svelte';
-  import { PLATFORM_PAGES } from '@scopenet/experience';
+  import { PLATFORM_PAGES } from '@velora/experience';
   import { route } from '../lib/router.svelte';
   import { logout, session } from '../lib/session.svelte';
   import Avatar from './Avatar.svelte';
@@ -67,7 +67,7 @@
     <a class="player" href="#/play"><Smartphone size={15} /> Player panel <span class="soft">members &amp; mobile</span></a>
     <div class="links">
       <a href="#/landing" target="_blank" rel="noreferrer"><Globe size={13} /> Landing page</a>
-      <a href="https://github.com/scopeddlol/SCOPENET-MC#readme" target="_blank" rel="noreferrer"><ExternalLink size={13} /> Docs</a>
+      <a href="https://github.com/VeloraMCDev/velora-launcher#readme" target="_blank" rel="noreferrer"><ExternalLink size={13} /> Docs</a>
     </div>
     {#if session.user}
       <div class="me">

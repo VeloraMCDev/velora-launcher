@@ -24,20 +24,22 @@ See the [Capacitor 7 setup requirements](https://capacitorjs.com/docs/v7/getting
 
 The distribution target is free sideloading, without paid store accounts.
 Android requires signing even for direct APK installation. The manual workflow's
-`sign_android=true` builds and verifies a release APK using the operator's persistent
+`mobile-release.yml` builds and verifies a release APK using the operator's persistent
 self-signed key. There is no Google Play upload or paid certificate. The operator can
-run `powershell -NoProfile -File mobile/setup-android-signing.ps1` once in a normal
+run `powershell -NoProfile -File panel/mobile/setup-android-signing.ps1` once in a normal
 Windows terminal. It creates a private key outside the repository, encrypts its
 password for that Windows user and configures encrypted GitHub secrets through stdin.
 Existing complete setup is reused; existing partial keys are never overwritten.
 Back up the key and credentials securely: changing the key breaks in-place updates.
 The workflow fails when signing was requested but no valid key is configured.
 
-PR CI produces an installable debug-signed Android test APK, an unsigned Android
-release APK, unsigned iOS device IPA and iOS simulator app. Debug keys are temporary
-runner identities and must not be used for durable distribution or upgrade promises.
-The manual workflow accepts the actual hosted HTTPS panel URL; generic-origin PR
-artifacts validate builds and are not pointed at a live service.
+Source CI checks mobile configuration. Native builds remain manual. The standalone
+Mobile app builds workflow produces a signed APK and an unsigned device IPA for
+personal AltStore signing, using `VELORA_DEFAULT_PANEL_URL` from repository settings.
+The Launcher release workflow calls these same jobs and includes both apps in its
+signed release manifest. Approving that release in Operations verifies every file
+and publishes desktop downloads, mobile downloads and the AltStore source together.
+No app reaches players simply because a GitHub release was built.
 
 For iOS, users can import the IPA into AltStore Classic and sign it on their own
 computer with a free Apple Account. Windows is supported. Free provisioning requires

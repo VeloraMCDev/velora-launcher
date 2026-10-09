@@ -3,7 +3,7 @@
 
 use crate::http::get_json;
 use anyhow::{bail, Context, Result};
-use scopenet_shared::Loader;
+use velora_shared::Loader;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 

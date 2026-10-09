@@ -1,4 +1,4 @@
-//! Data and actions for in-game plugins: what the SCOPENET Developer API, the
+//! Data and actions for in-game plugins: what the Velora Developer API, the
 //! PlaceholderAPI expansion and other plugins read and change for a player.
 
 use crate::state::RequestState as State;

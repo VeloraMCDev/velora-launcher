@@ -3,9 +3,9 @@
   import { ClipboardList, ScrollText, Store, Gavel, Tag, RefreshCw, Search, Clock, Crown, Flame, History, Package, Wallet, Shield, X, TrendingUp, ShoppingCart, ArrowDownLeft, ArrowUpRight, Archive } from '@lucide/svelte';
   import ItemTile from '../components/ItemTile.svelte';
   import Modal from '../components/Modal.svelte';
-  import Orders from '@scopenet/board/Orders.svelte';
-  import Contracts from '@scopenet/board/Contracts.svelte';
-  import { setBoardHost } from '@scopenet/board';
+  import Orders from '@velora/board/Orders.svelte';
+  import Contracts from '@velora/board/Contracts.svelte';
+  import { setBoardHost } from '@velora/board';
   import { app, instances, selectedInstance, toast } from '../lib/store.svelte';
   import { errorText, invoke } from '../lib/tauri';
 

@@ -12,7 +12,7 @@ use axum::extract::{Multipart, Path, Query};
 use axum::http::{header, HeaderMap, StatusCode};
 use axum::response::{IntoResponse, Response};
 use axum::Json;
-use scopenet_shared::PlayerProfile;
+use velora_shared::PlayerProfile;
 use serde::Deserialize;
 use std::time::Duration;
 use velora_auth_http::account as authority;
@@ -68,7 +68,7 @@ pub async fn set_username(
     State(state): State<AppState>,
     AuthUser(user): AuthUser,
     Json(input): Json<UsernameInput>,
-) -> AppResult<Json<scopenet_shared::AuthResponse>> {
+) -> AppResult<Json<velora_shared::AuthResponse>> {
     Ok(Json(response(
         authority::set_username(&context(&state), &MutationHost(state.clone()), &user, &input.username, &input.password)
             .await

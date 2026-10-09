@@ -1,9 +1,9 @@
 <script lang="ts">
   import { playPath } from '../lib/router.svelte';
-  import { pageEnabled, enabled, navigation } from '@scopenet/experience';
+  import { pageEnabled, enabled, navigation } from '@velora/experience';
   import { onMount } from 'svelte';
   import { ChevronDown, Command, Ellipsis, LogOut, Search, ShieldCheck, Check, ExternalLink } from '@lucide/svelte';
-  import { COMMAND_GROUPS } from '@scopenet/commands';
+  import { COMMAND_GROUPS } from '@velora/commands';
   import Avatar from '../components/Avatar.svelte';
   import NotificationBell from '../components/NotificationBell.svelte';
   import Palette, { type PaletteItem } from '../components/Palette.svelte';

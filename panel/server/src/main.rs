@@ -1,9 +1,9 @@
-use scopenet_panel::{app, bootstrap_admin, build_state, config::Config, db};
+use velora_panel::{app, bootstrap_admin, build_state, config::Config, db};
 use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    // `scopenet-panel healthcheck` — used by the Docker HEALTHCHECK so the
+    // `velora-panel healthcheck` — used by the Docker HEALTHCHECK so the
     // image doesn't need curl.
     if std::env::args().nth(1).as_deref() == Some("healthcheck") {
         return healthcheck().await;

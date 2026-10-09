@@ -1,4 +1,4 @@
-import { PLATFORM_PAGES, pageEnabled, type Experience } from '@scopenet/experience';
+import { PLATFORM_PAGES, pageEnabled, type Experience } from '@velora/experience';
 import {
   Activity, Banknote, Boxes, ClipboardList, CalendarClock, Dice5, Flag, Globe, LayoutDashboard, Mail, MessageSquare, MessagesSquare, Palette, Server, Settings, Shield,
   ShieldCheck, SlidersHorizontal, Sparkles, Table2, Target, Terminal, Trophy, Users, Wand2, CalendarDays, Key, Shirt, Link2, Package, Monitor,

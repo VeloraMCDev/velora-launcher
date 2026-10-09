@@ -6,7 +6,7 @@ use crate::state::AppState;
 use crate::state::RequestState as State;
 use axum::extract::Path;
 use axum::Json;
-use scopenet_shared::{ServerLevelInfo, UserLevelInfo};
+use velora_shared::{ServerLevelInfo, UserLevelInfo};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -169,7 +169,7 @@ pub async fn get_user_levels_by_uuid(state: &AppState, uuid: &str) -> AppResult<
             let data: Value = serde_json::from_str(&rdata).unwrap_or_default();
             let desc = data.get("description").and_then(|v| v.as_str()).unwrap_or("").to_string();
             let icon = data.get("icon").and_then(|v| v.as_str()).map(|s| s.to_string());
-            scopenet_shared::LevelReward {
+            velora_shared::LevelReward {
                 id,
                 level: req,
                 reward_type: rtype,

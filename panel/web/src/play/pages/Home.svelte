@@ -1,7 +1,7 @@
 <script lang="ts">
   import { playPath } from '../../lib/router.svelte';
-  import { enabled, pageEnabled } from '@scopenet/experience';
-  import ExperienceWidgets from '@scopenet/experience/ExperienceWidgets.svelte';
+  import { enabled, pageEnabled } from '@velora/experience';
+  import ExperienceWidgets from '@velora/experience/ExperienceWidgets.svelte';
   import { route } from '../../lib/router.svelte';
   import { nativeApp } from '../../lib/native';
   import { onMount } from 'svelte';

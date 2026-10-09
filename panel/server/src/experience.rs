@@ -13,7 +13,7 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use scopenet_shared::{Experience, EXPERIENCE_FEATURES};
+use velora_shared::{Experience, EXPERIENCE_FEATURES};
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqliteJournalMode, SqlitePoolOptions},
     Acquire, Row, SqlitePool,

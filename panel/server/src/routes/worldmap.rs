@@ -1,4 +1,4 @@
-//! SCOPENET Map endpoints: ingest from game servers, and what launchers and the admin panel load.
+//! Velora Map endpoints: ingest from game servers, and what launchers and the admin panel load.
 
 use super::servers::{get_server, GameServer};
 use crate::auth::{AdminUser, AuthUser};

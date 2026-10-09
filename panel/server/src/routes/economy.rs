@@ -7,7 +7,7 @@ use crate::routes::servers::GameServer;
 use crate::state::AppState;
 use axum::extract::{Path};
 use axum::Json;
-use scopenet_shared::{BaltopEntry, EconomyTransaction, MarketListing, ServerEconomyBalance};
+use velora_shared::{BaltopEntry, EconomyTransaction, MarketListing, ServerEconomyBalance};
 use serde::Deserialize;
 use serde_json::Value;
 

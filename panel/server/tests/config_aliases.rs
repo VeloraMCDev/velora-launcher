@@ -1,4 +1,4 @@
-use scopenet_panel::config::Config;
+use velora_panel::config::Config;
 
 #[test]
 fn velora_config_takes_precedence_and_legacy_configuration_remains_usable() {

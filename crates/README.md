@@ -5,7 +5,7 @@ Auth is in auth-core/http/service/tools; Panel libraries use panel-*; core is th
 ## Local checks
 
 ```sh
-cargo test --locked -j 1 --workspace --exclude scopenet-launcher --no-fail-fast
+cargo test --locked -j 1 --workspace --exclude velora-launcher --no-fail-fast
 ```
 
 Use the root Cargo workspace. No crate here owns a production deployment merely by being a library.

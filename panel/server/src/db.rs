@@ -1307,7 +1307,7 @@ pub(crate) async fn migrate_mode(pool: &SqlitePool, experience: bool) -> Result<
 async fn backfill_uuids(pool: &SqlitePool) -> Result<()> {
     let missing: Vec<(i64, String)> = sqlx::query_as("SELECT id, username FROM users WHERE uuid = ''").fetch_all(pool).await?;
     for (id, name) in missing {
-        sqlx::query("UPDATE users SET uuid = ? WHERE id = ?").bind(scopenet_shared::offline_uuid(&name)).bind(id).execute(pool).await?;
+        sqlx::query("UPDATE users SET uuid = ? WHERE id = ?").bind(velora_shared::offline_uuid(&name)).bind(id).execute(pool).await?;
     }
     if sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM sqlite_master WHERE name = 'users_uuid'").fetch_one(pool).await? == 0 {
         sqlx::query("CREATE UNIQUE INDEX users_uuid ON users(uuid)").execute(pool).await?;
@@ -1328,7 +1328,7 @@ mod tests {
         let pool = SqlitePoolOptions::new().max_connections(1).connect("sqlite::memory:").await.unwrap();
         sqlx::raw_sql(MIGRATIONS[0]).execute(&pool).await.unwrap();
         sqlx::raw_sql(MIGRATIONS[1]).execute(&pool).await.unwrap();
-        let existing = scopenet_shared::offline_uuid("LegacyPlayer");
+        let existing = velora_shared::offline_uuid("LegacyPlayer");
         sqlx::query("INSERT INTO users(username,password_hash,created_at,uuid) VALUES('LegacyPlayer','test',?,?)")
             .bind(now())
             .bind(&existing)

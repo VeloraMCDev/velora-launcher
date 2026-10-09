@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import MapViewer from '@scopenet/map/MapViewer.svelte';
-  import { startFeed, type MapInfo, type MapLayers, type MapOverlay } from '@scopenet/map';
+  import MapViewer from '@velora/map/MapViewer.svelte';
+  import { startFeed, type MapInfo, type MapLayers, type MapOverlay } from '@velora/map';
   import { get } from '../lib/api';
 
   // The public live map on the landing page. The admin chooses the server and which layers visitors may see

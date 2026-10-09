@@ -159,7 +159,7 @@ async fn release_downloads(state: &AppState, url: &str) -> Vec<HostedDownload> {
         let response = state
             .http
             .get(format!("https://api.github.com/repos/{key}/releases/latest"))
-            .header("User-Agent", "scopenet-panel")
+            .header("User-Agent", "velora-panel")
             .header("Accept", "application/vnd.github+json")
             .timeout(Duration::from_secs(5))
             .send()

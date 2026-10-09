@@ -1,11 +1,11 @@
 [package]
-name = "scopenet-core"
-description = "Minecraft install / launch engine used by the SCOPENET launcher (and meta lookups in the panel)"
+name = "velora-launcher-core"
+description = "Minecraft install / launch engine used by the Velora launcher (and meta lookups in the panel)"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
-scopenet-shared.workspace = true
+velora-shared.workspace = true
 velora-platform-utils.workspace = true
 anyhow.workspace = true
 serde.workspace = true

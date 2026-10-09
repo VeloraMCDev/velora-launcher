@@ -3,12 +3,12 @@
   import AdminTopbar from './components/AdminTopbar.svelte';
   import Palette, { type PaletteItem } from './components/Palette.svelte';
   import { experienceContext } from './lib/experience.svelte';
-  import { pageEnabled, PLATFORM_PAGES } from '@scopenet/experience';
+  import { pageEnabled, PLATFORM_PAGES } from '@velora/experience';
   import InstanceControl from './pages/InstanceControl.svelte';
   import ExperienceEditor from './pages/ExperienceEditor.svelte';
   import EconomyAdmin from './pages/EconomyAdmin.svelte';
   import { adminGroups } from './lib/adminNav';
-  import { COMMAND_GROUPS } from '@scopenet/commands';
+  import { COMMAND_GROUPS } from '@velora/commands';
   import { LogOut, Smartphone, Globe } from '@lucide/svelte';
   import Toasts from './components/Toasts.svelte';
   import Login from './pages/Login.svelte';

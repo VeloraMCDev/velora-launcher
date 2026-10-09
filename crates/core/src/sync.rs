@@ -8,7 +8,7 @@ use crate::http::{self, Download};
 use crate::paths::safe_join;
 use crate::progress::{self, Reporter, Stage};
 use anyhow::Result;
-use scopenet_shared::FileEntry;
+use velora_shared::FileEntry;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};

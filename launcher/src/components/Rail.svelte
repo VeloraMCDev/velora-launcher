@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Settings, Plus, Check, LogOut, Home, Trophy, Target, Shield, Users, Terminal, Store, Dice5, Award } from '@lucide/svelte';
-  import { navigation } from '@scopenet/experience';
+  import { navigation } from '@velora/experience';
   import { selectedInstance } from '../lib/store.svelte';
   import Avatar from './Avatar.svelte';
   import { abs, activeAccount, app, instances, removeAccount, selectInstance, switchAccount } from '../lib/store.svelte';

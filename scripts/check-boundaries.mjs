@@ -29,7 +29,7 @@ for(const p of packages){
 }
 for(const name of readdirSync(resolve(root,'crates')).filter(n=>n.startsWith('auth-')||n.startsWith('panel-')||['core','platform-utils'].includes(n))){
  const text=readFileSync(resolve(root,'crates',name,'Cargo.toml'),'utf8');
- assert(!/(?:private-gameplay|private-storage|velora-experiences-|scopenet-panel)/.test(text),'Reusable library depends on private/application composition: '+name);
+ assert(!/(?:private-gameplay|private-storage|velora-experiences-|velora-panel(?:["\s]|$))/.test(text),'Reusable library depends on private/application composition: '+name);
 }
 const cargo=readFileSync(resolve(root,'Cargo.toml'),'utf8');
 assert(/exclude\s*=\s*\[[^\]]*"infra"/.test(cargo),'Infra must retain its independent Cargo workspace');

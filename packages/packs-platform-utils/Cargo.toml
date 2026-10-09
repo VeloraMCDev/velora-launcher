@@ -6,7 +6,7 @@ license = "MIT"
 repository = "https://github.com/VeloraMCDev/velora-launcher"
 
 [dependencies]
-scopenet-shared = { package = "velora-platform-contracts", version = "0.1.0", path = "../rust-platform-contracts" }
+velora-shared = { package = "velora-platform-contracts", version = "0.1.0", path = "../rust-platform-contracts" }
 anyhow.workspace = true
 serde.workspace = true
 serde_json.workspace = true

@@ -1,6 +1,6 @@
 # Run by the operator in Windows PowerShell. Never paste keys/passwords in chat.
 [CmdletBinding()]
-param([string]$Repository = 'VeloraMCDev/panel')
+param([string]$Repository = 'VeloraMCDev/velora-launcher')
 $ErrorActionPreference = 'Stop'
 if ($env:OS -ne 'Windows_NT') { throw 'This setup uses Windows user-bound credential encryption.' }
 if ($Repository -notmatch '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$') { throw 'Invalid repository name.' }
@@ -14,7 +14,9 @@ $taskAcl.SetAccessRuleProtection($true, $false)
 $taskSid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User
 $taskRule = New-Object System.Security.AccessControl.FileSystemAccessRule($taskSid, 'FullControl', 'ContainerInherit,ObjectInherit', 'None', 'Allow')
 $taskAcl.AddAccessRule($taskRule)
-Set-Acl -LiteralPath $taskDirectory -AclObject $taskAcl
+if (!(Test-Path -LiteralPath $taskKey) -and !(Test-Path -LiteralPath $taskCredential)) {
+    Set-Acl -LiteralPath $taskDirectory -AclObject $taskAcl
+}
 if ((Test-Path -LiteralPath $taskKey) -ne (Test-Path -LiteralPath $taskCredential)) {
     throw 'Existing partial signing setup found. Nothing was overwritten. Recover the original key/password first.'
 }
@@ -55,4 +57,4 @@ try {
 } finally { $taskPassword = $null }
 Write-Host 'DONE. The persistent key stays outside the repository and GitHub stores its encrypted signing secrets.'
 Write-Host 'Keep an encrypted backup of this directory. Windows password recovery does not recover DPAPI-encrypted credentials.'
-Write-Host 'Use the mobile workflow with sign_android=true and the actual HTTPS player endpoint.'
+Write-Host 'Set VELORA_DEFAULT_PANEL_URL, then run Mobile app builds or Launcher release manually.'

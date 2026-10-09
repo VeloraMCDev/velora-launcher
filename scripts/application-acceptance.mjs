@@ -9,7 +9,7 @@ import {createServer} from 'node:net';
 import {fileURLToPath} from 'node:url';
 
 const application = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const binary = resolve(process.argv[2] || 'target/debug/scopenet-panel');
+const binary = resolve(process.argv[2] || 'target/debug/velora-panel');
 const web = resolve(application, 'panel/web/dist');
 assert(lstatSync(binary).isFile(), 'Supply the freshly built backend binary');
 const root = mkdtempSync(join(tmpdir(), 'velora-restore-acceptance-'));

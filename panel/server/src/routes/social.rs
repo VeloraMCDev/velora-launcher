@@ -6,7 +6,7 @@ use crate::state::AppState;
 use crate::state::RequestState as State;
 use axum::extract::{Path, Query};
 use axum::Json;
-use scopenet_shared::{DirectMessage, FriendInfo, GameInvite, UserPost, UserProfileView};
+use velora_shared::{DirectMessage, FriendInfo, GameInvite, UserPost, UserProfileView};
 use serde::Deserialize;
 use serde_json::Value;
 
@@ -561,12 +561,12 @@ pub async fn get_player_profile(
 struct ProfileExtras {
     online: bool,
     last_seen: Option<String>,
-    guild: Option<scopenet_shared::ProfileGuild>,
-    rank: Option<scopenet_shared::ProfileRank>,
+    guild: Option<velora_shared::ProfileGuild>,
+    rank: Option<velora_shared::ProfileRank>,
     favorite_server: Option<String>,
     wealth: f64,
-    recent_activity: Vec<scopenet_shared::ProfileActivity>,
-    mutual_friends: Vec<scopenet_shared::MutualFriend>,
+    recent_activity: Vec<velora_shared::ProfileActivity>,
+    mutual_friends: Vec<velora_shared::MutualFriend>,
     relationship: String,
     accent_color: Option<String>,
     discord_linked: bool,
@@ -626,7 +626,7 @@ async fn profile_extras(state: &AppState, uuid: &str, viewer: Option<&str>) -> A
     .bind(uuid)
     .fetch_all(db)
     .await?;
-    let mut recent_activity: Vec<scopenet_shared::ProfileActivity> = events
+    let mut recent_activity: Vec<velora_shared::ProfileActivity> = events
         .into_iter()
         .map(|(kind, detail, server, at)| {
             let detail = detail.unwrap_or_default();
@@ -641,9 +641,9 @@ async fn profile_extras(state: &AppState, uuid: &str, viewer: Option<&str>) -> A
                     if detail.is_empty() { "an advancement".into() } else { detail.chars().take(60).collect::<String>() }
                 ),
             };
-            scopenet_shared::ProfileActivity { kind, text, at }
+            velora_shared::ProfileActivity { kind, text, at }
         })
-        .chain(unlocked.into_iter().map(|(title, at)| scopenet_shared::ProfileActivity {
+        .chain(unlocked.into_iter().map(|(title, at)| velora_shared::ProfileActivity {
             kind: "achievement".into(),
             text: format!("Unlocked {title}"),
             at,
@@ -677,7 +677,7 @@ async fn profile_extras(state: &AppState, uuid: &str, viewer: Option<&str>) -> A
             .bind(uuid)
             .fetch_all(db)
             .await?;
-            (relationship, mutual.into_iter().map(|(uuid, username)| scopenet_shared::MutualFriend { uuid, username }).collect())
+            (relationship, mutual.into_iter().map(|(uuid, username)| velora_shared::MutualFriend { uuid, username }).collect())
         }
         None => ("none".to_string(), vec![]),
     };
@@ -692,8 +692,8 @@ async fn profile_extras(state: &AppState, uuid: &str, viewer: Option<&str>) -> A
     Ok(ProfileExtras {
         online,
         last_seen,
-        guild: guild.map(|(id, name, tag, role)| scopenet_shared::ProfileGuild { id, name, tag, role }),
-        rank: rank.map(|(primary, display, prefix, server_name)| scopenet_shared::ProfileRank {
+        guild: guild.map(|(id, name, tag, role)| velora_shared::ProfileGuild { id, name, tag, role }),
+        rank: rank.map(|(primary, display, prefix, server_name)| velora_shared::ProfileRank {
             display: if display.is_empty() { primary } else { display },
             prefix,
             server_name,
@@ -853,7 +853,7 @@ pub async fn search_members(
     auth: AuthUser,
     Query(query): Query<SearchMembersQuery>,
     State(state): State<AppState>,
-) -> AppResult<Json<Vec<scopenet_shared::MemberProfile>>> {
+) -> AppResult<Json<Vec<velora_shared::MemberProfile>>> {
     // `%` and `_` are LIKE wildcards; players shouldn't be able to inject them.
     let q = query.q.unwrap_or_default().trim().to_lowercase().replace(['%', '_', '\\'], "");
     let pattern = format!("%{q}%");
@@ -901,7 +901,7 @@ pub async fn search_members(
                 _ => "none",
             }
             .to_string();
-            scopenet_shared::MemberProfile {
+            velora_shared::MemberProfile {
                 uuid,
                 username,
                 role,

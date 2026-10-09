@@ -1,8 +1,8 @@
 use crate::accounts::AccountsFile;
 use crate::secrets::Secrets;
 use crate::settings::Settings;
-use scopenet_core::Layout;
-use scopenet_shared::LauncherManifest;
+use velora_launcher_core::Layout;
+use velora_shared::LauncherManifest;
 use std::path::PathBuf;
 use std::sync::{Mutex, RwLock};
 
@@ -63,7 +63,7 @@ impl AppState {
         let manifest = std::fs::read(data_dir.join("manifest.json")).ok().and_then(|b| serde_json::from_slice(&b).ok());
         Self {
             layout: Layout::new(data_dir.join("minecraft")),
-            http: scopenet_core::http::client(),
+            http: velora_launcher_core::http::client(),
             secrets: Secrets::open(&data_dir),
             settings: RwLock::new(settings),
             accounts: RwLock::new(accounts),

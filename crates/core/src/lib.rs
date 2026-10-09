@@ -1,4 +1,4 @@
-//! SCOPENET launcher engine.
+//! Velora launcher engine.
 //!
 //! The Tauri app is a thin UI shell around this crate: everything that
 //! downloads, installs or launches Minecraft lives here so it can be unit

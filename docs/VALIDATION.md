@@ -24,7 +24,7 @@ before running it. Exact synthetic/provenance findings are documented in
 
 | Segment | Checks |
 |---|---|
-| Root Rust | cargo test --locked -j 1 --workspace --exclude scopenet-launcher --no-fail-fast |
+| Root Rust | cargo test --locked -j 1 --workspace --exclude velora-launcher --no-fail-fast |
 | Panel web | npm run check; npm run check:runes; npm run build |
 | Launcher | npm run check; npm run check:runes; npm run build |
 | Infra | npm test; npx --no-install tsc -p control-plane/tsconfig.json; cargo test --locked --workspace -j 1 |

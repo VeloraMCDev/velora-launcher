@@ -90,7 +90,7 @@ async fn renaming_preserves_uuid_stats_and_reserves_names() {
     )
     .await;
     sqlx::query("UPDATE game_servers SET last_seen=? WHERE id=?")
-        .bind(scopenet_panel::db::now())
+        .bind(velora_panel::db::now())
         .bind(server_id)
         .execute(&t.db)
         .await
@@ -162,7 +162,7 @@ async fn new_accounts_are_random_and_old_uuids_stay_fixed() {
     let t = setup().await;
     let id = t.uuid("admin").await;
     assert_eq!(uuid::Uuid::parse_str(&id).unwrap().get_version_num(), 4);
-    assert_ne!(id, scopenet_shared::offline_uuid("admin"));
+    assert_ne!(id, velora_shared::offline_uuid("admin"));
     assert!(sqlx::query("UPDATE users SET uuid='' WHERE username='admin'").execute(&t.db).await.is_err());
 }
 

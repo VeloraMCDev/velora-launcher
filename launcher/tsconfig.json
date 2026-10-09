@@ -11,7 +11,7 @@
     "verbatimModuleSyntax": true,
     "types": ["svelte", "vite/client"],
     "baseUrl": ".",
-    "paths": {"svelte": ["./node_modules/svelte"], "svelte/*": ["./node_modules/svelte/*"], "@scopenet/map": ["../shared/map/index.ts"], "@scopenet/map/*": ["../shared/map/*"], "@scopenet/casino": ["../shared/casino/index.ts"], "@scopenet/casino/*": ["../shared/casino/*"], "@scopenet/commands": ["../shared/commands/index.ts"], "@scopenet/board": ["../shared/board/index.ts"], "@scopenet/board/*": ["../shared/board/*"], "@lucide/svelte": ["./node_modules/@lucide/svelte"], "@scopenet/experience": ["../shared/experience/index.ts"], "@scopenet/experience/*": ["../shared/experience/*"]}
+    "paths": {"svelte": ["./node_modules/svelte"], "svelte/*": ["./node_modules/svelte/*"], "@velora/map": ["../shared/map/index.ts"], "@velora/map/*": ["../shared/map/*"], "@velora/casino": ["../shared/casino/index.ts"], "@velora/casino/*": ["../shared/casino/*"], "@velora/commands": ["../shared/commands/index.ts"], "@velora/board": ["../shared/board/index.ts"], "@velora/board/*": ["../shared/board/*"], "@lucide/svelte": ["./node_modules/@lucide/svelte"], "@velora/experience": ["../shared/experience/index.ts"], "@velora/experience/*": ["../shared/experience/*"]}
   },
   "include": ["src/**/*.ts", "src/**/*.svelte", "../shared/map/**/*.ts", "../shared/map/**/*.svelte", "../shared/casino/**/*.ts", "../shared/casino/**/*.svelte", "../shared/commands/**/*.ts", "../shared/experience/**/*.ts", "../shared/experience/**/*.svelte"]
 }

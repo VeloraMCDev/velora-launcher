@@ -183,7 +183,7 @@ async fn one_free_spin_a_day_and_admin_settings_apply() {
     c["daily_loss_limit"] = json!(150.0);
     w.t.call("PUT", "/api/admin/casino", Some(&w.admin), Some(c.clone())).await;
     sqlx::query("INSERT INTO casino_rounds (server_id, uuid, name, game, bet, payout, created_at) VALUES (?, ?, 'Steve', 'wheel', 500, 0, ?)")
-        .bind(w.sid).bind(&w.uuid["Steve"]).bind(scopenet_panel::db::now()).execute(&w.t.db).await.unwrap();
+        .bind(w.sid).bind(&w.uuid["Steve"]).bind(velora_panel::db::now()).execute(&w.t.db).await.unwrap();
     let (s, r) = w.post("Steve", "wheel", json!({"bet": 100.0})).await;
     assert_eq!(s, StatusCode::FORBIDDEN, "{r}");
     assert!(r["error"].as_str().unwrap().contains("loss limit"), "{r}");
