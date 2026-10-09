@@ -9,6 +9,9 @@ for (const path of ['panel/web/package-lock.json', 'launcher/package-lock.json',
 const config = JSON.parse(readFileSync(resolve(root, 'launcher/src-tauri/tauri.conf.json')));
 if (config.productName !== 'Velora Launcher' || config.bundle.publisher !== 'Velora') throw Error('Launcher packaging must use Velora branding');
 if (config.identifier !== 'net.scopenet.launcher') throw Error('Installed launcher identity must remain compatible');
+for (const field of ['provides', 'conflicts', 'replaces']) {
+  if (!config.bundle.linux.deb[field]?.includes('scopenet-launcher')) throw Error(`Debian ${field} must retain the legacy package upgrade path`);
+}
 const secrets = readFileSync(resolve(root, 'launcher/src-tauri/src/secrets.rs'), 'utf8');
 if (!secrets.includes('const SERVICE: &str = "net.scopenet.launcher";')) throw Error('Credential store identity changed');
 const template = readFileSync(resolve(root, 'launcher/src-tauri/installer/installer.nsi'), 'utf8');

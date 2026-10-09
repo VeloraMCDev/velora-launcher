@@ -90,6 +90,9 @@ jobs:
         run: |
           $taskInstaller=(Get-ChildItem ../target/release/bundle/nsis/*-setup.exe).FullName
           & ../.github/scripts/test-windows-launcher-upgrade.ps1 -Installer $taskInstaller
+      - name: Verify Debian upgrade from the installed product
+        if: matrix.name == 'linux'
+        run: bash ../.github/scripts/test-linux-launcher-upgrade.sh
       - name: Collect installers with release names
         env:
           VERSION: ${{ needs.version.outputs.version }}

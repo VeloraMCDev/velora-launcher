@@ -3,6 +3,8 @@
 Desktop packages, publisher names, player-facing text and maintained package names
 use Velora. Launcher 1.3.1 changes the macOS app bundle itself to `Velora Launcher.app`;
 renaming a download filename alone does not change the installed application.
+The Debian package declares that it replaces the previous `scopenet-launcher`
+package; native release acceptance installs 1.3.0 first and verifies the upgrade.
 
 Technical identities used by existing installs remain compatible: the desktop app
 and credential service use `net.scopenet.launcher`, mobile apps use
