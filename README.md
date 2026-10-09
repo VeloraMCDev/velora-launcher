@@ -1,64 +1,125 @@
-# Velora
+<p align="center">
+  <img src=".github/assets/hero.svg" width="1200" alt="Velora — Your worlds. One home. The complete Minecraft platform." />
+</p>
 
-The canonical public monorepo for the complete Velora product, hosted at
-`VeloraMCDev/velora-launcher`. Each segment has its own build and
-README; services retain independent deployment lifecycles. Start with
-[the boundaries](docs/BOUNDARIES.md) and [the plan](MONOREPO.md).
+<p align="center">
+  <a href="https://github.com/VeloraMCDev/velora-launcher/actions/workflows/ci.yml"><img src="https://github.com/VeloraMCDev/velora-launcher/actions/workflows/ci.yml/badge.svg" alt="Source CI" /></a>
+  <img src="https://img.shields.io/badge/Rust-1.98.1-9564df?style=flat-square" alt="Rust 1.98.1" />
+  <img src="https://img.shields.io/badge/Svelte-5-f17b5c?style=flat-square" alt="Svelte 5" />
+  <img src="https://img.shields.io/badge/Cloudflare-Workers-f6a04d?style=flat-square" alt="Cloudflare Workers" />
+  <a href="LICENSE.md"><img src="https://img.shields.io/badge/License-per_package-637089?style=flat-square" alt="Licensing varies by package" /></a>
+</p>
 
-Public-release cleanup and the automatic CI policy are documented in
-[publication preparation](docs/security/PUBLICATION_PREPARATION.md).
+<p align="center"><strong>A connected home for Minecraft players, communities and operators.</strong><br />
+Desktop launcher · Player companion · Network administration · Multi-host deployment</p>
 
-| Segment | Entry point |
-|---|---|
-| Authentication and Rust libraries | [crates](crates/README.md) |
-| Panel backend, sites, deployment UI and mobile | [panel](panel/README.md) |
-| Desktop launcher | [launcher](launcher/README.md) |
-| Minecraft plugins/mods | [integrations](integrations/README.md) |
-| SDK and reusable/gameplay packages | [packages](packages/README.md) |
-| Browser client and frontend modules | [shared](shared/README.md) |
-| Java gameplay | [java](java/README.md) |
-| Experience UI | [ui](ui/README.md) |
-| Cloudflare control plane and native agent | [infra](infra/README.md) |
-| Guides and documentation site | [docs](docs/README.md) |
-| Frozen source and provenance | [migration](migration/README.md) |
+<p align="center">
+  <a href="#see-velora">Screenshots</a> ·
+  <a href="docs/APPLICATION.md">Get started</a> ·
+  <a href="docs/BOUNDARIES.md">Architecture</a> ·
+  <a href="docs/deployment/README.md">Deployment</a> ·
+  <a href="docs/README.md">Documentation</a>
+</p>
 
-## Local validation
+---
 
-Use Rust 1.98.1, Node 24 and each Java segment's supported Gradle/JDK toolchain.
+Velora brings launching, accounts, community features and network operations into
+one platform. This repository contains the **complete product source**, including
+gameplay, SDKs and deployment tooling. Each segment keeps a clear boundary and
+an independent build and release lifecycle.
+
+## Built around your community
+
+| For players | For operators | For builders |
+|---|---|---|
+| Instance-aware desktop launcher | Instance control center and branding | Reusable Rust, TypeScript and Java libraries |
+| Quests, guilds, friends and player markets | Server credentials, progression and content tools | Paper, Fabric and Forge integrations |
+| Player website and companion shells | Deployment across Cloudflare and native hosts | Shared UI modules and SMP/Frontiers gameplay |
+
+## See Velora
+
+### One launcher, your worlds
+
+Choose an instance, follow community news and jump into the experience.
+
+![Velora launcher with Survival SMP, instance navigation and community news](.github/assets/screenshots/launcher.png)
+
+<table>
+  <tr>
+    <td width="50%"><strong>A home for your players</strong><br />Progression, quests, friends and auctions in one player dashboard.</td>
+    <td width="50%"><strong>A control center for your network</strong><br />Manage the experience, community, game systems and economy.</td>
+  </tr>
+  <tr>
+    <td><img src=".github/assets/screenshots/player.png" alt="Velora player dashboard with fictional quests, friends and auctions" /></td>
+    <td><img src=".github/assets/screenshots/panel.png" alt="Velora Panel instance control center" /></td>
+  </tr>
+</table>
+
+*Actual UI previews using fictional accounts and demo data. The launcher runs its
+browser fixture; Panel views use an isolated local backend. These are development
+previews, not a production deployment. [Capture details](.github/assets/README.md).*
+
+## Try it locally
+
+The quickest way to explore the launcher needs **Node 24**:
 
 ```sh
-node scripts/check-boundaries.mjs
-CARGO_PROFILE_TEST_DEBUG=0 cargo test --locked -j 1 --workspace --exclude scopenet-launcher --no-fail-fast
-cd panel/web
+git clone https://github.com/VeloraMCDev/velora-launcher.git
+cd velora-launcher/launcher
 npm ci --no-audit --no-fund
-npm run check
-npm run check:runes
-npm run build
+npm run dev
 ```
 
-On PowerShell set `$env:CARGO_PROFILE_TEST_DEBUG='0'` before Cargo. Native desktop
-packaging and loader-specific Java builds have additional platform requirements.
-Use synthetic temporary stores; never open live data with a second writer.
+Open **http://localhost:1420/?mock=main**. The browser demo uses in-memory fixtures.
+Native launching uses Tauri and the target OS toolchain; see the
+[launcher guide](launcher/README.md).
 
-## Deployment and cost
+To run the complete backend and websites, follow [the application guide](docs/APPLICATION.md).
+For a populated local instance, use [the synthetic demo](scripts/demo/README.md).
 
-Cloudflare hosts the deployment authority and selected static sites. The complete
-Rust/SQLite Panel and Minecraft workloads currently need native hosting. See
-[deployment targets](docs/DEPLOYMENT_TARGETS.md) for domains and remaining gates.
-Libraries and agents do not each require a domain or separate server.
+## Find your part of the platform
 
-Source CI uses a standard Ubuntu runner on public pull requests and main pushes.
-Deprecated repos remain disabled. No paid plan or capacity was added.
-The manual immutable Panel workflow requires
-an explicit manual dispatch and tests the exact Docker image before publishing.
+| Segment | What's inside |
+|---|---|
+| [Launcher](launcher/README.md) | Tauri desktop app, instances and client settings |
+| [Panel](panel/README.md) | Rust backend, admin/player sites, mobile and Deployment Panel |
+| [Authentication & Rust libraries](crates/README.md) | Identity, sessions, gateway and reusable platform services |
+| [Minecraft integrations](integrations/README.md) | Loader-specific mods and server plugins |
+| [SDK & packages](packages/README.md) | Contracts, clients, platform utilities and gameplay packages |
+| [Shared frontend](shared/README.md) | HTTP client, map, board, commands and experience modules |
+| [Java gameplay](java/README.md) | Gameplay systems and server composition |
+| [Experience UI](ui/README.md) | Instance interfaces and presentation |
+| [Infrastructure](infra/README.md) | Cloudflare authority, outbound native agent and deployment contracts |
+| [Documentation](docs/README.md) | Development, architecture, operations and security |
+| [Branding](branding/README.md) | Original artwork, platform icons and rights |
 
-## Publication
+## Cloudflare first, native where needed
 
-The owner approved publication of the **complete product source, including gameplay**.
-The public repository starts from a reviewed source snapshot. Original history,
-PRs and artifacts remain in the private preservation repository.
-See [publication status](docs/security/PUBLICATION_STATUS.md) and the
-[audit](docs/security/PUBLICATION_AUDIT.md).
-`node scripts/check-publication.mjs --public` checks the recorded publication policy
-and tracked filenames; `check-secrets.mjs` separately scans tracked source.
-See [licensing boundaries](LICENSE.md); MIT does not apply to every file.
+The deployment authority uses **Workers, D1, R2 and Workflows**, with Access for
+protected operator access. Static sites can share existing Cloudflare hosting.
+The Deployment Panel coordinates Cloudflare, personally hosted machines and VPS
+targets through independent service contracts.
+
+The complete Rust/SQLite Panel and long-running Minecraft servers currently need
+native hosting. Libraries and outbound agents need no separate public domain.
+Reuse existing resources, keep expensive packaging manual and avoid idle capacity.
+Final Beta/Production hosts, domains and promotion gates remain tracked in
+[deployment targets](docs/DEPLOYMENT_TARGETS.md).
+
+## Contribute with confidence
+
+Start with [the boundaries](docs/BOUNDARIES.md) and [validation](docs/VALIDATION.md).
+Source CI runs automatically on public pull requests and main pushes with read-only
+permissions. Native packaging, image acceptance and releases remain manual.
+
+Keep credentials and runtime stores out of Git, use synthetic screenshot data,
+and preserve installed identities and persistent state. See
+[security and publication](docs/security/README.md).
+
+This is a **mixed-license repository**. Package licenses apply locally; public
+source access does not grant a repository-wide MIT license or rights to Velora
+artwork and trademarks. Read [the licensing boundaries](LICENSE.md).
+
+---
+
+<p align="center"><strong>Velora owns the platform. Each instance owns the experience.</strong></p>

@@ -14,7 +14,7 @@ const settings: Settings = {
     {id:'guild',enabled:true,x:.02,y:.8}, {id:'claim',enabled:true,x:.4,y:.04},
     {id:'quests',enabled:true,x:.76,y:.3}, {id:'clock',enabled:false,x:.76,y:.8},
   ] },
-  panel_url: scenario === 'setup' ? null : 'https://panel.scopenet.gg',
+  panel_url: scenario === 'setup' ? null : 'https://panel.velora.example',
   selected_instance: null,
   memory_max_mb: 0,
   memory_min_mb: 0,
@@ -51,9 +51,9 @@ const manifest: Manifest = {
   api_version: 1,
   panel_version: '0.4.0',
   user: null,
-  auth: { panel_accounts: true, registration: 'approval', offline_local: true, yggdrasil_url: 'https://panel.scopenet.gg/api/yggdrasil' },
+  auth: { panel_accounts: true, registration: 'approval', offline_local: true, yggdrasil_url: 'https://panel.velora.example/api/yggdrasil' },
   branding: {
-    name: 'SCOPENET',
+    name: 'Velora',
     tagline: 'Your worlds, one click away.',
     logo_url: null,
     icon_url: null,
@@ -62,7 +62,7 @@ const manifest: Manifest = {
     font: 'Inter',
     radius: 10,
     glass: false,
-    version_label: 'SCOPENET',
+    version_label: 'Velora',
     news: [
       { id: '1', title: 'Season 4 is live!', body: 'A brand new world with custom terrain, player shops and weekly events. Join now and claim your spot before the land rush.', image_url: null, link: 'https://example.com', date: '2026-09-26', pinned: true, tag: 'Update' },
       { id: '2', title: 'Build contest: Autumn Castles', body: 'Submit your best castle build on the Creative server by October 10th. Top three win VIP for a month.', image_url: null, link: null, date: '2026-09-21', pinned: false, tag: 'Event' },
@@ -73,29 +73,29 @@ const manifest: Manifest = {
       { label: 'Website', url: 'https://example.com', icon: 'website' },
       { label: 'Store', url: 'https://example.com/store', icon: 'store' },
     ],
-    about: { title: 'SCOPENET Launcher', icon_url: null, body: 'Your worlds, one click away.', links: [] },
+    about: { title: 'Velora Launcher', icon_url: null, body: 'Your worlds, one click away.', links: [] },
     features: { news: true, server_status: true, allow_user_theme: true, allow_advanced_java: true },
     custom_css: '',
   },
   instances: [
-    { id: 'survival-smp', name: 'Survival SMP', description: 'Our main survival world — season 4. Claims, shops & weekend events.', icon_url: null, banner_url: null, logo_url: null, mc_version: '1.21.1', loader: 'fabric', loader_version: '0.16.9', revision: 3, server: { name: 'SCOPENET SMP', address: 'play.scopenet.gg', port: 25565, auto_join: true, inject: true }, memory: { min_mb: 2048, max_mb: 6144 }, jvm_args: '', featured: true, source_label: 'Modrinth · Fabulously Optimized 6.2', file_count: 48, total_size: 184_000_000 },
-    { id: 'creative', name: 'Creative Build', description: 'Plots, WorldEdit and weekly build contests.', icon_url: null, banner_url: null, logo_url: null, mc_version: '1.20.1', loader: 'vanilla', loader_version: null, revision: 1, server: { name: 'Creative', address: 'creative.scopenet.gg', port: 25565, auto_join: false, inject: true }, memory: { min_mb: 1024, max_mb: 4096 }, jvm_args: '', featured: false, source_label: 'Minecraft 1.20.1', file_count: 0, total_size: 0 },
+    { id: 'survival-smp', name: 'Survival SMP', description: 'Our main survival world — season 4. Claims, shops & weekend events.', icon_url: null, banner_url: null, logo_url: null, mc_version: '1.21.1', loader: 'fabric', loader_version: '0.16.9', revision: 3, server: { name: 'Velora SMP', address: 'play.velora.example', port: 25565, auto_join: true, inject: true }, memory: { min_mb: 2048, max_mb: 6144 }, jvm_args: '', featured: true, source_label: 'Modrinth · Fabulously Optimized 6.2', file_count: 48, total_size: 184_000_000 },
+    { id: 'creative', name: 'Creative Build', description: 'Plots, WorldEdit and weekly build contests.', icon_url: null, banner_url: null, logo_url: null, mc_version: '1.20.1', loader: 'vanilla', loader_version: null, revision: 1, server: { name: 'Creative', address: 'creative.velora.example', port: 25565, auto_join: false, inject: true }, memory: { min_mb: 1024, max_mb: 4096 }, jvm_args: '', featured: false, source_label: 'Minecraft 1.20.1', file_count: 0, total_size: 0 },
     { id: 'modded', name: 'Create: Above & Beyond', description: 'Factory building with Create and friends.', icon_url: null, banner_url: null, logo_url: null, mc_version: '1.20.1', loader: 'forge', loader_version: '1.20.1-47.3.0', revision: 2, server: null, memory: { min_mb: 4096, max_mb: 8192 }, jvm_args: '', featured: false, source_label: 'CurseForge · Create: Above & Beyond 1.4', file_count: 212, total_size: 612_000_000 },
   ],
 };
 
 const frontierBrand = structuredClone(manifest.branding);
-frontierBrand.name = 'SCOPENET Frontiers';
+frontierBrand.name = 'Velora Frontiers';
 frontierBrand.tagline = 'Build settlements. Shape a shared world.';
 frontierBrand.colors.accent = '#d6a85f';
 frontierBrand.colors.accent_2 = '#91b8a2';
 frontierBrand.colors.background = '#101b19';
 frontierBrand.news = [];
 frontierBrand.links = [];
-manifest.instances.push({ ...manifest.instances[2], id: 'frontiers', name: 'SCOPENET Frontiers', description: 'Settlements, citizens, resources and cooperation.', experience: { ...preset('frontiers'), branding: frontierBrand } });
+manifest.instances.push({ ...manifest.instances[2], id: 'frontiers', name: 'Velora Frontiers', description: 'Settlements, citizens, resources and cooperation.', experience: { ...preset('frontiers'), branding: frontierBrand } });
 
 const accounts: Account[] = scenario === 'main' || scenario === 'progress' || scenario === 'update' ? [
-  { id: 'a1', kind: 'panel', username: 'Notch', uuid: 'b50ad385-829d-3141-a216-7e7d7539ba7f', panel_url: 'https://panel.scopenet.gg', role: 'admin' },
+  { id: 'a1', kind: 'panel', username: 'Alex_Miner', uuid: '00000000-0000-4000-8000-000000000001', panel_url: 'https://panel.velora.example', role: 'admin' },
   { id: 'a2', kind: 'offline', username: 'Steve', uuid: '5627dd98-e6be-3c21-b8a8-e92344183641', panel_url: null, role: null },
 ] : [];
 let active: string | null = accounts[0]?.id ?? null;
@@ -103,8 +103,8 @@ let active: string | null = accounts[0]?.id ?? null;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const profile: PlayerProfile = {
-  uuid: 'b50ad385-829d-3141-a216-7e7d7539ba7f',
-  name: 'Notch',
+  uuid: '00000000-0000-4000-8000-000000000001',
+  name: 'Alex_Miner',
   skin_url: null,
   skin_model: 'classic',
   cape: null,
@@ -133,7 +133,7 @@ async function fakeLaunch(id: string) {
   await sleep(500);
   running = true;
   mockEmit('launch://state', { instance_id: id, run_id: 'mock-run', state: 'running', message: null });
-  const lines = ['[main/INFO]: Loading Minecraft 1.21.1 with Fabric Loader 0.16.9', '[Render thread/INFO]: Setting user: Notch', '[Render thread/INFO]: Backend library: LWJGL version 3.3.3', '[Render thread/INFO]: Reloading ResourceManager: vanilla, fabric', '[Render thread/INFO]: Sound engine started', '[Render thread/INFO]: Connecting to play.scopenet.gg, 25565'];
+  const lines = ['[main/INFO]: Loading Minecraft 1.21.1 with Fabric Loader 0.16.9', '[Render thread/INFO]: Setting user: Alex_Miner', '[Render thread/INFO]: Backend library: LWJGL version 3.3.3', '[Render thread/INFO]: Reloading ResourceManager: vanilla, fabric', '[Render thread/INFO]: Sound engine started', '[Render thread/INFO]: Connecting to play.velora.example, 25565'];
   for (const l of lines) {
     await sleep(300);
     mockEmit('game://log', [`[12:00:0${lines.indexOf(l)}] ${l}`]);
@@ -200,18 +200,18 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
     case 'get_map_overlay':
       return { players: [], claims: [], pins: [], updated: null };
     case 'get_player_stats':
-      return { username: 'Notch', uuid: 'b50ad385-829d-3141-a216-7e7d7539ba7f', total: null, servers: [], events: [] };
+      return { username: 'Alex_Miner', uuid: '00000000-0000-4000-8000-000000000001', total: null, servers: [], events: [] };
     case 'get_leaderboard':
       return { leaderboard: [], totals: { players: 0, playtime_secs: 0 }, sort: args?.sort ?? 'playtime_secs' };
     case 'get_economy_balances':
       return [{ server_id: 1, server_name: 'Survival SMP', balance: 2450.75, currency_symbol: '$' }];
     case 'get_server_baltop':
-      return [{ rank: 1, uuid: 'b50ad385-829d-3141-a216-7e7d7539ba7f', username: 'Notch', balance: 2450.75 }];
+      return [{ rank: 1, uuid: '00000000-0000-4000-8000-000000000001', username: 'Alex_Miner', balance: 2450.75 }];
     case 'get_transactions':
-      return [{ id: 1, server_id: 1, server_name: 'Survival SMP', from_uuid: 'b50ad385-829d-3141-a216-7e7d7539ba7f', from_name: 'Notch', to_uuid: 'friend-1', to_name: 'Alex', amount: 150, description: 'Payment to Alex', created_at: '2026-09-29T15:30:00Z' }];
+      return [{ id: 1, server_id: 1, server_name: 'Survival SMP', from_uuid: '00000000-0000-4000-8000-000000000001', from_name: 'Alex_Miner', to_uuid: 'friend-1', to_name: 'Alex', amount: 150, description: 'Payment to Alex', created_at: '2026-09-29T15:30:00Z' }];
     case 'bootstrap': {
       const b: Bootstrap = {
-        app: { version: launcherPackage.version, default_panel_url: null, panel_locked: false, repo: 'https://github.com/scopeddlol/SCOPENET-MC', os: 'windows', arch: 'x86_64', total_ram_mb: 16384, data_dir: 'C:\\Users\\you\\AppData\\Roaming\\net.scopenet.launcher' },
+        app: { version: launcherPackage.version, default_panel_url: null, panel_locked: false, repo: 'https://github.com/scopeddlol/Velora-MC', os: 'windows', arch: 'x86_64', total_ram_mb: 16384, data_dir: 'C:\\Users\\you\\AppData\\Roaming\\net.scopenet.launcher' },
         panel_url: settings.panel_url,
         settings,
         accounts,
@@ -265,13 +265,13 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
       return { fov: '0.8', gamma: '1.0', graphicsMode: '1', autoJump: 'true' };
     case 'ping_server':
       await sleep(200);
-      return { online: true, version: 'Paper 1.21.1', players_online: 42, players_max: 100, sample: ['Notch', 'jeb_', 'Dinnerbone'], motd: '§b§lSCOPENET §r§7» §fSeason 4 is live!', favicon: null, latency_ms: 23 };
+      return { online: true, version: 'Paper 1.21.1', players_online: 42, players_max: 100, sample: ['Alex_Miner', 'jeb_', 'Dinnerbone'], motd: '§b§lVelora §r§7» §fSeason 4 is live!', favicon: null, latency_ms: 23 };
     case 'instance_local':
       return { installed: args.instanceId !== 'modded', revision: 3, size: 1_240_000_000 };
     case 'storage_info':
       return { shared: 2_400_000_000, runtimes: 410_000_000, instances: [['survival-smp', 1_240_000_000], ['creative', 320_000_000]] };
     case 'check_update':
-      return scenario === 'update' ? { version: '0.10.0', notes: 'A native Fabric companion, launcher-managed HUD, and panel-hosted launcher updates.', url: 'https://panel.scopenet.gg/api/v1/launcher/updates/mock/setup.exe', size: 24_000_000 } : null;
+      return scenario === 'update' ? { version: '0.10.0', notes: 'A native Fabric companion, launcher-managed HUD, and panel-hosted launcher updates.', url: 'https://panel.velora.example/api/v1/launcher/updates/mock/setup.exe', size: 24_000_000 } : null;
     case 'detect_java':
       return 21;
     case 'get_my_level':
@@ -309,15 +309,15 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
       const now = Date.now();
       return { server: { id: 1, name: 'Survival SMP' }, balance: 1840.5, listings: [
         { id: 12, seller_name: 'Alex', seller_guild: 'IRON', item_id: 'NETHERITE_SWORD', item_name: 'Stormbreaker', amount: 1, price: 2500, created_at: new Date(now - 3600e3).toISOString(), kind: 'auction', ends_at: new Date(now + 5400e3).toISOString(), current_bid: 2750, bidder_name: 'Steve', bid_count: 4, min_next_bid: 2887.5, mine: false, leading: false },
-        { id: 11, seller_name: 'Notch', seller_guild: null, item_id: 'DIAMOND', item_name: 'Diamond', amount: 32, price: 900, created_at: new Date(now - 7200e3).toISOString(), kind: 'buy_now', ends_at: null, current_bid: null, bidder_name: null, bid_count: 0, min_next_bid: 900, mine: true, leading: false },
+        { id: 11, seller_name: 'Alex_Miner', seller_guild: null, item_id: 'DIAMOND', item_name: 'Diamond', amount: 32, price: 900, created_at: new Date(now - 7200e3).toISOString(), kind: 'buy_now', ends_at: null, current_bid: null, bidder_name: null, bid_count: 0, min_next_bid: 900, mine: true, leading: false },
         { id: 10, seller_name: 'Mia', seller_guild: null, item_id: 'GOLDEN_APPLE', item_name: 'Golden Apple', amount: 8, price: 160, created_at: new Date(now - 9000e3).toISOString(), kind: 'buy_now', ends_at: null, current_bid: null, bidder_name: null, bid_count: 0, min_next_bid: 160, mine: false, leading: false },
-        { id: 9, seller_name: 'Steve', seller_guild: null, item_id: 'ELYTRA', item_name: 'Elytra', amount: 1, price: 400, created_at: new Date(now - 20000e3).toISOString(), kind: 'auction', ends_at: new Date(now + 600e3).toISOString(), current_bid: 520, bidder_name: 'Notch', bid_count: 2, min_next_bid: 546, mine: false, leading: true },
+        { id: 9, seller_name: 'Steve', seller_guild: null, item_id: 'ELYTRA', item_name: 'Elytra', amount: 1, price: 400, created_at: new Date(now - 20000e3).toISOString(), kind: 'auction', ends_at: new Date(now + 600e3).toISOString(), current_bid: 520, bidder_name: 'Alex_Miner', bid_count: 2, min_next_bid: 546, mine: false, leading: true },
         { id: 8, seller_name: 'Alex', seller_guild: 'IRON', item_id: 'OAK_LOG', item_name: 'Oak Log', amount: 64, price: 45, created_at: new Date(now - 40000e3).toISOString(), kind: 'buy_now', ends_at: null, current_bid: null, bidder_name: null, bid_count: 0, min_next_bid: 45, mine: false, leading: false },
       ] };
     }
     case 'market_mine':
       return { waiting: 1, waiting_items: [{ item_name: 'Elytra', amount: 1, note: 'won' }], history: [
-        { kind: 'sold', amount: 640, description: 'Market purchase: 16x Iron Ingot from Notch', at: new Date(Date.now() - 1800e3).toISOString(), other: 'u1' },
+        { kind: 'sold', amount: 640, description: 'Market purchase: 16x Iron Ingot from Alex_Miner', at: new Date(Date.now() - 1800e3).toISOString(), other: 'u1' },
         { kind: 'bought', amount: 160, description: 'Market purchase: 8x Golden Apple from Mia', at: new Date(Date.now() - 86400e3).toISOString(), other: 'u2' },
         { kind: 'bid', amount: 520, description: 'Auction bid: 1x Elytra', at: new Date(Date.now() - 7200e3).toISOString(), other: 'auction' },
       ] };
@@ -393,7 +393,7 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
       return null;
     case 'get_guild_members':
       return [
-        { guild_id: 'g1', uuid: 'b50ad385-829d-3141-a216-7e7d7539ba7f', name: 'Notch', role: 'leader', joined_at: '2026-09-01T00:00:00Z', online: true },
+        { guild_id: 'g1', uuid: '00000000-0000-4000-8000-000000000001', name: 'Alex_Miner', role: 'leader', joined_at: '2026-09-01T00:00:00Z', online: true },
         { guild_id: 'g1', uuid: 'friend-1', name: 'Alex', role: 'officer', joined_at: '2026-09-02T00:00:00Z', online: true },
         { guild_id: 'g1', uuid: 'friend-2', name: 'Steve', role: 'member', joined_at: '2026-09-05T00:00:00Z', online: false }
       ];
@@ -407,7 +407,7 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
       return [
         { uuid: 'friend-1', username: 'Alex', status: 'accepted', online: true, playing_on: 'Survival SMP', avatar_url: null, unread: 2 },
         { uuid: 'friend-2', username: 'Steve', status: 'accepted', online: false, playing_on: null, avatar_url: null },
-        { uuid: 'friend-3', username: 'Notch', status: 'pending_incoming', online: true, playing_on: null, avatar_url: null }
+        { uuid: 'friend-3', username: 'Alex_Miner', status: 'pending_incoming', online: true, playing_on: null, avatar_url: null }
       ];
     case 'send_friend_request':
     case 'respond_friend_request':

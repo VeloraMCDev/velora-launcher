@@ -1,16 +1,13 @@
-# Migration instructions
+# Development instructions
 
-Read MONOREPO.md, docs/BOUNDARIES.md and docs/DEPLOYMENT_TARGETS.md from repo root.
-Infra is an independent workspace/lifecycle inside VeloraMCDev/velora-launcher.
-Keep local keys/operator state untracked. Preserve live identities and source-policy
-records; source consolidation does not authorize deployment or paid provisioning.
-Use this checkout directly; do not create a worktree unless the user requests one.
-Do not erase existing behavior or rename persisted IDs, database paths, volume names,
-Minecraft protocol identities or updater/signing identities without compatibility tests.
-The owner approved publication of the complete product source, including gameplay
-and SMP/Frontiers. Retain gameplay/package names and the reusable library boundaries.
-Public builds must require no inaccessible repository. Do not import mixed legacy files
-wholesale. Preserve source revision, checksums and attribution for each extraction.
-Do not claim a placeholder is runnable. Record validation and incomplete tasks honestly.
-Use generic, synthetic examples; never commit credentials, player data or operator URLs.
-MIT applies to platform code; artwork/trademark/private distribution terms are separate.
+The canonical public repository is VeloraMCDev/velora-launcher. It includes the complete product and gameplay.
+Read MONOREPO.md, docs/BOUNDARIES.md, docs/VALIDATION.md and docs/DEPLOYMENT_TARGETS.md from the repository root.
+Use this checkout directly; create a worktree only if the user requests one.
+Keep reusable platform libraries independent of gameplay and complete application hosts.
+Preserve persisted IDs, database paths, volume names, Minecraft protocol identities, credential-store and updater/signing identities unless compatibility is explicitly tested.
+Keep each segment's lockfiles, licenses, attribution and independent build/deployment lifecycle.
+Run relevant local checks. Source CI runs automatically; packaging and releases remain manual.
+Do not introduce paid infrastructure or automatic deployments during source cleanup.
+Never commit credentials, player data, operator addresses or local runtime stores. Screenshots must use synthetic data.
+Retain operational SQL schema migrations; these are runtime inputs.
+Describe implemented behavior and remaining gates honestly. MIT does not cover every file or Velora artwork/trademarks.

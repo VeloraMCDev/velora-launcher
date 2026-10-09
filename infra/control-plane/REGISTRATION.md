@@ -1,13 +1,8 @@
-# Candidate registration API — Milestone 3 exit criteria passed
+# Candidate registration API
 
-The Development API and `0002` migrations are live from the verified compiled
-CI artifact at `fcc2f293f626d4e9c287ecad51e659511726c3de`. Genuine GitHub OIDC
-registration succeeded in run 37688370959; a job-only retry reused the existing
-artifact and returned the same candidate/checksum with `created: false`.
-The protected operator API returned that exact candidate and artifact, while
-Production reads were denied. Registration is paused again, CI opt-in disabled,
-bootstrap disabled and all deployment flags zero. Docs `deployment/MILESTONE_3.md`
-records the proof. No GitHub App connection or agent installation is claimed.
+Registration requires explicit environment-scoped source policies and remains
+disabled until the canonical repository ID/workflow/SHA policy is reviewed.
+See [deployment preparation](../../docs/deployment/DEPLOYMENT_GUIDE.md).
 
 Sequential expand-only `0002` migrations define repository/service registries,
 explicit CI identity policies, environments, immutable artifact/candidate records,

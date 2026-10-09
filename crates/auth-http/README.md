@@ -4,7 +4,7 @@ This directory consumes the reviewed `velora-auth-http` library from
 VeloraMCDev/Authentication. `SNAPSHOT.json` pins all twelve Rust sources. Build
 metadata uses the source workspace version and authority core to preserve type
 identity; public wire models come from the immutable SDK contract snapshot in
-`packages/rust-platform-contracts`. Publication is disabled.
+`packages/rust-platform-contracts`. Registry publishing is disabled; complete source is public.
 
 `panel/server/src/yggdrasil/mod.rs` supplies the existing pools, texture path,
 signing key, shared login guard and typed host ports. It preserves live operator
@@ -16,8 +16,6 @@ the owned router. The account/launcher response bridge converts fields explicitl
 Verify drift with:
 
 ```sh
-node scripts/migration/verify-ui-snapshot.mjs crates/auth-http packages/rust-platform-contracts
-node scripts/migration/verify-auth-host.mjs
 ```
 
 This library adoption does not open or import databases, change key/asset paths,

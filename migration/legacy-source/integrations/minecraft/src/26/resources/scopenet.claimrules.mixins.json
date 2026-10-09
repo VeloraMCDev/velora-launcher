@@ -1,9 +1,0 @@
-{
-  "required": false,
-  "minVersion": "0.8",
-  "package": "net.scopenet.minecraft.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "refmap": "scopenet.refmap.json",
-  "mixins": ["RulePvpMixin", "RuleFireMixin", "RuleFluidMixin", "RuleSpawnMixin", "RuleReachMixin"],
-  "injectors": { "defaultRequire": 0 }
-}

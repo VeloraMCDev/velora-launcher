@@ -1,17 +1,32 @@
 {
   "repository": "VeloraMCDev/velora-launcher",
-  "purpose": "Repository README banner",
-  "source": "VeloraMCDev/sdk:branding/originals/velora2.png",
+  "purpose": "README branding and synthetic product screenshots",
+  "source": "branding/originals/velora2.png",
   "source_sha256": "cec8fe83bfb43f0c66f77b8acd5b5ab73fc7b9fe59aac03a722134d6dceb3e89",
-  "licensing": "Velora artwork and trademarks are excluded from the platform MIT license; no separate artwork reuse grant.",
+  "licensing": "Velora artwork/trademarks excluded from platform MIT; see LICENSE.md.",
+  "screenshots": {
+    "captured": "2026-10-08",
+    "data": "Fictional accounts and isolated temporary stores; launcher uses its in-memory browser demo.",
+    "method": "Unmodified collaborative-browser PNG captures; private host address and browser chrome are outside the viewport.",
+    "panel_runtime": "Existing compiled backend/frontend with the same maintained runtime source; only demo fixtures and documentation changed.",
+    "limitations": "Browser UI previews, not proof of native packaging, real server connections or production deployment."
+  },
   "files": [
     {
-      "path": "banner.svg",
-      "sha256": "b024f6f33b431235e51ee284466548e1ea0bf6fd765d4a7bd6f9590b720e1fa5"
+      "path": "hero.svg",
+      "sha256": "b6a9cfb29505e55f0a2bb9fee586b5ff4a660ad460e26b062b23f345e943f7bc"
     },
     {
-      "path": "banner.png",
-      "sha256": "e2a33de045f83aeaf24b3ecab30c132424d0e9f2fb034d876fb14f6f2bdfddd3"
+      "path": "screenshots/launcher.png",
+      "sha256": "350b22487c6a2749cf276da1a2a76b7029db73126fa869b4b9ceaa2296a3bb2c"
+    },
+    {
+      "path": "screenshots/panel.png",
+      "sha256": "09b256ab8c6efbf2b27a8ad5f81313198c2c79417bb67b6e1d405f84784485db"
+    },
+    {
+      "path": "screenshots/player.png",
+      "sha256": "9f154261108d00bc6221ce9e9f094eb595ab629e74488879233fdf43feb7a645"
     }
   ]
 }

@@ -12,5 +12,5 @@ Historical gameplay provenance records the private extraction policy in effect
 at that time. The current source-publication decision supersedes that visibility
 restriction; it does not relicense gameplay or grant trademark/binary distribution
 rights. Source without an explicit license retains its existing rights restrictions.
-Review [the publication audit](docs/security/PUBLICATION_AUDIT.md) before publishing
+Review [the publication policy](docs/security/PUBLICATION_STATUS.md) before publishing
 source or artifacts. Third-party licenses and notices remain in effect.

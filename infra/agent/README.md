@@ -42,16 +42,11 @@ and local identity, and refuses existing destinations/accounts without replacing
 anything. It does not start the service. Run the installed script's `enroll` command
 in your sudo terminal; it accepts a hidden one-use code, verifies enrollment and
 heartbeat, then enables the service. No package installation is needed on the host.
-Linux CI tests the installer on a disposable runner, including repeat-install
-refusal and private key permissions. Live protected Panel/API now show the real
-Hermes Development agent ONLINE at its exact CI source; systemd confirms the
-service is active and boot-enabled under the dedicated account. Development has
-migration `0003`, explicit
-operator agent permissions and enabled enrollment. Generic public configuration
-still defaults the agent API disabled. Registration/deployment stay paused, and
-Beta/Production stay disabled. This is enrollment/health proof, not job execution
-or workload deployment. Status/key rotation and supported-version policy remain
-deferred beyond this guide milestone's healthy-agent exit criterion.
+The reference Linux workflow tests repeat-install refusal and private-key
+permissions on a disposable runner. Review its working directories and canonical
+source policy before enabling it in the monorepo. Public configuration defaults
+the agent API off; registration and deployment require explicit scoped policies.
+Enrollment/heartbeat checks do not prove job execution or workload deployment.
 
 ```sh
 cargo test --workspace --locked
@@ -59,6 +54,6 @@ cargo clippy --workspace --locked --all-targets -- -D warnings
 npm test
 ```
 
-The Linux CI job additionally tests private-file permissions/symlink/overwrite
+The reference Linux job additionally tests private-file permissions/symlink/overwrite
 rejection and produces the checksum-manifested source-named bootstrap binary.
 It is temporary 14-day artifact custody, not a durable signed updater release.
