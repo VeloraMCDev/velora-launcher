@@ -20,6 +20,7 @@ def main(image):
     volume = name + "-data"
     original_name = name
     restored_name = name + "-restore"
+    loader_name = name + "-loader"
     restored_volume = volume + "-restore"
     password = uuid.uuid4().hex
     docker("volume", "create", volume)
@@ -104,12 +105,17 @@ def main(image):
                 assert parts[0] == "data" and ".." not in parts, "backup path escapes disposable data"
                 assert member.isfile() or member.isdir(), "backup must contain only ordinary files/directories"
         docker("volume", "create", restored_volume)
+        # Docker refuses copies into a read-only container, even onto a volume.
+        # A never-started, networkless helper writes the archive into the volume.
+        docker("create", "--name", loader_name, "--network", "none",
+               "--volume", restored_volume + ":/data", image)
+        subprocess.run(["docker", "cp", "--archive", "-", loader_name + ":/"], input=archive, check=True)
+        docker("rm", loader_name)
         docker("create", "--name", restored_name,
                "--read-only", "--tmpfs", "/tmp:rw,mode=1777,size=64m",
                "--cap-drop", "ALL", "--security-opt", "no-new-privileges:true",
                "--publish", "127.0.0.1::8080", "--volume", restored_volume + ":/data",
                "--env", "ADMIN_PASSWORD=" + uuid.uuid4().hex, image)
-        subprocess.run(["docker", "cp", "--archive", "-", restored_name + ":/"], input=archive, check=True)
         name = restored_name
         docker("start", name)
         ready()
@@ -128,7 +134,7 @@ def main(image):
         subprocess.run(["docker", "logs", name], check=False)
         raise
     finally:
-        for container in [original_name, restored_name]:
+        for container in [original_name, loader_name, restored_name]:
             subprocess.run(["docker", "rm", "--force", container], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         for owned_volume in [volume, restored_volume]:
             subprocess.run(["docker", "volume", "rm", owned_volume], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
