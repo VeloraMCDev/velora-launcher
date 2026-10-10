@@ -13,7 +13,7 @@ From `integrations` on PowerShell:
 
 On Unix use `sh toolchains/fabric-1.20.1/gradlew` with the same arguments. Do not combine server and client tasks in one invocation: settings include one loader at a time. Distribution jars are under each loader's `build/libs`; install the remapped jar, not the development jar. Existing archive names/identities are preserved despite the new display title.
 
-Server config remains `config/scopenet.properties`. Optional local switches are `modules.map.enabled`, `modules.economy.enabled`, `modules.vaults.enabled`, `modules.casino.enabled`, `modules.analytics.enabled`, `modules.factions.enabled` and `modules.permissions_chat.enabled`. Each accepts strict `true`/`false`; local switches can only narrow panel policy. Authentication has no module switch.
+Server config remains `config/scopenet.properties`; it is generated with documented defaults on first start (see the [setup guide](../../docs/VELORA_CORE_SETUP.md)). Optional local switches are `modules.map.enabled`, `modules.economy.enabled`, `modules.vaults.enabled`, `modules.casino.enabled`, `modules.analytics.enabled`, `modules.factions.enabled` and `modules.permissions_chat.enabled`. Each accepts strict `true`/`false`; local switches can only narrow panel policy. Authentication has no module switch.
 
 Client config remains `config/scopenet-client.json`. K opens the existing hub/settings, M opens the server map and V runs `/vault 1`. Module visibility, map layers, local waypoints and minimap anchor/offset/compact/scale settings persist there. Map tiles come from the server's panel feed. Seven-row vaults register `scopenet:vault_7rows` on both sides and require the Core client.
 

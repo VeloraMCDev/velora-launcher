@@ -6,15 +6,8 @@ pluginManagement {
     }
 }
 rootProject.name = 'scopenet-integrations'
-include 'common', 'api', 'paper'
-// Build loaders separately: Forge and Loom use different Gradle generations.
+include 'common'
+// Velora Core is Fabric 1.20.1 only. Paper, Forge and modern-version builds live in ../archive/integrations.
 if (providers.gradleProperty('loader').orNull == 'fabric') include 'fabric'
-if (providers.gradleProperty('loader').orNull == 'forge') include 'forge'
-// Optional client: Velora Core defaults to Fabric 1.20.1; modern versions remain opt-in.
+// Velora Core (Client), Fabric 1.20.1.
 if (providers.gradleProperty('loader').orNull == 'fabric-client') include 'fabric-client'
-def mcVer = (providers.gradleProperty('mcVersion').orNull ?: startParameter.projectProperties['mcVersion'] ?: '').toString()
-if (mcVer.startsWith('26.') || mcVer == '26.x') {
-    if (findProject(':fabric') != null) project(':fabric').buildFileName = 'modern.gradle'
-    if (findProject(':forge') != null) project(':forge').buildFileName = 'modern.gradle'
-}
-if (findProject(':fabric-client') != null && mcVer && mcVer != '1.20.1') project(':fabric-client').buildFileName = 'modern.gradle'

@@ -31,7 +31,7 @@ public record Settings(
         }
         token = token == null ? "" : token.trim();
         if (!token.matches("sn_[A-Za-z0-9]{40}")) {
-            throw new IllegalArgumentException("Set the server token from the panel's Servers page");
+            throw new IllegalArgumentException("Set token in config/scopenet.properties (copy it from the panel's Servers page)");
         }
     }
 
@@ -118,11 +118,18 @@ public record Settings(
         }
     }
 
-    public static Settings load(Path path) throws IOException {
+    /** Writes the documented default file if none exists. Safe to call early; never overwrites. */
+    public static void ensureDefault(Path path) throws IOException {
         if (!Files.exists(path)) {
-            Files.createDirectories(path.toAbsolutePath().getParent());
+            Path parent = path.toAbsolutePath().getParent();
+            if (parent != null) Files.createDirectories(parent);
             String defaultProps = """
-                    # Velora server integration
+                    # Velora Core (Server) configuration. Edit, then restart the server or run /scopenet reload.
+                    #
+                    # 1. In the panel open Servers, create (or open) this server and copy its token.
+                    # 2. Set panel-url to your panel's address and paste the token below.
+                    # 3. Keep online-mode=true and start the server with the panel's authlib-injector flag
+                    #    (shown in the panel's connect dialog) so players sign in with their Velora account.
                     panel-url=https://panel.example.com
                     token=
 
@@ -166,9 +173,28 @@ public record Settings(
                     # Draw this world on the Velora Map: tiles, player positions, claims and pins go to the panel.
                     # It only runs when the map is also enabled for this server in the panel.
                     map.enabled=true
+
+                    # Core modules. false narrows what the panel allows on this server; true never overrides the panel.
+                    modules.map.enabled=true
+                    modules.economy.enabled=true
+                    modules.vaults.enabled=true
+                    modules.casino.enabled=true
+                    modules.analytics.enabled=true
+                    modules.factions.enabled=true
+                    modules.permissions_chat.enabled=true
+
+                    # Who may use Velora commands when LuckPerms is absent: "all" or "op".
+                    permissions.default_level=all
+                    # Lets players with Velora Core (Client) use the in-game hub and map.
+                    clientlink.enabled=true
+                    economy.currency_symbol=$
                     """;
             Files.writeString(path, defaultProps, StandardCharsets.UTF_8);
         }
+    }
+
+    public static Settings load(Path path) throws IOException {
+        ensureDefault(path);
         Properties properties = new Properties();
         try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             properties.load(reader);

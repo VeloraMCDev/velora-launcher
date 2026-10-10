@@ -21,10 +21,10 @@
 {/if}
 
 <style>
-  .backdrop { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 1.5rem; background: color-mix(in srgb, var(--bg) 70%, transparent); animation: fade 0.12s ease; }
-  .modal { width: 100%; max-height: calc(100vh - 4rem); overflow: auto; background: var(--surface); border-color: var(--line-strong); box-shadow: 0 1rem 3rem -1rem rgba(0, 0, 0, 0.5); animation: pop 0.15s ease; }
+  .backdrop { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 1.5rem; background: color-mix(in srgb, var(--bg) 62%, transparent); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: fade 0.18s ease; }
+  .modal { width: 100%; max-height: calc(100vh - 4rem); overflow: auto; background: var(--surface); border-color: var(--line-strong); box-shadow: 0 1rem 3rem -1rem rgba(0, 0, 0, 0.5); animation: pop 0.24s cubic-bezier(0.2, 1.1, 0.3, 1); }
   header { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.25rem 0; }
   .body { padding: 1rem 1.25rem 1.25rem; display: flex; flex-direction: column; gap: 0.9rem; }
   footer { display: flex; justify-content: flex-end; gap: 0.6rem; padding: 0.9rem 1.25rem; border-top: 1px solid var(--line); }
-  @keyframes pop { from { opacity: 0; transform: translateY(0.3rem); } }
+  @keyframes pop { from { opacity: 0; transform: translateY(0.8rem) scale(0.97); } }
 </style>
