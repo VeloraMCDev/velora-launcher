@@ -126,9 +126,9 @@
       </div>
 
       <button disabled={!signedIn || isMe || !iCanInvite || !!busy} onclick={invite}
-        title={!myGuild ? 'You are not in a guild here' : !iCanInvite ? 'Only guild leaders and officers can invite' : ''}>
+        title={!myGuild ? 'You are not in a faction here' : !iCanInvite ? 'Only faction leaders and officers can invite' : ''}>
         {#if busy === 'invite'}<LoaderCircle class="spin" size={14} />{:else}<UserPlus size={14} />{/if}
-        Invite to {myGuild ? `[${myGuild.tag}]` : 'my guild'}
+        Invite to {myGuild ? `[${myGuild.tag}]` : 'my faction'}
       </button>
     </div>
   {/if}

@@ -5,7 +5,7 @@
   import { experienceContext } from './lib/experience.svelte';
   import { pageEnabled, PLATFORM_PAGES } from '@velora/experience';
   import InstanceControl from './pages/InstanceControl.svelte';
-  import ExperienceEditor from './pages/ExperienceEditor.svelte';
+  import InstanceSetup from './pages/InstanceSetup.svelte';
   import EconomyAdmin from './pages/EconomyAdmin.svelte';
   import { adminGroups } from './lib/adminNav';
   import { COMMAND_GROUPS } from '@velora/commands';
@@ -16,22 +16,16 @@
   import Instances from './pages/Instances.svelte';
   import InstanceEditor from './pages/InstanceEditor.svelte';
   import Users from './pages/Users.svelte';
-  import Branding from './pages/Branding.svelte';
   import Settings from './pages/Settings.svelte';
   import Servers from './pages/Servers.svelte';
   import ServerDetail from './pages/ServerDetail.svelte';
   import Capes from './pages/Capes.svelte';
   import Activity from './pages/Activity.svelte';
-  import LandingBuilder from './pages/LandingBuilder.svelte';
   import PublicLanding from './pages/PublicLanding.svelte';
-  import QuestEditor from './pages/QuestEditor.svelte';
-  import QuestChains from './pages/QuestChains.svelte';
-  import AchievementEditor from './pages/AchievementEditor.svelte';
-  import RewardQueue from './pages/RewardQueue.svelte';
   import CompanionBuilder from './pages/CompanionBuilder.svelte';
-  import LevelingAdmin from './pages/LevelingAdmin.svelte';
-  import Progression from './pages/Progression.svelte';
-  import BulkEditor from './pages/BulkEditor.svelte';
+  import ProgressionWorkspace from './pages/ProgressionWorkspace.svelte';
+  import AppearanceWorkspace from './pages/AppearanceWorkspace.svelte';
+  import { PROGRESSION_SECTIONS } from './lib/adminNav';
   import DiscordStudio from './pages/DiscordStudio.svelte';
   import Emails from './pages/Emails.svelte';
   import Events from './pages/Events.svelte';
@@ -144,10 +138,8 @@
           <InstanceControl />
         {:else if route.name === 'control'}
           <InstanceControl />
-        {:else if route.name === 'experience'}
-          <ExperienceEditor />
-        {:else if route.name === 'installation' && route.instanceId}
-          <InstanceEditor id={route.instanceId} />
+        {:else if route.instanceId && ['experience', 'installation', 'servers'].includes(route.name)}
+          <InstanceSetup section={route.name} />
         {:else if route.name === 'instances' && route.params[0]}
           <InstanceEditor id={route.params[0]} />
         {:else if route.name === 'instances'}
@@ -156,18 +148,8 @@
           <ServerDetail id={route.params[0]} />
         {:else if route.name === 'servers'}
           <Servers />
-        {:else if route.name === 'quests'}
-          <QuestEditor />
-        {:else if route.name === 'quest-chains'}
-          <QuestChains />
-        {:else if route.name === 'achievements'}
-          <AchievementEditor />
-        {:else if route.name === 'leveling'}
-          <LevelingAdmin />
-        {:else if route.name === 'bulk'}
-          <BulkEditor />
-        {:else if route.name === 'progression'}
-          <Progression />
+        {:else if PROGRESSION_SECTIONS.some(s => s.id === route.name)}
+          <ProgressionWorkspace section={route.name} />
         {:else if route.name === 'events'}
           <Events />
         {:else if route.name === 'cosmetics'}
@@ -198,18 +180,14 @@
           <Activity />
         {:else if route.name === 'users'}
           <Users />
-        {:else if route.name === 'branding'}
-          <Branding onsaved={(b) => (brand = b)} />
+        {:else if ['branding', 'landing-builder'].includes(route.name)}
+          <AppearanceWorkspace section={route.name} onsaved={(b) => (brand = b)} />
         {:else if route.name === 'emails'}
           <Emails />
         {:else if route.name === 'discord'}
           <DiscordStudio />
         {:else if route.name === 'companion'}
           <CompanionBuilder />
-        {:else if route.name === 'reward-queue'}
-          <RewardQueue />
-        {:else if route.name === 'landing-builder'}
-          <LandingBuilder />
         {:else if route.name === 'settings'}
           <Settings />
         {:else}

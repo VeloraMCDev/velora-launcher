@@ -25,13 +25,15 @@ pub fn definitions() -> Value {
         { "name": "status", "description": "Is the server online? Players, version and performance", "type": 1 },
         { "name": "players", "description": "Who is online right now", "type": 1 },
         { "name": "quests", "description": "See a player's daily and weekly quests", "type": 1, "options": [player_opt(true, "The player to look at")] },
-        { "name": "stats", "description": "A player's level, playtime, guild and more", "type": 1, "options": [player_opt(true, "The player to look at")] },
+        { "name": "stats", "description": "A player's level, playtime, faction and more", "type": 1, "options": [player_opt(true, "The player to look at")] },
         { "name": "leaderboard", "description": "The top players", "type": 1, "options": [{
             "type": 3, "name": "by", "description": "What to rank by", "required": false,
             "choices": [{ "name": "Level", "value": "level" }, { "name": "Playtime", "value": "playtime" }, { "name": "Player kills", "value": "kills" }, { "name": "Blocks broken", "value": "blocks" }, { "name": "Balance", "value": "balance" }]
         }] },
-        { "name": "guild", "description": "Look up a guild", "type": 1, "options": [{ "type": 3, "name": "name", "description": "Guild name or tag", "required": true, "autocomplete": true }] },
-        { "name": "guilds", "description": "The biggest guilds", "type": 1 },
+        { "name": "faction", "description": "Look up a faction", "type": 1, "options": [{ "type": 3, "name": "name", "description": "Faction name or tag", "required": true, "autocomplete": true }] },
+        { "name": "factions", "description": "The biggest factions", "type": 1 },
+        { "name": "guild", "description": "Compatibility alias for /faction", "type": 1, "options": [{ "type": 3, "name": "name", "description": "Faction name or tag", "required": true, "autocomplete": true }] },
+        { "name": "guilds", "description": "Compatibility alias for /factions", "type": 1 },
     ])
 }
 
@@ -116,8 +118,8 @@ async fn handle_command(state: &AppState, interaction: &Value) -> AppResult<Valu
         "quests" => quests_embed(state, option(interaction, "player").unwrap_or("")).await,
         "stats" => stats(state, option(interaction, "player").unwrap_or("")).await,
         "leaderboard" => leaderboard(state, option(interaction, "by").unwrap_or("level")).await,
-        "guild" => guild(state, option(interaction, "name").unwrap_or("")).await,
-        "guilds" => guilds(state).await,
+        "faction" | "guild" => guild(state, option(interaction, "name").unwrap_or("")).await,
+        "factions" | "guilds" => guilds(state).await,
         _ => Ok(notice("I don't know that command. An admin may need to register commands again.")),
     }
 }
@@ -223,7 +225,7 @@ async fn stats(state: &AppState, who: &str) -> AppResult<Value> {
             { "name": "Achievements", "value": achievements.to_string(), "inline": true },
             { "name": "Combat", "value": format!("{} kills · {} deaths · {} mobs", totals.1, totals.2, totals.3), "inline": false },
             { "name": "Blocks broken", "value": totals.4.to_string(), "inline": true },
-            { "name": "Guild", "value": guild.map(|(n, t, r)| format!("[{t}] {n} ({r})")).unwrap_or_else(|| "None".into()), "inline": true },
+            { "name": "Faction", "value": guild.map(|(n, t, r)| format!("[{t}] {n} ({r})")).unwrap_or_else(|| "None".into()), "inline": true },
         ],
     })))
 }
@@ -266,7 +268,7 @@ async fn guild(state: &AppState, text: &str) -> AppResult<Value> {
     .bind(text.trim())
     .fetch_optional(&state.db)
     .await?;
-    let (id, name, tag, desc, leader_uuid, level, created) = g.ok_or_else(|| AppError::not_found(format!("There's no guild called \"{}\".", text.trim())))?;
+    let (id, name, tag, desc, leader_uuid, level, created) = g.ok_or_else(|| AppError::not_found(format!("There's no faction called \"{}\".", text.trim())))?;
     let leader: Option<String> = sqlx::query_scalar("SELECT name FROM guild_members WHERE guild_id = ? AND uuid = ?").bind(&id).bind(&leader_uuid).fetch_optional(&state.db).await?;
     let members: Vec<String> = sqlx::query_scalar("SELECT name FROM guild_members WHERE guild_id = ? ORDER BY CASE role WHEN 'leader' THEN 0 WHEN 'officer' THEN 1 ELSE 2 END, name COLLATE NOCASE LIMIT 25").bind(&id).fetch_all(&state.db).await?;
     let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM guild_members WHERE guild_id = ?").bind(&id).fetch_one(&state.db).await?;
@@ -291,10 +293,10 @@ async fn guilds(state: &AppState) -> AppResult<Value> {
     .fetch_all(&state.db)
     .await?;
     if rows.is_empty() {
-        return Ok(notice("No guilds yet."));
+        return Ok(notice("No factions yet."));
     }
     let text = rows.iter().enumerate().map(|(i, (n, t, l, m, c))| format!("`{}` **[{}] {}** · level {l} · {m} members · {c} chunks", i + 1, t, cut(n, 40))).collect::<Vec<_>>().join("\n");
-    Ok(reply(json!({ "title": "🛡️ Top guilds", "description": text, "color": COLOR })))
+    Ok(reply(json!({ "title": "🛡️ Top factions", "description": text, "color": COLOR })))
 }
 
 /// Register (or refresh) the slash commands with the bot's server. Guild commands show up immediately.

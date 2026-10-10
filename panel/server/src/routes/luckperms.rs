@@ -540,7 +540,7 @@ mod tests {
         assert_eq!(group_name(" VIP.Gold ").unwrap(), "vip.gold");
         assert!(group_name("has space").is_err());
         assert!(group_name("").is_err());
-        assert!(node_key("velora.command.guild.*").is_ok());
+        assert!(node_key("velora.command.faction.*").is_ok());
         assert!(node_key("bad node").is_err());
         assert!(node_key("semi;colon").is_err());
         assert!(text("&c[Admin] ", 64, "x").is_ok());

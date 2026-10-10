@@ -52,7 +52,7 @@ public final class MapService {
         Map<String, MapModel.NamedPos> guildHomes = new TreeMap<>();
         Map<String, String> labels = new HashMap<>();
         claims.byDimension().values().forEach(list -> list.forEach(g -> labels.put(g.id(), "[" + g.tag() + "] " + g.name())));
-        places.guildHomes().forEach((id, pos) -> guildHomes.put(id, new MapModel.NamedPos(labels.getOrDefault(id, "Guild home"), pos)));
+        places.guildHomes().forEach((id, pos) -> guildHomes.put(id, new MapModel.NamedPos(labels.getOrDefault(id, "Faction home"), pos)));
         Pos spawn = env.platform.worldSpawn("minecraft:overworld");
         MapModel.Sources sources = new MapModel.Sources(
                 env.features.guilds() && env.features.landClaiming() ? claims.byDimension() : Map.of(),

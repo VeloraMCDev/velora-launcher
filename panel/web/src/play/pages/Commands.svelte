@@ -53,7 +53,7 @@
       </div>
     </section>
   {:else}
-    <div class="pl-card"><div class="pl-empty"><Search size={28} /><b>No commands match “{query}”</b><span>Try a shorter word, like “guild” or “home”.</span></div></div>
+    <div class="pl-card"><div class="pl-empty"><Search size={28} /><b>No commands match “{query}”</b><span>Try a shorter word, like “faction” or “home”.</span></div></div>
   {/each}
   {#if q}<p class="count">{total} match{total === 1 ? '' : 'es'}</p>{/if}
 

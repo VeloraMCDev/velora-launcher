@@ -18,7 +18,7 @@ public final class MapScreen extends Screen {
     @Override protected void init() {
         if (minecraft.player != null) { cx = minecraft.player.getX(); cz = minecraft.player.getZ(); }
         int index = 0, columns = Math.max(1, (width - 20) / 64);
-        for (String layer : new String[]{"players", "claims", "spawn", "warps", "homes", "shops", "waypoints"}) {
+        for (String layer : new String[]{"players", "mobs", "claims", "spawn", "warps", "homes", "shops", "waypoints"}) {
             int buttonX = 10 + (index % columns) * 64, buttonY = 10 + (index / columns) * 23; index++;
             addRenderableWidget(Button.builder(label(layer), button -> {
                 var config = VeloraClient.config(); config.mapLayers.put(layer, !Boolean.TRUE.equals(config.mapLayers.get(layer))); config.save(); button.setMessage(label(layer));

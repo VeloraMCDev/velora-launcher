@@ -80,7 +80,7 @@
         roles = r; requests = jr; relations = rel;
       } else { roles = []; requests = []; relations = []; if (tab !== 'discover') tab = 'overview'; }
     } catch (e) {
-      if (mine === seq && (!quiet || !g)) error = e instanceof Error ? e.message : 'Could not load guilds';
+      if (mine === seq && (!quiet || !g)) error = e instanceof Error ? e.message : 'Could not load factions';
     } finally {
       if (mine === seq) { loading = false; refreshing = false; }
     }
@@ -119,11 +119,11 @@
     const c = confirm, id = g.id;
     let ok = false;
     if (c.kind === 'kick' && c.member) ok = !!(await act('kick', () => del(`/api/v1/guilds/${id}/members/${c.member!.uuid}`), `${c.member.name} was removed`));
-    else if (c.kind === 'leader' && c.member) ok = !!(await act('leader', () => put(`/api/v1/guilds/${id}/leader`, { uuid: c.member!.uuid }), `${c.member.name} now leads the guild`));
-    else if (c.kind === 'leave') ok = !!(await act('leave', () => del(`/api/v1/guilds/${id}/members/${me}`), 'You left the guild'));
+    else if (c.kind === 'leader' && c.member) ok = !!(await act('leader', () => put(`/api/v1/guilds/${id}/leader`, { uuid: c.member!.uuid }), `${c.member.name} now leads the faction`));
+    else if (c.kind === 'leave') ok = !!(await act('leave', () => del(`/api/v1/guilds/${id}/members/${me}`), 'You left the faction'));
     else if (c.kind === 'release' && c.claim) ok = !!(await act('release', () => del(`/api/v1/guilds/claims/${c.claim!.id}`), 'Chunk released'));
     else if (c.kind === 'disband') {
-      const r = await act('disband', () => del<{ refunded?: number }>(`/api/v1/guilds/${id}`), (x) => (x?.refunded ? `Guild disbanded. ${x.refunded.toLocaleString()} from the treasury was paid to you.` : 'Guild disbanded'));
+      const r = await act('disband', () => del<{ refunded?: number }>(`/api/v1/guilds/${id}`), (x) => (x?.refunded ? `Faction disbanded. ${x.refunded.toLocaleString()} from the treasury was paid to you.` : 'Faction disbanded'));
       ok = !!r || r === null; if (r) balanceChanged();
     }
     if (ok) confirmOpen = false;
@@ -139,7 +139,7 @@
 
   // ---------- join requests ----------
   const answerJoin = (r: JoinReq, accept: boolean) =>
-    g && act(`jr${r.uuid}`, () => post(`/api/v1/guilds/${g!.id}/requests/${r.uuid}/respond`, { accept }), accept ? `${r.name} joined the guild` : 'Request declined');
+    g && act(`jr${r.uuid}`, () => post(`/api/v1/guilds/${g!.id}/requests/${r.uuid}/respond`, { accept }), accept ? `${r.name} joined the faction` : 'Request declined');
 
   // ---------- invite a player ----------
   let inviteOpen = $state(false), iq = $state(''), found = $state<{ uuid: string; username: string; online: boolean; global_level: number }[]>([]), searching = $state(false), invited = $state(new Set<string>());
@@ -176,7 +176,7 @@
       await put(`/api/v1/guilds/${g!.id}`, { description: eDesc, motd: eMotd, icon_url: eIcon, banner_url: eBanner });
       if (isLeader && (eName.trim() !== g!.name || eTag.trim().toUpperCase() !== g!.tag.toUpperCase())) await put(`/api/v1/guilds/${g!.id}/name`, { name: eName.trim(), tag: eTag.trim() });
       return true;
-    }, 'Guild saved');
+    }, 'Faction saved');
     if (ok) editOpen = false;
   }
 
@@ -200,7 +200,7 @@
   const limit = $derived(mode === 'deposit' ? wallet?.my_balance : wallet?.balance);
   const over = $derived(valid && limit != null && val > limit + 1e-9);
   const isOut = (k: string) => k === 'withdraw' || k === 'purchase' || k === 'transfer_out' || k === 'upkeep';
-  const verbs: Record<string, string> = { deposit: 'deposited', withdraw: 'withdrew', sale: 'sold items', purchase: 'bought something', transfer_in: 'received a payment', transfer_out: 'paid a guild' };
+  const verbs: Record<string, string> = { deposit: 'deposited', withdraw: 'withdrew', sale: 'sold items', purchase: 'bought something', transfer_in: 'received a payment', transfer_out: 'paid a faction' };
   const totals = $derived({ in: wallet?.transactions.filter((t) => !isOut(t.kind)).reduce((n, t) => n + t.amount, 0) ?? 0, out: wallet?.transactions.filter((t) => isOut(t.kind)).reduce((n, t) => n + t.amount, 0) ?? 0 });
   const who = (uuid: string) => g?.members.find((m) => m.uuid === uuid);
 
@@ -282,11 +282,11 @@
       {#if x.description}<p class="desc">{x.description}</p>{/if}
       <div class="chips"><span class="pl-chip"><Users size={12} /> {x.member_count}</span><span class="pl-chip"><MapIcon size={12} /> {x.claims_count}{#if x.max_claims}/{x.max_claims}{/if}</span></div>
       {#if x.id === g?.id}
-        <button class="pl-btn block" onclick={() => (tab = 'overview')}>Open your guild</button>
+        <button class="pl-btn block" onclick={() => (tab = 'overview')}>Open your faction</button>
       {:else if asked.has(x.id)}
         <button class="pl-btn block" disabled><Check size={15} /> Request sent</button>
       {:else}
-        <button class="pl-btn primary block" disabled={!!g} title={g ? 'Leave your guild first to join another' : ''} onclick={() => askJoin(x)}><UserPlus size={15} /> {g ? 'Already in a guild' : 'Request to join'}</button>
+        <button class="pl-btn primary block" disabled={!!g} title={g ? 'Leave your faction first to join another' : ''} onclick={() => askJoin(x)}><UserPlus size={15} /> {g ? 'Already in a faction' : 'Request to join'}</button>
       {/if}
     </div>
   </article>
@@ -295,7 +295,7 @@
 <div class="pl-page gld">
   <div class="pl-head">
     <div>
-      <h1><Shield size={26} /> Guilds</h1>
+      <h1><Shield size={26} /> Factions</h1>
       <p>{currentServer() ? `Your faction on ${currentServer()!.name}` : 'Factions, land and treasuries'}</p>
     </div>
     <div class="pl-actions">
@@ -305,13 +305,13 @@
 
   {#if invites.length}
     <section class="pl-card invs">
-      <div class="pl-card-head"><h2><Mail size={17} /> Guild invitations <span class="pl-chip accent">{invites.length}</span></h2></div>
+      <div class="pl-card-head"><h2><Mail size={17} /> Faction invitations <span class="pl-chip accent">{invites.length}</span></h2></div>
       <div class="pl-list">
         {#each invites as inv (inv.id)}
           <div class="pl-item">
             {@render emblem({ id: inv.guild_id, tag: inv.guild_tag, icon_url: inv.icon_url || null }, 42)}
             <div class="grow"><b>[{inv.guild_tag}] {inv.guild_name}</b><span class="sub">Invited by {inv.inviter}</span></div>
-            <button class="pl-btn primary sm" disabled={!!g || busy === `inv${inv.id}`} title={g ? 'Leave your guild first' : ''} onclick={() => answerInvite(inv, true)}>Accept</button>
+            <button class="pl-btn primary sm" disabled={!!g || busy === `inv${inv.id}`} title={g ? 'Leave your faction first' : ''} onclick={() => answerInvite(inv, true)}>Accept</button>
             <button class="pl-iconbtn" aria-label="Decline" disabled={busy === `inv${inv.id}`} onclick={() => answerInvite(inv, false)}><X size={16} /></button>
           </div>
         {/each}
@@ -333,17 +333,17 @@
     <section class="pl-hero nog">
       <div class="nog-ic"><Shield size={34} /></div>
       <div>
-        <h1>No guild yet</h1>
-        <p>Found a guild to claim land, share a treasury and play as a faction. Or browse the guilds below and ask to join.</p>
-        <button class="pl-btn primary lg" onclick={() => (createOpen = true)}><Plus size={17} /> Create a guild</button>
+        <h1>No faction yet</h1>
+        <p>Found a faction to claim land, share a treasury and play as a faction. Or browse the factions below and ask to join.</p>
+        <button class="pl-btn primary lg" onclick={() => (createOpen = true)}><Plus size={17} /> Create a faction</button>
       </div>
     </section>
     <div class="dirhead">
-      <h2>Guilds {#if all.length}<span class="pl-chip">{all.length}</span>{/if}</h2>
-      {#if all.length > 3}<div class="pl-search"><Search size={16} /><input class="pl-input" type="search" placeholder="Search guilds" bind:value={gq} aria-label="Search guilds" /></div>{/if}
+      <h2>Factions {#if all.length}<span class="pl-chip">{all.length}</span>{/if}</h2>
+      {#if all.length > 3}<div class="pl-search"><Search size={16} /><input class="pl-input" type="search" placeholder="Search factions" bind:value={gq} aria-label="Search factions" /></div>{/if}
     </div>
     {#if all.length === 0}
-      <div class="pl-card"><Empty icon={Compass} title="No guilds here yet" text="Be the first to found one on this server." /></div>
+      <div class="pl-card"><Empty icon={Compass} title="No factions here yet" text="Be the first to found one on this server." /></div>
     {:else if directory.length === 0}
       <div class="pl-card"><Empty icon={Search} title="No match" text={`Nothing matches “${gq}”.`} /></div>
     {:else}
@@ -412,15 +412,15 @@
             <div class="pl-card-head"><h2><Settings2 size={16} /> Manage</h2></div>
             <div class="pl-stack tight">
               {#if can('invite')}<button class="pl-btn block" onclick={() => (inviteOpen = true)}><UserPlus size={16} /> Invite a player</button>{/if}
-              {#if canManage}<button class="pl-btn block" onclick={openEdit}><Pencil size={16} /> Edit guild details</button>{/if}
+              {#if canManage}<button class="pl-btn block" onclick={openEdit}><Pencil size={16} /> Edit faction details</button>{/if}
               {#if isLeader}<button class="pl-btn block" onclick={() => (rolesOpen = true)}><ShieldCheck size={16} /> Custom roles <span class="pl-chip">{roles.length}</span></button>{/if}
               {#if !isLeader}
-                <button class="pl-btn block danger" onclick={() => ask('leave')}><LogOut size={16} /> Leave guild</button>
+                <button class="pl-btn block danger" onclick={() => ask('leave')}><LogOut size={16} /> Leave faction</button>
               {:else}
-                <button class="pl-btn block danger" onclick={() => ask('disband')}><Trash2 size={16} /> Disband guild</button>
+                <button class="pl-btn block danger" onclick={() => ask('disband')}><Trash2 size={16} /> Disband faction</button>
               {/if}
             </div>
-            {#if !can('invite') && !canManage && isLeader === false}<p class="sub" style="margin-top:8px">Officers and the leader manage the guild.</p>{/if}
+            {#if !can('invite') && !canManage && isLeader === false}<p class="sub" style="margin-top:8px">Officers and the leader manage the faction.</p>{/if}
           </div>
         </div>
       </div>
@@ -495,7 +495,7 @@
         <div class="pl-grid" style="--min: 320px">
           <div class="pl-stack">
             <section class="pl-hero treasury">
-              <span class="tl"><Landmark size={15} /> Guild treasury · [{g.tag}]</span>
+              <span class="tl"><Landmark size={15} /> Faction treasury · [{g.tag}]</span>
               <div class="big"><Count value={wallet.balance} format={fmt} /></div>
               {#if wallet.upkeep}<p>Daily upkeep {fmt(wallet.upkeep.daily_cents/100)} · {wallet.upkeep.grace_days}-day grace period.</p>
                 {#if wallet.upkeep.arrears_cents>0}<p class="neg">Unpaid: {fmt(wallet.upkeep.arrears_cents/100)}. {wallet.upkeep.claims_frozen?'New claims are frozen.':`New claims freeze on ${wallet.upkeep.freezes_at} UTC.`} Deposit funds to settle outstanding bills within a minute. Existing claims remain protected.</p>{/if}
@@ -549,7 +549,7 @@
               <div class="pl-stat"><span>Area</span><b>{compact(g.claims_count * 256)}</b><small>blocks²</small></div>
             </div>
             {#if g.max_claims}<div class="pl-progress" style="margin-top:14px"><i style="width:{claimPct}%"></i></div>{/if}
-            <p class="sub" style="margin-top:10px">Claim and release chunks in game with the guild commands. Chunks you own are protected from griefing.</p>
+            <p class="sub" style="margin-top:10px">Claim and release chunks in game with the faction commands. Chunks you own are protected from griefing.</p>
           </div>
           <LandRules guildId={g.id} />
           {#if bounds}
@@ -568,7 +568,7 @@
         <div class="pl-card">
           <div class="pl-card-head"><h2>Claimed chunks</h2></div>
           {#if g.claims.length === 0}
-            <Empty icon={MapIcon} title="No land claimed" text="Stand in a chunk in game and use the guild claim command." />
+            <Empty icon={MapIcon} title="No land claimed" text="Stand in a chunk in game and use the faction claim command." />
           {:else}
             <div class="pl-list claims">
               {#each g.claims as c (c.id)}
@@ -589,7 +589,7 @@
           <form class="pl-card compose" onsubmit={(e) => { e.preventDefault(); void publish(); }}>
             <div class="pl-card-head"><h2><Pencil size={16} /> New announcement</h2></div>
             <input class="pl-input" placeholder="Title" maxlength="80" bind:value={pTitle} aria-label="Title" />
-            <textarea class="pl-input" rows="3" placeholder="Share news, plans or updates with your guild" bind:value={pBody} aria-label="Content"></textarea>
+            <textarea class="pl-input" rows="3" placeholder="Share news, plans or updates with your faction" bind:value={pBody} aria-label="Content"></textarea>
             <button class="pl-btn primary" disabled={!pTitle.trim() || !pBody.trim() || busy === 'post'} aria-busy={busy === 'post'}>{#if busy === 'post'}<LoaderCircle size={15} class="spin" />{:else}<Send size={15} />{/if} Publish</button>
           </form>
         {/if}
@@ -608,8 +608,8 @@
 
     {:else}
       <div class="dirhead">
-        <h2>All guilds <span class="pl-chip">{all.length}</span></h2>
-        {#if all.length > 3}<div class="pl-search"><Search size={16} /><input class="pl-input" type="search" placeholder="Search guilds" bind:value={gq} aria-label="Search guilds" /></div>{/if}
+        <h2>All factions <span class="pl-chip">{all.length}</span></h2>
+        {#if all.length > 3}<div class="pl-search"><Search size={16} /><input class="pl-input" type="search" placeholder="Search factions" bind:value={gq} aria-label="Search factions" /></div>{/if}
       </div>
       {#if directory.length === 0}
         <div class="pl-card"><Empty icon={Search} title="No match" text={`Nothing matches “${gq}”.`} /></div>
@@ -637,20 +637,20 @@
           {/each}
         </div>
       </div>
-      <button class="pl-btn block" onclick={() => ask('leader', { member: m })}><Crown size={16} /> Make guild leader</button>
+      <button class="pl-btn block" onclick={() => ask('leader', { member: m })}><Crown size={16} /> Make faction leader</button>
     {/if}
-    {#if canKick(m)}<button class="pl-btn block danger" onclick={() => ask('kick', { member: m })}><UserMinus size={16} /> Remove from guild</button>{/if}
+    {#if canKick(m)}<button class="pl-btn block danger" onclick={() => ask('kick', { member: m })}><UserMinus size={16} /> Remove from faction</button>{/if}
   {/if}
 </Sheet>
 
 <!-- confirmations -->
-<Sheet bind:open={confirmOpen} title={confirm?.kind === 'kick' ? `Remove ${confirm.member?.name}?` : confirm?.kind === 'leader' ? `Make ${confirm.member?.name} the leader?` : confirm?.kind === 'leave' ? 'Leave this guild?' : confirm?.kind === 'release' ? 'Release this chunk?' : `Disband ${g?.name ?? 'guild'}?`}>
-  {#if confirm?.kind === 'kick'}<p class="body">They leave the guild straight away and get a notification. They can ask to join again later.</p>
-  {:else if confirm?.kind === 'leader'}<p class="body">{confirm.member?.name} becomes the guild leader and you become an officer. Only they can undo it.</p>
-  {:else if confirm?.kind === 'leave'}<p class="body">You will lose access to the guild land and treasury. You can ask to join again later.</p>
+<Sheet bind:open={confirmOpen} title={confirm?.kind === 'kick' ? `Remove ${confirm.member?.name}?` : confirm?.kind === 'leader' ? `Make ${confirm.member?.name} the leader?` : confirm?.kind === 'leave' ? 'Leave this faction?' : confirm?.kind === 'release' ? 'Release this chunk?' : `Disband ${g?.name ?? 'guild'}?`}>
+  {#if confirm?.kind === 'kick'}<p class="body">They leave the faction straight away and get a notification. They can ask to join again later.</p>
+  {:else if confirm?.kind === 'leader'}<p class="body">{confirm.member?.name} becomes the faction leader and you become an officer. Only they can undo it.</p>
+  {:else if confirm?.kind === 'leave'}<p class="body">You will lose access to the faction land and treasury. You can ask to join again later.</p>
   {:else if confirm?.kind === 'release'}<p class="body">Chunk {confirm.claim?.chunk_x}, {confirm.claim?.chunk_z} stops being protected and anyone can claim it.</p>
   {:else if confirm?.kind === 'disband' && g}
-    <div class="pl-alert err"><TriangleAlert size={15} style="vertical-align:-3px" /> This removes the guild for good: every member is released, all {g.claims_count} claimed chunks are freed and roles, posts and invites are deleted. The treasury is paid to you.</div>
+    <div class="pl-alert err"><TriangleAlert size={15} style="vertical-align:-3px" /> This removes the faction for good: every member is released, all {g.claims_count} claimed chunks are freed and roles, posts and invites are deleted. The treasury is paid to you.</div>
     <label class="field">Type “{g.name}” to confirm<input class="pl-input" bind:value={typed} placeholder={g.name} autocomplete="off" /></label>
   {/if}
   {#snippet footer()}
@@ -705,7 +705,7 @@
 </Sheet>
 
 <!-- edit -->
-<Sheet bind:open={editOpen} title="Guild details" width={560}>
+<Sheet bind:open={editOpen} title="Faction details" width={560}>
   {#if isLeader}
     <div class="two">
       <label class="field">Name<input class="pl-input" bind:value={eName} maxlength="32" /></label>
@@ -734,15 +734,15 @@
 </Sheet>
 
 <!-- create -->
-<Sheet bind:open={createOpen} title="Found a guild" width={560}>
-  <label class="field">Guild name<input class="pl-input" placeholder="e.g. Iron Fortress" maxlength="32" bind:value={cName} /></label>
+<Sheet bind:open={createOpen} title="Found a faction" width={560}>
+  <label class="field">Faction name<input class="pl-input" placeholder="e.g. Iron Fortress" maxlength="32" bind:value={cName} /></label>
   <label class="field">Tag (2 to 6 letters)<input class="pl-input" placeholder="IRON" maxlength="6" bind:value={cTag} style="text-transform:uppercase" /></label>
   <label class="field">Description<textarea class="pl-input" rows="3" maxlength="500" bind:value={cDesc} placeholder="Your playstyle, goals and rules"></textarea></label>
   <label class="field">Icon URL (optional)<input class="pl-input" bind:value={cIcon} placeholder="https://…" /></label>
   <label class="field">Banner URL (optional)<input class="pl-input" bind:value={cBanner} placeholder="https://…" /></label>
   {#snippet footer()}
     <button class="pl-btn" onclick={() => (createOpen = false)}>Cancel</button>
-    <button class="pl-btn primary" disabled={cName.trim().length < 3 || cTag.trim().length < 2 || busy === 'create'} aria-busy={busy === 'create'} onclick={createGuild}><Shield size={15} /> Found guild</button>
+    <button class="pl-btn primary" disabled={cName.trim().length < 3 || cTag.trim().length < 2 || busy === 'create'} aria-busy={busy === 'create'} onclick={createGuild}><Shield size={15} /> Found faction</button>
   {/snippet}
 </Sheet>
 

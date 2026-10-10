@@ -148,7 +148,7 @@
       })
       .catch(() => {});
 
-    // 5. Load Global Levels & Guilds
+    // 5. Load Global Levels & Factions
     get<any[]>('/api/v1/levels/leaderboard')
       .then((res) => (globalLevels = res || []))
       .catch(() => {});
@@ -522,7 +522,7 @@
               {#if publicGuilds.length > 0}
                 <div class="guilds-showcase" style="margin-top: 48px;">
                   <div class="section-head" style="margin-bottom: 20px;">
-                    <h3>Top Guilds & Claimed Territories</h3>
+                    <h3>Top Factions & Claimed Territories</h3>
                     <p class="muted">Form parties, recruit allies, and protect your faction's chunks.</p>
                   </div>
                   <div class="guilds-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
@@ -578,7 +578,7 @@
                 {#if block.options?.show_guilds !== false && publicGuilds.length > 0}
                   <div class="counter-card">
                     <span class="counter-num">{publicGuilds.length}</span>
-                    <span class="counter-label">Active Guilds</span>
+                    <span class="counter-label">Active Factions</span>
                   </div>
                 {/if}
                 <div class="counter-card">

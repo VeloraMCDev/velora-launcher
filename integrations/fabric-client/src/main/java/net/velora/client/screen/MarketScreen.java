@@ -102,7 +102,7 @@ public final class MarketScreen extends Screen {
             g.renderItem(Ui.stackFor(l.itemId(), l.amount()), left + 10, y + 5);
             g.renderItemDecorations(font, Ui.stackFor(l.itemId(), l.amount()), left + 10, y + 5);
             g.drawString(font, Ui.clip(font, l.itemName() + " x" + l.amount(), 150), left + 32, y + 4, Ui.TEXT, true);
-            String seller = l.guildTag() != null ? "[" + l.guildTag() + "] guild" : l.seller();
+            String seller = l.guildTag() != null ? "[" + l.guildTag() + "] faction" : l.seller();
             g.drawString(font, Ui.clip(font, seller + "  ·  #" + l.id(), 150), left + 32, y + 15, Ui.MUTED, false);
             String p = Ui.money(state.currency, l.price());
             g.drawString(font, p, left + W - 68 - font.width(p), y + 9, Ui.GREEN, true);

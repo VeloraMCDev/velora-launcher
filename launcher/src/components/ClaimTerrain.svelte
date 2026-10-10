@@ -240,10 +240,10 @@
     <button role="radio" aria-checked={mode === 'move'} class:on={mode === 'move'} onclick={() => (mode = 'move')} title="Click and drag to move the map (no claiming)">
       <Hand size={15} /> Move</button>
     <button role="radio" aria-checked={mode === 'claim'} class:on={mode === 'claim'} class="claim-btn" disabled={!canEdit} onclick={() => (mode = 'claim')}
-      title={canEdit ? 'Click and drag to claim chunks. Alt + drag to move.' : 'Join a guild to claim land'}>
+      title={canEdit ? 'Click and drag to claim chunks. Alt + drag to move.' : 'Join a faction to claim land'}>
       <SquarePlus size={15} /> Claim</button>
     <button role="radio" aria-checked={mode === 'unclaim'} class:on={mode === 'unclaim'} class="unclaim-btn" disabled={!canEdit} onclick={() => (mode = 'unclaim')}
-      title={canEdit ? 'Click and drag to un-claim your guild’s chunks. Alt + drag to move.' : 'Join a guild to manage land'}>
+      title={canEdit ? 'Click and drag to un-claim your faction’s chunks. Alt + drag to move.' : 'Join a faction to manage land'}>
       <Eraser size={15} /> Un-claim</button>
   </div>
   <div class="zoom" role="group" aria-label="Zoom" onpointerdown={(e) => e.stopPropagation()}>

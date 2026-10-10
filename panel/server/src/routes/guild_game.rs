@@ -50,7 +50,7 @@ async fn member_uuid(state: &AppState, guild_id: &str, name: &str) -> AppResult<
         .bind(name.trim())
         .fetch_optional(&state.db)
         .await?
-        .ok_or_else(|| AppError::bad_request(format!("{} is not in your guild", name.trim())))
+        .ok_or_else(|| AppError::bad_request(format!("{} is not in your faction", name.trim())))
 }
 
 async fn find_guild(state: &AppState, instance: &str, text: &str) -> AppResult<Option<(String, String, String)>> {
@@ -75,7 +75,7 @@ fn clip(text: &str, max: usize, what: &str) -> AppResult<String> {
 pub async fn server_guild_manage(GameServer(server): GameServer, State(state): State<AppState>, Json(p): Json<ManagePayload>) -> AppResult<Json<Value>> {
     let instance = server.instance_id.as_str();
     let me = my_guild(&state, instance, &p.uuid).await?;
-    let need = |m: &Option<Me>| -> AppResult<()> { m.as_ref().map(|_| ()).ok_or_else(|| AppError::bad_request("You are not in a guild")) };
+    let need = |m: &Option<Me>| -> AppResult<()> { m.as_ref().map(|_| ()).ok_or_else(|| AppError::bad_request("You are not in a faction")) };
 
     match p.action.as_str() {
         "list" => {
@@ -95,7 +95,7 @@ pub async fn server_guild_manage(GameServer(server): GameServer, State(state): S
                 let m = me.as_ref().unwrap();
                 (m.guild_id.clone(), Some(m.role.clone()))
             } else {
-                let (id, _, _) = find_guild(&state, instance, &p.target).await?.ok_or_else(|| AppError::bad_request(format!("No guild called \"{}\"", p.target.trim())))?;
+                let (id, _, _) = find_guild(&state, instance, &p.target).await?.ok_or_else(|| AppError::bad_request(format!("No faction called \"{}\"", p.target.trim())))?;
                 let role = me.as_ref().filter(|m| m.guild_id == id).map(|m| m.role.clone());
                 (id, role)
             };
@@ -117,7 +117,7 @@ pub async fn server_guild_manage(GameServer(server): GameServer, State(state): S
             need(&me)?;
             let m = me.as_ref().unwrap();
             if !guild_can(&state, &m.guild_id, &p.uuid, "manage").await? {
-                return Err(AppError::forbidden("Only the leader, officers and roles that can manage the guild may change land rules"));
+                return Err(AppError::forbidden("Only the leader, officers and roles that can manage the faction may change land rules"));
             }
             let value = match p.text.trim().to_lowercase().as_str() {
                 "on" | "true" | "allow" | "yes" => true,
@@ -132,9 +132,9 @@ pub async fn server_guild_manage(GameServer(server): GameServer, State(state): S
         }
         "join" => {
             if me.is_some() {
-                return Err(AppError::bad_request("Leave your current guild before joining another"));
+                return Err(AppError::bad_request("Leave your current faction before joining another"));
             }
-            let (id, name, _) = find_guild(&state, instance, &p.target).await?.ok_or_else(|| AppError::bad_request(format!("No guild called \"{}\"", p.target.trim())))?;
+            let (id, name, _) = find_guild(&state, instance, &p.target).await?.ok_or_else(|| AppError::bad_request(format!("No faction called \"{}\"", p.target.trim())))?;
             create_join_request(&state, &id, &p.uuid, &p.name, &p.text).await?;
             Ok(Json(json!({ "ok": true, "message": format!("Request sent to {name}. Its leaders have been told.") })))
         }
@@ -142,7 +142,7 @@ pub async fn server_guild_manage(GameServer(server): GameServer, State(state): S
             need(&me)?;
             let m = me.as_ref().unwrap();
             if !guild_can(&state, &m.guild_id, &p.uuid, "invite").await? {
-                return Err(AppError::forbidden("Your guild role cannot review requests"));
+                return Err(AppError::forbidden("Your faction role cannot review requests"));
             }
             let rows: Vec<(String, String)> = sqlx::query_as("SELECT name, message FROM guild_join_requests WHERE guild_id = ? ORDER BY created_at").bind(&m.guild_id).fetch_all(&state.db).await?;
             Ok(Json(json!({ "ok": true, "requests": rows.into_iter().map(|(n, msg)| json!({"name": n, "message": msg})).collect::<Vec<_>>() })))
@@ -151,7 +151,7 @@ pub async fn server_guild_manage(GameServer(server): GameServer, State(state): S
             need(&me)?;
             let m = me.as_ref().unwrap();
             if !guild_can(&state, &m.guild_id, &p.uuid, "invite").await? {
-                return Err(AppError::forbidden("Your guild role cannot review requests"));
+                return Err(AppError::forbidden("Your faction role cannot review requests"));
             }
             let uuid: Option<String> = sqlx::query_scalar("SELECT uuid FROM guild_join_requests WHERE guild_id = ? AND name = ? COLLATE NOCASE")
                 .bind(&m.guild_id).bind(p.target.trim()).fetch_optional(&state.db).await?;
@@ -164,7 +164,7 @@ pub async fn server_guild_manage(GameServer(server): GameServer, State(state): S
             let m = me.as_ref().unwrap();
             let target = member_uuid(&state, &m.guild_id, &p.target).await?;
             if target == p.uuid {
-                return Err(AppError::bad_request("Use /guild leave to leave your own guild"));
+                return Err(AppError::bad_request("Use /guild leave to leave your own faction"));
             }
             let name = kick_member(&state, &m.guild_id, &p.uuid, &target).await?;
             Ok(Json(json!({ "ok": true, "message": format!("{name} was removed from {}.", m.guild_name) })))
@@ -173,12 +173,12 @@ pub async fn server_guild_manage(GameServer(server): GameServer, State(state): S
             need(&me)?;
             let m = me.as_ref().unwrap();
             if m.role != "leader" {
-                return Err(AppError::forbidden("Only the guild leader can change roles"));
+                return Err(AppError::forbidden("Only the faction leader can change roles"));
             }
             let target = member_uuid(&state, &m.guild_id, &p.target).await?;
             let current: String = sqlx::query_scalar("SELECT role FROM guild_members WHERE guild_id = ? AND uuid = ?").bind(&m.guild_id).bind(&target).fetch_one(&state.db).await?;
             if current == "leader" {
-                return Err(AppError::bad_request("That is the guild leader"));
+                return Err(AppError::bad_request("That is the faction leader"));
             }
             let role = match p.action.as_str() {
                 "promote" => "officer".to_string(),
@@ -190,11 +190,11 @@ pub async fn server_guild_manage(GameServer(server): GameServer, State(state): S
                     } else {
                         sqlx::query_scalar("SELECT name FROM guild_roles WHERE guild_id = ? AND name = ? COLLATE NOCASE").bind(&m.guild_id).bind(&wanted).fetch_optional(&state.db).await?
                     };
-                    known.ok_or_else(|| AppError::bad_request(format!("Your guild has no role called \"{wanted}\". See /guild roles")))?
+                    known.ok_or_else(|| AppError::bad_request(format!("Your faction has no role called \"{wanted}\". See /guild roles")))?
                 }
             };
             sqlx::query("UPDATE guild_members SET role = ? WHERE guild_id = ? AND uuid = ?").bind(&role).bind(&m.guild_id).bind(&target).execute(&state.db).await?;
-            notifications::push(&state.db, &target, "guild_role", "Your guild role changed", &format!("You are now {role} in {}.", m.guild_name), Some("/guild")).await;
+            notifications::push(&state.db, &target, "guild_role", "Your faction role changed", &format!("You are now {role} in {}.", m.guild_name), Some("/guild")).await;
             Ok(Json(json!({ "ok": true, "message": format!("{} is now {role}.", p.target.trim()) })))
         }
         "roles" => {
@@ -214,7 +214,7 @@ pub async fn server_guild_manage(GameServer(server): GameServer, State(state): S
             need(&me)?;
             let m = me.as_ref().unwrap();
             if !guild_can(&state, &m.guild_id, &p.uuid, "manage").await? {
-                return Err(AppError::forbidden("Only guild officers or leaders can update guild details"));
+                return Err(AppError::forbidden("Only faction officers or leaders can update faction details"));
             }
             if p.action == "motd" {
                 let text = clip(&p.text, 200, "The message of the day")?;
@@ -223,14 +223,14 @@ pub async fn server_guild_manage(GameServer(server): GameServer, State(state): S
             } else {
                 let text = clip(&p.text, 500, "The description")?;
                 sqlx::query("UPDATE guilds SET description = ? WHERE id = ?").bind(&text).bind(&m.guild_id).execute(&state.db).await?;
-                Ok(Json(json!({ "ok": true, "message": "Guild description updated." })))
+                Ok(Json(json!({ "ok": true, "message": "Faction description updated." })))
             }
         }
         "post" => {
             need(&me)?;
             let m = me.as_ref().unwrap();
             if !guild_can(&state, &m.guild_id, &p.uuid, "post").await? {
-                return Err(AppError::forbidden("Your guild role cannot post"));
+                return Err(AppError::forbidden("Your faction role cannot post"));
             }
             let title = clip(&p.title, 80, "The title")?;
             let content = clip(&p.text, 2000, "The post")?;
@@ -241,7 +241,7 @@ pub async fn server_guild_manage(GameServer(server): GameServer, State(state): S
                 .bind(&m.guild_id).bind(&p.uuid).bind(&p.name).bind(&title).bind(&content).bind(chrono::Utc::now().to_rfc3339()).execute(&state.db).await?;
             let members: Vec<String> = sqlx::query_scalar("SELECT uuid FROM guild_members WHERE guild_id = ? AND uuid <> ?").bind(&m.guild_id).bind(&p.uuid).fetch_all(&state.db).await?;
             notifications::push_many(&state.db, &members, "guild_post", &format!("{}: {title}", m.guild_name), &format!("{} posted an announcement.", p.name), Some("/guild")).await;
-            Ok(Json(json!({ "ok": true, "message": "Posted to your guild's board." })))
+            Ok(Json(json!({ "ok": true, "message": "Posted to your faction's board." })))
         }
         "posts" => {
             need(&me)?;
@@ -249,6 +249,6 @@ pub async fn server_guild_manage(GameServer(server): GameServer, State(state): S
             let rows: Vec<(String, String, String, String)> = sqlx::query_as("SELECT title, content, author_name, created_at FROM guild_posts WHERE guild_id = ? ORDER BY id DESC LIMIT 5").bind(&m.guild_id).fetch_all(&state.db).await?;
             Ok(Json(json!({ "ok": true, "posts": rows.into_iter().map(|(t, c, a, at)| json!({"title":t,"content":c,"author":a,"created_at":at})).collect::<Vec<_>>() })))
         }
-        _ => Err(AppError::bad_request("Unknown guild action")),
+        _ => Err(AppError::bad_request("Unknown faction action")),
     }
 }

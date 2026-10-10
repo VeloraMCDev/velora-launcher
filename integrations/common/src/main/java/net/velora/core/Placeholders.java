@@ -14,6 +14,7 @@ import java.util.UUID;
 public final class Placeholders {
     public static final List<String> KEYS = List.of(
             "level", "xp", "level_xp", "next_level_xp", "level_progress", "level_bar", "title", "rank_title", "leaderboard_rank",
+            "faction", "faction_tag", "faction_role", "faction_claims", "has_faction",
             "server_level", "server_xp", "server_rank", "guild", "guild_tag", "guild_role", "guild_claims", "has_guild",
             "balance", "balance_formatted", "playtime", "playtime_seconds", "playtime_hours", "server_playtime",
             "quest_progress", "quest_daily", "quest_weekly", "quest_daily_done", "quest_daily_total", "quest_weekly_done", "quest_weekly_total",
@@ -51,11 +52,11 @@ public final class Placeholders {
             case "server_level" -> String.valueOf((long) PlayerCache.num(server, "level", 1));
             case "server_xp" -> String.valueOf((long) PlayerCache.num(server, "xp", 0));
             case "server_rank" -> PlayerCache.str(server, "rank_name", "");
-            case "guild" -> PlayerCache.str(guild, "name", "");
-            case "guild_tag" -> PlayerCache.str(guild, "tag", "");
-            case "guild_role" -> PlayerCache.str(guild, "role", "");
-            case "guild_claims" -> String.valueOf((long) PlayerCache.num(guild, "claims", 0));
-            case "has_guild" -> String.valueOf(guild != null);
+            case "guild", "faction" -> PlayerCache.str(guild, "name", "");
+            case "guild_tag", "faction_tag" -> PlayerCache.str(guild, "tag", "");
+            case "guild_role", "faction_role" -> PlayerCache.str(guild, "role", "");
+            case "guild_claims", "faction_claims" -> String.valueOf((long) PlayerCache.num(guild, "claims", 0));
+            case "has_guild", "has_faction" -> String.valueOf(guild != null);
             case "balance" -> String.format(Locale.US, "%.2f", balance);
             case "balance_formatted" -> Format.money(symbol, balance);
             case "playtime" -> duration(playtime);

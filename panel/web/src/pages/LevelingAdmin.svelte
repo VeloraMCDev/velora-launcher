@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { go } from '../lib/router.svelte';
   import PlayerLink from '../components/PlayerLink.svelte';
   import { onMount } from 'svelte';
   import { Sparkles, Trophy, Plus, Pencil, Trash2, Award, Shield, Crown, RefreshCw } from '@lucide/svelte';
@@ -210,7 +211,7 @@
           Total XP required for level <em>L</em> is given by:
         </p>
         <code class="formula-box">XP = round(L ^ {curve.exponent} &times; {curve.base})</code>
-        <p class="formula-desc">{curve.max ? `Level cap: ${curve.max}.` : 'No level cap.'} <a href="#/progression">Tune the curve →</a></p>
+        <p class="formula-desc">{curve.max ? `Level cap: ${curve.max}.` : 'No level cap.'} <button class="ghost sm" onclick={() => go('progression')}>Tune the curve</button></p>
         <ul class="curve-points">
           <li><span>Level 5:</span> <strong>{calcXp(5).toLocaleString()} XP</strong></li>
           <li><span>Level 10:</span> <strong>{calcXp(10).toLocaleString()} XP</strong></li>

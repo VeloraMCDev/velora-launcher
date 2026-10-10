@@ -17,10 +17,10 @@ use std::collections::BTreeSet;
 
 /// `(id, label, help, group, default)`. `true` means allowed. The defaults match how guild land has always behaved.
 pub const GUILD_FLAGS: &[(&str, &str, &str, &str, bool)] = &[
-    ("build", "Visitors can build", "Players outside your guild can place and break blocks and use buckets on your land.", "Visitors", false),
+    ("build", "Visitors can build", "Players outside your faction can place and break blocks and use buckets on your land.", "Visitors", false),
     ("interact", "Visitors can use doors & buttons", "Doors, trapdoors, buttons, levers, pressure plates and beds.", "Visitors", false),
     ("containers", "Visitors can open chests", "Chests, barrels, furnaces, hoppers, shulker boxes and similar.", "Visitors", false),
-    ("entry", "Visitors can walk in", "Turn this off to keep everyone outside your guild off your land.", "Visitors", true),
+    ("entry", "Visitors can walk in", "Turn this off to keep everyone outside your faction off your land.", "Visitors", true),
     ("pvp", "Player vs player", "Players can hurt each other on your land. Off makes it a peaceful zone for everyone.", "Combat", true),
     ("mob_spawning", "Mobs spawn", "Mobs spawn naturally, from spawners and from eggs.", "Mobs", true),
     ("mob_griefing", "Mob griefing", "Endermen, ravagers and silverfish can change blocks.", "Mobs", false),
@@ -66,7 +66,7 @@ fn catalog(policy: &Policy) -> Vec<Value> {
 
 async fn view(state: &AppState, guild_id: &str, can_edit: bool) -> AppResult<Value> {
     let stored: Option<String> = sqlx::query_scalar("SELECT claim_flags FROM guilds WHERE id = ?").bind(guild_id).fetch_optional(&state.db).await?;
-    let stored = stored.ok_or_else(|| AppError::not_found("Guild not found"))?;
+    let stored = stored.ok_or_else(|| AppError::not_found("Faction not found"))?;
     let policy = policy(state).await?;
     Ok(json!({ "flags": resolve(&stored, &policy), "catalog": catalog(&policy), "can_edit": can_edit }))
 }
@@ -78,7 +78,7 @@ pub async fn get(user: AuthUser, State(state): State<AppState>, Path(id): Path<S
         .fetch_one(&state.db)
         .await?;
     if !member {
-        return Err(AppError::forbidden("Only members can see their guild's land rules"));
+        return Err(AppError::forbidden("Only members can see their faction's land rules"));
     }
     let can_edit = super::guilds::guild_can(&state, &id, &user.uuid, "manage").await?;
     Ok(Json(view(&state, &id, can_edit).await?))
@@ -93,13 +93,13 @@ pub struct FlagsBody {
 pub async fn change(state: &AppState, guild_id: &str, flags: &serde_json::Map<String, Value>) -> AppResult<()> {
     let policy = policy(state).await?;
     let stored: Option<String> = sqlx::query_scalar("SELECT claim_flags FROM guilds WHERE id = ?").bind(guild_id).fetch_optional(&state.db).await?;
-    let mut merged: serde_json::Map<String, Value> = serde_json::from_str(&stored.ok_or_else(|| AppError::not_found("Guild not found"))?).unwrap_or_default();
+    let mut merged: serde_json::Map<String, Value> = serde_json::from_str(&stored.ok_or_else(|| AppError::not_found("Faction not found"))?).unwrap_or_default();
     for (key, value) in flags {
         if !GUILD_FLAGS.iter().any(|f| f.0 == key) {
             return Err(AppError::bad_request(format!("Unknown rule \"{key}\"")));
         }
         if !policy.allows(key) {
-            return Err(AppError::bad_request("The server admins manage that rule, so guilds can't change it"));
+            return Err(AppError::bad_request("The server admins manage that rule, so factions can't change it"));
         }
         merged.insert(key.clone(), json!(value.as_bool().ok_or_else(|| AppError::bad_request("Rules are on or off"))?));
     }
@@ -109,7 +109,7 @@ pub async fn change(state: &AppState, guild_id: &str, flags: &serde_json::Map<St
 
 pub async fn put(user: AuthUser, State(state): State<AppState>, Path(id): Path<String>, Json(b): Json<FlagsBody>) -> AppResult<Json<Value>> {
     if !super::guilds::guild_can(&state, &id, &user.uuid, "manage").await? {
-        return Err(AppError::forbidden("Only the leader, officers and roles that can manage the guild may change land rules"));
+        return Err(AppError::forbidden("Only the leader, officers and roles that can manage the faction may change land rules"));
     }
     change(&state, &id, &b.flags).await?;
     Ok(Json(view(&state, &id, true).await?))
@@ -168,7 +168,7 @@ mod tests {
     fn locked_rules_ignore_what_a_guild_saved() {
         let policy = Policy { editable: Some(vec!["pvp".into()]) };
         let r = resolve(r#"{"pvp":false,"build":true}"#, &policy);
-        assert_eq!(r["pvp"], false, "pvp is the guild's call");
+        assert_eq!(r["pvp"], false, "pvp is the faction's call");
         assert_eq!(r["build"], false, "build is locked to its default");
     }
 }

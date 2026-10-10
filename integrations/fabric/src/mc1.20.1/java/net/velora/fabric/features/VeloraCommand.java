@@ -8,14 +8,14 @@ import net.velora.core.Format;
 import java.util.List;
 import java.util.Locale;
 
-/** /velora help | panel | status | reload (aliases /sn and /scopenet), with the same nodes as the Paper plugin. */
+/** The Velora hub command; /help shares the same command guide. */
 final class VeloraCommand implements CoreCommand {
     private final FabricFeatures features;
 
     VeloraCommand(FabricFeatures features) { this.features = features; }
 
     @Override public String name() { return "velora"; }
-    @Override public List<String> aliases() { return List.of("sn", "scopenet"); }
+    @Override public List<String> aliases() { return List.of(); }
     @Override public String permission() { return "velora.command.velora"; }
 
     @Override public List<String> complete(CorePlayer player, String[] args) {
@@ -27,14 +27,14 @@ final class VeloraCommand implements CoreCommand {
         switch (sub) {
             case "help" -> {
                 if (!p.hasPermission("velora.command.velora.help")) { p.send(Format.RED + "You do not have permission to view Velora help."); return; }
-                help(p);
+                help(p, java.util.Arrays.copyOfRange(args, Math.min(1, args.length), args.length));
             }
             case "panel", "web", "app" -> {
                 if (!p.hasPermission("velora.command.velora.panel")) { p.send(Format.RED + "You do not have permission to use /velora panel."); return; }
                 net.scopenet.integration.Integration integration = net.velora.minecraft.Bridge.integration();
                 if (integration == null) { p.send(Format.RED + "Velora is not connected to a panel yet."); return; }
                 p.send(Format.GOLD + "Player panel: " + Format.AQUA + integration.settings().panel().toString().replaceAll("/+$", "") + "/#/play");
-                p.send(Format.GRAY + "Market, casino, friends, guilds, quests and more, from any phone or browser. Sign in with your launcher account.");
+                p.send(Format.GRAY + "Market, casino, friends, factions, quests and more, from any phone or browser. Sign in with your launcher account.");
             }
             case "status" -> {
                 if (!p.hasPermission("velora.command.velora.status")) { p.send(Format.RED + "You do not have permission to use /velora status."); return; }
@@ -53,21 +53,16 @@ final class VeloraCommand implements CoreCommand {
         }
     }
 
-    private void help(CorePlayer p) {
-        p.send(Format.GOLD + "=================== " + Format.YELLOW + "Velora Commands" + Format.GOLD + " ===================");
+    void help(CorePlayer p, String[] args) {
         CommandSet set = features.commandSet();
         if (set == null) return;
-        for (CoreCommand c : set.all()) {
-            if (!c.permission().isBlank() && !p.hasPermission(c.permission())) continue;
-            String aliases = c.aliases().isEmpty() ? "" : Format.DARK_GRAY + " (" + String.join(", ", c.aliases().stream().map(a -> "/" + a).toList()) + ")";
-            p.send(Format.YELLOW + " /" + c.name() + aliases);
+        String[] query = args.clone();
+        if (query.length > 0) {
+            String requested = query[0].replaceFirst("^/", "").toLowerCase(Locale.ROOT);
+            set.all().stream().filter(c -> c.aliases().contains(requested)).findFirst().ifPresent(c -> query[0] = c.name());
         }
-        p.send(Format.GRAY + "Open the launcher's Command guide for what each one does.");
-        if (p.hasPermission("velora.admin.kits")) p.send(Format.YELLOW + " /kit create <name>" + Format.GRAY + " - Save your inventory as a kit");
-        if (p.hasPermission("velora.admin.customitem")) p.send(Format.YELLOW + " /customitem give <player> <id> [amount]" + Format.GRAY + " - Give a custom item");
-        if (p.hasPermission("velora.admin.claims")) p.send(Format.YELLOW + " /adminclaim create|add|remove|delete|rename|describe|color|list|info" + Format.GRAY + " - Protect server land");
-        if (p.hasPermission("velora.command.guild")) p.send(Format.YELLOW + " /guild " + String.join("|", net.velora.core.GuildManage.COMPLETIONS) + Format.GRAY + " - Guild management");
-        p.send(Format.YELLOW + " /velora panel" + Format.GRAY + " - Link to the player panel (market, casino, friends, guilds on any device)");
-        p.send(Format.YELLOW + " /velora map" + Format.GRAY + " - Map rendering and upload progress");
+        net.velora.core.CommandGuide.show(p, name -> name.equals("velora") || name.equals("help") ||
+                (name.equals("pshop") && features.physicalShopsEnabled()) ||
+                set.all().stream().anyMatch(c -> c.name().equals(name) && c.available()), query);
     }
 }

@@ -3,19 +3,16 @@
   import { navigation } from '@velora/experience';
   import { selectedInstance } from '../lib/store.svelte';
   import Avatar from './Avatar.svelte';
-  import McIcon from './McIcon.svelte';
   import { abs, activeAccount, app, instances, removeAccount, selectInstance, switchAccount } from '../lib/store.svelte';
 
   const pages = $derived(navigation(selectedInstance()?.experience, [
     { id: 'home', label: 'Overview' }, { id: 'quests', label: 'Quests & Objectives' },
-    { id: 'collections', label: 'Collection' }, { id: 'guilds', label: 'Guilds & Claims' },
+    { id: 'collections', label: 'Collection' }, { id: 'guilds', label: 'Factions & Claims' },
     { id: 'market', label: 'Market & Auctions' }, { id: 'casino', label: 'Casino' },
     { id: 'commands', label: 'Command guide' }, { id: 'stats', label: 'Stats & Leaderboards' },
     ...(selectedInstance()?.experience?.widgets.length ? [{ id: 'experience', label: 'Experience' }] : []),
   ]));
   const icons: Record<string, typeof Home> = { home: Home, quests: Target, collections: Award, guilds: Shield, market: Store, casino: Dice5, commands: Terminal, stats: Trophy, experience: Home };
-  // The Minecraft item that stands for each page once the game's textures are unpacked.
-  const items: Record<string, string> = { home: 'compass', quests: 'map', collections: 'name_tag', guilds: 'shield', market: 'emerald', casino: 'gold_ingot', commands: 'command_block', stats: 'diamond', experience: 'nether_star', social: 'player_head', settings: 'redstone' };
   let menu = $state(false);
   const kindLabel = { panel: 'Account', offline: 'Offline' };
   const initials = (name: string) => name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
@@ -42,20 +39,22 @@
   <div class="bottom">
     {#each pages as page (page.id)}
       {@const Icon = icons[page.id] ?? Home}
-      <button class="ghost icon big nav" class:on={app.view === page.id} onclick={() => (app.view = page.id as typeof app.view)} aria-label={page.label} data-label={page.label}><McIcon item={items[page.id]} fallback={Icon} size={22} /></button>
+      <button class="ghost big nav" class:on={app.view === page.id} aria-current={app.view === page.id ? 'page' : undefined} onclick={() => (app.view = page.id as typeof app.view)} aria-label={page.label}><Icon size={18} /><span>{page.label}</span></button>
     {/each}
-    <button class="ghost icon big nav" class:on={app.view === 'social'} onclick={() => (app.view = 'social')} aria-label="Friends & Social" data-label="Friends & Social">
-      <McIcon item={items.social} fallback={Users} size={22} />
+    <button class="ghost big nav" class:on={app.view === 'social'} aria-current={app.view === 'social' ? 'page' : undefined} onclick={() => (app.view = 'social')} aria-label="Friends & Social">
+      <Users size={18} /><span>Friends & Social</span>
     </button>
 
 
-    <button class="ghost icon big nav" class:on={app.view === 'settings'} onclick={() => (app.view = 'settings')} aria-label="Settings" data-label="Settings">
-      <McIcon item={items.settings} fallback={Settings} size={22} />
+    <button class="ghost big nav" class:on={app.view === 'settings'} aria-current={app.view === 'settings' ? 'page' : undefined} onclick={() => (app.view = 'settings')} aria-label="Settings">
+      <Settings size={18} /><span>Settings</span>
       {#if app.update}<span class="dot"></span>{/if}
     </button>
+  </div>
     <div class="account">
-      <button class="me" onclick={() => (menu = !menu)} aria-label="Accounts">
+      <button class="me" onclick={() => (menu = !menu)} aria-label="Accounts" aria-expanded={menu}>
         <Avatar account={activeAccount()} size={2.3} />
+        <span>{activeAccount()?.username ?? 'Accounts'}</span>
       </button>
       {#if menu}
         <div class="menu glass">
@@ -74,12 +73,11 @@
         </div>
       {/if}
     </div>
-  </div>
 </nav>
 
 <style>
-  .rail { width: 4.5rem; display: flex; flex-direction: column; align-items: center; padding: 0.75rem 0 0.9rem; gap: 0.6rem; border: none; border-right: 1px solid var(--line); border-radius: 0; background: color-mix(in srgb, var(--surface) 60%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); position: relative; z-index: 20; flex-shrink: 0; }
-  .list { display: flex; flex-direction: column; gap: 0.65rem; align-items: center; overflow-y: auto; overflow-x: visible; flex: 1; width: 100%; padding: 0.2rem 0; scrollbar-width: none; }
+  .rail { width: 12.5rem; display: flex; flex-direction: column; align-items: center; padding: 0.75rem 0.6rem 0.9rem; gap: 0.6rem; border: none; border-right: 1px solid var(--line); border-radius: 0; background: color-mix(in srgb, var(--surface) 60%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); position: relative; z-index: 20; flex-shrink: 0; }
+  .list { display: flex; flex-wrap: wrap; gap: 0.65rem; align-items: center; width: 100%; padding: 0.2rem 0 0.8rem; border-bottom: 1px solid var(--line); }
   .inst {
     width: 3rem; height: 3rem; padding: 0; border-radius: var(--radius); position: relative; flex-shrink: 0; overflow: visible;
     background: color-mix(in srgb, var(--text) 6%, transparent); border: 1px solid transparent; font-weight: 600; font-size: 0.85rem;
@@ -90,18 +88,18 @@
   .inst.active { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--text); border-color: color-mix(in srgb, var(--accent) 55%, transparent); box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 30%, transparent); }
   .inst.active::before { content: ''; position: absolute; left: -0.75rem; top: 0.65rem; bottom: 0.65rem; width: 3.5px; border-radius: 0 3px 3px 0; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
   .inst.running::after { content: ''; position: absolute; right: -0.2rem; bottom: -0.2rem; width: 0.8rem; height: 0.8rem; border-radius: 50%; background: var(--success); border: 2px solid var(--bg); }
-  .tip { position: fixed; left: 5.2rem; transform: translateY(0); font-style: normal; font-size: 0.82rem; font-weight: 600; max-width: 16rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0.4rem 0.75rem; border-radius: 0.5rem; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 50; color: var(--text); }
+  .tip { position: fixed; left: 13.2rem; transform: translateY(0); font-style: normal; font-size: 0.82rem; font-weight: 600; max-width: 16rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0.4rem 0.75rem; border-radius: 0.5rem; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 50; color: var(--text); }
   .inst:hover .tip { opacity: 1; }
-  .bottom { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
-  .big { width: 2.6rem; height: 2.6rem; position: relative; border-radius: var(--radius-sm); transition: transform 0.15s var(--ease), background 0.15s, box-shadow 0.2s; }
-  .big:hover { transform: scale(1.05); }
+  .bottom { display: flex; flex-direction: column; align-items: stretch; gap: 0.3rem; width: 100%; flex: 1; min-height: 0; overflow-y: auto; }
+  .big { width: 100%; min-height: 2.6rem; padding: .65rem .6rem; justify-content: flex-start; gap: .65rem; position: relative; border-radius: var(--radius-sm); transition: background 0.15s; font-size: .8rem; text-align: left; }
+  .nav :global(svg) { flex-shrink: 0; } .nav span { line-height: 1.3; }
+  .big:hover { background: var(--surface-2); }
   .big.on { color: var(--text); background: color-mix(in srgb, var(--accent) 16%, transparent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); box-shadow: 0 0 14px -2px var(--glow); }
-  .big.on::before { content: ""; position: absolute; left: -0.95rem; top: 0.55rem; bottom: 0.55rem; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: fade 0.25s ease; }
-  .nav::after { content: attr(data-label); position: absolute; left: calc(100% + 0.9rem); top: 50%; transform: translate(-0.3rem, -50%); white-space: nowrap; font-size: 0.8rem; font-weight: 600; padding: 0.35rem 0.7rem; border-radius: 0.5rem; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); opacity: 0; pointer-events: none; transition: opacity 0.15s, transform 0.15s var(--ease); z-index: 50; }
-  .nav:hover::after, .nav:focus-visible::after { opacity: 1; transform: translate(0, -50%); transition-delay: 0.25s; }
+  .big.on::before { content: ""; position: absolute; left: 0; top: 0.55rem; bottom: 0.55rem; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: fade 0.25s ease; }
   .dot { position: absolute; top: 0.55rem; right: 0.55rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--accent); }
-  .account { position: relative; margin-top: 0.3rem; }
-  .me { padding: 0.15rem; border-radius: 30%; background: transparent; border-color: transparent; }
+  .account { position: relative; margin-top: 0.3rem; width: 100%; }
+  .me { padding: 0.4rem; border-radius: var(--radius-sm); background: transparent; border-color: transparent; width: 100%; justify-content: flex-start; gap: .65rem; }
+  .me span { overflow: hidden; text-overflow: ellipsis; }
   .me:hover { border-color: var(--line-strong); background: transparent; }
   .menu { position: absolute; left: calc(100% + 0.9rem); bottom: 0; width: 17rem; padding: 0.6rem; display: flex; flex-direction: column; gap: 0.25rem; background: var(--surface); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: 0 0.8rem 2.5rem -0.5rem rgba(0, 0, 0, 0.6); animation: pop-in 0.16s var(--ease); z-index: 60; transform-origin: bottom left; }
   @keyframes pop-in { from { opacity: 0; transform: translateX(-0.4rem) scale(0.96); } }

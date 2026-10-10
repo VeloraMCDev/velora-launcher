@@ -36,7 +36,7 @@ class ClaimIndexTest {
         assertEquals(Boolean.FALSE, index.adminFlag("minecraft:overworld", 0, 0, "fly"));
         assertEquals(Boolean.TRUE, index.adminFlag("minecraft:overworld", 0, 0, "mob_spawning"), "an unset flag takes the panel's default");
         assertEquals(Boolean.FALSE, index.adminFlag("minecraft:overworld", 0, 0, "explosions"), "protected by default");
-        assertNull(index.adminFlag("minecraft:overworld", 1, 0, "build"), "a guild named like an admin claim is still just a guild");
+        assertNull(index.adminFlag("minecraft:overworld", 1, 0, "build"), "a faction named like an admin claim is still just a faction");
         assertNull(index.adminFlag("minecraft:overworld", 9, 9, "pvp"), "wilderness");
         assertEquals(Boolean.FALSE, index.adminFlag("minecraft:overworld", 2, 0, "build"), "an admin claim with no flags at all is fully protected");
         assertEquals(Boolean.TRUE, index.adminFlag("minecraft:overworld", 2, 0, "pvp"));
@@ -50,10 +50,10 @@ class ClaimIndexTest {
                            {"id":"g2","name":"Gold","tag":"GOLD"}],
                  "claims":[["minecraft:overworld",0,0,0],["minecraft:overworld",1,0,1]],
                  "members":{}}"""));
-        assertEquals(Boolean.TRUE, index.claimFlag("minecraft:overworld", 0, 0, "build"), "this guild lets visitors build");
+        assertEquals(Boolean.TRUE, index.claimFlag("minecraft:overworld", 0, 0, "build"), "this faction lets visitors build");
         assertEquals(Boolean.FALSE, index.claimFlag("minecraft:overworld", 0, 0, "pvp"), "and keeps the peace");
         assertEquals(Boolean.FALSE, index.claimFlag("minecraft:overworld", 0, 0, "entry"));
-        assertEquals(Boolean.FALSE, index.claimFlag("minecraft:overworld", 1, 0, "build"), "an untouched guild stays protected");
+        assertEquals(Boolean.FALSE, index.claimFlag("minecraft:overworld", 1, 0, "build"), "an untouched faction stays protected");
         assertEquals(Boolean.TRUE, index.claimFlag("minecraft:overworld", 1, 0, "pvp"));
         assertEquals(Boolean.FALSE, index.claimFlag("minecraft:overworld", 1, 0, "explosions"));
         assertNull(index.claimFlag("minecraft:overworld", 9, 9, "build"), "wilderness has no rules");
@@ -71,9 +71,9 @@ class ClaimIndexTest {
                  "members":{"g1":["b50ad385-829d-3141-a216-7e7d7539ba7f"],"g2":["b50ad385-829d-3141-a216-7e7d7539ba7f"]}}"""));
         String d = "minecraft:overworld";
         assertTrue(index.mayModify(d, 9, 9, OUTSIDER, "build"), "wilderness is open");
-        assertTrue(index.mayModify(d, 0, 0, OUTSIDER, "build"), "this guild opened building to visitors");
+        assertTrue(index.mayModify(d, 0, 0, OUTSIDER, "build"), "this faction opened building to visitors");
         assertFalse(index.mayModify(d, 0, 0, OUTSIDER, "containers"), "but not its chests");
-        assertFalse(index.mayModify(d, 1, 0, OUTSIDER, "build"), "an untouched guild stays closed");
+        assertFalse(index.mayModify(d, 1, 0, OUTSIDER, "build"), "an untouched faction stays closed");
         assertTrue(index.mayModify(d, 1, 0, MEMBER, "build"), "members always may");
         assertTrue(index.mayModify(d, 2, 0, OUTSIDER, "interact"), "an admin claim can leave doors usable");
         assertFalse(index.mayModify(d, 2, 0, OUTSIDER, "build"));

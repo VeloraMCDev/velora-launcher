@@ -84,7 +84,7 @@ pub fn default_templates() -> BTreeMap<String, EmbedStyle> {
             color: "#fcd34d".into(),
             thumbnail: "{avatar}".into(),
             footer: "{category} · {server_name}".into(),
-            fields: vec![field("Reward", "+{xp} XP", true), field("Level", "{level}", true), field("Guild", "{guild_line}", true)],
+            fields: vec![field("Reward", "+{xp} XP", true), field("Level", "{level}", true), field("Faction", "{guild_line}", true)],
             ..Default::default()
         },
     );
@@ -103,11 +103,11 @@ pub fn default_templates() -> BTreeMap<String, EmbedStyle> {
     m.insert(
         "guild".to_string(),
         EmbedStyle {
-            title: "🛡️ New guild".into(),
+            title: "🛡️ New faction".into(),
             description: "**{guild}** [{tag}] was founded by **{leader}**.\n{guild_description}".into(),
             color: "#22d3ee".into(),
             thumbnail: "{leader_avatar}".into(),
-            footer: "{guilds_total} guilds in total · {server_name}".into(),
+            footer: "{guilds_total} factions in total · {server_name}".into(),
             fields: vec![field("Leader", "{leader}", true), field("Members", "{members}", true), field("Land", "{claims} chunks", true)],
             ..Default::default()
         },
@@ -345,7 +345,7 @@ pub async fn player_vars(state: &AppState, uuid: &str, name: &str) -> Vars {
     let (gn, gt) = guild.unwrap_or_default();
     v.insert("guild".into(), plain(&gn));
     v.insert("guild_tag".into(), plain(&gt));
-    v.insert("guild_line".into(), if gn.is_empty() { "No guild".into() } else { format!("[{}] {}", plain(&gt), plain(&gn)) });
+    v.insert("guild_line".into(), if gn.is_empty() { "No faction".into() } else { format!("[{}] {}", plain(&gt), plain(&gn)) });
     v
 }
 
@@ -503,8 +503,8 @@ pub fn default_live() -> BTreeMap<String, LiveConfig> {
         LiveConfig {
             style: EmbedStyle {
                 enabled: false,
-                title: "🛡️ Active guilds".into(),
-                description: "{rows}\n\n{guilds_total} guilds · {claims_total} claimed chunks".into(),
+                title: "🛡️ Active factions".into(),
+                description: "{rows}\n\n{guilds_total} factions · {claims_total} claimed chunks".into(),
                 color: "#22d3ee".into(),
                 footer: "{server_name}".into(),
                 ..Default::default()

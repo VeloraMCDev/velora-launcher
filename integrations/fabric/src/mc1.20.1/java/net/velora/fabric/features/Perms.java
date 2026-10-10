@@ -16,14 +16,15 @@ final class Perms {
 
     /** The pre-rename node for a velora.* node, so permission setups made before the rename keep working. */
     static String legacy(String node) {
-        return node.startsWith("velora.") ? "scopenet." + node.substring(7).replace("command.velora", "command.scopenet") : node;
+        if (node.equals("faction.fly")) return "guild.fly";
+        return node.startsWith("velora.") ? "scopenet." + node.substring(7).replace("command.velora", "command.scopenet").replace("command.faction", "command.guild") : node;
     }
 
     static boolean luckPermsPresent() { return LUCKPERMS; }
 
     /** Nodes that grant extras (limit tiers like velora.homes.10): nobody has them unless a permissions system says so. */
     static boolean isGrantNode(String node) {
-        return node.startsWith("velora.homes.") || node.startsWith("velora.limit.") || node.equals("free.fly") || node.equals("guild.fly")
+        return node.startsWith("velora.homes.") || node.startsWith("velora.limit.") || node.equals("free.fly") || node.equals("faction.fly")
                 || node.startsWith("velora.vault.") || node.startsWith("velora.kit.") || node.startsWith("group.");
     }
 

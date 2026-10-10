@@ -5,7 +5,7 @@ export interface Binding { id: string; label: string; default: string }
 export const BIND_GROUPS: { title: string; binds: Binding[] }[] = [
   { title: 'Velora Companion · Fabric 26.3', binds: [
     {id:'key.scopenet.hub',label:'Open Velora',default:'key.keyboard.k'},
-    ...[['vaults','Vaults and kits'],['map','World map'],['guild','Guild hall'],['casino','Casino'],['market','Marketplace'],['quests','Quest journal'],['travel','Travel'],['friends','Friends'],['catalog','Content collection'],['hud','HUD preview']].map(([id,label])=>({id:`key.scopenet.${id}`,label,default:'key.keyboard.unknown'})),
+    ...[['vaults','Vaults and kits'],['map','World map'],['guild','Faction hall'],['casino','Casino'],['market','Marketplace'],['quests','Quest journal'],['travel','Travel'],['friends','Friends'],['catalog','Content collection'],['hud','HUD preview']].map(([id,label])=>({id:`key.scopenet.${id}`,label,default:'key.keyboard.unknown'})),
   ] },
   {
     title: 'Movement',

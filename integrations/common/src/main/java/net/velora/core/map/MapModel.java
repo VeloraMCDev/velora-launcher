@@ -37,7 +37,7 @@ public final class MapModel {
         return out.toString();
     }
 
-    /** A stable, pleasant colour per guild: hue from the id, fixed saturation and lightness. */
+    /** A stable, pleasant colour per faction: hue from the id, fixed saturation and lightness. */
     public static int guildColor(String guildId) {
         int h = guildId.hashCode();
         double hue = Math.floorMod(h, 360);
@@ -91,7 +91,7 @@ public final class MapModel {
         s.warps().forEach((name, p) -> pins.add(new MapData.Pin("warp-" + name, "warp", "Warp: " + name, p.world(), p.x(), p.y(), p.z(),
                 "<div class=\"velora-detail\"><strong>Warp</strong> " + escape(name) + "<br><code>/warp " + escape(name) + "</code></div>")));
         s.guildHomes().forEach((guildId, home) -> pins.add(new MapData.Pin("guild-home-" + guildId, "guild_home", home.label(), home.pos().world(),
-                home.pos().x(), home.pos().y(), home.pos().z(), "<div class=\"velora-detail\"><strong>" + escape(home.label()) + "</strong><br>Guild home</div>")));
+                home.pos().x(), home.pos().y(), home.pos().z(), "<div class=\"velora-detail\"><strong>" + escape(home.label()) + "</strong><br>Faction home</div>")));
         if (s.showHomes()) {
             s.homes().forEach((owner, byName) -> byName.forEach((name, p) -> {
                 String who = s.homeOwners().getOrDefault(owner, "a player");
@@ -120,7 +120,7 @@ public final class MapModel {
         for (JsonElement e : listings) {
             if (shown++ >= 5) break;
             JsonObject l = e.getAsJsonObject();
-            String guild = l.has("seller_guild") && l.get("seller_guild").isJsonPrimitive() ? "[" + l.get("seller_guild").getAsString() + "] guild" : text(l, "seller_name");
+            String guild = l.has("seller_guild") && l.get("seller_guild").isJsonPrimitive() ? "[" + l.get("seller_guild").getAsString() + "] faction" : text(l, "seller_name");
             b.append("<li>").append(escape(text(l, "item_name"))).append(" x").append(l.has("amount") ? l.get("amount").getAsInt() : 1)
                     .append(" &middot; ").append(String.format(Locale.US, "%,.2f", l.has("price") ? l.get("price").getAsDouble() : 0))
                     .append(" <span>by ").append(escape(guild)).append("</span></li>");

@@ -39,7 +39,9 @@ export function preset(kind: 'smp' | 'frontiers'): Experience {
 export function navigation(experience: Experience | undefined, defaults: { id: string; label: string }[]) {
   const pages = defaults.filter(p => pageEnabled(experience, p.id));
   const configured = experience?.navigation ?? [];
-  return configured.length
+  const result = configured.length
     ? [...configured.filter(p => pages.some(d => d.id === p.id)), ...pages.filter(p => !configured.some(c => c.id === p.id))]
     : pages;
+  // Old saved navigation labels remain compatible with the Faction presentation.
+  return result.map(p => p.id === 'guilds' ? { ...p, label: p.label.replace(/\bguilds\b/gi, 'Factions').replace(/\bguild\b/gi, 'Faction') } : p);
 }

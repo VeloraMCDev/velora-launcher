@@ -1,4 +1,4 @@
-import { Alert, Badge, Checkbox, Code, Group, PasswordInput, Stack, Switch, Text } from '@mantine/core';
+import { Alert, Badge, Checkbox, Code, Group, PasswordInput, Stack, Text } from '@mantine/core';
 import { useCallback, useEffect, useState } from 'react';
 import { httpErrorToHuman } from '@/api/axios.ts';
 import Button from '@/elements/buttons/Button.tsx';
@@ -8,7 +8,7 @@ import Spinner from '@/elements/feedback/Spinner.tsx';
 import { useServerCan } from '@/plugins/usePermissions.ts';
 import { useToast } from '@/providers/ToastProvider.tsx';
 import { useServerStore } from '@/stores/server.ts';
-import { connect, getStatus, install, installAuthlib, ServerStatus, setAutoUpdate } from '../api/veloraCore.ts';
+import { connect, getStatus, installAuthlib, ServerStatus } from '../api/veloraCore.ts';
 
 export default function ServerVeloraCore() {
   const { addToast } = useToast();
@@ -48,12 +48,10 @@ export default function ServerVeloraCore() {
     );
   }
 
-  const stopped = status.server_state === 'offline';
   const hasJar = status.installed_version !== null;
-  const canInstallNow = status.latest !== null && (!hasJar || stopped);
 
   return (
-    <ServerContentContainer title='Velora Core' subtitle='Connect this server to your Velora Panel and keep the Velora Core mod up to date.'>
+    <ServerContentContainer title='Velora Core' subtitle='Connect this server to your Velora Panel and inspect its Velora Core installation.'>
       <Stack gap='md'>
         {!status.configured && (
           <Alert color='yellow' title='The Velora Panel address is not set'>
@@ -71,23 +69,10 @@ export default function ServerVeloraCore() {
               <Text size='sm'>Approved release:</Text>
               {status.latest ? <Badge>{status.latest.version} for Minecraft {status.latest.minecraft}</Badge> : <Badge color='gray'>None approved yet</Badge>}
             </Group>
-            {status.legacy_install && <Text size='sm' c='dimmed'>This is the older SCOPENET build. Updating replaces it with Velora Core and keeps your configuration.</Text>}
+            {status.legacy_install && <Text size='sm' c='dimmed'>An older build is installed. Download Velora Core from the Admin Panel and replace the old mod jar while the server is stopped.</Text>}
             {!status.fabric_api_present && hasJar && <Alert color='yellow'>Fabric API was not found in the mods folder. Velora Core needs it.</Alert>}
-            {status.update_available && !stopped && <Text size='sm' c='dimmed'>An update is available. It is installed when the server is stopped{status.auto_update ? ', and this server updates itself on its next restart' : ''}.</Text>}
-            <ServerCanButtons
-              disabled={!canManage || !canInstallNow || busy !== null}
-              loading={busy === 'install'}
-              label={hasJar ? (status.update_available ? 'Update now' : 'Reinstall') : 'Install Velora Core'}
-              onClick={() => run('install', () => install(server.uuid))}
-            />
-            <Switch
-              label='Update this server automatically'
-              description='When a new release is approved, it is installed the next time this server is stopped. Players are never interrupted.'
-              checked={status.auto_update}
-              disabled={!canManage || !status.auto_update_enabled}
-              onChange={(event) => run('auto', async () => { await setAutoUpdate(server.uuid, event.currentTarget.checked); })}
-            />
-            {!status.auto_update_enabled && <Text size='xs' c='dimmed'>Automatic updates are switched off for the whole Panel in the extension settings.</Text>}
+            <Text size='sm' c='dimmed'>Download the Server jar from the Velora Admin Panel under Instance setup / Mod downloads. Stop this server, upload the jar to mods/, remove the previous Velora Core jar and restart. Install Fabric API for the matching Minecraft version.</Text>
+            {status.panel_url && <a href={status.panel_url + '/#/instances'} target='_blank' rel='noreferrer'>Open Velora Admin Panel</a>}
           </Stack>
         </TitleCard>
 
@@ -139,12 +124,3 @@ export default function ServerVeloraCore() {
   );
 }
 
-function ServerCanButtons({ label, loading, disabled, onClick }: { label: string; loading: boolean; disabled: boolean; onClick: () => void }) {
-  return (
-    <Group>
-      <Button loading={loading} disabled={disabled} onClick={onClick}>
-        {label}
-      </Button>
-    </Group>
-  );
-}

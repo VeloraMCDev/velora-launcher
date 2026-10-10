@@ -1,7 +1,7 @@
 {
   "name": "Velora Player Panel",
   "short_name": "Velora",
-  "description": "Market, casino, friends, guilds and more, from any device.",
+  "description": "Market, casino, friends, factions and more, from any device.",
   "start_url": "/#/play",
   "scope": "/",
   "display": "standalone",

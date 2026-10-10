@@ -1,4 +1,4 @@
-//! Per-server Velora Core page: what is installed, connect it to the Velora Panel, install and update it.
+//! Per-server Velora Core page: what is installed, connect it to the Velora Panel and explain manual installation.
 use super::State;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
@@ -35,9 +35,9 @@ mod status {
         /// `scopenet.properties` exists but `velora-core.properties` does not; the mod copies it on first start.
         legacy_config: bool,
         authlib_present: bool,
-        /// This server updates itself when it is stopped.
+        /// Always false: mod installation is manual.
         auto_update: bool,
-        /// Automatic updates are switched on for the whole Panel.
+        /// Always false: no automatic updater is registered.
         auto_update_enabled: bool,
         update_available: bool,
         server_state: Option<String>,
@@ -94,79 +94,16 @@ mod status {
             config_present: config_names.iter().any(|n| n == "velora-core.properties"),
             legacy_config: config_names.iter().any(|n| n == "scopenet.properties") && !config_names.iter().any(|n| n == "velora-core.properties"),
             authlib_present: root_names.iter().any(|n| n == "authlib-injector.jar"),
-            auto_update: config.linked.contains(&server.uuid),
-            auto_update_enabled: config.auto_update,
+            auto_update: false,
+            auto_update_enabled: false,
             update_available,
             server_state: wings::power_state(&state, &server).await.ok().flatten(),
-            last_result: updater::last_result(server.uuid).await,
+            last_result: None,
             javaagent_flag: (!config.panel_url.is_empty()).then(|| velora::javaagent_flag(&config.panel_url)),
             latest: latest.map(|l| Release { version: l.version, minecraft: l.minecraft, notes: l.notes }),
             error,
         })
         .ok()
-    }
-}
-
-mod install {
-    use crate::{settings, updater, velora};
-    use axum::http::StatusCode;
-    use serde::{Deserialize, Serialize};
-    use shared::{
-        GetState,
-        models::{
-            server::{GetServer, GetServerActivityLogger},
-            user::GetPermissionManager,
-        },
-        response::{ApiResponse, ApiResponseResult},
-    };
-    use std::time::Duration;
-    use utoipa::ToSchema;
-
-    #[derive(ToSchema, Deserialize)]
-    pub struct Payload {}
-
-    #[derive(ToSchema, Serialize)]
-    struct Response {
-        message: String,
-    }
-
-    #[utoipa::path(post, path = "/install", responses(
-        (status = OK, body = inline(Response)),
-        (status = CONFLICT, body = shared::ApiError),
-        (status = EXPECTATION_FAILED, body = shared::ApiError),
-    ), params(
-        ("server" = uuid::Uuid, description = "The server ID"),
-    ), request_body = inline(Payload))]
-    pub async fn route(
-        state: GetState,
-        permissions: GetPermissionManager,
-        server: GetServer,
-        activity_logger: GetServerActivityLogger,
-        shared::Payload(_data): shared::Payload<Payload>,
-    ) -> ApiResponseResult {
-        permissions.has_server_permission("velora-core.manage")?;
-        let state = state.0;
-        let server = server.0;
-        let config = settings::load(&state).await?;
-        if config.panel_url.is_empty() {
-            return ApiResponse::error("Ask an administrator to set the Velora Panel address in the Velora Core extension settings first.").with_status(StatusCode::CONFLICT).ok();
-        }
-        let latest = match velora::latest(&config.panel_url, Duration::from_secs(5)).await {
-            Ok(Some(latest)) => latest,
-            Ok(None) => return ApiResponse::error("The Velora Panel has not approved a Velora Core release yet.").with_status(StatusCode::CONFLICT).ok(),
-            Err(err) => return ApiResponse::error(&format!("The Velora Panel could not be reached: {err}")).with_status(StatusCode::EXPECTATION_FAILED).ok(),
-        };
-        let current = updater::installed(&state, &server).await?;
-        if !updater::may_change(&state, &server, !current.jars.is_empty()).await? {
-            return ApiResponse::error("Stop the server before updating Velora Core. The jar is replaced while the server is offline.").with_status(StatusCode::CONFLICT).ok();
-        }
-        match updater::install(&state, &server, &config.panel_url, &latest).await {
-            Ok(outcome) => {
-                activity_logger.log("server:velora-core.install", serde_json::json!({ "version": latest.version })).await;
-                ApiResponse::new_serialized(Response { message: outcome.message() }).ok()
-            }
-            Err(err) => ApiResponse::error(&err.to_string()).with_status(StatusCode::EXPECTATION_FAILED).ok(),
-        }
     }
 }
 
@@ -287,59 +224,10 @@ mod authlib {
     }
 }
 
-mod auto_update {
-    use crate::settings;
-    use serde::{Deserialize, Serialize};
-    use shared::{
-        GetState,
-        models::{
-            server::{GetServer, GetServerActivityLogger},
-            user::GetPermissionManager,
-        },
-        response::{ApiResponse, ApiResponseResult},
-    };
-    use utoipa::ToSchema;
-
-    #[derive(ToSchema, Deserialize)]
-    pub struct Payload {
-        enabled: bool,
-    }
-
-    #[derive(ToSchema, Serialize)]
-    struct Response {}
-
-    #[utoipa::path(put, path = "/auto-update", responses(
-        (status = OK, body = inline(Response)),
-    ), params(
-        ("server" = uuid::Uuid, description = "The server ID"),
-    ), request_body = inline(Payload))]
-    pub async fn route(
-        state: GetState,
-        permissions: GetPermissionManager,
-        server: GetServer,
-        activity_logger: GetServerActivityLogger,
-        shared::Payload(data): shared::Payload<Payload>,
-    ) -> ApiResponseResult {
-        permissions.has_server_permission("velora-core.manage")?;
-        let id = server.0.uuid;
-        settings::update(&state.0, |s| {
-            s.linked.retain(|linked| *linked != id);
-            if data.enabled {
-                s.linked.push(id);
-            }
-        })
-        .await?;
-        activity_logger.log("server:velora-core.auto-update", serde_json::json!({ "enabled": data.enabled })).await;
-        ApiResponse::new_serialized(Response {}).ok()
-    }
-}
-
 pub fn router(state: &State) -> OpenApiRouter<State> {
     OpenApiRouter::new()
         .routes(routes!(status::route))
-        .routes(routes!(install::route))
         .routes(routes!(connect::route))
         .routes(routes!(authlib::route))
-        .routes(routes!(auto_update::route))
         .with_state(state.clone())
 }

@@ -13,11 +13,11 @@
   const events = [
     { id: 'achievement', title: 'Achievement unlocked', blurb: 'When a player earns an achievement.' },
     { id: 'member', title: 'New player', blurb: 'When a new player account is approved.' },
-    { id: 'guild', title: 'New guild', blurb: 'When a guild is founded.' }
+    { id: 'guild', title: 'New faction', blurb: 'When a faction is founded.' }
   ];
   const lives = [
     { id: 'status', title: 'Server status', blurb: 'Every server: online, players, TPS and version.' },
-    { id: 'guilds', title: 'Active guilds', blurb: 'The top guilds with members, land and level.' },
+    { id: 'guilds', title: 'Active factions', blurb: 'The top factions with members, land and level.' },
     { id: 'leaderboard', title: 'Player leaderboard', blurb: 'Top players by playtime, level, kills or blocks.' },
     { id: 'baltop', title: 'Richest players', blurb: 'The top balances on a server economy.' }
   ];
@@ -123,7 +123,7 @@
           <div class="live-opts">
             <h3>Live settings</h3>
             <div class="grid">
-              <label class="field wide">Line for each row <small>one line per server, guild or player. Fills {'{rows}'} in the description.</small><input bind:value={c.row} placeholder="Leave empty for the default" /></label>
+              <label class="field wide">Line for each row <small>one line per server, faction or player. Fills {'{rows}'} in the description.</small><input bind:value={c.row} placeholder="Leave empty for the default" /></label>
               <label class="field">Update every
                 <select bind:value={c.interval_secs}>
                   {#each [[60, '1 minute'], [120, '2 minutes'], [300, '5 minutes'], [900, '15 minutes'], [3600, '1 hour']] as [v, l]}<option value={v}>{l}</option>{/each}

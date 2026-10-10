@@ -91,7 +91,7 @@
         joinRequests = [];
       }
     } catch (e: any) {
-      toast(e?.message ?? 'Failed to load guild data', 'error');
+      toast(e?.message ?? 'Failed to load faction data', 'error');
     } finally {
       loading = false;
     }
@@ -114,7 +114,7 @@
   }
 
   async function makePrimary(guildId: string, serverId: number) {
-    try { await invoke('set_primary_guild', { guildId, serverId }); toast('Primary guild updated for this server', 'ok'); await loadInstanceGuildData(); }
+    try { await invoke('set_primary_guild', { guildId, serverId }); toast('Primary faction updated for this server', 'ok'); await loadInstanceGuildData(); }
     catch (e: any) { toast(String(e), 'error'); }
   }
   async function sendRelation() {
@@ -147,7 +147,7 @@
     if (!myGuild) return;
     try {
       await invoke('respond_guild_join_request', { guildId: myGuild.id, uuid: req.uuid, accept });
-      toast(accept ? `${req.name} joined the guild` : 'Request declined', 'ok');
+      toast(accept ? `${req.name} joined the faction` : 'Request declined', 'ok');
       await loadInstanceGuildData();
     } catch (e: any) { toast(String(e), 'error'); }
   }
@@ -158,7 +158,7 @@
       await invoke('create_guild_role', { guildId: myGuild.id, role: { name: newRoleName.trim(), ...roleFlags } });
       newRoleName = '';
       roles = (await invoke<GuildRole[] | null>('get_guild_roles', { guildId: myGuild.id })) ?? [];
-      toast('Guild role created', 'ok');
+      toast('Faction role created', 'ok');
     } catch (e: any) { toast(String(e), 'error'); }
   }
 
@@ -167,7 +167,7 @@
     try {
       await invoke('assign_guild_role', { guildId: myGuild.id, uuid: member.uuid, role });
       member.role = role as GuildMember['role'];
-      toast('Guild role assigned', 'ok');
+      toast('Faction role assigned', 'ok');
     } catch (e: any) { toast(String(e), 'error'); }
   }
 
@@ -181,7 +181,7 @@
     try {
       await invoke('kick_guild_member', { guildId: myGuild.id, uuid: m.uuid });
       members = members.filter((x) => x.uuid !== m.uuid);
-      toast(`${m.name} was removed from the guild`, 'ok');
+      toast(`${m.name} was removed from the faction`, 'ok');
     } catch (e: any) { toast(String(e), 'error'); }
     confirmKick = null;
   }
@@ -190,7 +190,7 @@
     if (!myGuild) return;
     try {
       await invoke('transfer_guild_leader', { guildId: myGuild.id, uuid: m.uuid });
-      toast(`${m.name} now leads the guild. You are an officer.`, 'ok');
+      toast(`${m.name} now leads the faction. You are an officer.`, 'ok');
       await loadInstanceGuildData();
     } catch (e: any) { toast(String(e), 'error'); }
     confirmLeader = null;
@@ -201,7 +201,7 @@
     try {
       await invoke('delete_guild_role', { guildId: myGuild.id, roleId: role.id });
       await loadInstanceGuildData();
-      toast('Guild role deleted', 'ok');
+      toast('Faction role deleted', 'ok');
     } catch (e: any) { toast(String(e), 'error'); }
   }
 
@@ -224,8 +224,8 @@
     try {
       await invoke('rename_guild', { guildId: myGuild.id, name: renameName.trim(), tag: renameTag.trim() });
       await loadInstanceGuildData();
-      toast('Guild renamed', 'ok');
-    } catch (e: any) { toast(typeof e === 'string' ? e : e?.message ?? 'Could not rename the guild', 'error'); }
+      toast('Faction renamed', 'ok');
+    } catch (e: any) { toast(typeof e === 'string' ? e : e?.message ?? 'Could not rename the faction', 'error'); }
     finally { renaming = false; }
   }
   let disbandOpen = $state(false), disbandConfirm = $state(''), disbanding = $state(false);
@@ -235,9 +235,9 @@
     try {
       const r = await invoke<{ refunded?: number }>('disband_guild', { guildId: myGuild.id });
       disbandOpen = false; disbandConfirm = '';
-      toast(r?.refunded ? `Guild disbanded. ${r.refunded.toLocaleString()} from the treasury was paid to you.` : 'Guild disbanded', 'ok');
+      toast(r?.refunded ? `Faction disbanded. ${r.refunded.toLocaleString()} from the treasury was paid to you.` : 'Faction disbanded', 'ok');
       await loadInstanceGuildData();
-    } catch (e: any) { toast(typeof e === 'string' ? e : e?.message ?? 'Could not disband the guild', 'error'); }
+    } catch (e: any) { toast(typeof e === 'string' ? e : e?.message ?? 'Could not disband the faction', 'error'); }
     finally { disbanding = false; }
   }
 
@@ -246,7 +246,7 @@
     try {
       await invoke('update_guild', { guildId: myGuild.id, description: guildEdit.description, motd: guildEdit.motd, iconUrl: guildEdit.icon_url, bannerUrl: guildEdit.banner_url });
       await loadInstanceGuildData();
-      toast('Guild details saved', 'ok');
+      toast('Faction details saved', 'ok');
     } catch (e: any) { toast(String(e), 'error'); }
   }
 
@@ -258,7 +258,7 @@
 
   async function handleCreateGuild() {
     if (!newGuildName.trim() || !newGuildTag.trim()) {
-      toast('Please enter both guild name and tag', 'error');
+      toast('Please enter both faction name and tag', 'error');
       return;
     }
     creating = true;
@@ -271,7 +271,7 @@
         iconUrl: newGuildIcon.trim() || null,
         bannerUrl: newGuildBanner.trim() || null
       });
-      toast(`Guild [${guild.tag}] ${guild.name} founded!`, 'ok');
+      toast(`Faction [${guild.tag}] ${guild.name} founded!`, 'ok');
       createModalOpen = false;
       newGuildName = '';
       newGuildTag = '';
@@ -280,7 +280,7 @@
       newGuildBanner = '';
       await loadInstanceGuildData();
     } catch (e: any) {
-      toast(e?.message ?? 'Failed to create guild', 'error');
+      toast(e?.message ?? 'Failed to create faction', 'error');
     } finally {
       creating = false;
     }
@@ -303,7 +303,7 @@
       postTitle = '';
       postContent = '';
       postPinned = false;
-      toast('Announcement posted to guild wall', 'ok');
+      toast('Announcement posted to faction wall', 'ok');
     } catch (e: any) {
       toast(e?.message ?? 'Failed to create post', 'error');
     } finally {
@@ -328,23 +328,23 @@
 {#snippet guildDirectory()}
   <div class="browse-section">
     <div class="browse-header">
-      <h3>Guilds on {currentInstance?.name || 'this instance'} ({allGuilds.length})</h3>
+      <h3>Factions on {currentInstance?.name || 'this instance'} ({allGuilds.length})</h3>
       {#if allGuilds.length > 4}
-        <label class="guild-search"><Search size={14} /><input type="search" placeholder="Search guilds…" bind:value={guildSearch} aria-label="Search guilds" /></label>
+        <label class="guild-search"><Search size={14} /><input type="search" placeholder="Search factions…" bind:value={guildSearch} aria-label="Search factions" /></label>
       {/if}
     </div>
     {#if allGuilds.length === 0}
       <div class="empty-state glass">
-        <p>No guilds have been created on this instance yet. Be the first to establish territory!</p>
+        <p>No factions have been created on this instance yet. Be the first to establish territory!</p>
       </div>
     {:else if directory.length === 0}
-      <div class="empty-state glass"><p>No guild matches “{guildSearch}”.</p></div>
+      <div class="empty-state glass"><p>No faction matches “{guildSearch}”.</p></div>
     {:else}
       <div class="guilds-directory-grid">
         {#each directory as g (g.id)}
           <article class="guild-dir-card glass" class:mine={g.id === myGuild?.id}>
             <GuildBanner guild={g} height={5}>
-              {#if g.id === myGuild?.id}<span class="ribbon">Your guild</span>{/if}
+              {#if g.id === myGuild?.id}<span class="ribbon">Your faction</span>{/if}
             </GuildBanner>
             <div class="dir-body">
               <div class="dir-emblem"><GuildEmblem guild={g} size={3.6} /></div>
@@ -358,9 +358,9 @@
                 <span title="Claimed chunks"><Map size={13} /> {g.claims_count}</span>
               </div>
               {#if g.id === myGuild?.id}
-                <button class="sm ghost" onclick={() => (view = 'mine')}>Open your guild</button>
+                <button class="sm ghost" onclick={() => (view = 'mine')}>Open your faction</button>
               {:else}
-                <button class="sm primary" onclick={() => requestJoin(g)} disabled={!!myGuild} title={myGuild ? 'Leave your guild first to join another' : ''}>Request to join</button>
+                <button class="sm primary" onclick={() => requestJoin(g)} disabled={!!myGuild} title={myGuild ? 'Leave your faction first to join another' : ''}>Request to join</button>
               {/if}
             </div>
           </article>
@@ -374,7 +374,7 @@
   <!-- Page Header & Instance Picker -->
   <div class="page-header">
     <div class="title-wrap">
-      <h1><Shield class="guild-icon" size={26} /> Guilds & Territories</h1>
+      <h1><Shield class="guild-icon" size={26} /> Factions & Territories</h1>
       <p class="lead">Form factions, claim land chunks protected from griefing, and collaborate with your party.</p>
     </div>
     <div class="header-actions">
@@ -397,21 +397,21 @@
   </div>
 
   {#if myGuild}
-    <div class="view-toggle" role="tablist" aria-label="Guild view">
-      <button role="tab" aria-selected={view === 'mine'} class:active={view === 'mine'} onclick={() => (view = 'mine')}><Shield size={14} /> My guild</button>
-      <button role="tab" aria-selected={view === 'browse'} class:active={view === 'browse'} onclick={() => (view = 'browse')}><Users size={14} /> All guilds ({allGuilds.length})</button>
+    <div class="view-toggle" role="tablist" aria-label="Faction view">
+      <button role="tab" aria-selected={view === 'mine'} class:active={view === 'mine'} onclick={() => (view = 'mine')}><Shield size={14} /> My faction</button>
+      <button role="tab" aria-selected={view === 'browse'} class:active={view === 'browse'} onclick={() => (view = 'browse')}><Users size={14} /> All factions ({allGuilds.length})</button>
     </div>
   {/if}
 
   {#if invites.length}
-    <section class="invites glass" aria-label="Guild invitations">
-      <h3>Guild invitations</h3>
+    <section class="invites glass" aria-label="Faction invitations">
+      <h3>Faction invitations</h3>
       {#each invites as inv (inv.id)}
         <div class="invite">
           <GuildEmblem guild={{ id: inv.guild_id, tag: inv.guild_tag, icon_url: inv.icon_url }} size={2.4} />
           <span class="text"><strong>[{inv.guild_tag}] {inv.guild_name}</strong><span class="muted tiny">Invited by <PlayerLink uuid={inv.inviter_uuid} name={inv.inviter} /></span></span>
           <button class="sm ghost" onclick={() => answerInvite(inv, false)}>Decline</button>
-          <button class="sm primary" onclick={() => answerInvite(inv, true)} disabled={!!myGuild} title={myGuild ? 'Leave your guild first' : ''}>Accept</button>
+          <button class="sm primary" onclick={() => answerInvite(inv, true)} disabled={!!myGuild} title={myGuild ? 'Leave your faction first' : ''}>Accept</button>
         </div>
       {/each}
     </section>
@@ -455,13 +455,13 @@
             <Users size={15} /> Roster ({members.length})
           </button>
           <button class:active={activeTab === 'feed'} onclick={() => (activeTab = 'feed')}>
-            <MessageSquare size={15} /> Guild Feed ({posts.length})
+            <MessageSquare size={15} /> Faction Feed ({posts.length})
           </button>
           <button class:active={activeTab === 'wallet'} onclick={() => (activeTab = 'wallet')}>
             <Landmark size={15} /> Treasury
           </button>
           <button class:active={activeTab === 'relations'} onclick={() => (activeTab = 'relations')}><Handshake size={15} /> Memberships & relations</button>
-          {#if canManageDetails}<button class:active={activeTab === 'settings'} onclick={() => (activeTab = 'settings')}>Guild settings</button>{/if}
+          {#if canManageDetails}<button class:active={activeTab === 'settings'} onclick={() => (activeTab = 'settings')}>Faction settings</button>{/if}
         </div>
       </div>
 
@@ -473,7 +473,7 @@
             <div class="callout-text">
               <strong>Grief Protection Relay Active</strong>
               <p class="tiny muted">
-                Chunks claimed by your guild are synchronized with the Velora mod/plugin on the server. By default non-members cannot build, open chests or use doors on your land; you can change that in the land rules below.
+                Chunks claimed by your faction are synchronized with the Velora mod/plugin on the server. By default non-members cannot build, open chests or use doors on your land; you can change that in the land rules below.
               </p>
             </div>
           </div>
@@ -540,7 +540,7 @@
                   {#if canKick(m) || (myRole === 'leader' && m.uuid !== activeAccount()?.uuid)}
                     <div class="member-actions">
                       {#if myRole === 'leader' && m.uuid !== activeAccount()?.uuid}
-                        <button class="ghost tiny-btn" onclick={(e) => { e.stopPropagation(); confirmLeader = m; }} title="Make {m.name} the guild leader"><Crown size={12} /> Make leader</button>
+                        <button class="ghost tiny-btn" onclick={(e) => { e.stopPropagation(); confirmLeader = m; }} title="Make {m.name} the faction leader"><Crown size={12} /> Make leader</button>
                       {/if}
                       {#if canKick(m)}
                         <button class="ghost tiny-btn danger-text" onclick={(e) => { e.stopPropagation(); confirmKick = m; }} title="Remove {m.name}"><UserMinus size={12} /> Remove</button>
@@ -554,7 +554,7 @@
         </div>
       {:else if activeTab === 'relations'}
         <section class="card col relation-panel">
-          <h3>Your guild memberships in this instance</h3>
+          <h3>Your faction memberships in this instance</h3>
           {#if memberships.length === 0}<p class="muted">No memberships in this instance.</p>{:else}
             {#each memberships as membership (membership.id)}
               <div class="row"><span><strong>[{membership.tag}] {membership.name}</strong><small>{membership.role} · primary on {membership.primary_server_count} server(s)</small></span><span class="spacer"></span>
@@ -567,7 +567,7 @@
           {#if myGuild && myRole==='leader'}
             <h3>Alliance and rivalry requests</h3>
             {#if relationKind==='rival'}<div class="relation-create"><label>Fixed kill reward ($)<input type="number" min="0" bind:value={rivalReward}/></label><label>Or victim balance (%)<input type="number" min="0" max="100" bind:value={rivalPercent}/></label><label>Duration (hours, 0 = permanent)<input type="number" min="0" max="8760" bind:value={rivalHours}/></label></div><p class="muted">Choose a fixed reward or percentage. Both factions must accept the terms. Repeat kills share a faction-wide victim cooldown.</p>{/if}
-            <div class="relation-create"><select bind:value={relationTarget} aria-label="Other guild"><option value="">Choose a guild</option>{#each allGuilds.filter((g) => g.id !== myGuild?.id) as guild}<option value={guild.id}>[{guild.tag}] {guild.name}</option>{/each}</select><select bind:value={relationKind} aria-label="Relation type"><option value="alliance">Alliance</option><option value="rival">Rivalry</option></select><button class="primary sm" onclick={sendRelation} disabled={!relationTarget}>Send request</button></div>
+            <div class="relation-create"><select bind:value={relationTarget} aria-label="Other faction"><option value="">Choose a faction</option>{#each allGuilds.filter((g) => g.id !== myGuild?.id) as guild}<option value={guild.id}>[{guild.tag}] {guild.name}</option>{/each}</select><select bind:value={relationKind} aria-label="Relation type"><option value="alliance">Alliance</option><option value="rival">Rivalry</option></select><button class="primary sm" onclick={sendRelation} disabled={!relationTarget}>Send request</button></div>
             {#each relations as relation (relation.id)}
               <div class="row"><span><strong>{relation.relation}: [{relation.tag}] {relation.name}</strong><small>{relation.status}{#if relation.relation==='rival'} · {relation.reward_bps?(relation.reward_bps/100)+'%':'$'+((relation.reward_cents??0)/100)} per eligible kill · {relation.expires_at??'permanent'}{/if}</small></span><span class="spacer"></span>
                 {#if relation.status === 'pending' && relation.other_guild_id === myGuild.id}<button class="sm primary" onclick={() => decideRelation(relation, true)}>Accept</button><button class="sm ghost" onclick={() => decideRelation(relation, false)}>Decline</button>{/if}
@@ -577,22 +577,22 @@
         </section>
       {:else if activeTab === 'settings'}
         <div class="card col">
-          <h3>Guild appearance</h3>
+          <h3>Faction appearance</h3>
           <label>Description<textarea bind:value={guildEdit.description} maxlength="500"></textarea></label>
           <label>Message of the day<input bind:value={guildEdit.motd} maxlength="200" /></label>
           <div class="media-preview">
             <GuildBanner guild={{ id: myGuild.id, banner_url: guildEdit.banner_url }} height={6}>
               <div class="mp-emblem"><GuildEmblem guild={{ id: myGuild.id, tag: myGuild.tag, icon_url: guildEdit.icon_url }} size={4.2} /></div>
             </GuildBanner>
-            <p class="tiny muted">Live preview — this is how your guild looks in the launcher. Leave a box empty to use the generated look in your guild colour.</p>
+            <p class="tiny muted">Live preview — this is how your faction looks in the launcher. Leave a box empty to use the generated look in your faction colour.</p>
           </div>
           <label>Icon (square image address, https://… or /uploads/…)<input bind:value={guildEdit.icon_url} placeholder="https://example.com/emblem.png" /></label>
           <label>Banner (wide image address)<input bind:value={guildEdit.banner_url} placeholder="https://example.com/banner.jpg" /></label>
-          <button class="primary" onclick={saveGuild}>Save guild details</button>
+          <button class="primary" onclick={saveGuild}>Save faction details</button>
         </div>
         {#if myRole === 'leader'}
           <div class="card col">
-            <h3><Pencil size={15} /> Rename guild</h3>
+            <h3><Pencil size={15} /> Rename faction</h3>
             <p class="tiny muted">The new name and tag show up everywhere straight away: the launcher, the map and in game.</p>
             <div class="row">
               <label class="grow">Name<input bind:value={renameName} maxlength="32" /></label>
@@ -603,13 +603,13 @@
             </button>
           </div>
           <div class="card col danger-zone">
-            <h3><TriangleAlert size={15} /> Disband guild</h3>
-            <p class="tiny muted">Removes the guild for good: every member is released, all {myGuild.claims_count} claimed chunks are freed and the roles, posts and invites are deleted. Whatever is in the treasury is paid to you.</p>
-            <button class="danger" onclick={() => { disbandConfirm = ''; disbandOpen = true; }}><Trash2 size={14} /> Disband guild…</button>
+            <h3><TriangleAlert size={15} /> Disband faction</h3>
+            <p class="tiny muted">Removes the faction for good: every member is released, all {myGuild.claims_count} claimed chunks are freed and the roles, posts and invites are deleted. Whatever is in the treasury is paid to you.</p>
+            <button class="danger" onclick={() => { disbandConfirm = ''; disbandOpen = true; }}><Trash2 size={14} /> Disband faction…</button>
           </div>
         {/if}
         {#if myRole === 'leader'}<div class="card col">
-          <h3>Guild roles</h3>
+          <h3>Faction roles</h3>
           {#each roles as role}
             <div class="row"><strong>{role.name}</strong><span class="tiny muted">{[role.can_invite && 'Invite', role.can_kick && 'Kick', role.can_claim && 'Claim', role.can_post && 'Post', role.can_manage && 'Manage', role.can_vault && 'Faction vault'].filter(Boolean).join(', ') || 'No extra permissions'}</span><span class="spacer"></span><button class="sm danger" onclick={() => deleteRole(role)}>Delete</button></div>
           {/each}
@@ -621,7 +621,7 @@
         <div class="feed-tab">
           <!-- Post Announcement Form -->
           <div class="post-creator glass">
-            <span class="creator-title">Post Guild Announcement</span>
+            <span class="creator-title">Post Faction Announcement</span>
             <input
               type="text"
               placeholder="Announcement Title"
@@ -629,7 +629,7 @@
               class="post-title-input"
             />
             <textarea
-              placeholder="Share news, raid plans, or updates with your guild..."
+              placeholder="Share news, raid plans, or updates with your faction..."
               bind:value={postContent}
               rows="3"
               class="post-textarea"
@@ -655,7 +655,7 @@
             {#if posts.length === 0}
               <div class="empty-state glass">
                 <MessageSquare size={32} class="muted" />
-                <p>No guild announcements posted yet.</p>
+                <p>No faction announcements posted yet.</p>
               </div>
             {:else}
               {#each posts as p (p.id)}
@@ -689,12 +689,12 @@
           <Shield size={38} class="guild-icon" />
         </div>
         <div class="prompt-text">
-          <h2>No Guild on {currentInstance?.name || 'this Instance'}</h2>
+          <h2>No Faction on {currentInstance?.name || 'this Instance'}</h2>
           <p class="lead">
-            Guilds are tied to instances. Start your own guild to claim land chunks, invite members, and build a faction base, or browse existing factions below.
+            Factions are tied to instances. Start your own faction to claim land chunks, invite members, and build a faction base, or browse existing factions below.
           </p>
           <button class="primary create-guild-btn" onclick={() => (createModalOpen = true)}>
-            <Plus size={16} /> Create a Guild
+            <Plus size={16} /> Create a Faction
           </button>
         </div>
       </div>
@@ -708,7 +708,7 @@
 {#if myGuild}
 <Modal bind:open={disbandOpen} title="Disband {myGuild.name}?" width={28}>
   <div class="modal-form">
-    <p>This can't be undone. Type the guild's name to confirm.</p>
+    <p>This can't be undone. Type the faction's name to confirm.</p>
     <label>
       <span class="field-label">Type “{myGuild.name}”</span>
       <input type="text" bind:value={disbandConfirm} placeholder={myGuild.name} autocomplete="off" />
@@ -726,7 +726,7 @@
 <!-- Remove member / hand over leadership -->
 <Modal open={!!confirmKick} onclose={() => (confirmKick = null)} title="Remove {confirmKick?.name}?" width={26}>
   <div class="modal-form">
-    <p>They will leave the guild straight away and get a notification. They can ask to join again later.</p>
+    <p>They will leave the faction straight away and get a notification. They can ask to join again later.</p>
     <div class="row end">
       <button class="ghost" onclick={() => (confirmKick = null)}>Cancel</button>
       <button class="danger" onclick={() => confirmKick && kick(confirmKick)}><UserMinus size={14} /> Remove</button>
@@ -735,7 +735,7 @@
 </Modal>
 <Modal open={!!confirmLeader} onclose={() => (confirmLeader = null)} title="Make {confirmLeader?.name} the leader?" width={26}>
   <div class="modal-form">
-    <p>{confirmLeader?.name} becomes the guild leader and you become an officer. Only they can undo it.</p>
+    <p>{confirmLeader?.name} becomes the faction leader and you become an officer. Only they can undo it.</p>
     <div class="row end">
       <button class="ghost" onclick={() => (confirmLeader = null)}>Cancel</button>
       <button class="danger" onclick={() => confirmLeader && makeLeader(confirmLeader)}><Crown size={14} /> Hand over</button>
@@ -744,20 +744,20 @@
 </Modal>
 
 <!-- Create Guild Modal -->
-<Modal bind:open={createModalOpen} title="Found a New Guild" width={28}>
+<Modal bind:open={createModalOpen} title="Found a New Faction" width={28}>
   <div class="modal-form">
     <label>
-      <span class="field-label">Guild Name</span>
+      <span class="field-label">Faction Name</span>
       <input type="text" placeholder="e.g. Iron Fortress" bind:value={newGuildName} maxlength="32" />
     </label>
     <label>
-      <span class="field-label">Guild Tag (3 - 5 characters)</span>
+      <span class="field-label">Faction Tag (3 - 5 characters)</span>
       <input type="text" placeholder="e.g. IRON" bind:value={newGuildTag} maxlength="5" class="tag-input" />
       <span class="tiny muted">Appears in brackets on claimed chunks and chat tags.</span>
     </label>
     <label>
       <span class="field-label">Description / Moto</span>
-      <textarea placeholder="Describe your guild's playstyle, goals, or rules..." bind:value={newGuildDesc} rows="3"></textarea>
+      <textarea placeholder="Describe your faction's playstyle, goals, or rules..." bind:value={newGuildDesc} rows="3"></textarea>
     </label>
     <label>
       <span class="field-label">Banner Image URL (Optional)</span>
@@ -765,14 +765,14 @@
     </label>
     <label>
       <span class="field-label">Icon Image URL (Optional)</span>
-      <input type="url" placeholder="https://example.com/guild-icon.png" bind:value={newGuildIcon} />
+      <input type="url" placeholder="https://example.com/faction-icon.png" bind:value={newGuildIcon} />
     </label>
   </div>
   {#snippet footer()}
     <button class="ghost" onclick={() => (createModalOpen = false)}>Cancel</button>
     <button class="primary" onclick={handleCreateGuild} disabled={creating}>
       {#if creating}<LoaderCircle size={14} class="spin" />{:else}<Sparkles size={14} />{/if}
-      Found Guild
+      Found Faction
     </button>
   {/snippet}
 </Modal>

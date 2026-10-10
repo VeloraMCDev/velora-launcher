@@ -303,7 +303,7 @@ pub async fn guilds(_admin: AdminUser, State(state): State<AppState>, Query(q): 
 
 pub async fn adjust_guild(admin: AdminUser, State(state): State<AppState>, Json(p): Json<AdjustPayload>) -> AppResult<Json<Value>> {
     let server = scoped(&state, p.server_id).await?;
-    let gid = p.guild_id.as_deref().map(str::trim).filter(|g| !g.is_empty()).ok_or_else(|| AppError::bad_request("A guild is required"))?;
+    let gid = p.guild_id.as_deref().map(str::trim).filter(|g| !g.is_empty()).ok_or_else(|| AppError::bad_request("A faction is required"))?;
     let reason = clean(p.reason.as_deref(), "adjustment");
     let mut tx = state.db.begin().await?;
     let guild: Option<(String, String)> = sqlx::query_as("SELECT leader_uuid, tag FROM guilds WHERE id = ? AND instance_id = ?")
@@ -311,7 +311,7 @@ pub async fn adjust_guild(admin: AdminUser, State(state): State<AppState>, Json(
         .bind(&server.instance_id)
         .fetch_optional(&mut *tx)
         .await?;
-    let Some((leader, tag)) = guild else { return Err(AppError::not_found("Guild not found on this server")) };
+    let Some((leader, tag)) = guild else { return Err(AppError::not_found("Faction not found on this server")) };
     guild_bank::ensure_wallet(&mut tx, server.economy_id, gid).await?;
     let current: f64 = sqlx::query_scalar("SELECT balance FROM guild_wallets WHERE server_id = ? AND guild_id = ?")
         .bind(server.economy_id)
@@ -335,8 +335,8 @@ pub async fn adjust_guild(admin: AdminUser, State(state): State<AppState>, Json(
             &state.db,
             &leader,
             "economy_adjust",
-            "Guild bank changed",
-            &format!("An admin {verb} the [{tag}] guild bank: ${:.2}. Reason: {reason}. New balance: ${balance:.2}.", delta.abs()),
+            "Faction bank changed",
+            &format!("An admin {verb} the [{tag}] faction bank: ${:.2}. Reason: {reason}. New balance: ${balance:.2}.", delta.abs()),
             None,
         )
         .await;

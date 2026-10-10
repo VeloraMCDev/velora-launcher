@@ -365,10 +365,10 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
     case 'get_guild_claim_flags':
     case 'set_guild_claim_flags': {
       const catalog = [
-        ['build', 'Visitors can build', 'Players outside your guild can place and break blocks and use buckets on your land.', 'Visitors', false],
+        ['build', 'Visitors can build', 'Players outside your faction can place and break blocks and use buckets on your land.', 'Visitors', false],
         ['interact', 'Visitors can use doors & buttons', 'Doors, trapdoors, buttons, levers, pressure plates and beds.', 'Visitors', false],
         ['containers', 'Visitors can open chests', 'Chests, barrels, furnaces, hoppers, shulker boxes and similar.', 'Visitors', false],
-        ['entry', 'Visitors can walk in', 'Turn this off to keep everyone outside your guild off your land.', 'Visitors', true],
+        ['entry', 'Visitors can walk in', 'Turn this off to keep everyone outside your faction off your land.', 'Visitors', true],
         ['pvp', 'Player vs player', 'Players can hurt each other on your land.', 'Combat', true],
         ['mob_spawning', 'Mobs spawn', 'Mobs spawn naturally, from spawners and from eggs.', 'Mobs', true],
         ['explosions', 'Explosions break blocks', 'TNT, creepers and beds can destroy blocks.', 'World', false],
@@ -418,7 +418,7 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
       ];
     case 'get_guild_posts':
       return [
-        { id: 'gp1', guild_id: 'g1', author_uuid: 'mock-user-1', author_name: 'Alyssa', title: 'Community Farm Completed!', content: 'The automatic wheat and pumpkin farm at chunk [2, 1] is open to all guild members. Please replenish seeds after harvesting.', pinned: true, created_at: '2026-09-25T16:00:00Z' }
+        { id: 'gp1', guild_id: 'g1', author_uuid: 'mock-user-1', author_name: 'Alyssa', title: 'Community Farm Completed!', content: 'The automatic wheat and pumpkin farm at chunk [2, 1] is open to all faction members. Please replenish seeds after harvesting.', pinned: true, created_at: '2026-09-25T16:00:00Z' }
       ];
     case 'create_guild_post':
       return { id: 'gp' + Date.now(), guild_id: args?.guildId, author_uuid: 'mock-user-1', author_name: 'Alyssa', title: args?.title, content: args?.content, pinned: args?.pinned ?? false, created_at: new Date().toISOString() };
@@ -451,7 +451,7 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
       return {
         uuid: args?.uuid,
         username: args?.uuid === 'mock-user-1' ? 'Alyssa' : (args?.uuid === 'friend-1' ? 'Alex' : 'Steve'),
-        bio: 'Explorer, redstone engineer, and proud founder of the Iron Fortress guild!',
+        bio: 'Explorer, redstone engineer, and proud founder of the Iron Fortress faction!',
         banner_url: null,
         skin_url: null,
         skin_model: 'classic',
@@ -499,7 +499,7 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
 }
 
 const mockNotes: { id: number; kind: string; title: string; body: string; link: string | null; created_at: string; read: boolean }[] = [
-  { id: 3, kind: 'guild_renamed', title: 'Your guild was renamed', body: 'Iron Fort is now called Iron Fortress [IRON].', link: '/guild', created_at: new Date(Date.now() - 600e3).toISOString(), read: false },
+  { id: 3, kind: 'guild_renamed', title: 'Your faction was renamed', body: 'Iron Fort is now called Iron Fortress [IRON].', link: '/guild', created_at: new Date(Date.now() - 600e3).toISOString(), read: false },
   { id: 2, kind: 'auction_won', title: 'You won an auction', body: 'Diamond Pickaxe for $450.', link: null, created_at: new Date(Date.now() - 86400e3).toISOString(), read: false },
-  { id: 1, kind: 'guild_disbanded', title: 'Your guild was disbanded', body: 'Old Guild was disbanded by its leader.', link: null, created_at: new Date(Date.now() - 4 * 86400e3).toISOString(), read: true },
+  { id: 1, kind: 'guild_disbanded', title: 'Your faction was disbanded', body: 'Old Faction was disbanded by its leader.', link: null, created_at: new Date(Date.now() - 4 * 86400e3).toISOString(), read: true },
 ];

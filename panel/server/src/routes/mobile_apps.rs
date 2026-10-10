@@ -306,7 +306,7 @@ pub async fn altstore(State(state): State<AppState>, headers: HeaderMap) -> AppR
                 "bundleIdentifier": a.bundle_id,
                 "developerName": name,
                 "subtitle": "Market, casino, friends and more",
-                "localizedDescription": format!("The {name} player panel as an app: market, casino, friends, guilds, quests and leaderboards."),
+                "localizedDescription": format!("The {name} player panel as an app: market, casino, friends, factions, quests and leaderboards."),
                 "iconURL": icon,
                 "tintColor": branding.colors.accent.trim_start_matches('#'),
                 "screenshotURLs": [],

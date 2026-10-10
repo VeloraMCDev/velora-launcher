@@ -360,7 +360,7 @@
             {#if canManage}
               <form class="perm-form" onsubmit={(e) => { e.preventDefault(); addPermission(); }}>
                 <div class="combo">
-                  <input bind:value={perm.permission} placeholder="velora.command.guild.create" list="lp-nodes" aria-label="Permission" autocomplete="off" spellcheck="false" />
+                  <input bind:value={perm.permission} placeholder="velora.command.faction.create" list="lp-nodes" aria-label="Permission" autocomplete="off" spellcheck="false" />
                   <datalist id="lp-nodes">{#each permHints as n}<option value={n}></option>{/each}</datalist>
                 </div>
                 <div class="segmented" role="group" aria-label="Allow or deny">
@@ -548,7 +548,7 @@
       <div class="chips">{#each groupNames as n}<button type="button" class="chip pick" class:on={draft.parents.includes(n)} onclick={() => toggleParent(n)}>{n}</button>{/each}</div>
     </div>
   {/if}
-  <label class="field">Permissions<textarea bind:value={draft.permissions} rows="4" placeholder={'velora.command.guild.create\n-essentials.fly   (a leading - denies it)'} spellcheck="false"></textarea><span class="help">One per line. You can add more later.</span></label>
+  <label class="field">Permissions<textarea bind:value={draft.permissions} rows="4" placeholder={'velora.command.faction.create\n-essentials.fly   (a leading - denies it)'} spellcheck="false"></textarea><span class="help">One per line. You can add more later.</span></label>
   {#snippet footer()}
     <button onclick={() => (createOpen = false)}>Cancel</button>
     <button class="primary" onclick={create} disabled={!draft.name.trim()}>Create group</button>

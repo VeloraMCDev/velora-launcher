@@ -27,7 +27,7 @@
   const dirty = $derived(s ? JSON.stringify(s) !== saved : false);
 
   const PRESETS: { name: string; desc: string; v: Partial<S> }[] = [
-    { name: 'Classic', desc: 'Guild, title, then LuckPerms rank', v: { format: '{guild}{title}{prefix}{name}{suffix}&7: &f{message}', guild_format: '&3[{tag}] ', title_format: '&6[{title}] ', group_format: '', level_format: '' } },
+    { name: 'Classic', desc: 'Faction, title, then LuckPerms rank', v: { format: '{guild}{title}{prefix}{name}{suffix}&7: &f{message}', guild_format: '&3[{tag}] ', title_format: '&6[{title}] ', group_format: '', level_format: '' } },
     { name: 'Rank first', desc: 'LuckPerms prefix leads', v: { format: '{prefix}{name}{suffix} {guild}&8» &f{message}', guild_format: '&3[{tag}] ', title_format: '', group_format: '', level_format: '' } },
     { name: 'Level badge', desc: 'Shows the global level', v: { format: '{level}{guild}{prefix}{name}{suffix}&7: &f{message}', level_format: '&8[&e{level}&8] ', guild_format: '&3{tag} ', title_format: '', group_format: '' } },
     { name: 'Everything', desc: 'Every part at once', v: { format: '{level}{guild}{title}{group}{prefix}{name}{suffix}&7: &f{message}', level_format: '&8[&e{level}&8] ', guild_format: '&3[{tag}] ', title_format: '&6{title} ', group_format: '&b({group}) ' } },
@@ -105,7 +105,7 @@
       <div class="sample">
         <label>Name<input bind:value={sample.name} /></label>
         <label>Message<input bind:value={sample.message} /></label>
-        <label>Guild tag<input bind:value={sample.guild} placeholder="none" /></label>
+        <label>Faction tag<input bind:value={sample.guild} placeholder="none" /></label>
         <label>Rank title<input bind:value={sample.title} placeholder="none" /></label>
         <label>LuckPerms prefix<input bind:value={sample.prefix} placeholder="none" /></label>
         <label>LuckPerms suffix<input bind:value={sample.suffix} placeholder="none" /></label>
@@ -129,7 +129,7 @@
 
         <h3>Parts</h3>
         <p class="hint">Each part appears only when the player has it, so there are no empty brackets. Leave blank to hide a part everywhere.</p>
-        <label class="f">Guild <small>{'{tag} {guild_name}'}</small><input class="mono" bind:value={s.guild_format} spellcheck="false" /></label>
+        <label class="f">Faction <small>{'{tag} {guild_name}'}</small><input class="mono" bind:value={s.guild_format} spellcheck="false" /></label>
         <label class="f">Rank title <small>{'{title}'}</small><input class="mono" bind:value={s.title_format} spellcheck="false" /></label>
         <label class="f">LuckPerms group <small>{'{group}'}</small><input class="mono" bind:value={s.group_format} spellcheck="false" /></label>
         <label class="f">Level <small>{'{level}'}</small><input class="mono" bind:value={s.level_format} spellcheck="false" /></label>

@@ -221,17 +221,28 @@ public final class FabricFeatures implements Runnable {
         dispatcher.register(Commands.literal("pshop").executes(ctx->{if(ctx.getSource().getPlayer()!=null)physicalShops.command(ctx.getSource().getPlayer(),"");return 1;})
             .then(Commands.argument("args",StringArgumentType.greedyString()).executes(ctx->{if(ctx.getSource().getPlayer()!=null)physicalShops.command(ctx.getSource().getPlayer(),StringArgumentType.getString(ctx,"args"));return 1;})));
         List<CoreCommand> all = new ArrayList<>(commands.all());
-        all.add(new VeloraCommand(this));
+        VeloraCommand velora = new VeloraCommand(this);
+        all.add(velora);
+        all.add(new CoreCommand() {
+            public String name() { return "help"; }
+            public String permission() { return ""; }
+            public void run(CorePlayer player, String[] args) { velora.help(player, args); }
+            public List<String> complete(CorePlayer player, String[] args) {
+                return net.velora.core.CommandGuide.visible(player, name -> name.equals("velora") || name.equals("help") || (name.equals("pshop") && physicalShopsEnabled()) || commands.all().stream().anyMatch(c -> c.name().equals(name) && c.available()), "").stream().map(net.velora.core.CommandGuide.Entry::command).distinct().toList();
+            }
+        });
         for (CoreCommand command : all) {
             List<String> names = new ArrayList<>();
             names.add(command.name());
             names.addAll(command.aliases());
             for (String name : names) {
+                // Match vanilla help's argument node so Brigadier replaces its executor instead of keeping competing greedy branches.
+                String argumentName = command.name().equals("help") ? "command" : "args";
                 LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal(name)
                         .executes(ctx -> execute(ctx, command, ""))
-                        .then(Commands.argument("args", StringArgumentType.greedyString())
+                        .then(Commands.argument(argumentName, StringArgumentType.greedyString())
                                 .suggests((ctx, builder) -> suggest(ctx, command, builder))
-                                .executes(ctx -> execute(ctx, command, StringArgumentType.getString(ctx, "args"))));
+                                .executes(ctx -> execute(ctx, command, StringArgumentType.getString(ctx, argumentName))));
                 dispatcher.register(root);
             }
         }
@@ -267,13 +278,15 @@ public final class FabricFeatures implements Runnable {
 
     // ---- /velora -------------------------------------------------------------------------
 
+    boolean physicalShopsEnabled() { return physicalShops != null && env.features.economy() && env.modules.get().enabled("economy"); }
+
     void sendStatus(CorePlayer p) {
         Integration integration = Bridge.integration();
         Settings s = integration.settings();
         p.send(Format.GOLD + "=== Velora Status ===");
         p.send(Format.GRAY + "Panel: " + Format.WHITE + s.panel() + Format.GRAY + "   Token: " + (s.token().isEmpty() ? Format.RED + "missing" : Format.GREEN + "set"));
         Features f = env.features;
-        p.send(Format.GRAY + "Essentials: " + flag(f.essentials()) + Format.GRAY + "  Economy: " + flag(f.economy()) + Format.GRAY + "  Guilds: " + flag(f.guilds())
+        p.send(Format.GRAY + "Essentials: " + flag(f.essentials()) + Format.GRAY + "  Economy: " + flag(f.economy()) + Format.GRAY + "  Factions: " + flag(f.guilds())
                 + Format.GRAY + "  Claims: " + flag(f.landClaiming()) + Format.GRAY + "  Client link: " + flag(f.clientLink()));
         p.send(Format.GRAY + "Claim index: " + (integration.client().claims().loaded() ? Format.GREEN + integration.client().claims().claimCount() + " claims" : Format.YELLOW + "loading"));
         p.send(Format.GRAY + "Permissions: " + Format.WHITE + (Perms.luckPermsPresent() ? "LuckPerms" : "defaults (" + (config.everyoneByDefault() ? "everyone" : "operators") + ")"));

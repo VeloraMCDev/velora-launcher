@@ -48,7 +48,7 @@
     { id: 'messages', label: 'Chat Messages Sent' },
     { id: 'joins', label: 'Server Joins' },
     { id: 'friend_add', label: 'Add a Friend' },
-    { id: 'guild_create', label: 'Create a Guild' },
+    { id: 'guild_create', label: 'Create a Faction' },
   ];
 
   async function loadQuests() {

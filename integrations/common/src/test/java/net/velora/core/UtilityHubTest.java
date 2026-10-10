@@ -96,13 +96,13 @@ class UtilityHubTest {
     }
 
     @Test void flyNeedsEitherPermissionAndGuildFlightStaysInsideOwnLand() {
-        alex.denied.addAll(List.of("free.fly", "guild.fly"));
+        alex.denied.addAll(List.of("free.fly", "faction.fly"));
         run(alex, "fly");
         assertTrue(alex.heard("permission"));
 
-        alex.denied.remove("guild.fly");
+        alex.denied.remove("faction.fly");
         run(alex, "fly");
-        assertTrue(alex.heard("inside your own guild"), "wilderness");
+        assertTrue(alex.heard("inside your own faction"), "wilderness");
         kit.panel.claims.put("minecraft:overworld:0:0", new ChunkCheckResult(true, true, "Iron", "IRON"));
         run(alex, "fly");
         assertEquals(Boolean.TRUE, kit.platform.flight.get(alex.id));
@@ -111,7 +111,7 @@ class UtilityHubTest {
         alex.pos = new Pos("minecraft:overworld", 100, 64, 0, 0, 0);
         hub.tick();
         assertEquals(Boolean.FALSE, kit.platform.flight.get(alex.id));
-        assertTrue(alex.heard("left your guild"));
+        assertTrue(alex.heard("left your faction"));
 
         // A rival guild's land doesn't count, and neither does an admin claim.
         kit.panel.claims.put("minecraft:overworld:6:0", new ChunkCheckResult(true, false, "Void", "VOID"));
@@ -120,7 +120,7 @@ class UtilityHubTest {
     }
 
     @Test void freeFlyWorksAnywhereAndToggles() {
-        steve.denied.add("guild.fly");
+        steve.denied.add("faction.fly");
         steve.granted.add("free.fly");
         steve.pos = new Pos("minecraft:overworld", 5000, 64, 5000, 0, 0);
         run(steve, "fly");

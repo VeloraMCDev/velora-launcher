@@ -472,9 +472,9 @@ pub async fn server_market_list(
     let guild_id = if payload.as_guild {
         let m = crate::routes::guild_bank::membership(&mut tx, &server, &payload.seller_uuid)
             .await?
-            .ok_or_else(|| AppError::forbidden("You are not in a guild"))?;
+            .ok_or_else(|| AppError::forbidden("You are not in a faction"))?;
         if !m.can_spend() {
-            return Err(AppError::forbidden("Only guild leaders and officers can sell for the guild"));
+            return Err(AppError::forbidden("Only faction leaders and officers can sell for the faction"));
         }
         Some(m.guild_id)
     } else {
@@ -570,9 +570,9 @@ pub(crate) async fn market_buy(state: &AppState, server: &crate::routes::servers
     let buyer_guild = if payload.as_guild {
         let m = crate::routes::guild_bank::membership(&mut tx, server, &payload.buyer_uuid)
             .await?
-            .ok_or_else(|| AppError::forbidden("You are not in a guild"))?;
+            .ok_or_else(|| AppError::forbidden("You are not in a faction"))?;
         if !m.can_spend() {
-            return Err(AppError::forbidden("Only guild leaders and officers can spend guild money"));
+            return Err(AppError::forbidden("Only faction leaders and officers can spend faction money"));
         }
         Some(m)
     } else {
@@ -629,7 +629,7 @@ pub(crate) async fn market_buy(state: &AppState, server: &crate::routes::servers
             &format!("Market: {amount}x {item_name}"),
         )
         .await?;
-        (format!("guild:{guild_id}"), format!("[{tag}] guild bank"))
+        (format!("guild:{guild_id}"), format!("[{tag}] faction bank"))
     } else {
         // A seller without an account first gets the usual starting balance, then the sale on top.
         ensure_balance(&mut tx, server.economy_id, &seller_uuid, &seller_name).await?;
@@ -659,7 +659,7 @@ pub(crate) async fn market_buy(state: &AppState, server: &crate::routes::servers
         None => payload.buyer_uuid.clone(),
     })
     .bind(match &buyer_guild {
-        Some(m) => format!("[{}] guild bank", m.tag),
+        Some(m) => format!("[{}] faction bank", m.tag),
         None => payload.buyer_name.clone(),
     })
     .bind(&to_uuid)

@@ -239,7 +239,7 @@
           </label>
           <label class="field">Base level Discord role ID<input bind:value={disc.base_role_id} inputmode="numeric" placeholder="Optional role for new players" /></label>
           <label class="field">Invite link shown in the launcher<input bind:value={disc.invite_url} placeholder="https://discord.gg/yourcode" autocomplete="off" /></label>
-          <ChannelPicker bind:value={disc.channel_id} label="Announcement channel" hint="where the bot posts achievements, new guilds and status boards" canList={disc.bot_ready} />
+          <ChannelPicker bind:value={disc.channel_id} label="Announcement channel" hint="where the bot posts achievements, new factions and status boards" canList={disc.bot_ready} />
           {#if !disc.bot_token_set}
             <p class="help">The bot needs its token first: paste it in <strong>Bot token</strong> above and save.</p>
           {:else}
@@ -249,7 +249,7 @@
             <p class="help">An older webhook address is also saved. It is only used when no channel is set. <button type="button" class="ghost sm" onclick={() => { discWebhook = '-'; saveDisc(); }}>Remove the webhook</button></p>
           {/if}
           <Toggle bind:checked={disc.notify_achievements} label="Announce achievements" />
-          <Toggle bind:checked={disc.notify_guilds} label="Announce new guilds" />
+          <Toggle bind:checked={disc.notify_guilds} label="Announce new factions" />
           <Toggle bind:checked={disc.notify_members} label="Announce new players" />
           <div class="row wrap">
             <button class="primary" disabled={savingDisc} onclick={saveDisc}>{savingDisc ? 'Saving…' : 'Save community settings'}</button>
@@ -260,7 +260,7 @@
         </section>
         <section class="card col">
           <div class="section-title"><KeyRound size={18} /><h2>Discord slash commands</h2></div>
-          <p class="help">Let members type <code>/status</code>, <code>/players</code>, <code>/quests</code>, <code>/stats</code>, <code>/leaderboard</code>, <code>/guild</code> and <code>/guilds</code> in your server. Discord calls the panel when someone uses one, so nothing else needs to run.</p>
+          <p class="help">Let members type <code>/status</code>, <code>/players</code>, <code>/quests</code>, <code>/stats</code>, <code>/leaderboard</code>, <code>/faction</code> and <code>/factions</code> in your server. Discord calls the panel when someone uses one, so nothing else needs to run.</p>
           <ol class="help steps">
             <li>In the <strong>Developer Portal → your application → General Information</strong>, copy the <strong>Public Key</strong> and paste it below.</li>
             <li>Set <strong>Interactions Endpoint URL</strong> on that same page to <code>{s.public_url || info?.public_url || 'https://panel.example.com'}/api/v1/discord/interactions</code> and save it there.</li>

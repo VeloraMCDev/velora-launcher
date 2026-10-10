@@ -160,7 +160,7 @@ pub async fn set_primary_guild(
     .bind(&guild_id).bind(&auth.uuid).bind(payload.server_id)
     .fetch_one(&state.db).await?;
     if !valid {
-        return Err(AppError::bad_request("You are not a member of that guild on this server"));
+        return Err(AppError::bad_request("You are not a member of that faction on this server"));
     }
     sqlx::query(
         "INSERT INTO guild_primary_memberships(server_id,uuid,guild_id,updated_at)
@@ -201,7 +201,7 @@ pub async fn guild_wallet(
     let member: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM guild_members gm JOIN guilds g ON g.id=gm.guild_id JOIN game_servers s ON s.instance_id=g.instance_id WHERE gm.guild_id=? AND gm.uuid=? AND s.id=?)")
         .bind(&guild_id).bind(&auth.uuid).bind(query.server_id).fetch_one(&state.db).await?;
     if !member {
-        return Err(AppError::forbidden("Guild membership is required"));
+        return Err(AppError::forbidden("Faction membership is required"));
     }
     let sid = crate::routes::servers::economy_scope(&state.db, query.server_id).await?;
     let balance: f64 = sqlx::query_scalar("SELECT balance FROM guild_wallets WHERE guild_id=? AND server_id=?")
@@ -260,10 +260,10 @@ async fn wallet_transfer(
     let role: Option<String> = sqlx::query_scalar("SELECT gm.role FROM guild_members gm JOIN guilds g ON g.id=gm.guild_id JOIN game_servers s ON s.instance_id=g.instance_id WHERE gm.guild_id=? AND gm.uuid=? AND s.id=?")
         .bind(guild_id).bind(&auth.uuid).bind(p.server_id).fetch_optional(&state.db).await?;
     let Some(role) = role else {
-        return Err(AppError::forbidden("Guild membership is required"));
+        return Err(AppError::forbidden("Faction membership is required"));
     };
     if withdraw && role != "leader" && role != "officer" {
-        return Err(AppError::forbidden("Only guild leaders and officers can withdraw"));
+        return Err(AppError::forbidden("Only faction leaders and officers can withdraw"));
     }
     // Servers in one economy group share balances and guild banks.
     let mut p = p;
@@ -354,7 +354,7 @@ pub async fn check_room(conn: &mut sqlx::SqliteConnection, guild_id: &str) -> Ap
         let members: i64 =
             sqlx::query_scalar("SELECT COUNT(*) FROM guild_members WHERE guild_id = ?").bind(guild_id).fetch_one(&mut *conn).await?;
         if members >= limit {
-            return Err(AppError::bad_request(format!("That guild is full ({limit} members)")));
+            return Err(AppError::bad_request(format!("That faction is full ({limit} members)")));
         }
     }
     Ok(())
@@ -372,7 +372,7 @@ async fn fetch_guild_detail(state: &AppState, guild_id: &str) -> AppResult<Guild
         .await?;
 
     let (id, inst_id, name, tag, desc, motd, leader_uuid, icon_url, banner_url, level, xp, max_claims, created_at) =
-        row.ok_or_else(|| AppError::not_found("Guild not found"))?;
+        row.ok_or_else(|| AppError::not_found("Faction not found"))?;
 
     // Members with online presence
     let member_rows: Vec<(String, String, String, String, bool)> = sqlx::query_as(
@@ -499,10 +499,10 @@ pub async fn create_guild(
     let name = payload.name.trim();
     let tag = payload.tag.trim();
     if name.len() < 3 || name.len() > 32 {
-        return Err(AppError::bad_request("Guild name must be 3-32 characters"));
+        return Err(AppError::bad_request("Faction name must be 3-32 characters"));
     }
     if tag.len() < 2 || tag.len() > 6 {
-        return Err(AppError::bad_request("Guild tag must be 2-6 characters"));
+        return Err(AppError::bad_request("Faction tag must be 2-6 characters"));
     }
 
     let mut tx = state.db.begin().await?;
@@ -585,7 +585,7 @@ pub async fn update_guild(
 ) -> AppResult<Json<Value>> {
     let is_officer_or_leader = guild_can(&state, &id, &auth.uuid, "manage").await?;
     if !is_officer_or_leader {
-        return Err(AppError::forbidden("Only guild officers or leaders can update guild details"));
+        return Err(AppError::forbidden("Only faction officers or leaders can update faction details"));
     }
 
     sqlx::query(
@@ -632,7 +632,7 @@ pub async fn request_join(
 /// A player asks to join a guild; its leaders and officers hear about it in their bell.
 pub(crate) async fn create_join_request(state: &AppState, id: &str, uuid: &str, name: &str, message: &str) -> AppResult<()> {
     let guild_name: String = sqlx::query_scalar("SELECT name FROM guilds WHERE id = ?")
-        .bind(id).fetch_optional(&state.db).await?.ok_or_else(|| AppError::not_found("guild not found"))?;
+        .bind(id).fetch_optional(&state.db).await?.ok_or_else(|| AppError::not_found("faction not found"))?;
     sqlx::query("INSERT INTO guild_join_requests(guild_id,uuid,name,message,created_at) VALUES(?,?,?,?,?) ON CONFLICT(guild_id,uuid) DO UPDATE SET message=excluded.message,created_at=excluded.created_at")
         .bind(id).bind(uuid).bind(name).bind(message.trim().chars().take(300).collect::<String>()).bind(crate::db::now()).execute(&state.db).await?;
     let reviewers: Vec<String> = sqlx::query_scalar("SELECT uuid FROM guild_members WHERE guild_id = ? AND role IN ('leader','officer')")
@@ -645,7 +645,7 @@ pub(crate) async fn create_join_request(state: &AppState, id: &str, uuid: &str, 
 
 pub async fn list_join_requests(auth: AuthUser, Path(id): Path<String>, State(state): State<AppState>) -> AppResult<Json<Value>> {
     if !guild_can(&state, &id, &auth.uuid, "invite").await? {
-        return Err(AppError::forbidden("Your guild role cannot review requests"));
+        return Err(AppError::forbidden("Your faction role cannot review requests"));
     }
     let rows: Vec<(String, String, String, String)> =
         sqlx::query_as("SELECT uuid,name,message,created_at FROM guild_join_requests WHERE guild_id=? ORDER BY created_at DESC")
@@ -670,7 +670,7 @@ pub async fn respond_join_request(
     Json(decision): Json<JoinDecision>,
 ) -> AppResult<Json<Value>> {
     if !guild_can(&state, &id, &auth.uuid, "invite").await? {
-        return Err(AppError::forbidden("Your guild role cannot review requests"));
+        return Err(AppError::forbidden("Your faction role cannot review requests"));
     }
     decide_join_request(&state, &id, &uuid, decision.accept).await?;
     Ok(Json(json!({"ok":true})))
@@ -772,7 +772,7 @@ async fn require_guild_leader(state: &AppState, guild_id: &str, uuid: &str) -> A
         .fetch_optional(&state.db)
         .await?;
     if role.as_deref() != Some("leader") {
-        return Err(AppError::forbidden("Only the guild leader can manage roles"));
+        return Err(AppError::forbidden("Only the faction leader can manage roles"));
     }
     Ok(())
 }
@@ -784,7 +784,7 @@ pub async fn list_guild_roles(auth: AuthUser, Path(id): Path<String>, State(stat
         .fetch_one(&state.db)
         .await?;
     if !member {
-        return Err(AppError::forbidden("Guild membership is required"));
+        return Err(AppError::forbidden("Faction membership is required"));
     }
     let roles: Vec<(i64,String,i64,i64,i64,i64,i64,i64,i64)> = sqlx::query_as("SELECT id,name,priority,can_invite,can_kick,can_claim,can_post,can_manage,can_vault FROM guild_roles WHERE guild_id=? ORDER BY priority DESC,name")
         .bind(&id).fetch_all(&state.db).await?;
@@ -855,7 +855,7 @@ pub async fn assign_guild_role(
             .fetch_one(&state.db)
             .await?;
         if !exists {
-            return Err(AppError::bad_request("Role does not belong to this guild"));
+            return Err(AppError::bad_request("Role does not belong to this faction"));
         }
     }
     let done = sqlx::query("UPDATE guild_members SET role=? WHERE guild_id=? AND uuid=? AND role<>'leader'")
@@ -865,10 +865,10 @@ pub async fn assign_guild_role(
         .execute(&state.db)
         .await?;
     if done.rows_affected() == 0 {
-        return Err(AppError::not_found("member not found or is guild leader"));
+        return Err(AppError::not_found("member not found or is faction leader"));
     }
     let guild_name: String = sqlx::query_scalar("SELECT name FROM guilds WHERE id = ?").bind(&id).fetch_one(&state.db).await?;
-    super::notifications::push(&state.db, &uuid, "guild_role", "Your guild role changed", &format!("You are now {} in {guild_name}.", input.role), Some("/guild")).await;
+    super::notifications::push(&state.db, &uuid, "guild_role", "Your faction role changed", &format!("You are now {} in {guild_name}.", input.role), Some("/guild")).await;
     Ok(Json(json!({"ok":true})))
 }
 
@@ -899,7 +899,7 @@ pub async fn add_guild_member(
     Json(payload): Json<AddMemberPayload>,
 ) -> AppResult<Json<Value>> {
     if !guild_can(&state, &id, &auth.uuid, "invite").await? {
-        return Err(AppError::forbidden("Only guild leaders or officers can invite members"));
+        return Err(AppError::forbidden("Only faction leaders or officers can invite members"));
     }
 
     let target_user: Option<(String, String)> = sqlx::query_as("SELECT uuid, username FROM users WHERE username = ? COLLATE NOCASE")
@@ -955,7 +955,7 @@ pub async fn remove_guild_member(
             .fetch_optional(&state.db)
             .await?;
         if role.as_deref() == Some("leader") {
-            return Err(AppError::bad_request("Guild leader cannot leave without transferring leadership"));
+            return Err(AppError::bad_request("Faction leader cannot leave without transferring leadership"));
         }
         sqlx::query("DELETE FROM guild_members WHERE guild_id = ? AND uuid = ?").bind(&guild_id).bind(&target_uuid).execute(&state.db).await?;
     } else {
@@ -974,9 +974,9 @@ pub(crate) async fn kick_member(state: &AppState, guild_id: &str, actor: &str, t
         .bind(target)
         .fetch_optional(&state.db)
         .await?;
-    let (name, role) = row.ok_or_else(|| AppError::not_found("That player is not in your guild"))?;
+    let (name, role) = row.ok_or_else(|| AppError::not_found("That player is not in your faction"))?;
     if role == "leader" {
-        return Err(AppError::forbidden("The guild leader can't be removed"));
+        return Err(AppError::forbidden("The faction leader can't be removed"));
     }
     let actor_role: Option<String> = sqlx::query_scalar("SELECT role FROM guild_members WHERE guild_id = ? AND uuid = ?")
         .bind(guild_id)
@@ -988,29 +988,29 @@ pub(crate) async fn kick_member(state: &AppState, guild_id: &str, actor: &str, t
     }
     let guild_name: String = sqlx::query_scalar("SELECT name FROM guilds WHERE id = ?").bind(guild_id).fetch_one(&state.db).await?;
     sqlx::query("DELETE FROM guild_members WHERE guild_id = ? AND uuid = ?").bind(guild_id).bind(target).execute(&state.db).await?;
-    super::notifications::push(&state.db, target, "guild_kicked", "Removed from your guild", &format!("You were removed from {guild_name}."), None).await;
+    super::notifications::push(&state.db, target, "guild_kicked", "Removed from your faction", &format!("You were removed from {guild_name}."), None).await;
     Ok(name)
 }
 
 /// Hand the guild to another member. The old leader becomes an officer.
 pub(crate) async fn transfer_leadership(state: &AppState, guild_id: &str, actor: &str, target: &str) -> AppResult<String> {
-    require_guild_leader(state, guild_id, actor).await.map_err(|_| AppError::forbidden("Only the guild leader can hand over leadership"))?;
+    require_guild_leader(state, guild_id, actor).await.map_err(|_| AppError::forbidden("Only the faction leader can hand over leadership"))?;
     if actor == target {
-        return Err(AppError::bad_request("You already lead this guild"));
+        return Err(AppError::bad_request("You already lead this faction"));
     }
     let name: Option<String> = sqlx::query_scalar("SELECT name FROM guild_members WHERE guild_id = ? AND uuid = ?")
         .bind(guild_id)
         .bind(target)
         .fetch_optional(&state.db)
         .await?;
-    let name = name.ok_or_else(|| AppError::not_found("That player is not in your guild"))?;
+    let name = name.ok_or_else(|| AppError::not_found("That player is not in your faction"))?;
     let mut tx = state.db.begin().await?;
     sqlx::query("UPDATE guilds SET leader_uuid = ? WHERE id = ?").bind(target).bind(guild_id).execute(&mut *tx).await?;
     sqlx::query("UPDATE guild_members SET role = 'officer' WHERE guild_id = ? AND uuid = ?").bind(guild_id).bind(actor).execute(&mut *tx).await?;
     sqlx::query("UPDATE guild_members SET role = 'leader' WHERE guild_id = ? AND uuid = ?").bind(guild_id).bind(target).execute(&mut *tx).await?;
     tx.commit().await?;
     let guild_name: String = sqlx::query_scalar("SELECT name FROM guilds WHERE id = ?").bind(guild_id).fetch_one(&state.db).await?;
-    super::notifications::push(&state.db, target, "guild_leader", "You lead the guild now", &format!("You are the new leader of {guild_name}."), Some("/guild")).await;
+    super::notifications::push(&state.db, target, "guild_leader", "You lead the faction now", &format!("You are the new leader of {guild_name}."), Some("/guild")).await;
     Ok(name)
 }
 
@@ -1052,7 +1052,7 @@ pub async fn create_guild_post(
         .await?;
 
     if !in_guild || !guild_can(&state, &id, &auth.uuid, "post").await? {
-        return Err(AppError::forbidden("Your guild role cannot post"));
+        return Err(AppError::forbidden("Your faction role cannot post"));
     }
 
     let now = chrono::Utc::now().to_rfc3339();
@@ -1101,7 +1101,7 @@ pub async fn claim_chunk(
         .await?;
 
     if role.is_none() || !guild_can(&state, &guild_id, &auth.uuid, "claim").await? {
-        return Err(AppError::forbidden("Your guild role cannot claim land"));
+        return Err(AppError::forbidden("Your faction role cannot claim land"));
     }
 
     let max_claims: i64 = sqlx::query_scalar("SELECT (guilds.max_claims + COALESCE((SELECT SUM(b.claim_chunks) FROM player_bonuses b JOIN guild_members m ON m.uuid = b.uuid WHERE m.guild_id = guilds.id), 0) + COALESCE((SELECT CAST(value AS INTEGER) FROM kv WHERE key = 'rule_claims_per_member'), 0) * MAX(0, (SELECT COUNT(*) FROM guild_members m2 WHERE m2.guild_id = guilds.id) - 1) + COALESCE((SELECT CAST(value AS INTEGER) FROM kv WHERE key = 'rule_claims_per_level'), 0) * MAX(0, guilds.level - 1)) FROM guilds WHERE id = ?").bind(&guild_id).fetch_one(&state.db).await?;
@@ -1110,7 +1110,7 @@ pub async fn claim_chunk(
         sqlx::query_scalar("SELECT COUNT(*) FROM guild_claims WHERE guild_id = ?").bind(&guild_id).fetch_one(&state.db).await?;
 
     if current_claims >= max_claims {
-        return Err(AppError::bad_request(format!("Guild reached its max claim limit of {max_claims} chunks")));
+        return Err(AppError::bad_request(format!("Faction reached its max claim limit of {max_claims} chunks")));
     }
 
     let server_id = payload.server_id.ok_or_else(|| AppError::bad_request("Select a game server for this claim"))?;
@@ -1122,7 +1122,7 @@ pub async fn claim_chunk(
     .fetch_one(&state.db)
     .await?;
     if !matches {
-        return Err(AppError::bad_request("Server is not linked to this guild's instance"));
+        return Err(AppError::bad_request("Server is not linked to this faction's instance"));
     }
     let dim = payload.dimension.unwrap_or_else(|| "minecraft:overworld".into());
     let now = chrono::Utc::now().to_rfc3339();
@@ -1185,7 +1185,7 @@ pub async fn unclaim_chunk(
         .await?;
 
     if role.is_none() || !guild_can(&state, &guild_id, &auth.uuid, "claim").await? {
-        return Err(AppError::forbidden("Your guild role cannot unclaim land"));
+        return Err(AppError::forbidden("Your faction role cannot unclaim land"));
     }
 
     let dim = payload.dimension.unwrap_or_else(|| "minecraft:overworld".into());
@@ -1215,7 +1215,7 @@ pub async fn unclaim_by_id(auth: AuthUser, Path(claim_id): Path<i64>, State(stat
         .await?;
 
     if role.is_none() || !guild_can(&state, &guild_id, &auth.uuid, "claim").await? {
-        return Err(AppError::forbidden("Your guild role cannot unclaim land"));
+        return Err(AppError::forbidden("Your faction role cannot unclaim land"));
     }
 
     sqlx::query("DELETE FROM guild_claims WHERE id = ?").bind(claim_id).execute(&state.db).await?;
@@ -1305,10 +1305,10 @@ fn checked_guild_name(name: &str) -> AppResult<String> {
     let name = name.trim();
     let len = name.chars().count();
     if !(3..=32).contains(&len) {
-        return Err(AppError::bad_request("Guild name must be 3-32 characters"));
+        return Err(AppError::bad_request("Faction name must be 3-32 characters"));
     }
     if name.chars().any(|c| c.is_control()) {
-        return Err(AppError::bad_request("Guild name can't contain control characters"));
+        return Err(AppError::bad_request("Faction name can't contain control characters"));
     }
     Ok(name.to_string())
 }
@@ -1317,7 +1317,7 @@ fn checked_guild_tag(tag: &str) -> AppResult<String> {
     let tag = tag.trim();
     let len = tag.chars().count();
     if !(2..=6).contains(&len) || !tag.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-') {
-        return Err(AppError::bad_request("Guild tag must be 2-6 letters, digits, _ or -"));
+        return Err(AppError::bad_request("Faction tag must be 2-6 letters, digits, _ or -"));
     }
     Ok(tag.to_ascii_uppercase())
 }
@@ -1332,7 +1332,7 @@ async fn rename_guild_to(state: &AppState, id: &str, name: &str, tag: Option<&st
         .fetch_one(&state.db)
         .await?;
     if taken {
-        return Err(AppError::bad_request("Another guild already uses that name"));
+        return Err(AppError::bad_request("Another faction already uses that name"));
     }
     let old_name: Option<String> = sqlx::query_scalar("SELECT name FROM guilds WHERE id = ?").bind(id).fetch_optional(&state.db).await?;
     let done = sqlx::query("UPDATE guilds SET name = ?, tag = COALESCE(?, tag) WHERE id = ?")
@@ -1342,13 +1342,13 @@ async fn rename_guild_to(state: &AppState, id: &str, name: &str, tag: Option<&st
         .execute(&state.db)
         .await?;
     if done.rows_affected() == 0 {
-        return Err(AppError::not_found("Guild not found"));
+        return Err(AppError::not_found("Faction not found"));
     }
     let tag: String = sqlx::query_scalar("SELECT tag FROM guilds WHERE id = ?").bind(id).fetch_one(&state.db).await?;
     if old_name.as_deref().is_some_and(|o| o != name) {
         let members = guild_member_uuids(state, id).await;
         let body = format!("{} is now called {} [{}].", old_name.unwrap_or_default(), name, tag);
-        super::notifications::push_many(&state.db, &members, "guild_renamed", "Your guild was renamed", &body, Some("/guild")).await;
+        super::notifications::push_many(&state.db, &members, "guild_renamed", "Your faction was renamed", &body, Some("/guild")).await;
     }
     Ok((name, tag))
 }
@@ -1399,11 +1399,11 @@ async fn disband_guild_now(state: &AppState, id: &str, refund_to: Option<(&str, 
     }
     let done = sqlx::query("DELETE FROM guilds WHERE id = ?").bind(id).execute(&mut *tx).await?;
     if done.rows_affected() == 0 {
-        return Err(AppError::not_found("Guild not found"));
+        return Err(AppError::not_found("Faction not found"));
     }
     tx.commit().await?;
     let body = format!("{guild_name} was disbanded by its leader. Its claims were released.");
-    super::notifications::push_many(&state.db, &members, "guild_disbanded", "Your guild was disbanded", &body, None).await;
+    super::notifications::push_many(&state.db, &members, "guild_disbanded", "Your faction was disbanded", &body, None).await;
     Ok((paid * 100.0).round() / 100.0)
 }
 
@@ -1418,7 +1418,7 @@ async fn require_leader(state: &AppState, guild_id: &str, uuid: &str) -> AppResu
         .fetch_optional(&state.db)
         .await?;
     if role.as_deref() != Some("leader") {
-        return Err(AppError::forbidden("Only the guild leader can do this"));
+        return Err(AppError::forbidden("Only the faction leader can do this"));
     }
     Ok(())
 }
@@ -1542,7 +1542,7 @@ pub struct RelationDecisionPayload {
 pub async fn list_relations(auth: AuthUser, Path(id): Path<String>, State(state): State<AppState>) -> AppResult<Json<Value>> {
     let member: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM guild_members WHERE guild_id=? AND uuid=?)")
         .bind(&id).bind(&auth.uuid).fetch_one(&state.db).await?;
-    if !member { return Err(AppError::forbidden("You are not a member of this guild")); }
+    if !member { return Err(AppError::forbidden("You are not a member of this faction")); }
     let rows: Vec<(i64,String,String,String,String,String,String,i64,i64,Option<String>,String,String)> = sqlx::query_as(
         "SELECT r.id,r.guild_id,r.other_guild_id,r.relation,r.status,g.name,g.tag,r.reward_cents,r.reward_bps,r.expires_at,r.ally_permissions,r.terms_revision
          FROM guild_relations r JOIN guilds g ON g.id=CASE WHEN r.guild_id=? THEN r.other_guild_id ELSE r.guild_id END
@@ -1555,11 +1555,11 @@ pub async fn list_relations(auth: AuthUser, Path(id): Path<String>, State(state)
 /// restricted to guilds belonging to the same launcher instance.
 pub async fn create_relation(auth: AuthUser, Path(id): Path<String>, State(state): State<AppState>, Json(payload): Json<RelationPayload>) -> AppResult<Json<Value>> {
     if crate::velora_core::load(&state).await?.is_some() { require_leader(&state,&id,&auth.uuid).await?; }
-    if !guild_can(&state, &id, &auth.uuid, "manage").await? { return Err(AppError::forbidden("Your guild role cannot manage relations")); }
+    if !guild_can(&state, &id, &auth.uuid, "manage").await? { return Err(AppError::forbidden("Your faction role cannot manage relations")); }
     if payload.relation != "alliance" && payload.relation != "rival" { return Err(AppError::bad_request("relation must be alliance or rival")); }
     let instance: Option<String> = sqlx::query_scalar("SELECT instance_id FROM guilds WHERE id=? AND id<>?").bind(&payload.other_guild_id).bind(&id).fetch_optional(&state.db).await?;
     let own: Option<String> = sqlx::query_scalar("SELECT instance_id FROM guilds WHERE id=?").bind(&id).fetch_optional(&state.db).await?;
-    if instance.is_none() || instance != own { return Err(AppError::bad_request("Guilds must belong to the same instance")); }
+    if instance.is_none() || instance != own { return Err(AppError::bad_request("Factions must belong to the same instance")); }
     let cents=payload.reward_cents.unwrap_or(0); let bps=payload.reward_bps.unwrap_or(0);
     if !(0..=100_000_000_000).contains(&cents) || !(0..=10000).contains(&bps) || (cents>0&&bps>0) {return Err(AppError::bad_request("choose a fixed kill reward or percentage, not both"));}
     let expires=match payload.duration_hours { Some(hours) if (1..=8760).contains(&hours)=>Some((chrono::Utc::now()+chrono::Duration::hours(hours)).to_rfc3339_opts(chrono::SecondsFormat::Secs,true)),Some(_)=>return Err(AppError::bad_request("rivalry duration must be 1–8760 hours")),None=>None };
@@ -1591,7 +1591,7 @@ pub async fn decide_relation(
         if payload.expected_revision.as_ref().is_none_or(|v|v.is_empty()) {return Err(AppError::bad_request("review the current relation terms before deciding"));}
     }
     if !guild_can(&state, &id, &auth.uuid, "manage").await? {
-        return Err(AppError::forbidden("Your guild role cannot manage relations"));
+        return Err(AppError::forbidden("Your faction role cannot manage relations"));
     }
     let row: Option<(String, String, String)> = sqlx::query_as(
         "SELECT guild_id,other_guild_id,status FROM guild_relations WHERE id=? AND other_guild_id=?",
@@ -1843,10 +1843,10 @@ pub async fn server_claim_chunk(
     .await?;
 
     let Some((guild_id, _role)) = member else {
-        return Err(AppError::bad_request("You must be in a guild to claim land. Create one with /guild create <name> <tag>"));
+        return Err(AppError::bad_request("You must be in a faction to claim land. Create one with /guild create <name> <tag>"));
     };
     if !guild_can(&state, &guild_id, &payload.uuid, "claim").await? {
-        return Err(AppError::forbidden("Your guild role cannot claim land"));
+        return Err(AppError::forbidden("Your faction role cannot claim land"));
     }
 
     let max_claims: i64 =
@@ -1856,7 +1856,7 @@ pub async fn server_claim_chunk(
         sqlx::query_scalar("SELECT COUNT(*) FROM guild_claims WHERE guild_id = ?").bind(&guild_id).fetch_one(&state.db).await.unwrap_or(0);
 
     if current_claims >= max_claims {
-        return Err(AppError::bad_request(format!("Guild reached its max claim limit of {max_claims} chunks")));
+        return Err(AppError::bad_request(format!("Faction reached its max claim limit of {max_claims} chunks")));
     }
 
     let now = chrono::Utc::now().to_rfc3339();
@@ -1885,7 +1885,7 @@ pub async fn server_claim_chunk(
 
     if let Err(e) = res {
         tracing::warn!("server claim chunk failed: {e}");
-        return Err(AppError::bad_request("Chunk is already claimed by another guild"));
+        return Err(AppError::bad_request("Chunk is already claimed by another faction"));
     }
     tx.commit().await?;
 
@@ -1893,7 +1893,7 @@ pub async fn server_claim_chunk(
         .bind(&guild_id)
         .fetch_one(&state.db)
         .await
-        .unwrap_or_else(|_| "Guild".into());
+        .unwrap_or_else(|_| "Faction".into());
 
     Ok(Json(serde_json::json!({
         "ok": true,
@@ -1929,7 +1929,7 @@ pub async fn server_unclaim_chunk(
         .await?;
 
     if member.is_none() || !guild_can(&state, &guild_id, &payload.uuid, "claim").await? {
-        return Err(AppError::forbidden("You cannot unclaim land belonging to another guild"));
+        return Err(AppError::forbidden("You cannot unclaim land belonging to another faction"));
     }
 
     sqlx::query("DELETE FROM guild_claims WHERE id = ?").bind(claim_id).execute(&state.db).await?;
@@ -2012,10 +2012,10 @@ pub async fn server_create_guild(
     let name = payload.name.trim();
     let tag = payload.tag.trim();
     if name.len() < 3 || name.len() > 32 {
-        return Err(AppError::bad_request("Guild name must be between 3 and 32 characters"));
+        return Err(AppError::bad_request("Faction name must be between 3 and 32 characters"));
     }
     if tag.len() < 2 || tag.len() > 6 {
-        return Err(AppError::bad_request("Guild tag must be between 2 and 6 characters"));
+        return Err(AppError::bad_request("Faction tag must be between 2 and 6 characters"));
     }
 
     let in_guild: bool = sqlx::query_scalar(
@@ -2027,7 +2027,7 @@ pub async fn server_create_guild(
     .await?;
 
     if in_guild {
-        return Err(AppError::bad_request("You are already in a guild. Leave your current guild first"));
+        return Err(AppError::bad_request("You are already in a faction. Leave your current faction first"));
     }
 
     let guild_id = format!("guild_{}", uuid::Uuid::new_v4().simple());
@@ -2053,7 +2053,7 @@ pub async fn server_create_guild(
 
     if let Err(e) = res {
         tracing::warn!("server_create_guild failed: {e}");
-        return Err(AppError::bad_request("A guild with that name or tag already exists"));
+        return Err(AppError::bad_request("A faction with that name or tag already exists"));
     }
 
     sqlx::query(
@@ -2096,7 +2096,7 @@ pub async fn server_guild_leave(
     .await?;
 
     let Some((guild_id, role)) = member_opt else {
-        return Err(AppError::bad_request("You are not in a guild"));
+        return Err(AppError::bad_request("You are not in a faction"));
     };
 
     if role == "leader" {
@@ -2107,7 +2107,7 @@ pub async fn server_guild_leave(
             .unwrap_or(1);
 
         if member_count > 1 {
-            return Err(AppError::bad_request("Guild leader cannot leave without transferring leadership"));
+            return Err(AppError::bad_request("Faction leader cannot leave without transferring leadership"));
         } else {
             let name: String = sqlx::query_scalar("SELECT name FROM guild_members WHERE guild_id = ? AND uuid = ?")
                 .bind(&guild_id)
@@ -2168,7 +2168,7 @@ async fn leader_guild_on(state: &AppState, instance_id: &str, uuid: &str) -> App
     .await?;
     match found {
         Some((id, role)) if role == "leader" => Ok(id),
-        Some(_) => Err(AppError::forbidden("Only the guild leader can do this")),
-        None => Err(AppError::bad_request("You are not in a guild")),
+        Some(_) => Err(AppError::forbidden("Only the faction leader can do this")),
+        None => Err(AppError::bad_request("You are not in a faction")),
     }
 }

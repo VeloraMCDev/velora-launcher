@@ -45,10 +45,12 @@ class CommandsTest {
         var names = new java.util.HashSet<String>();
         set.all().forEach(c -> names.add(c.name()));
         for (String n : List.of("spawn", "home", "sethome", "delhome", "back", "tpa", "tpaccept", "tpdeny", "rtp", "warp", "playtime",
-                "balance", "pay", "baltop", "shop", "sell", "market", "orders", "contracts", "trade", "transactions", "guild", "claim", "unclaim"))
+                "balance", "pay", "baltop", "shop", "sell", "market", "orders", "contracts", "trade", "transactions", "faction", "claim", "unclaim"))
             assertTrue(names.contains(n), n);
         assertTrue(Kit.find(set.all(), "balance").aliases().contains("bal"));
         assertEquals("scopenet.command.guild", Kit.find(set.all(), "guild").permission());
+        assertEquals("faction", Kit.find(set.all(), "guild").name());
+        assertSame(Kit.find(set.all(), "faction"), Kit.find(set.all(), "guild"));
     }
 
     // ---- essentials wiring ---------------------------------------------------------------
@@ -234,7 +236,7 @@ class CommandsTest {
         assertTrue(kit.panel.claimsRefreshed);
 
         run(alex, "guild", "transfer", "Steve");
-        assertTrue(alex.last().contains("/guild transfer Steve confirm"), "needs confirmation before anything is sent");
+        assertTrue(alex.last().contains("/faction transfer Steve confirm"), "needs confirmation before anything is sent");
         int calls = kit.panel.calls.size();
         run(alex, "guild", "transfer", "Steve", "confirm");
         assertEquals(calls + 1, kit.panel.calls.size());
@@ -245,16 +247,16 @@ class CommandsTest {
         assertEquals("Raid tonight", post.get("title").getAsString());
         assertEquals("Bring potions", post.get("text").getAsString());
         run(alex, "guild", "post", "no", "separator");
-        assertTrue(alex.last().contains("Usage: /guild post"));
+        assertTrue(alex.last().contains("Usage: /faction post"));
 
         run(alex, "guild", "info", "Void");
         assertEquals("Void", kit.panel.bodies.get(kit.panel.bodies.size() - 1).get("target").getAsString());
         run(alex, "guild", "role", "Mia", "Scout");
         assertEquals("Scout", kit.panel.bodies.get(kit.panel.bodies.size() - 1).get("text").getAsString());
 
-        kit.panel.handlers.put("guilds/manage", b -> { throw new net.scopenet.integration.PanelClient.HttpFailure(403, "Only the guild leader can change roles"); });
+        kit.panel.handlers.put("guilds/manage", b -> { throw new net.scopenet.integration.PanelClient.HttpFailure(403, "Only the faction leader can change roles"); });
         run(alex, "guild", "promote", "Mia");
-        assertTrue(alex.last().contains("Only the guild leader can change roles"));
+        assertTrue(alex.last().contains("Only the faction leader can change roles"));
     }
 
     @Test void guildFlagsListsAndChangesTheLandRules() {
@@ -264,7 +266,7 @@ class CommandsTest {
         assertEquals("flags", kit.panel.bodies.get(kit.panel.bodies.size() - 1).get("action").getAsString());
         assertTrue(alex.heard("OFF build"), "an off rule is shown as off");
         assertTrue(alex.heard("ON  pvp") && alex.heard("locked by the server"), "a locked rule says so");
-        assertTrue(alex.heard("/guild flags <rule> <on|off>"), "someone who can edit is told how");
+        assertTrue(alex.heard("/faction flags <rule> <on|off>"), "someone who can edit is told how");
 
         kit.panel.on("guilds/manage", "{\"ok\":true,\"message\":\"build is now on for Iron.\"}");
         run(alex, "guild", "flags", "build", "on");
@@ -275,7 +277,7 @@ class CommandsTest {
         assertTrue(alex.last().contains("build is now on for Iron."));
 
         run(alex, "guild", "flags", "build");
-        assertTrue(alex.last().contains("Usage: /guild flags"));
+        assertTrue(alex.last().contains("Usage: /faction flags"));
         alex.denied.add("scopenet.command.guild.flags");
         run(alex, "guild", "flags");
         assertTrue(alex.last().contains("do not have permission"));
@@ -289,7 +291,7 @@ class CommandsTest {
     @Test void guildCreateClaimAndPermissions() {
         kit.panel.on("guilds/create", "{}");
         run(alex, "guild", "create", "Iron", "IRON");
-        assertTrue(alex.heard("Guild Iron [IRON] founded"));
+        assertTrue(alex.heard("Faction Iron [IRON] founded"));
         assertTrue(kit.panel.claimsRefreshed);
         run(alex, "guild", "create", "Only");
         assertTrue(alex.last().startsWith("Usage"));
@@ -305,16 +307,16 @@ class CommandsTest {
 
         alex.denied.add("scopenet.command.guild.leave");
         run(alex, "guild", "leave");
-        assertTrue(alex.last().contains("permission to use /guild leave"));
+        assertTrue(alex.last().contains("permission to use /faction leave"));
         alex.denied.add("scopenet.command.guild.sell.hand");
         run(alex, "guild", "sell", "hand");
-        assertTrue(alex.last().contains("/guild sell hand"));
+        assertTrue(alex.last().contains("/faction sell hand"));
     }
 
     @Test void guildInfoMembersChatAndMap() {
         inGuild("leader");
         run(alex, "guild");
-        assertTrue(alex.heard("Guild: Iron [IRON]"));
+        assertTrue(alex.heard("Faction: Iron [IRON]"));
         assertTrue(alex.heard("Claimed chunks: 3 / 16"));
         run(alex, "guild", "members");
         assertTrue(alex.heard("Steve (member) [Online]"));
@@ -322,9 +324,9 @@ class CommandsTest {
 
         kit.platform.add("Bob");
         run(alex, "guild", "chat", "hello", "team");
-        assertTrue(steve.heard("[Guild IRON] Alex: hello team"));
+        assertTrue(steve.heard("[Faction IRON] Alex: hello team"));
         Kit.Player bob = kit.platform.online.values().stream().filter(p -> p.name.equals("Bob")).findFirst().orElseThrow();
-        assertFalse(bob.heard("hello team"), "non-members don't see guild chat");
+        assertFalse(bob.heard("hello team"), "non-members don't see faction chat");
 
         kit.panel.claims.put("minecraft:overworld:1:0", new ChunkCheckResult(true, true, "Iron", "IRON"));
         kit.panel.claims.put("minecraft:overworld:-1:0", new ChunkCheckResult(true, false, "Void", "VOID"));
@@ -336,11 +338,11 @@ class CommandsTest {
     @Test void guildHomeNeedsOfficerAndPersists() {
         inGuild("member");
         run(steve, "guild", "sethome");
-        assertTrue(steve.last().contains("Only guild leaders and officers"));
+        assertTrue(steve.last().contains("Only faction leaders and officers"));
         inGuild("leader");
         alex.pos = new Pos("minecraft:overworld", 100, 64, 100, 0, 0);
         run(alex, "guild", "sethome");
-        assertTrue(alex.last().contains("Guild home waypoint set"));
+        assertTrue(alex.last().contains("Faction home waypoint set"));
         CommandSet reopened = new CommandSet(kit.env, EssentialsConfig.defaults());
         alex.pos = new Pos("minecraft:overworld", 0, 64, 0, 0, 0);
         Kit.find(reopened.all(), "guild").run(alex, new String[]{"home"});

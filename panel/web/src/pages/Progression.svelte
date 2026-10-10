@@ -349,14 +349,14 @@
       </section>
 
       <section class="card">
-        <div class="section-title"><h2><Info size={16} /> Economy &amp; guild rules</h2></div>
+        <div class="section-title"><h2><Info size={16} /> Economy &amp; faction rules</h2></div>
         <p class="muted small">Apply on every server. Home limits, cooldowns and RTP are set per server in the plugin/mod config, and ranks can raise home limits with permission nodes (velora.homes.10).</p>
         <div class="rates">
           <label class="field"><span class="lab">Starting balance <span class="unit">$</span></span><input type="number" min="0" step="50" bind:value={s.rules.starting_balance} /></label>
-          <label class="field"><span class="lab">Guild claims at creation <span class="unit">chunks</span></span><input type="number" min="0" step="1" bind:value={s.rules.guild_base_claims} /></label>
+          <label class="field"><span class="lab">Faction claims at creation <span class="unit">chunks</span></span><input type="number" min="0" step="1" bind:value={s.rules.guild_base_claims} /></label>
           <label class="field"><span class="lab">Extra claims per member <span class="unit">chunks</span></span><input type="number" min="0" step="1" bind:value={s.rules.guild_claims_per_member} /></label>
-          <label class="field"><span class="lab">Extra claims per guild level <span class="unit">chunks</span></span><input type="number" min="0" step="1" bind:value={s.rules.guild_claims_per_level} /></label>
-          <label class="field"><span class="lab">Guild member limit <span class="unit">0 = none</span></span><input type="number" min="0" step="1" bind:value={s.rules.guild_max_members} /></label>
+          <label class="field"><span class="lab">Extra claims per faction level <span class="unit">chunks</span></span><input type="number" min="0" step="1" bind:value={s.rules.guild_claims_per_level} /></label>
+          <label class="field"><span class="lab">Faction member limit <span class="unit">0 = none</span></span><input type="number" min="0" step="1" bind:value={s.rules.guild_max_members} /></label>
           <label class="field"><span class="lab">Market listings per player <span class="unit">0 = none</span></span><input type="number" min="0" step="1" bind:value={s.rules.market_max_listings} /></label>
         </div>
       </section>

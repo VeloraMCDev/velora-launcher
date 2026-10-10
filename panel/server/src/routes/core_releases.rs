@@ -3,8 +3,8 @@
 //!
 //! The release workflow attaches `core-manifest.json`, listing the server and client jar with their size, SHA-256
 //! and an Ed25519 signature by the Velora release key. Approving downloads both jars, checks size, checksum and
-//! signature, and serves them from the Panel. Deployment tools (such as the Calagopus extension) read
-//! `/api/v1/core/latest` and fetch the jar from the Panel, so a server never talks to GitHub.
+//! signature, and serves them as Admin Panel downloads for manual installation.
+//! Approval does not deploy or replace mod jars.
 use super::launcher_releases::{fetch_verified, github, github_releases_prefixed, release_repo, GithubAsset};
 use crate::state::RequestState as State;
 use crate::{

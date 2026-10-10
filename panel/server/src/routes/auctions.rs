@@ -196,7 +196,7 @@ pub(crate) async fn cancel_core(state: &AppState, server: &crate::routes::server
         return Err(AppError::bad_request("Someone has already bid, so this auction can't be cancelled"));
     }
     if guild.is_some() {
-        return Err(AppError::bad_request("Guild listings are managed by the guild's leaders and officers; ask them to cancel it"));
+        return Err(AppError::bad_request("Faction listings are managed by the faction's leaders and officers; ask them to cancel it"));
     }
     sqlx::query("DELETE FROM server_market WHERE id = ?").bind(p.listing_id).execute(&mut *tx).await?;
     if to_vault {
@@ -293,7 +293,7 @@ async fn settle_one(state: &AppState, id: i64, server_id: i64) -> AppResult<bool
             let (to_uuid, to_name) = if let Some((gid, tag)) = &guild_target {
                 super::guild_bank::adjust_wallet(&mut tx, economy, gid, price).await?;
                 super::guild_bank::log(&mut tx, economy, gid, &seller_uuid, "sale", price, &format!("Auction: {amount}x {item_name}")).await?;
-                (format!("guild:{gid}"), format!("[{tag}] guild bank"))
+                (format!("guild:{gid}"), format!("[{tag}] faction bank"))
             } else {
                 credit(&mut tx, economy, &seller_uuid, &seller_name, price).await?;
                 (seller_uuid.clone(), seller_name.clone())

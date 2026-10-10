@@ -1068,7 +1068,7 @@ async fn seed_achievements(pool: &SqlitePool) -> Result<()> {
         (
             "ach_guild_initiate",
             "United We Stand",
-            "Join or found a Guild.",
+            "Join or found a Faction.",
             "guilds",
             "task",
             "shield",
@@ -1083,7 +1083,7 @@ async fn seed_achievements(pool: &SqlitePool) -> Result<()> {
         (
             "ach_land_claim",
             "Territorial Sovereign",
-            "Claim your first chunk of guild territory.",
+            "Claim your first chunk of faction territory.",
             "guilds",
             "goal",
             "grass_block",

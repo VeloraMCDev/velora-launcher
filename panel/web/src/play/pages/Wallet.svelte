@@ -144,9 +144,9 @@
 
         {#if guild && gwallet}
           <section class="pl-card guild o3">
-            <div class="pl-card-head"><h2><Shield size={17} /> {guild.name} <span class="pl-chip accent">[{guild.tag}]</span></h2><a class="more" href={playPath('guilds')}>Open guild</a></div>
+            <div class="pl-card-head"><h2><Shield size={17} /> {guild.name} <span class="pl-chip accent">[{guild.tag}]</span></h2><a class="more" href={playPath('guilds')}>Open faction</a></div>
             <div class="pl-stats">
-              <div class="pl-stat"><span>Guild bank</span><b><Count value={gwallet.balance} format={(v) => money(v)} /></b><small>your role: {gwallet.role}</small></div>
+              <div class="pl-stat"><span>Faction bank</span><b><Count value={gwallet.balance} format={(v) => money(v)} /></b><small>your role: {gwallet.role}</small></div>
               <div class="pl-stat"><span>Your balance</span><b>{money(gwallet.my_balance)}</b><small>available to deposit</small></div>
             </div>
             {#if gwallet.transactions.length}

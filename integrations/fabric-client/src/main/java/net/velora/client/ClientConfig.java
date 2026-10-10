@@ -51,7 +51,7 @@ public final class ClientConfig {
 
     public boolean enabled = true;
     public Map<String, Boolean> modules = moduleDefaults();
-    public Map<String, Boolean> mapLayers = new LinkedHashMap<>(Map.of("players", true, "claims", true, "spawn", true, "warps", true, "homes", true, "shops", true, "waypoints", true));
+    public Map<String, Boolean> mapLayers = new LinkedHashMap<>(Map.of("players", true, "mobs", true, "claims", true, "spawn", true, "warps", true, "homes", true, "shops", true, "waypoints", true));
     public java.util.List<Waypoint> waypoints = new java.util.ArrayList<>();
     public record Waypoint(String scope, String dimension, String name, double x, double z) {}
     public float minimapScale = 0.5f;
@@ -103,7 +103,7 @@ public final class ClientConfig {
         if (config.modules != null) for (String id : modules.keySet()) if (config.modules.containsKey(id)) modules.put(id, Boolean.TRUE.equals(config.modules.get(id)));
         config.modules = modules;
         if (config.mapLayers == null) config.mapLayers = new LinkedHashMap<>();
-        for (String layer : new String[]{"players", "claims", "spawn", "warps", "homes", "shops", "waypoints"}) config.mapLayers.putIfAbsent(layer, true);
+        for (String layer : new String[]{"players", "mobs", "claims", "spawn", "warps", "homes", "shops", "waypoints"}) config.mapLayers.putIfAbsent(layer, true);
         if (config.waypoints == null) config.waypoints = new java.util.ArrayList<>();
         config.minimapScale = Float.isFinite(config.minimapScale) ? Math.max(0.1f, Math.min(2f, config.minimapScale)) : 0.5f;
         config.hud.scale = Math.max(0.5f, Math.min(2.0f, config.hud.scale));

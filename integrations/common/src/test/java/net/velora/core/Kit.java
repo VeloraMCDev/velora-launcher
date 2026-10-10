@@ -126,6 +126,6 @@ final class Kit {
     }
 
     static CoreCommand find(List<CoreCommand> all, String name) {
-        return all.stream().filter(c -> c.name().equals(name)).findFirst().orElseThrow(() -> new AssertionError("no command " + name));
+        return all.stream().filter(c -> c.name().equals(name) || c.aliases().contains(name)).findFirst().orElseThrow(() -> new AssertionError("no command " + name));
     }
 }

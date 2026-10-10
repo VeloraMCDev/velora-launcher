@@ -4,7 +4,7 @@ Gradle common build plus the Fabric 1.20.1 server and client builds. Paper, Forg
 
 Velora SMP's active target is **Velora Core**, with separate Fabric 1.20.1 server and client jars. See [its build guide](velora-core/README.md) and [implemented behavior and remaining work](../docs/VELORA_CORE.md).
 
-The [Calagopus extension](calagopus/README.md) installs and updates the server jar on Calagopus servers from the Velora Panel.
+The [Calagopus extension](calagopus/README.md) connects Calagopus servers to the Velora Panel and reports installed mod versions. Download jars from the Admin Panel and upload them manually.
 
 ## Local checks
 
