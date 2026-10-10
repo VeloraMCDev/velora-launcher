@@ -4,7 +4,7 @@
   import ServerForm from '../components/ServerForm.svelte';
   import TokenReveal from '../components/TokenReveal.svelte';
   import { get, post, timeAgo } from '../lib/api';
-  import { go } from '../lib/router.svelte';
+  import { go, hashFor } from '../lib/router.svelte';
   import { toastError } from '../lib/toast.svelte';
   import type { AuthServerInfo, GameServer, Group, ServerDraft } from '../lib/types';
 
@@ -77,7 +77,7 @@
     <p class="summary muted small"><span class="live"></span> {online} player{online === 1 ? '' : 's'} online across {servers.filter((s) => s.online).length} of {servers.length} server{servers.length === 1 ? '' : 's'}</p>
     <div class="list">
       {#each servers as s (s.id)}
-        <a class="card hover srv" href="#/servers/{s.id}">
+        <a class="card hover srv" href={hashFor(`servers/${s.id}`)}>
           <span class="status" class:on={s.online} title={s.online ? 'Online' : 'Offline'}></span>
           <div class="who">
             <strong>{s.name}</strong>

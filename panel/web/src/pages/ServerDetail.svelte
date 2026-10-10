@@ -11,7 +11,7 @@
   import ServerForm from '../components/ServerForm.svelte';
   import TokenReveal from '../components/TokenReveal.svelte';
   import { del, duration, get, post, put, timeAgo } from '../lib/api';
-  import { go } from '../lib/router.svelte';
+  import { go, hashFor } from '../lib/router.svelte';
   import { toast, toastError } from '../lib/toast.svelte';
   import type { AuthServerInfo, Group, ServerDetail, ServerDraft, ServerEvent } from '../lib/types';
 
@@ -116,7 +116,7 @@
 </script>
 
 <div class="page">
-  <a class="back" href="#/servers"><ArrowLeft size={15} /> Servers</a>
+  <a class="back" href={hashFor("servers")}><ArrowLeft size={15} /> Servers</a>
   {#if s && d}
     <div class="page-head">
       <div>
