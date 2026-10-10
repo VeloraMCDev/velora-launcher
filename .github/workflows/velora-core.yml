@@ -24,6 +24,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
+      - name: Normalize wrapper line endings
+        run: tr -d '\r' < toolchains/fabric-1.20.1/gradlew > gradlew.lf && cat gradlew.lf > toolchains/fabric-1.20.1/gradlew && rm gradlew.lf
       - name: Server jar and common tests
         run: sh toolchains/fabric-1.20.1/gradlew -p . -Ploader=fabric -PmcVersion=1.20.1 :fabric:build :common:test --no-daemon
       - name: Client jar
@@ -37,3 +39,4 @@ jobs:
             !integrations/**/*-dev.jar
             !integrations/**/*-sources.jar
           if-no-files-found: error
+          retention-days: 14
