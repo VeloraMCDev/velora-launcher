@@ -34,15 +34,16 @@ jobs:
           cp -r integrations/calagopus/net_velora_core "$RUNNER_TEMP/panel/backend-extensions/"
       - name: Install the panel's Rust toolchain
         run: rustup toolchain install stable --profile minimal && rustup default stable
-      - name: Rust tests
-        working-directory: ${{ runner.temp }}/panel
-        run: cargo test -p net_velora_core --ignore-rust-version
+      # The panel's Rust build embeds the built frontend, so the frontend (and this extension's typecheck) comes first.
       - name: Frontend typecheck and build
         working-directory: ${{ runner.temp }}/panel/frontend
         run: |
-          corepack enable
-          pnpm install --frozen-lockfile
+          npm install --global pnpm@11
+          pnpm install --frozen-lockfile=false
           pnpm build:ci
+      - name: Rust tests
+        working-directory: ${{ runner.temp }}/panel
+        run: cargo test -p net_velora_core --ignore-rust-version
       - name: Export the extension package
         working-directory: ${{ runner.temp }}/panel
         run: cargo run -p panel-rs --ignore-rust-version -- extensions export net.velora.core
