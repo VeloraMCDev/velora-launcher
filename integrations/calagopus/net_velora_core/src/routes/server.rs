@@ -142,7 +142,7 @@ mod install {
         permissions: GetPermissionManager,
         server: GetServer,
         activity_logger: GetServerActivityLogger,
-        shared::Payload(_): shared::Payload<Payload>,
+        shared::Payload(_data): shared::Payload<Payload>,
     ) -> ApiResponseResult {
         permissions.has_server_permission("velora-core.manage")?;
         let state = state.0;
@@ -268,7 +268,7 @@ mod authlib {
         permissions: GetPermissionManager,
         server: GetServer,
         activity_logger: GetServerActivityLogger,
-        shared::Payload(_): shared::Payload<Payload>,
+        shared::Payload(_data): shared::Payload<Payload>,
     ) -> ApiResponseResult {
         permissions.has_server_permission("velora-core.manage")?;
         let state = state.0;
