@@ -36,7 +36,7 @@ jobs:
         run: rustup toolchain install stable --profile minimal && rustup default stable
       - name: Rust tests
         working-directory: ${{ runner.temp }}/panel
-        run: cargo test -p net_velora_core --ignore-rust-version --locked
+        run: cargo test -p net_velora_core --ignore-rust-version
       - name: Frontend typecheck and build
         working-directory: ${{ runner.temp }}/panel/frontend
         run: |
@@ -45,7 +45,7 @@ jobs:
           pnpm build:ci
       - name: Export the extension package
         working-directory: ${{ runner.temp }}/panel
-        run: cargo run -p panel-rs --ignore-rust-version --locked -- extensions export net.velora.core
+        run: cargo run -p panel-rs --ignore-rust-version -- extensions export net.velora.core
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: net-velora-core-calagopus-extension
