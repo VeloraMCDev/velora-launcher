@@ -21,6 +21,8 @@ use sqlx::{Sqlite, SqliteConnection, Transaction};
 
 mod games;
 pub use games::*;
+mod core_games;
+pub use core_games::*;
 
 type Tx = Transaction<'static, Sqlite>;
 
@@ -123,6 +125,13 @@ async fn record(tx: &mut Tx, server: i64, uuid: &str, name: &str, game: &str, be
 fn op() -> String {
     format!("casino-{}", uuid::Uuid::new_v4())
 }
+fn receipt_id(uuid: &str, action: &str, nonce: Option<&str>) -> AppResult<String> {
+    match nonce {
+        Some(nonce) if uuid::Uuid::parse_str(nonce).is_ok() => Ok(format!("casino:{uuid}:{action}:{nonce}")),
+        Some(_) => Err(AppError::bad_request("operation_id must be a UUID")),
+        None => Ok(op()),
+    }
+}
 
 fn check_bet(bet: f64, min: f64, max: f64) -> AppResult<f64> {
     if !bet.is_finite() {
@@ -165,6 +174,7 @@ async fn play(
     title: &str,
     bet: f64,
     chaos: bool,
+    nonce: Option<&str>,
     game_fn: impl FnOnce(&Config, f64) -> AppResult<Played>,
 ) -> AppResult<Json<Value>> {
     let c = ctx_open(state, server_id).await?;
@@ -173,14 +183,16 @@ async fn play(
         "wheel" => (c.cfg.wheel.enabled, c.cfg.wheel.min_bet, c.cfg.wheel.max_bet),
         "dice" => (c.cfg.dice.enabled, c.cfg.dice.min_bet, c.cfg.dice.max_bet),
         "coinflip" => (c.cfg.coinflip.enabled, c.cfg.coinflip.min_bet, c.cfg.coinflip.max_bet),
+        "roulette" => (c.cfg.roulette.enabled, c.cfg.roulette.min_bet, c.cfg.roulette.max_bet),
         _ => (c.cfg.plinko.enabled, c.cfg.plinko.min_bet, c.cfg.plinko.max_bet),
     };
     if !enabled {
         return Err(AppError::forbidden(format!("{title} is switched off.")));
     }
     let bet = check_bet(bet, min, max)?;
-    let operation = op();
-    let (mut tx, _) = begin_operation(state, c.server.id, &operation).await?;
+    let operation = receipt_id(&auth.uuid, game, nonce)?;
+    let (mut tx, previous) = begin_operation(state, c.server.id, &operation).await?;
+    if let Some(previous) = previous { return Ok(Json(previous)); }
     if loss_limit_reached(&mut tx, &c.cfg, &auth.uuid).await? {
         return Err(AppError::forbidden(LOSS_LIMIT_MESSAGE));
     }
@@ -217,13 +229,14 @@ async fn play(
 #[derive(Deserialize)]
 pub struct BetBody {
     pub bet: f64,
+    pub operation_id: Option<String>,
     /// Chaos mode: the player switched it on for this round (and the admin allows it), so a win can be surged or cursed.
     #[serde(default)]
     pub chaos: bool,
 }
 
 pub async fn slots(auth: AuthUser, State(state): State<AppState>, Path(sid): Path<i64>, Json(p): Json<BetBody>) -> AppResult<Json<Value>> {
-    play(&state, &auth, sid, "slots", "Slots", p.bet, p.chaos, |cfg, _| {
+    play(&state, &auth, sid, "slots", "Slots", p.bet, p.chaos, p.operation_id.as_deref(), |cfg, _| {
         let spin = casino::slots_spin(&cfg.slots, &mut rand::thread_rng());
         let pair = spin.multiplier > 0.0 && !(spin.reels[0] == spin.reels[1] && spin.reels[1] == spin.reels[2]);
         Ok(Played { multiplier: spin.multiplier, detail: json!({ "reels": spin.reels, "pair": pair }) })
@@ -232,7 +245,7 @@ pub async fn slots(auth: AuthUser, State(state): State<AppState>, Path(sid): Pat
 }
 
 pub async fn wheel(auth: AuthUser, State(state): State<AppState>, Path(sid): Path<i64>, Json(p): Json<BetBody>) -> AppResult<Json<Value>> {
-    play(&state, &auth, sid, "wheel", "Wheel", p.bet, p.chaos, |cfg, _| {
+    play(&state, &auth, sid, "wheel", "Wheel", p.bet, p.chaos, p.operation_id.as_deref(), |cfg, _| {
         let weights: Vec<f64> = cfg.wheel.segments.iter().map(|s| s.weight).collect();
         let index = casino::pick_weighted(&weights, &mut rand::thread_rng());
         Ok(Played { multiplier: cfg.wheel.segments[index].value, detail: json!({ "segment": index }) })
@@ -243,6 +256,7 @@ pub async fn wheel(auth: AuthUser, State(state): State<AppState>, Path(sid): Pat
 #[derive(Deserialize)]
 pub struct PlinkoBody {
     pub bet: f64,
+    pub operation_id: Option<String>,
     pub rows: u32,
     pub risk: String,
     #[serde(default)]
@@ -251,7 +265,7 @@ pub struct PlinkoBody {
 
 pub async fn plinko(auth: AuthUser, State(state): State<AppState>, Path(sid): Path<i64>, Json(p): Json<PlinkoBody>) -> AppResult<Json<Value>> {
     let (rows, risk) = (p.rows, p.risk.clone());
-    play(&state, &auth, sid, "plinko", "Plinko", p.bet, p.chaos, move |cfg, _| {
+    play(&state, &auth, sid, "plinko", "Plinko", p.bet, p.chaos, p.operation_id.as_deref(), move |cfg, _| {
         if rows < cfg.plinko.min_rows || rows > cfg.plinko.max_rows {
             return Err(AppError::bad_request(format!("Pick between {} and {} rows.", cfg.plinko.min_rows, cfg.plinko.max_rows)));
         }
@@ -492,11 +506,12 @@ pub async fn lobby(auth: AuthUser, State(app): State<AppState>, Path(sid): Path<
         "config": cfg,
         "plinko_tables": tables,
         "rtp": { "slots": slots_rtp, "slots_hit": slots_hit, "wheel": casino::segments_expected(&cfg.wheel.segments), "plinko": cfg.plinko.rtp, "mines": 1.0 - cfg.mines.house_edge,
-            "blackjack": 0.99, "crash": 1.0 - cfg.crash.house_edge, "dice": 1.0 - cfg.dice.house_edge, "coinflip": cfg.coinflip.payout / 2.0, "double": cfg.double.win_chance * 2.0, "chaos": casino::chaos_factor(&cfg.chaos) },
+            "blackjack": 0.99, "crash": 1.0 - cfg.crash.house_edge, "dice": 1.0 - cfg.dice.house_edge, "coinflip": cfg.coinflip.payout / 2.0, "roulette":36.0/37.0,"burst":1.0-cfg.burst.house_edge,"double": cfg.double.win_chance * 2.0, "chaos": casino::chaos_factor(&cfg.chaos) },
         "free": { "per_day": cfg.daily.spins_per_day, "used": used, "left": (cfg.daily.spins_per_day as i64 - used).max(0), "resets_at": tomorrow_start() },
         "mines": mines,
         "crash": crash,
         "blackjack": blackjack,
+        "burst": core_games::active_burst(&app.db, &auth.uuid, c.server.id).await?,
         "double": double,
         "lost_today": round2(lost_today.max(0.0)),
         "bounty_on_me": round2(my_bounty),
@@ -504,10 +519,11 @@ pub async fn lobby(auth: AuthUser, State(app): State<AppState>, Path(sid): Path<
     })))
 }
 
-pub async fn history(auth: AuthUser, State(app): State<AppState>, Path(_sid): Path<i64>) -> AppResult<Json<Value>> {
-    let rows: Vec<(i64, String, f64, f64, String, String)> = sqlx::query_as("SELECT id, game, bet, payout, detail, created_at FROM casino_rounds WHERE uuid = ? ORDER BY id DESC LIMIT 40")
-        .bind(&auth.uuid).fetch_all(&app.db).await?;
-    let totals: (f64, f64, i64) = sqlx::query_as("SELECT COALESCE(SUM(bet), 0.0), COALESCE(SUM(payout), 0.0), COUNT(*) FROM casino_rounds WHERE uuid = ?").bind(&auth.uuid).fetch_one(&app.db).await?;
+pub async fn history(auth: AuthUser, State(app): State<AppState>, Path(sid): Path<i64>) -> AppResult<Json<Value>> {
+    get_server(&app,sid).await?;
+    let rows: Vec<(i64, String, f64, f64, String, String)> = sqlx::query_as("SELECT id, game, bet, payout, detail, created_at FROM casino_rounds WHERE uuid = ? AND server_id=? ORDER BY id DESC LIMIT 40")
+        .bind(&auth.uuid).bind(sid).fetch_all(&app.db).await?;
+    let totals: (f64, f64, i64) = sqlx::query_as("SELECT COALESCE(SUM(bet), 0.0), COALESCE(SUM(payout), 0.0), COUNT(*) FROM casino_rounds WHERE uuid = ? AND server_id=?").bind(&auth.uuid).bind(sid).fetch_one(&app.db).await?;
     Ok(Json(json!({
         "rounds": rows.into_iter().map(|(id, game, bet, payout, detail, at)| json!({ "id": id, "game": game, "bet": bet, "payout": payout, "detail": serde_json::from_str::<Value>(&detail).unwrap_or(Value::Null), "at": at })).collect::<Vec<_>>(),
         "wagered": round2(totals.0), "won": round2(totals.1), "rounds_played": totals.2,
@@ -955,6 +971,7 @@ pub async fn settle_due(app: &AppState) -> AppResult<String> {
     }
     // Old Double or Nothing offers are just cleared out.
     sqlx::query("DELETE FROM casino_double WHERE created_at <= ?").bind((Utc::now() - Duration::days(2)).to_rfc3339_opts(SecondsFormat::Secs, true)).execute(&app.db).await?;
+    counts.2 += core_games::settle_abandoned(app).await?;
     counts.3 = counts.0 + counts.1 + counts.2;
     Ok(format!("{} bounties expired, {} bets settled, {} abandoned games closed", counts.0, counts.1, counts.2))
 }

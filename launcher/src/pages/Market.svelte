@@ -5,6 +5,8 @@
   import Modal from '../components/Modal.svelte';
   import Orders from '@velora/board/Orders.svelte';
   import Contracts from '@velora/board/Contracts.svelte';
+  import Darknet from '@velora/board/Darknet.svelte';
+  import Vaults from '@velora/board/Vaults.svelte';
   import { setBoardHost } from '@velora/board';
   import { app, instances, selectedInstance, toast } from '../lib/store.svelte';
   import { errorText, invoke } from '../lib/tauri';
@@ -23,7 +25,8 @@
   let history = $state<Activity[]>([]);
   let waiting = $state(0);
   let waitingItems = $state<{ item_name: string; amount: number; note: string }[]>([]);
-  let tab = $state<'browse' | 'mine' | 'orders' | 'contracts'>('browse');
+  let tab = $state<'browse' | 'mine' | 'orders' | 'contracts' | 'darknet' | 'vaults'>('browse');
+  const coreExperience = $derived(selectedInstance()?.experience?.kind === 'velora-smp');
   // Buy orders and contracts are shared with the web player panel; this plugs them into the launcher's account session.
   setBoardHost({
     get: (id, path) => invoke('board_get', { serverId: id, path }),
@@ -137,8 +140,10 @@
   <div class="tabs" role="tablist">
     <button role="tab" aria-selected={tab === 'browse'} class:active={tab === 'browse'} onclick={() => (tab = 'browse')}><Tag size={15} /> Browse <span class="n">{listings.length}</span></button>
     <button role="tab" aria-selected={tab === 'mine'} class:active={tab === 'mine'} onclick={() => (tab = 'mine')}><History size={15} /> My activity {#if mineListings.length + leadingBids.length}<span class="n">{mineListings.length + leadingBids.length}</span>{/if}</button>
-    <button role="tab" aria-selected={tab === 'orders'} class:active={tab === 'orders'} onclick={() => (tab = 'orders')}><ClipboardList size={15} /> Buy orders</button>
-    <button role="tab" aria-selected={tab === 'contracts'} class:active={tab === 'contracts'} onclick={() => (tab = 'contracts')}><ScrollText size={15} /> Contracts</button>
+    <button role="tab" aria-selected={tab === 'orders'} class:active={tab === 'orders'} onclick={() => (tab = 'orders')}><ClipboardList size={15} /> {coreExperience ? 'Buy contracts' : 'Buy orders'}</button>
+    <button role="tab" aria-selected={tab === 'darknet'} class:active={tab === 'darknet'} onclick={() => (tab = 'darknet')}><Store size={15} /> Darknet</button>
+    {#if coreExperience}<button role="tab" aria-selected={tab === 'vaults'} class:active={tab === 'vaults'} onclick={() => (tab = 'vaults')}><Archive size={15} /> Vaults</button>{/if}
+    {#if !coreExperience}<button role="tab" aria-selected={tab === 'contracts'} class:active={tab === 'contracts'} onclick={() => (tab = 'contracts')}><ScrollText size={15} /> Contracts</button>{/if}
     {#if auctionsEnding}<span class="ending"><Flame size={14} /> {auctionsEnding} auction{auctionsEnding === 1 ? '' : 's'} ending soon</span>{/if}
   </div>
 
@@ -177,7 +182,11 @@
     </article>
   {/snippet}
 
-  {#if tab === 'orders' && serverId != null}
+  {#if tab === 'vaults' && serverId != null}
+    <Vaults {serverId} get={(id) => invoke('vault_get', { serverId: id })} post={(id, action, body) => invoke('vault_post', { serverId: id, action, body })} onbalance={(value) => (balance = value)} />
+  {:else if tab === 'darknet' && serverId != null}
+    <Darknet {serverId} onbalance={(value) => (balance = value)} />
+  {:else if tab === 'orders' && serverId != null}
     {#key serverId}<Orders {serverId} onbalance={(v) => (balance = v)} />{/key}
   {:else if tab === 'contracts' && serverId != null}
     {#key serverId}<Contracts {serverId} onbalance={(v) => (balance = v)} />{/key}

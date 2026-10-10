@@ -31,11 +31,12 @@ public final class CommandSet {
         add(env, new BoardCommands(env, jobs).build(), "Economy", () -> env.features.economy());
         add(env, guilds.build(), "Guilds", () -> env.features.guilds());
         utilityHub = new UtilityHub(env, () -> env.utilities.get(), new UtilityStore(dir.resolve("utility-state.json")));
+        guilds.vaults = utilityHub.cloudVaults;
         add(env, utilityHub.commands(), "Utility commands", () -> true);
     }
 
     private void add(Env env, List<CoreCommand> list, String system, java.util.function.BooleanSupplier enabled) {
-        for (CoreCommand c : list) commands.add(new Gated(c, system, enabled));
+        for (CoreCommand c : list) commands.add(new Gated(c, system, () -> enabled.getAsBoolean() && env.modules.get().commandEnabled(c.name())));
     }
 
     public List<CoreCommand> all() { return List.copyOf(commands); }

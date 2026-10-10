@@ -1238,6 +1238,89 @@ const MIGRATIONS: &[&str] = &[
         luckperms_group TEXT NOT NULL DEFAULT '',
         discord_role TEXT NOT NULL DEFAULT ''
     );"#,
+    r#"
+    CREATE TABLE casino_burst (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, server_id INTEGER NOT NULL REFERENCES game_servers(id), uuid TEXT NOT NULL,
+        bet REAL NOT NULL, steps INTEGER NOT NULL DEFAULT 0, survival REAL NOT NULL, house_edge REAL NOT NULL,
+        max_steps INTEGER NOT NULL, max_payout REAL NOT NULL, status TEXT NOT NULL DEFAULT 'active', created_at TEXT NOT NULL
+    );
+    CREATE UNIQUE INDEX casino_burst_active ON casino_burst(server_id,uuid) WHERE status='active';
+    ALTER TABLE buy_orders ADD COLUMN acceptance_minutes INTEGER;
+    CREATE TABLE faction_upkeep (
+        guild_id TEXT NOT NULL REFERENCES guilds(id) ON DELETE CASCADE, day TEXT NOT NULL, server_id INTEGER NOT NULL,
+        chunks INTEGER NOT NULL, members INTEGER NOT NULL, amount_cents INTEGER NOT NULL, paid_at TEXT, billed_at TEXT NOT NULL,
+        PRIMARY KEY(guild_id,day)
+    );
+    ALTER TABLE guild_relations ADD COLUMN reward_cents INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE guild_relations ADD COLUMN reward_bps INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE guild_relations ADD COLUMN expires_at TEXT;
+    ALTER TABLE guild_relations ADD COLUMN ally_permissions TEXT NOT NULL DEFAULT '{}';
+    ALTER TABLE guild_relations ADD COLUMN terms_revision TEXT NOT NULL DEFAULT '';
+    CREATE TABLE faction_rival_kills (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, server_id INTEGER NOT NULL, relation_id INTEGER NOT NULL,
+        guild_id TEXT NOT NULL, killer_uuid TEXT NOT NULL, victim_uuid TEXT NOT NULL, amount_cents INTEGER NOT NULL, created_at TEXT NOT NULL
+    );
+    CREATE INDEX faction_rival_cooldown ON faction_rival_kills(guild_id,victim_uuid,created_at);
+    "#,
+    // Velora Core completion: faction upgrades, ally permissions in the claim index.
+    r#"
+    CREATE TABLE faction_upgrades (
+        guild_id TEXT NOT NULL REFERENCES guilds(id) ON DELETE CASCADE, track TEXT NOT NULL,
+        tiers INTEGER NOT NULL CHECK (tiers >= 0), updated_at TEXT NOT NULL, PRIMARY KEY(guild_id, track)
+    );
+    CREATE TRIGGER guild_relations_rev_i AFTER INSERT ON guild_relations BEGIN UPDATE kv SET value = CAST(value AS INTEGER) + 1 WHERE key = 'guild_rev'; END;
+    CREATE TRIGGER guild_relations_rev_u AFTER UPDATE ON guild_relations BEGIN UPDATE kv SET value = CAST(value AS INTEGER) + 1 WHERE key = 'guild_rev'; END;
+    CREATE TRIGGER guild_relations_rev_d AFTER DELETE ON guild_relations BEGIN UPDATE kv SET value = CAST(value AS INTEGER) + 1 WHERE key = 'guild_rev'; END;
+    UPDATE guild_relations SET ally_permissions = COALESCE((SELECT o.ally_permissions FROM guild_relations o
+        WHERE o.instance_id = guild_relations.instance_id AND o.guild_id = guild_relations.other_guild_id AND o.other_guild_id = guild_relations.guild_id
+          AND o.ally_permissions <> '{}'), ally_permissions)
+      WHERE relation = 'alliance' AND status = 'accepted' AND ally_permissions = '{}';
+    -- Cloud vaults: 'player:<uuid>' or 'faction:<guild id>'. A game server leases a vault while it is open.
+    CREATE TABLE cloud_vaults (
+        owner TEXT NOT NULL, number INTEGER NOT NULL CHECK (number BETWEEN 1 AND 54),
+        contents TEXT NOT NULL DEFAULT '[]', revision INTEGER NOT NULL DEFAULT 0,
+        lease_server INTEGER, lease_token TEXT, lease_until TEXT, updated_at TEXT NOT NULL,
+        PRIMARY KEY(owner, number)
+    );
+    CREATE TABLE cloud_vault_imports (owner TEXT PRIMARY KEY, server_id INTEGER NOT NULL, vaults INTEGER NOT NULL, imported_at TEXT NOT NULL);
+    CREATE TABLE vault_entitlements (
+        uuid TEXT NOT NULL, number INTEGER NOT NULL, price_cents INTEGER NOT NULL, purchased_at TEXT NOT NULL, PRIMARY KEY(uuid, number)
+    );
+    ALTER TABLE guild_roles ADD COLUMN can_vault INTEGER NOT NULL DEFAULT 1;
+    "#,
+    r#"
+    CREATE TABLE faction_outposts (
+        id TEXT PRIMARY KEY, guild_id TEXT NOT NULL REFERENCES guilds(id) ON DELETE CASCADE,
+        status TEXT NOT NULL DEFAULT 'issued' CHECK(status IN ('issued','placed')),
+        server_id INTEGER, dimension TEXT, x INTEGER, y INTEGER, z INTEGER,
+        purchased_at TEXT NOT NULL, placed_at TEXT
+    );
+    CREATE INDEX faction_outposts_guild ON faction_outposts(guild_id);
+    ALTER TABLE guild_claims ADD COLUMN outpost_id TEXT REFERENCES faction_outposts(id);
+    "#,
+    r#"
+    CREATE TABLE vault_transfers (
+        id TEXT PRIMARY KEY, server_id INTEGER NOT NULL, uuid TEXT NOT NULL,
+        owner TEXT NOT NULL, number INTEGER NOT NULL, revision INTEGER NOT NULL,
+        lease TEXT NOT NULL, before_contents TEXT NOT NULL, after_contents TEXT NOT NULL,
+        fingerprint TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'prepared'
+            CHECK(status IN ('prepared','committed','cancelled')),
+        created_at TEXT NOT NULL, resolved_at TEXT
+    );
+    CREATE UNIQUE INDEX vault_transfers_container ON vault_transfers(owner,number) WHERE status='prepared';
+    CREATE UNIQUE INDEX vault_transfers_player ON vault_transfers(server_id,uuid) WHERE status='prepared';
+    "#,
+    r#"
+    CREATE TABLE physical_shops (
+        id TEXT PRIMARY KEY, server_id INTEGER NOT NULL REFERENCES game_servers(id), owner_uuid TEXT NOT NULL,
+        dimension TEXT NOT NULL, x INTEGER NOT NULL, y INTEGER NOT NULL, z INTEGER NOT NULL,
+        chest_x INTEGER NOT NULL, chest_y INTEGER NOT NULL, chest_z INTEGER NOT NULL,
+        item_id TEXT NOT NULL, item_name TEXT NOT NULL, fingerprint TEXT NOT NULL, display_data TEXT NOT NULL,
+        quantity INTEGER NOT NULL, price_cents INTEGER NOT NULL, enabled INTEGER NOT NULL DEFAULT 1,
+        promoted_until TEXT, warp_enabled INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL, UNIQUE(server_id,dimension,x,y,z), UNIQUE(server_id,dimension,chest_x,chest_y,chest_z)
+    );
+    "#,
 ];
 
 pub async fn connect(data_dir: &Path) -> Result<SqlitePool> {
@@ -1246,7 +1329,7 @@ pub async fn connect(data_dir: &Path) -> Result<SqlitePool> {
     let opts = SqliteConnectOptions::from_str(&url)?
         .create_if_missing(true)
         .journal_mode(SqliteJournalMode::Wal)
-        .synchronous(SqliteSynchronous::Normal)
+        .synchronous(SqliteSynchronous::Full)
         .foreign_keys(true);
     let pool = SqlitePoolOptions::new().max_connections(8).connect_with(opts).await?;
     migrate(&pool).await?;

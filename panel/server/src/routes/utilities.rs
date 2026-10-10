@@ -286,8 +286,8 @@ fn check_utilities(u: &mut Utilities) -> AppResult<()> {
     if !(1..=54).contains(&u.vault.count) {
         return Err(AppError::bad_request("Vault count must be between 1 and 54"));
     }
-    if !(1..=6).contains(&u.vault.rows) {
-        return Err(AppError::bad_request("Vault rows must be between 1 and 6"));
+    if !(1..=7).contains(&u.vault.rows) {
+        return Err(AppError::bad_request("Vault rows must be between 1 and 7; seven rows require Velora Core Client"));
     }
     u.vault.free_count = u.vault.free_count.clamp(0, u.vault.count);
     if u.kits.len() > 60 {
@@ -341,7 +341,13 @@ fn clean_item_or_custom(v: &Value) -> AppResult<Value> {
 }
 
 pub async fn load(state: &AppState) -> AppResult<Utilities> {
-    store::kv_get(state, "utilities").await
+    let mut utilities: Utilities = store::kv_get(state, "utilities").await?;
+    if let Some(policy) = crate::velora_core::load(state).await? {
+        let configured: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM kv WHERE key='utilities')").fetch_one(&state.db).await?;
+        if !configured { utilities.vault.count = 54; utilities.vault.rows = 7; utilities.vault.free_count = 1; }
+        utilities.vault.enabled &= policy.enabled("vaults");
+    }
+    Ok(utilities)
 }
 
 #[derive(Deserialize)]

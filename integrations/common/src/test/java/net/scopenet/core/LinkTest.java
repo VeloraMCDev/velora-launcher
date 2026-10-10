@@ -13,6 +13,13 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LinkTest {
+    @Test void mapClaimEditsDeriveIdentityAndDimensionAndRejectFractionalCoordinates(){
+        kit.panel.on("guilds/claim","{\"ok\":true}");link.receive(alex,msg("{\"t\":\"hello\",\"protocol\":2}"));kit.now.addAndGet(1000);
+        link.receive(alex,msg("{\"t\":\"request\",\"id\":\"claim-one\",\"operation\":\"claim_edit\",\"args\":{\"action\":\"claim\",\"x\":-2,\"z\":3,\"uuid\":\"forged\",\"dimension\":\"forged\"}}"));
+        int index=kit.panel.calls.indexOf("guilds/claim");assertTrue(index>=0);JsonObject body=kit.panel.bodies.get(index);assertEquals(alex.uuid().toString(),body.get("uuid").getAsString());assertEquals(alex.pos().world(),body.get("dimension").getAsString());assertTrue(kit.panel.claimsRefreshed);
+        kit.now.addAndGet(1000);link.receive(alex,msg("{\"t\":\"request\",\"id\":\"claim-two\",\"operation\":\"claim_edit\",\"args\":{\"action\":\"claim\",\"x\":1.5,\"z\":3}}"));assertEquals(1,kit.panel.calls.stream().filter("guilds/claim"::equals).count());
+        alex.denied.add("scopenet.command.guild.claim");kit.now.addAndGet(1000);link.receive(alex,msg("{\"t\":\"request\",\"id\":\"claim-three\",\"operation\":\"claim_edit\",\"args\":{\"action\":\"claim\",\"x\":1,\"z\":3}}"));assertEquals(1,kit.panel.calls.stream().filter("guilds/claim"::equals).count());
+    }
     static final String INFO = "{\"exists\":true,\"name\":\"Alex\",\"joined\":\"2026-01-02T03:04:05Z\",\"global\":{\"level\":12,\"xp\":5000,\"next_level_xp\":6000,\"current_level_xp\":4800,\"progress_pct\":16.6,\"title\":\"Miner\",\"rank\":3},"
             + "\"server\":{\"level\":4,\"xp\":300,\"progress_pct\":50.0,\"rank_name\":\"Initiate\"},\"guild\":{\"id\":\"g\",\"name\":\"Iron\",\"tag\":\"IRON\",\"role\":\"leader\",\"claims\":3},"
             + "\"balance\":1234.5,\"playtime_secs\":7300,\"server_playtime_secs\":600,\"kills\":10,\"deaths\":4,\"friends\":6,\"achievements\":9,"

@@ -13,6 +13,7 @@
   let item = $state('COBBLESTONE');
   let amount = $state(64);
   let total = $state(100);
+  let acceptanceMinutes = $state(1440);
 
   async function load(quiet = true) {
     try {
@@ -32,7 +33,7 @@
       await load();
     } catch (e) { toast(errorText(e), 'error'); await load(); } finally { busy = false; }
   }
-  const post = () => act('/orders', { item_id: item.trim(), amount, total }, `Order posted. ${money(total)} is held until it's filled.`);
+  const post = () => act('/orders', { item_id: item.trim(), amount, total, acceptance_minutes: acceptanceMinutes }, `Order posted. ${money(total)} is held until it's filled.`);
 
   const each = $derived(amount > 0 ? total / amount : 0);
   const afford = $derived(board?.balance == null || board.balance >= total);
@@ -54,7 +55,7 @@
       <h2><Info size={16} /> How buy orders work</h2>
       <ol>
         <li><b>Ask</b> for the items you need and set the price. The money is held safely (escrow) until someone delivers.</li>
-        <li><b>Someone picks it up</b> from this board and gathers the items. It's reserved for them for {board.rules.claim_minutes} minutes.</li>
+        <li><b>Someone accepts it</b> {#if board.rules.requester_deadlines}and gathers the items before your chosen deadline. Missed deadlines refund you.{:else}and reserves it for {board.rules.claim_minutes} minutes. After that, someone else can pick it up.{/if}</li>
         <li><b>They hand the items in</b> with <code>/orders fill &lt;id&gt;</code> in game. The items appear in <b>your vault</b> and they get paid.</li>
       </ol>
     </section>
@@ -65,6 +66,7 @@
         <label>Item<input list="board-items" bind:value={item} placeholder="DIAMOND" autocapitalize="characters" spellcheck="false" /><datalist id="board-items">{#each COMMON_ITEMS as i}<option value={i}></option>{/each}</datalist></label>
         <label>How many<input type="number" min="1" max={board.rules.max_amount} bind:value={amount} /></label>
         <label>Total you'll pay ($)<input type="number" min={board.rules.min_total} max={board.rules.max_total} step="1" bind:value={total} /></label>
+        {#if board.rules.requester_deadlines}<label>Deadline after acceptance (minutes)<input type="number" min="5" max="43200" step="1" bind:value={acceptanceMinutes}/></label>{/if}
       </div>
       <div class="sum"><span>{money(each)} each</span><span>Held in escrow: <b>{money(total)}</b></span>{#if board.balance != null}<span class:bad={!afford}>Balance {money(board.balance)}</span>{/if}</div>
       <button class="primary" onclick={post} disabled={busy || !valid}><PackagePlus size={16} /> Post order</button>
@@ -103,7 +105,7 @@
     <div class="what"><span class="qty">{o.amount}×</span><div><b>{o.item_name}</b><small>{o.mine ? 'Your order' : `from ${o.buyer_name}`} · {ago(o.created_at, now)}</small></div></div>
     <div class="price"><b>{money(o.total)}</b><small>{money(o.each)} each</small></div>
     <div class="state">
-      {#if o.status === 'claimed'}<span class="chip taken"><Clock size={11} /> {o.claimed_by_me ? 'yours' : `${o.claimer_name}`} · {untilText(o.claim_until, now)}</span>{:else}<span class="chip open">open</span>{/if}
+      {#if o.status === 'claimed'}<span class="chip taken"><Clock size={11} /> {o.claimed_by_me ? 'yours' : `${o.claimer_name}`} · {untilText(o.claim_until, now)}</span>{:else}<span class="chip {o.status}">{o.status==='expired'?'Expired · refund pending':o.status}</span>{/if}
     </div>
     <div class="act">
       {#if o.mine}

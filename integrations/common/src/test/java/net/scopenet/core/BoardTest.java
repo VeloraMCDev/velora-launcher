@@ -61,6 +61,15 @@ class BoardTest {
         assertTrue(alex.heard("Balance: $1,150.00"), alex.inbox.toString());
     }
 
+    @Test void requesterChoosesDeadlineAndInvalidMinutesNeverReachPanel() {
+        kit.panel.on("economy/orders/create", "{\"message\":\"Posted\"}");
+        run(steve,"orders","request","16","80","diamond","45");
+        assertEquals(45,kit.panel.bodies.get(kit.panel.bodies.size()-1).get("acceptance_minutes").getAsInt());
+        int calls=kit.panel.calls.size();
+        for(String deadline:List.of("4","43201","1.5","tomorrow")) run(steve,"orders","request","16","80","diamond",deadline);
+        assertEquals(calls,kit.panel.calls.size());
+    }
+
     @Test void notEnoughItemsReturnsEverythingAndSendsNothing() {
         kit.panel.on("economy/orders", "{\"orders\":[{\"id\":4,\"item_id\":\"COBBLESTONE\",\"item_name\":\"Cobblestone\",\"amount\":100,\"total\":150.0}]}");
         alex.inventory.add(new Item("COBBLESTONE", "Cobblestone", 40, ""));

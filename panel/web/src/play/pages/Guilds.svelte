@@ -10,6 +10,7 @@
   import Count from '../ui/Count.svelte';
   import ProfileSheet from '../ui/ProfileSheet.svelte';
   import LandRules from '../ui/LandRules.svelte';
+  import FactionMarket from '@velora/board/FactionMarket.svelte';
   import { del, get, post, put, timeAgo } from '../../lib/api';
   import { session } from '../../lib/session.svelte';
   import { toast, toastError } from '../../lib/toast.svelte';
@@ -20,17 +21,20 @@
   type GPost = { id: number; author_uuid: string; author_name: string; title: string; content: string; created_at: string };
   type Claim = { id: number; dimension: string; chunk_x: number; chunk_z: number; claimed_by_uuid: string; claimed_at: string };
   type Detail = Guild & { members: Member[]; posts: GPost[]; claims: Claim[] };
-  type Role = { id: number; name: string; can_invite: boolean; can_kick: boolean; can_claim: boolean; can_post: boolean; can_manage: boolean };
+  type Role = { id: number; name: string; can_invite: boolean; can_kick: boolean; can_claim: boolean; can_post: boolean; can_manage: boolean; can_vault: boolean };
   type JoinReq = { uuid: string; name: string; message: string; created_at: string };
   type GInvite = { id: number; guild_id: string; guild_name: string; guild_tag: string; icon_url: string; inviter: string; inviter_uuid?: string };
   type Tx = { id: number; actor_uuid: string; kind: string; amount: number; created_at: string; note?: string };
-  type Wallet = { balance: number; my_balance?: number; role?: string; currency_symbol?: string; transactions: Tx[] };
+  type Wallet = { balance: number; my_balance?: number; role?: string; currency_symbol?: string; transactions: Tx[]; upkeep?: {daily_cents:number;arrears_cents:number;grace_days:number;freezes_at:string|null;claims_frozen:boolean}|null };
+  type Relation = {id:number;guild_id:string;other_guild_id:string;name:string;tag:string;relation:string;status:string;reward_cents:number;reward_bps:number;expires_at:string|null;terms_revision:string};
+  let relations=$state<Relation[]>([]), relationTarget=$state(''), relationKind=$state('alliance'), rewardKind=$state('percent'), reward=$state(5), relationHours=$state(0);
+  async function proposeRelation(){if(!g||!relationTarget)return;await act('relation',()=>post(`/api/v1/guilds/${g!.id}/relations`,{other_guild_id:relationTarget,relation:relationKind,reward_cents:relationKind==='rival'&&rewardKind==='fixed'?Math.round(reward*100):0,reward_bps:relationKind==='rival'&&rewardKind==='percent'?Math.round(reward*100):0,duration_hours:relationKind==='rival'&&relationHours>0?relationHours:null}),'Request sent');}
 
   const me = $derived(session.user?.uuid ?? '');
   const instanceId = $derived(currentServer()?.instance_id ?? '');
   const inst = $derived(instanceId ? `?instance_id=${encodeURIComponent(instanceId)}` : '');
 
-  let tab = $state<'overview' | 'members' | 'bank' | 'land' | 'posts' | 'discover'>('overview');
+  let tab = $state<'overview' | 'members' | 'bank' | 'land' | 'posts' | 'discover' | 'relations'>('overview');
   let g = $state<Detail | null>(null);
   let all = $state<Guild[]>([]);
   let roles = $state<Role[]>([]);
@@ -67,13 +71,14 @@
       if (mine !== seq) return;
       g = my; all = list; invites = inv; error = '';
       if (my) {
-        const [r, jr] = await Promise.all([
+        const [r, jr, rel] = await Promise.all([
           get<Role[]>(`/api/v1/guilds/${my.id}/roles`).catch(() => [] as Role[]),
           get<JoinReq[]>(`/api/v1/guilds/${my.id}/requests`).catch(() => [] as JoinReq[]),
+          get<Relation[]>(`/api/v1/guilds/${my.id}/relations`),
         ]);
         if (mine !== seq) return;
-        roles = r; requests = jr;
-      } else { roles = []; requests = []; if (tab !== 'discover') tab = 'overview'; }
+        roles = r; requests = jr; relations = rel;
+      } else { roles = []; requests = []; relations = []; if (tab !== 'discover') tab = 'overview'; }
     } catch (e) {
       if (mine === seq && (!quiet || !g)) error = e instanceof Error ? e.message : 'Could not load guilds';
     } finally {
@@ -153,14 +158,14 @@
   $effect(() => { if (inviteOpen) untrack(() => { iq = ''; void isearch(); }); });
 
   // ---------- roles ----------
-  let rolesOpen = $state(false), rName = $state(''), rFlags = $state({ can_invite: false, can_kick: false, can_claim: false, can_post: true, can_manage: false });
+  let rolesOpen = $state(false), rName = $state(''), rFlags = $state({ can_invite: false, can_kick: false, can_claim: false, can_post: true, can_manage: false, can_vault: false });
   async function createRole() {
     if (!g || rName.trim().length < 2) return;
     const r = await act('role', () => post(`/api/v1/guilds/${g!.id}/roles`, { name: rName.trim(), ...rFlags }), 'Role created');
     if (r !== undefined) rName = '';
   }
   const deleteRole = (r: Role) => g && act(`rd${r.id}`, () => del(`/api/v1/guilds/${g!.id}/roles/${r.id}`), 'Role deleted');
-  const permList = (r: Role) => [r.can_invite && 'Invite', r.can_kick && 'Kick', r.can_claim && 'Claim', r.can_post && 'Post', r.can_manage && 'Manage'].filter(Boolean) as string[];
+  const permList = (r: Role) => [r.can_invite && 'Invite', r.can_kick && 'Kick', r.can_claim && 'Claim', r.can_post && 'Post', r.can_manage && 'Manage', r.can_vault && 'Faction vault'].filter(Boolean) as string[];
 
   // ---------- edit / rename ----------
   let editOpen = $state(false), eDesc = $state(''), eMotd = $state(''), eIcon = $state(''), eBanner = $state(''), eName = $state(''), eTag = $state('');
@@ -194,7 +199,7 @@
   const valid = $derived(Number.isFinite(val) && val >= 0.01 && Math.abs(val * 100 - Math.round(val * 100)) < 1e-6);
   const limit = $derived(mode === 'deposit' ? wallet?.my_balance : wallet?.balance);
   const over = $derived(valid && limit != null && val > limit + 1e-9);
-  const isOut = (k: string) => k === 'withdraw' || k === 'purchase' || k === 'transfer_out';
+  const isOut = (k: string) => k === 'withdraw' || k === 'purchase' || k === 'transfer_out' || k === 'upkeep';
   const verbs: Record<string, string> = { deposit: 'deposited', withdraw: 'withdrew', sale: 'sold items', purchase: 'bought something', transfer_in: 'received a payment', transfer_out: 'paid a guild' };
   const totals = $derived({ in: wallet?.transactions.filter((t) => !isOut(t.kind)).reduce((n, t) => n + t.amount, 0) ?? 0, out: wallet?.transactions.filter((t) => isOut(t.kind)).reduce((n, t) => n + t.amount, 0) ?? 0 });
   const who = (uuid: string) => g?.members.find((m) => m.uuid === uuid);
@@ -369,6 +374,7 @@
       <button role="tab" class:on={tab === 'bank'} onclick={() => (tab = 'bank')}>Bank</button>
       <button role="tab" class:on={tab === 'land'} onclick={() => (tab = 'land')}>Land</button>
       <button role="tab" class:on={tab === 'posts'} onclick={() => (tab = 'posts')}>Posts</button>
+      <button role="tab" class:on={tab === 'relations'} onclick={() => (tab = 'relations')}>Allies & rivals</button>
       <button role="tab" class:on={tab === 'discover'} onclick={() => (tab = 'discover')}>Discover</button>
     </div>
 
@@ -458,7 +464,27 @@
         </div>
       </div>
 
+    {:else if tab === 'relations'}
+      <section class="pl-card pl-stack">
+        <h2>Allies & rivals</h2>
+        <p>Both factions must accept a rivalry. Kill rewards transfer the agreed amount from the defeated player's balance, with the server's repeated-kill cooldown.</p>
+        {#if isLeader}<form class="pl-stack" onsubmit={(e)=>{e.preventDefault();void proposeRelation();}}>
+          <label>Faction<select bind:value={relationTarget}><option value="">Choose a faction</option>{#each all.filter(f=>f.id!==g?.id) as faction}<option value={faction.id}>{faction.name} [{faction.tag}]</option>{/each}</select></label>
+          <label>Relationship<select bind:value={relationKind}><option value="alliance">Alliance</option><option value="rival">Rivalry</option></select></label>
+          {#if relationKind==='rival'}<label>Kill reward<select bind:value={rewardKind}><option value="percent">Percentage of victim's balance</option><option value="fixed">Fixed dollars</option></select></label>
+            <label>Reward<input type="number" min="0" max={rewardKind==='percent'?100:1000000000} step="0.01" bind:value={reward}/></label>
+            <label>Duration in hours (0 for permanent)<input type="number" min="0" max="8760" step="1" bind:value={relationHours}/></label>{/if}
+          <button class="pl-btn primary" disabled={!!busy||!relationTarget}>Send request</button>
+        </form>{/if}
+        {#each relations as relation}<article class="pl-card pl-stack tight"><b>{relation.name} [{relation.tag}] · {relation.relation}</b><span>{relation.status}</span>
+          {#if relation.relation==='rival'}<p>Kill reward: {relation.reward_bps>0?`${relation.reward_bps/100}%`:fmt(relation.reward_cents/100)}. {relation.expires_at?`Ends ${new Date(relation.expires_at).toLocaleString()}`:'Permanent'}</p>{/if}
+          {#if isLeader&&relation.status==='pending'&&relation.other_guild_id===g?.id}<div class="pl-actions"><button class="pl-btn primary" disabled={!!busy} onclick={()=>act('relation',()=>post(`/api/v1/guilds/${g!.id}/relations/${relation.id}/respond`,{accept:true,expected_revision:relation.terms_revision}),'Request accepted')}>Accept terms</button><button class="pl-btn" disabled={!!busy} onclick={()=>act('relation',()=>post(`/api/v1/guilds/${g!.id}/relations/${relation.id}/respond`,{accept:false,expected_revision:relation.terms_revision}),'Request declined')}>Decline</button></div>{/if}
+        </article>{/each}
+      </section>
     {:else if tab === 'bank'}
+      {#if play.manifest?.instances.find(instance => instance.id === instanceId)?.experience?.kind === 'velora-smp'}
+        <FactionMarket guildId={g.id} {canManage} get={(id) => get(`/api/v1/guilds/${id}/upgrades`)} buy={(id, track, tiers, price) => post(`/api/v1/guilds/${id}/upgrades`, { track, expected_tiers: tiers, expected_price_cents: price })} onchanged={() => { void loadWallet(); }} />
+      {/if}
       {#if !walletOk}
         <div class="pl-card"><Empty icon={Landmark} title="Switch server to see the treasury" text={`The guild treasury lives on the ${g.name} server's economy. Pick a server from the same modpack in the top bar.`} /></div>
       {:else if wLoading && !wallet}
@@ -471,6 +497,9 @@
             <section class="pl-hero treasury">
               <span class="tl"><Landmark size={15} /> Guild treasury · [{g.tag}]</span>
               <div class="big"><Count value={wallet.balance} format={fmt} /></div>
+              {#if wallet.upkeep}<p>Daily upkeep {fmt(wallet.upkeep.daily_cents/100)} · {wallet.upkeep.grace_days}-day grace period.</p>
+                {#if wallet.upkeep.arrears_cents>0}<p class="neg">Unpaid: {fmt(wallet.upkeep.arrears_cents/100)}. {wallet.upkeep.claims_frozen?'New claims are frozen.':`New claims freeze on ${wallet.upkeep.freezes_at} UTC.`} Deposit funds to settle outstanding bills within a minute. Existing claims remain protected.</p>{/if}
+              {/if}
               <div class="flow"><span class="pos"><ArrowDownToLine size={13} /> {fmt(totals.in)} in</span><span class="neg"><ArrowUpFromLine size={13} /> {fmt(totals.out)} out</span><small>last {wallet.transactions.length} transactions</small></div>
             </section>
             <div class="pl-card">
@@ -667,7 +696,7 @@
     <b>New role</b>
     <input class="pl-input" placeholder="Role name" maxlength="24" bind:value={rName} aria-label="Role name" />
     <div class="flags">
-      {#each [['can_invite', 'Invite'], ['can_kick', 'Kick'], ['can_claim', 'Claim'], ['can_post', 'Post'], ['can_manage', 'Manage']] as [k, l]}
+      {#each [['can_invite', 'Invite'], ['can_kick', 'Kick'], ['can_claim', 'Claim'], ['can_post', 'Post'], ['can_manage', 'Manage'], ['can_vault', 'Faction vault']] as [k, l]}
         <label class="flag"><input type="checkbox" bind:checked={rFlags[k as keyof typeof rFlags]} /> {l}</label>
       {/each}
     </div>

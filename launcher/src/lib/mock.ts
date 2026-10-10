@@ -93,6 +93,10 @@ frontierBrand.colors.background = '#101b19';
 frontierBrand.news = [];
 frontierBrand.links = [];
 manifest.instances.push({ ...manifest.instances[2], id: 'frontiers', name: 'Velora Frontiers', description: 'Settlements, citizens, resources and cooperation.', experience: { ...preset('frontiers'), branding: frontierBrand } });
+// Retain historical fixtures for explicit compatibility previews; the default demo is SMP only.
+if (scenario !== 'legacy') manifest.instances = [{ ...manifest.instances[0], name: 'Velora SMP',
+  description: 'Our Fabric survival world, powered by Velora Core.', mc_version: '1.20.1', loader_version: '0.16.10',
+  source_label: 'Velora Core', experience: preset('velora-smp') }];
 
 const accounts: Account[] = scenario === 'main' || scenario === 'progress' || scenario === 'update' ? [
   { id: 'a1', kind: 'panel', username: 'Alex_Miner', uuid: '00000000-0000-4000-8000-000000000001', panel_url: 'https://panel.velora.example', role: 'admin' },
@@ -315,6 +319,9 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
       return null;
     case 'casino_get': { const { casinoGet } = await import('./mockCasino'); try { return casinoGet(args?.path as string); } catch (e) { throw e; } }
     case 'board_get': { const { boardGet } = await import('./mockBoard'); return boardGet(args?.path as string); }
+    case 'vault_get': { const { vaultGet } = await import('./mockVaults'); return vaultGet(); }
+    case 'faction_upgrades': { const { upgrades } = await import('./mockFactions'); return upgrades(args?.body as any); }
+    case 'vault_post': { const { vaultPost } = await import('./mockVaults'); return vaultPost(args?.action as string, args?.body); }
     case 'board_post': { const { boardPost } = await import('./mockBoard'); return boardPost(args?.path as string, args?.body as any); }
     case 'casino_post': { const { casinoPost } = await import('./mockCasino'); return casinoPost(args?.path as string, args?.body); }
     case 'market_listings': {

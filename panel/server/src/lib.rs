@@ -28,6 +28,8 @@ pub mod seed;
 pub mod state;
 pub mod store;
 pub mod textures;
+pub mod velora_core;
+pub mod factions_core;
 pub mod worldmap;
 pub mod yggdrasil;
 

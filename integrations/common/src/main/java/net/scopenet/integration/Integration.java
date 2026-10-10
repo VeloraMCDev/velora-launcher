@@ -24,6 +24,8 @@ public final class Integration implements AutoCloseable {
     private volatile boolean closed;
     private volatile Consumer<JsonArray> notificationHandler;
     private volatile ChatLayout chat = ChatLayout.DEFAULT;
+    private volatile net.scopenet.core.CoreModules modules = net.scopenet.core.CoreModules.pending();
+    public net.scopenet.core.CoreModules modules() { return modules; }
     private volatile net.scopenet.core.Utilities utilities = net.scopenet.core.Utilities.DEFAULT;
     private volatile MapSink map;
     private volatile java.util.function.Supplier<String> mapOverlay;
@@ -94,6 +96,7 @@ public final class Integration implements AutoCloseable {
         if (!registered) {
             JsonObject response = client.post("hello", hello);
             if (!response.has("server_id")) throw new IllegalStateException("Invalid hello response");
+            modules = net.scopenet.core.CoreModules.fromPanel(response);
             registered = true;
         }
         if (pending == null) {
@@ -113,6 +116,7 @@ public final class Integration implements AutoCloseable {
         if (!response.has("ok") || !response.get("ok").getAsBoolean() || !response.has("kick")
                 || !response.get("kick").isJsonArray()) throw new IllegalStateException("Invalid sync response");
         pending = null;
+        modules = net.scopenet.core.CoreModules.fromPanel(response);
         if (response.has("chat") && response.get("chat").isJsonObject()) chat = ChatLayout.fromJson(response.getAsJsonObject("chat"));
         if (response.has("utilities") && response.get("utilities").isJsonObject()) {
             utilities = net.scopenet.core.Utilities.fromJson(response.getAsJsonObject("utilities"),
@@ -236,6 +240,11 @@ public final class Integration implements AutoCloseable {
     /** May this player change land here? See {@link ClaimIndex#mayModify}. */
     public boolean mayModify(String dimension, int chunkX, int chunkZ, java.util.UUID player, String flag) {
         return client.mayModify(dimension, chunkX, chunkZ, player, flag);
+    }
+
+    /** Like {@link #mayModify(String, int, int, java.util.UUID, String)}; allies pass where the claiming guild granted {@code ally}. */
+    public boolean mayModify(String dimension, int chunkX, int chunkZ, java.util.UUID player, String flag, String ally) {
+        return client.mayModify(dimension, chunkX, chunkZ, player, flag, ally);
     }
 
     /** The flag at a chunk, or null for wilderness. */

@@ -3,7 +3,7 @@
   // main button pinned above the tab bar so it is always under your thumb.
   import type { Component, Snippet } from 'svelte';
 
-  let { title, icon: Icon, controls, stage, action }: { title: string; icon: Component<{ size?: number }>; controls: Snippet; stage: Snippet; action: Snippet } = $props();
+  let { title, icon: Icon, controls, stage, action }: { title: string; icon: Component<{ size?: number }>; controls: Snippet; stage: Snippet; action?: Snippet } = $props();
 </script>
 
 <div class="game">
@@ -11,7 +11,7 @@
     <h2><Icon size={18} /> {title}
     </h2>
     {@render controls()}
-    <div class="act">{@render action()}</div>
+    {#if action}<div class="act">{@render action()}</div>{/if}
   </section>
   <section class="stage">{@render stage()}</section>
 </div>

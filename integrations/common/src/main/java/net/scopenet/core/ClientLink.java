@@ -94,28 +94,37 @@ public final class ClientLink {
         features.addProperty("claims", f.guilds() && f.landClaiming());
         features.addProperty("social", f.social());
         m.add("features", features);
+        m.add("modules", env.modules.get().toJson());
         send(p, m);
         cache.refresh(p, info -> pushState(p));
         if (cache.info(p.uuid()) != null) pushState(p);
         pushClaims(p);
     }
 
-    // The in-game companion has no casino; those rounds stay in the launcher and the web panel.
     private static final Set<String> OPERATIONS = Set.of("market", "quests", "quest_claim", "achievements", "levels", "transactions", "friends", "friend_request",
-            "notifications", "notifications_read", "guild", "guilds", "guild_bank", "guild_requests", "map", "orders", "contracts");
+            "notifications", "notifications_read", "guild", "guilds", "guild_bank", "guild_requests", "map", "orders", "contracts", "darknet", "darknet_buy",
+            "casino", "casino_history", "casino_slots", "casino_wheel", "casino_plinko", "casino_dice", "casino_coinflip", "casino_roulette",
+            "casino_crash_start", "casino_crash_status", "casino_crash_cashout", "casino_blackjack_start", "casino_blackjack_hit", "casino_blackjack_stand", "casino_blackjack_double",
+            "casino_mines_start", "casino_mines_reveal", "casino_mines_cashout", "casino_burst_start", "casino_burst_advance", "casino_burst_cashout");
 
     private void request(CorePlayer p, JsonObject msg) {
         String id = PlayerCache.str(msg, "id", ""), op = PlayerCache.str(msg, "operation", "");
         if (!id.matches("[a-zA-Z0-9-]{1,64}")) return;
-        if (op.equals("travel") || op.equals("storage")) {
+        if (op.equals("claim_edit")) { editClaim(p, id, PlayerCache.obj(msg, "args")); return; }
+        if (op.equals("travel") || op.equals("storage") || op.equals("physical_shop")) {
             if (localRequest != null) localRequest.accept(p, msg); else result(p, id, null, "This server does not expose that screen.");
             return;
         }
         if (!OPERATIONS.contains(op)) { result(p, id, null, "Unsupported companion operation."); return; }
-        if ((op.equals("market") || op.equals("transactions") || op.equals("orders") || op.equals("contracts")) && !env.features.economy()
+        if ((op.equals("market") || op.equals("transactions") || op.equals("orders") || op.equals("contracts") || op.startsWith("darknet")) && !env.features.economy()
+                || op.startsWith("casino") && (!env.modules.get().enabled("casino") || !env.features.economy())
+                || op.equals("map") && !env.modules.get().enabled("map")
                 || op.startsWith("guild") && !env.features.guilds()
                 || (op.equals("friends") || op.equals("friend_request")) && !env.features.social()) {
             result(p, id, null, "This feature is disabled."); return;
+        }
+        if ((op.startsWith("casino")&&!p.hasPermission("scopenet.command.casino")) || (op.startsWith("darknet")&&!p.hasPermission("scopenet.command.darknet"))) {
+            result(p,id,null,"You do not have permission to use this screen.");return;
         }
         if (op.startsWith("guild") && !p.hasPermission("scopenet.command.guild") || op.equals("guild_bank") && !p.hasPermission("scopenet.command.guild.bank")) {
             result(p, id, null, "You do not have permission to use this screen."); return;
@@ -137,6 +146,28 @@ public final class ClientLink {
             if (!Objects.equals(session, sessions.get(p.uuid()))) return;
             requests.remove(p.uuid()); result(p, id, null, error);
         });
+    }
+
+    private void editClaim(CorePlayer p, String id, JsonObject args) {
+        if (!env.modules.get().enabled("map") || !env.modules.get().enabled("factions") || !env.features.landClaiming()) {
+            result(p,id,null,"Map claim editing is disabled."); return;
+        }
+        try {
+            if (args == null || args.toString().length()>256) throw new IllegalArgumentException();
+            String action=args.get("action").getAsString();
+            if (!Set.of("claim","unclaim").contains(action)) throw new IllegalArgumentException();
+            int x=args.get("x").getAsBigDecimal().intValueExact(), z=args.get("z").getAsBigDecimal().intValueExact();
+            if (Math.abs((long)x)>1_875_000 || Math.abs((long)z)>1_875_000) throw new IllegalArgumentException();
+            if (!p.hasPermission("scopenet.command.guild."+action)) { result(p,id,null,"You do not have permission to edit claims."); return; }
+            if (!requests.add(p.uuid())) { result(p,id,null,"A request is already running."); return; }
+            JsonObject body=new JsonObject(); body.addProperty("uuid",p.uuid().toString());
+            body.addProperty("dimension",p.pos().world()); body.addProperty("chunk_x",x); body.addProperty("chunk_z",z);
+            Long session=sessions.get(p.uuid());
+            env.io(()->env.panel.call("guilds/"+action,body),data->{
+                if (!Objects.equals(session,sessions.get(p.uuid()))) return;
+                requests.remove(p.uuid()); env.panel.claimsChanged(); lastClaimsKey.remove(p.uuid()); result(p,id,data,null);
+            },error->{if (Objects.equals(session,sessions.get(p.uuid()))) {requests.remove(p.uuid());result(p,id,null,error);}});
+        } catch (RuntimeException invalid) { result(p,id,null,"Choose valid whole-number chunk coordinates and an action."); }
     }
 
     /** Bounded fragments keep each payload below Paper's messaging limit. */
@@ -168,6 +199,7 @@ public final class ClientLink {
         JsonObject quests = PlayerCache.obj(i, "quests");
         JsonObject m = new JsonObject();
         m.addProperty("t", "state");
+        m.add("modules", env.modules.get().toJson());
         m.addProperty("name", p.name());
         m.addProperty("level", (long) PlayerCache.num(global, "level", 1));
         m.addProperty("xp", (long) PlayerCache.num(global, "xp", 0));
@@ -240,6 +272,7 @@ public final class ClientLink {
     }
 
     private void market(CorePlayer p) {
+        if (!env.features.economy() || !env.modules.get().enabled("economy")) return;
         env.io(() -> env.panel.call("economy/market", new JsonObject()), el -> {
             JsonObject m = new JsonObject();
             m.addProperty("t", "market");
@@ -250,6 +283,7 @@ public final class ClientLink {
     }
 
     private void shop(CorePlayer p) {
+        if (!env.features.economy() || !env.modules.get().enabled("economy")) return;
         JsonObject m = new JsonObject();
         m.addProperty("t", "shop");
         JsonArray items = new JsonArray();

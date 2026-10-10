@@ -173,12 +173,14 @@ pub async fn viewer_overlay(_: AuthUser, State(state): State<AppState>, Path(id)
     let server = get_server(&state, id).await?;
     require_enabled(server.map_enabled)?;
     let overlay = state.worldmap.overlay(id);
-    Ok(Json(json!({
+    let mut pins=overlay.get("pins").and_then(Value::as_array).cloned().unwrap_or_default();
+    pins.extend(super::physical_shops::pins(&state,id).await?);
+    Ok(Json(crate::velora_core::filter_map(&state, json!({
         "players": state.worldmap.live_players(id),
         "claims": overlay.get("claims").cloned().unwrap_or(json!([])),
-        "pins": overlay.get("pins").cloned().unwrap_or(json!([])),
+        "pins": pins,
         "updated": state.worldmap.stats(id).last_overlay_at,
-    })))
+    })).await?))
 }
 
 pub async fn admin_status(_: AdminUser, State(state): State<AppState>, Path(id): Path<i64>) -> AppResult<Json<Value>> {
@@ -279,12 +281,12 @@ pub async fn public_overlay(State(state): State<AppState>, Path(requested): Path
     let (id, layers) = landing_map(&state, requested).await?;
     let overlay = state.worldmap.overlay(id);
     let on = |k: &str| layers[k].as_bool().unwrap_or(false);
-    Ok(Json(json!({
+    Ok(Json(crate::velora_core::filter_map(&state, json!({
         "players": if on("players") { json!(state.worldmap.live_players(id)) } else { json!([]) },
         "claims": if on("claims") { overlay.get("claims").cloned().unwrap_or(json!([])) } else { json!([]) },
         "pins": if on("pins") { overlay.get("pins").cloned().unwrap_or(json!([])) } else { json!([]) },
         "updated": state.worldmap.stats(id).last_overlay_at,
-    })))
+    })).await?))
 }
 
 pub async fn experience_tile(

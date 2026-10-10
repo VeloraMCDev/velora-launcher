@@ -23,4 +23,7 @@ public interface Panel {
     default boolean adminAllows(String dimension, int chunkX, int chunkZ, String flag) { return true; }
 
     default net.scopenet.integration.ClaimIndex.ClaimInfo info(String dimension, int chunkX, int chunkZ) { return null; }
+
+    /** Did the faction claiming this chunk grant {@code action} (fly, place…) to an ally this player belongs to? */
+    default boolean allyMay(String dimension, int chunkX, int chunkZ, UUID player, String action) { return false; }
 }

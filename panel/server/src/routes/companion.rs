@@ -63,6 +63,11 @@ pub async fn request(GameServer(server): GameServer, State(state): State<AppStat
             | "casino_mines_start"
             | "casino_mines_reveal"
             | "casino_mines_cashout"
+            | "casino_roulette"
+            | "casino_burst_start"
+            | "casino_burst_advance"
+            | "casino_burst_cashout"
+            | "darknet_buy"
             | "bounty_place"
             | "bet_place"
     );
@@ -134,14 +139,24 @@ async fn dispatch(server: super::servers::ServerRow, state: AppState, auth: Auth
             Some("achievements")
         } else if p.operation == "levels" {
             Some("progression")
-        } else if p.operation == "market" || p.operation == "transactions" {
+        } else if matches!(p.operation.as_str(), "market" | "transactions" | "orders" | "contracts" | "darknet" | "darknet_buy") {
             Some("economy")
+        } else if p.operation.starts_with("guild") {
+            Some("guilds")
+        } else if p.operation == "map" {
+            Some("maps")
+        } else if p.operation == "casino" || p.operation == "casino_history" {
+            Some("casino")
         } else {
             None
         };
         if feature.is_some_and(|f| !experience.enabled(f)) {
             return Err(AppError::forbidden("this feature is disabled for the instance"));
         }
+    }
+    if let Some(policy)=crate::velora_core::load(&state).await? {
+        let module=if p.operation.starts_with("casino"){Some("casino")}else if p.operation.starts_with("darknet"){Some("economy")}else{None};
+        if module.is_some_and(|module|!policy.enabled(module)){return Err(AppError::forbidden("this Velora Core module is disabled"));}
     }
     let sid = server.id;
     let mut platform = state.clone();
@@ -206,6 +221,8 @@ async fn dispatch(server: super::servers::ServerRow, state: AppState, auth: Auth
         }
         "orders" => orders::orders_board(auth, State(state), Path(sid)).await,
         "contracts" => contracts::contracts_board(auth, State(state), Path(sid)).await,
+        "darknet" => super::darknet::player_catalog(auth,State(state),Path(sid)).await,
+        "darknet_buy" => super::darknet::player_buy(auth,State(state),Path(sid),Json(decode(&p.args)?)).await,
         "casino" => casino::lobby(auth, State(state), Path(sid)).await,
         "casino_history" => casino::history(auth, State(state), Path(sid)).await,
         "casino_slots" => casino::slots(auth, State(state), Path(sid), Json(decode(&p.args)?)).await,
@@ -225,6 +242,10 @@ async fn dispatch(server: super::servers::ServerRow, state: AppState, auth: Auth
         "casino_mines_start" => casino::mines_start(auth, State(state), Path(sid), Json(decode(&p.args)?)).await,
         "casino_mines_reveal" => casino::mines_reveal(auth, State(state), Path(sid), Json(decode(&p.args)?)).await,
         "casino_mines_cashout" => casino::mines_cashout(auth, State(state), Path(sid)).await,
+        "casino_roulette" => casino::roulette(auth,State(state),Path(sid),Json(decode(&p.args)?)).await,
+        "casino_burst_start" => casino::burst_start(auth,State(state),Path(sid),Json(decode(&p.args)?)).await,
+        "casino_burst_advance" => casino::burst_advance(auth,State(state),Path(sid),Json(decode(&p.args)?)).await,
+        "casino_burst_cashout" => casino::burst_cashout(auth,State(state),Path(sid),Json(decode(&p.args)?)).await,
         "bounties" => casino::bounties(auth, State(state), Path(sid)).await,
         "betting" => casino::markets(auth, State(state), Path(sid)).await,
         "bounty_place" => casino::place_bounty(auth, State(state), Path(sid), Json(decode(&p.args)?)).await,

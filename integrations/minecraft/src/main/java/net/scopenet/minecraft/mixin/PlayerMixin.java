@@ -13,6 +13,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
 public abstract class PlayerMixin {
+    @Inject(method = "die", at = @At("HEAD"))
+    private void velora$pvp(net.minecraft.world.damagesource.DamageSource source, CallbackInfo ci) {
+        if (source.getEntity() instanceof ServerPlayer killer && killer != (Object) this)
+            Bridge.pvpKill(killer, (ServerPlayer) (Object) this);
+    }
     @Inject(method = "awardStat", at = @At("TAIL"))
     private void scopenet$stat(Stat<?> stat, int amount, CallbackInfo ci) {
         Bridge.action((ServerPlayer) (Object) this, stat.getName(), amount);

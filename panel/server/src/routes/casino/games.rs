@@ -27,6 +27,7 @@ fn now_ms() -> i64 {
 #[derive(Deserialize)]
 pub struct DiceBody {
     pub bet: f64,
+    pub operation_id: Option<String>,
     /// Win chance as a percentage, chosen by the player.
     pub chance: f64,
     /// `under` wins when the roll lands below the chance, `over` when it lands in the top slice of the same size.
@@ -39,7 +40,7 @@ pub struct DiceBody {
 pub async fn dice(auth: AuthUser, State(state): State<AppState>, Path(sid): Path<i64>, Json(p): Json<DiceBody>) -> AppResult<Json<Value>> {
     let over = p.mode == "over";
     let chance = p.chance;
-    play(&state, &auth, sid, "dice", "Dice", p.bet, p.chaos, move |cfg, _| {
+    play(&state, &auth, sid, "dice", "Dice", p.bet, p.chaos, p.operation_id.as_deref(), move |cfg, _| {
         let d = &cfg.dice;
         if !chance.is_finite() || chance < d.min_chance || chance > d.max_chance {
             return Err(AppError::bad_request(format!("Pick a win chance between {}% and {}%.", d.min_chance, d.max_chance)));
@@ -58,6 +59,7 @@ pub async fn dice(auth: AuthUser, State(state): State<AppState>, Path(sid): Path
 #[derive(Deserialize)]
 pub struct CoinBody {
     pub bet: f64,
+    pub operation_id: Option<String>,
     pub side: String,
     #[serde(default)]
     pub chaos: bool,
@@ -65,7 +67,7 @@ pub struct CoinBody {
 
 pub async fn coinflip(auth: AuthUser, State(state): State<AppState>, Path(sid): Path<i64>, Json(p): Json<CoinBody>) -> AppResult<Json<Value>> {
     let call = p.side.clone();
-    play(&state, &auth, sid, "coinflip", "Coin Flip", p.bet, p.chaos, move |cfg, _| {
+    play(&state, &auth, sid, "coinflip", "Coin Flip", p.bet, p.chaos, p.operation_id.as_deref(), move |cfg, _| {
         if call != "heads" && call != "tails" {
             return Err(AppError::bad_request("Call heads or tails."));
         }

@@ -8,6 +8,26 @@ pub fn round2(v: f64) -> f64 {
     (v * 100.0).round() / 100.0
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(default)]
+pub struct Roulette { pub enabled: bool, pub min_bet: f64, pub max_bet: f64 }
+impl Default for Roulette { fn default() -> Self { Self { enabled: true, min_bet: 10.0, max_bet: 5000.0 } } }
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[serde(default)]
+pub struct Burst { pub enabled: bool, pub min_bet: f64, pub max_bet: f64, pub survival: f64, pub house_edge: f64, pub max_steps: u32 }
+impl Default for Burst { fn default() -> Self { Self { enabled: true, min_bet: 10.0, max_bet: 5000.0, survival: 0.72, house_edge: 0.04, max_steps: 12 } } }
+pub fn roulette_red(number: u32) -> bool { matches!(number, 1|3|5|7|9|12|14|16|18|19|21|23|25|27|30|32|34|36) }
+pub fn roulette_payout(number: u32, selection: &str, straight: Option<u32>) -> Option<f64> {
+    let (won, multiplier) = match selection {
+        "straight" => (number == straight.filter(|n| *n <= 36)?, 36.0),
+        "red" => (roulette_red(number), 2.0), "black" => (number > 0 && !roulette_red(number), 2.0),
+        "odd" => (number > 0 && number % 2 == 1, 2.0), "even" => (number > 0 && number % 2 == 0, 2.0),
+        "low" => ((1..=18).contains(&number), 2.0), "high" => ((19..=36).contains(&number), 2.0),
+        "first" => ((1..=12).contains(&number), 3.0), "second" => ((13..=24).contains(&number), 3.0), "third" => ((25..=36).contains(&number), 3.0),
+        _ => return None,
+    }; Some(if won { multiplier } else { 0.0 })
+}
+
 // ---- settings ----------------------------------------------------------------------------------------------------------
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -207,6 +227,8 @@ pub struct Config {
     pub crash: Crash,
     pub dice: Dice,
     pub coinflip: Coinflip,
+    pub roulette: Roulette,
+    pub burst: Burst,
     pub double: Double,
     pub chaos: Chaos,
     pub bounties: Bounties,
@@ -388,6 +410,8 @@ impl Default for Config {
             crash: Crash::default(),
             dice: Dice::default(),
             coinflip: Coinflip::default(),
+            roulette: Roulette::default(),
+            burst: Burst::default(),
             double: Double::default(),
             chaos: Chaos::default(),
             bounties: Bounties::default(),
@@ -511,6 +535,11 @@ impl Config {
         f.payout = money(f.payout, 1.0, 2.0);
 
         let x = &mut self.double;
+        bet_range(&mut self.roulette.min_bet, &mut self.roulette.max_bet);
+        bet_range(&mut self.burst.min_bet, &mut self.burst.max_bet);
+        self.burst.survival = if self.burst.survival.is_finite() { self.burst.survival.clamp(0.1, 0.95) } else { 0.72 };
+        self.burst.house_edge = if self.burst.house_edge.is_finite() { self.burst.house_edge.clamp(0.0, 0.25) } else { 0.04 };
+        self.burst.max_steps = self.burst.max_steps.clamp(1, 20);
         x.win_chance = if x.win_chance.is_finite() { (x.win_chance * 1000.0).round() / 1000.0 } else { 0.49 }.clamp(0.05, 0.95);
         x.max_streak = x.max_streak.clamp(1, 20);
         x.offer_minutes = x.offer_minutes.clamp(1, 60);
@@ -1079,5 +1108,19 @@ mod tests {
             hits[pick_weighted(&[1.0, 3.0], &mut rng)] += 1;
         }
         assert!(hits[1] > hits[0] * 2);
+    }
+
+    #[test]
+    fn roulette_has_single_zero_and_standard_return_for_every_selection() {
+        for selection in ["red","black","odd","even","low","high","first","second","third"] {
+            assert_eq!(roulette_payout(0,selection,None),Some(0.0));
+            let total:f64=(0..=36).map(|n|roulette_payout(n,selection,None).unwrap()).sum();
+            assert_eq!(total,36.0,"{selection}: expected return is 36/37");
+        }
+        for number in 0..=36 {
+            assert_eq!((0..=36).map(|n|roulette_payout(n,"straight",Some(number)).unwrap()).sum::<f64>(),36.0);
+        }
+        assert_eq!(roulette_payout(2,"straight",Some(37)),None);
+        assert_eq!(roulette_payout(2,"unknown",None),None);
     }
 }

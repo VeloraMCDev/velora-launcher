@@ -1,10 +1,13 @@
 plugins { id 'fabric-loom' version '1.8.13' }
-def mc = (providers.gradleProperty('mcVersion').orNull ?: project.findProperty('mcVersion') ?: '1.21.1').toString().trim()
+def mc = (providers.gradleProperty('mcVersion').orNull ?: project.findProperty('mcVersion') ?: '1.20.1').toString().trim()
 if (!['1.20.1', '1.21.1'].contains(mc)) throw new GradleException("Use the modern build for 26.x (got '${mc}')")
 def targetJava = mc == '1.20.1' ? 17 : 21
 loom { mixin { defaultRefmapName = 'scopenet.refmap.json' } }
 if (providers.gradleProperty('verifyMixins').isPresent()) {
     loom { runs { server { vmArg '-Dscopenet.verifyMixins=true' } } }
+}
+if (providers.gradleProperty('verificationRunDir').isPresent()) {
+    loom { runs { server { runDir providers.gradleProperty('verificationRunDir').get() } } }
 }
 java.sourceCompatibility = JavaVersion.toVersion(targetJava)
 java.targetCompatibility = JavaVersion.toVersion(targetJava)
@@ -18,15 +21,18 @@ dependencies {
         modImplementation 'net.fabricmc.fabric-api:fabric-api:0.92.2+1.20.1'
         // Optional at runtime: present only when the LuckPerms mod is installed.
         compileOnly 'net.luckperms:api:5.4'
+        testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
 }
-if (features) sourceSets.main.java.srcDirs += ['src/mc1.20.1/java']
+if (features) sourceSets.main.java.srcDirs += ['src/mc1.20.1/java', '../velora-core/src/minecraft/java']
+if (features) sourceSets.test.java.srcDir 'src/mc1.20.1/test'
 sourceSets.main.java.srcDirs += ['../minecraft/src/main/java', "../minecraft/src/${mc}/java"]
 sourceSets.main.resources.srcDirs += ['../minecraft/src/main/resources', "../minecraft/src/${mc}/resources"]
 apply from: '../minecraft/build-info.gradle'
 processResources {
-    inputs.properties(version: project.version, mc: mc, java: targetJava)
-    filesMatching('fabric.mod.json') { expand(version: project.version, mc: mc, java: targetJava) }
+    inputs.properties(version: project.version, mc: mc, java: targetJava, coreMixin: features ? 'scopenet.core.mixins.json' : 'scopenet.core-disabled.mixins.json')
+    filesMatching('fabric.mod.json') { expand(version: project.version, mc: mc, java: targetJava, coreMixin: features ? 'scopenet.core.mixins.json' : 'scopenet.core-disabled.mixins.json') }
 }
 jar {
     archiveBaseName = "scopenet-fabric-${mc}"

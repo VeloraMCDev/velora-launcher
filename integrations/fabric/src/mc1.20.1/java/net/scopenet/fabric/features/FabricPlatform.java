@@ -273,7 +273,10 @@ final class FabricPlatform implements Platform {
     @Override public void openVault(UUID id, int number, int rows) {
         ServerPlayer p = server.getPlayerList().getPlayer(id);
         if (p == null) return;
-        rows = Math.max(1, Math.min(6, rows));
+        rows = Math.max(1, Math.min(7, rows));
+        if (rows == 7 && !net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.canSend(p, new net.minecraft.resources.ResourceLocation("scopenet", "s2c"))) {
+            p.sendSystemMessage(Component.literal("Velora Core Client is required to open a seven-row vault.")); return;
+        }
         final int fixedRows = rows;
         java.io.File file = vaultFile(id);
         net.minecraft.nbt.CompoundTag root = new net.minecraft.nbt.CompoundTag();
@@ -287,7 +290,7 @@ final class FabricPlatform implements Platform {
             net.minecraft.world.item.ItemStack stack = net.minecraft.world.item.ItemStack.of(entry);
             int slot = entry.getInt("VSlot");
             if (stack.isEmpty()) continue;
-            if (slot < container.getContainerSize()) container.setItem(slot, stack);
+            if (slot >= 0 && slot < container.getContainerSize()) container.setItem(slot, stack);
             else { p.getInventory().add(stack); if (!stack.isEmpty()) p.drop(stack, false); overflow++; }
         }
         if (overflow > 0) p.sendSystemMessage(Component.literal("§eThis vault is smaller than before; " + overflow + " stack(s) were moved to your inventory."));
@@ -300,14 +303,31 @@ final class FabricPlatform implements Platform {
                 entry.putInt("VSlot", slot);
                 list.add(entry);
             }
-            data.put("v" + number, list);
-            try { net.minecraft.nbt.NbtIo.writeCompressed(data, file); } catch (java.io.IOException e) { /* retried on the next change */ }
+            // Another vault or a mailbox delivery may have saved since this menu opened.
+            // Merge just this vault into the latest root instead of overwriting those changes.
+            try {
+                net.minecraft.nbt.CompoundTag latest = file.exists() ? net.minecraft.nbt.NbtIo.readCompressed(file) : new net.minecraft.nbt.CompoundTag();
+                latest.put("v" + number, list);
+                java.nio.file.Path temporary = file.toPath().resolveSibling(file.getName() + ".tmp");
+                net.minecraft.nbt.NbtIo.writeCompressed(latest, temporary.toFile());
+                try { java.nio.file.Files.move(temporary, file.toPath(), java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING); }
+                catch (java.nio.file.AtomicMoveNotSupportedException unsupported) { java.nio.file.Files.move(temporary, file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING); }
+            } catch (java.io.IOException e) {
+                System.err.println("[Velora Core] Vault save failed: " + e.getMessage());
+                p.sendSystemMessage(Component.literal("Vault storage failed; contact an administrator immediately."));
+            }
         };
         container.addListener(c -> save.run());
+        if (overflow > 0) save.run();
         final String openKey = id + ":" + number;
         p.openMenu(new net.minecraft.world.SimpleMenuProvider(
                 (windowId, inventory, player) -> {
                     openVaults.put(openKey, container);
+                    if (fixedRows == 7) return new net.scopenet.core.vault.VaultMenu(windowId, inventory, container) {
+                        @Override public void removed(net.minecraft.world.entity.player.Player who) {
+                            super.removed(who); openVaults.remove(openKey, container);
+                        }
+                    };
                     return new net.minecraft.world.inventory.ChestMenu(CHEST_MENUS[fixedRows - 1], windowId, inventory, container, fixedRows) {
                         @Override public void removed(net.minecraft.world.entity.player.Player who) {
                             super.removed(who);
@@ -321,11 +341,11 @@ final class FabricPlatform implements Platform {
     @Override public boolean depositToVault(UUID id, net.scopenet.core.Item item, int vaults, int rows) {
         net.minecraft.world.item.ItemStack stack = FabricItems.fromCore(item);
         if (stack.isEmpty()) return false;
-        int size = Math.max(1, Math.min(6, rows)) * 9;
+        int size = Math.max(1, Math.min(7, rows)) * 9;
         // A vault being looked at is the live copy; its listener saves the change.
         for (int n = 1; n <= Math.max(1, vaults); n++) {
             net.minecraft.world.SimpleContainer open = openVaults.get(id + ":" + n);
-            if (open != null) {
+            if (open != null && fits(open, stack)) {
                 net.minecraft.world.item.ItemStack left = open.addItem(stack.copy());
                 if (left.isEmpty()) return true;
             }
@@ -354,6 +374,253 @@ final class FabricPlatform implements Platform {
             }
             data.put("v" + n, list);
             try { net.minecraft.nbt.NbtIo.writeCompressed(data, file); return true; } catch (java.io.IOException e) { return false; }
+        }
+        return false;
+    }
+
+    // ---- cloud vaults --------------------------------------------------------------------------------------
+
+    @Override public boolean cloudVaults() { return true; }
+
+    static com.google.gson.JsonObject stackJson(int slot, net.minecraft.world.item.ItemStack stack) {
+        com.google.gson.JsonObject o = new com.google.gson.JsonObject();
+        String name = stack.getHoverName().getString();
+        o.addProperty("slot", slot);
+        o.addProperty("item", net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
+        o.addProperty("count", stack.getCount());
+        o.addProperty("name", name.length() > 128 ? name.substring(0, 128) : name);
+        o.addProperty("data", stack.save(new net.minecraft.nbt.CompoundTag()).toString());
+        o.addProperty("fingerprint", itemFingerprint(stack));
+        return o;
+    }
+
+    static String itemFingerprint(net.minecraft.world.item.ItemStack stack) {
+        String value=net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem())+"|"+(stack.hasTag()?canonicalTag(stack.getTag()):"");
+        try{return java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(value.getBytes(java.nio.charset.StandardCharsets.UTF_8)));}
+        catch(java.security.NoSuchAlgorithmException impossible){throw new IllegalStateException(impossible);}
+    }
+    private static String canonicalTag(net.minecraft.nbt.Tag tag){
+        if(tag instanceof net.minecraft.nbt.CompoundTag compound){
+            var keys=new java.util.ArrayList<>(compound.getAllKeys());java.util.Collections.sort(keys);
+            StringBuilder out=new StringBuilder("{");for(String key:keys)out.append(net.minecraft.nbt.StringTag.valueOf(key)).append(':').append(canonicalTag(compound.get(key))).append(',');return out.append('}').toString();
+        }
+        if(tag instanceof net.minecraft.nbt.ListTag list){StringBuilder out=new StringBuilder("[");for(var value:list)out.append(canonicalTag(value)).append(',');return out.append(']').toString();}
+        return tag.toString();
+    }
+
+    private static net.minecraft.world.item.ItemStack stackOf(com.google.gson.JsonObject o) {
+        String data = o.has("data") && o.get("data").isJsonPrimitive() ? o.get("data").getAsString() : "";
+        String item = o.get("item").getAsString();
+        return FabricItems.fromCore(new net.scopenet.core.Item(item, item, o.get("count").getAsInt(), data));
+    }
+
+    private static com.google.gson.JsonArray contentsOf(net.minecraft.world.Container container) {
+        com.google.gson.JsonArray out = new com.google.gson.JsonArray();
+        for (int slot = 0; slot < container.getContainerSize(); slot++) {
+            var stack = container.getItem(slot);
+            if (!stack.isEmpty()) out.add(stackJson(slot, stack));
+        }
+        return out;
+    }
+
+    /** One open vault's live container, shared by everyone on this server who opens it. */
+    private final class CloudView implements VaultView {
+        final net.minecraft.world.SimpleContainer container;
+        final int rows;
+        final String title;
+        final java.util.function.Consumer<UUID> closed;
+        VaultTransfer transfer;
+        boolean busy;
+
+        CloudView(net.minecraft.world.SimpleContainer container, int rows, String title, java.util.function.Consumer<UUID> closed) {
+            this.container = container; this.rows = rows; this.title = title; this.closed = closed;
+        }
+
+        @Override public com.google.gson.JsonArray contents() { return contentsOf(container); }
+        @Override public void transfers(VaultTransfer handler){transfer=handler;}
+        @Override public void replace(com.google.gson.JsonArray contents){container.clearContent();for(var e:contents){var o=e.getAsJsonObject();container.setItem(o.get("slot").getAsInt(),stackOf(o));}}
+        void click(net.minecraft.world.inventory.ChestMenu menu,int slot,int button,net.minecraft.world.inventory.ClickType type,net.minecraft.world.entity.player.Player who) {
+            if(!(who instanceof ServerPlayer p)||busy||transfer==null||slot<0||slot>=menu.slots.size()||button!=0||!(type==net.minecraft.world.inventory.ClickType.PICKUP||type==net.minecraft.world.inventory.ClickType.QUICK_MOVE)||!menu.getCarried().isEmpty())return;
+            var selected=menu.slots.get(slot);var stack=selected.getItem();if(stack.isEmpty())return;
+            net.minecraft.nbt.ListTag before=p.getInventory().save(new net.minecraft.nbt.ListTag());
+            var playerAfter=new java.util.ArrayList<net.minecraft.world.item.ItemStack>();
+            for(int i=0;i<p.getInventory().getContainerSize();i++)playerAfter.add(p.getInventory().getItem(i).copy());
+            com.google.gson.JsonArray after;
+            if(selected.container==p.getInventory()) {
+                after=vaultInsert(contents(),rows,new net.scopenet.core.Item(stackJson(0,stack).get("item").getAsString(),stack.getHoverName().getString(),stack.getCount(),stack.save(new net.minecraft.nbt.CompoundTag()).toString()));
+                if(after==null){p.sendSystemMessage(Component.literal("This vault has no room for that stack."));return;}
+                playerAfter.set(selected.getContainerSlot(),net.minecraft.world.item.ItemStack.EMPTY);
+            } else if(selected.container==container) {
+                net.minecraft.world.SimpleContainer box=new net.minecraft.world.SimpleContainer(36);
+                for(int i=0;i<36;i++)box.setItem(i,playerAfter.get(i).copy());
+                if(!fits(box,stack)){p.sendSystemMessage(Component.literal("Your inventory has no room for that stack."));return;}
+                box.addItem(stack.copy());for(int i=0;i<36;i++)playerAfter.set(i,box.getItem(i).copy());
+                after=new com.google.gson.JsonArray();for(var e:contents())if(e.getAsJsonObject().get("slot").getAsInt()!=selected.getContainerSlot())after.add(e);
+            } else return;
+            busy=true;menu.broadcastFullState();
+            transfer.begin(p.getUUID(),after,id->{
+                if(server.getPlayerList().getPlayer(p.getUUID())!=p||!before.equals(p.getInventory().save(new net.minecraft.nbt.ListTag())))return false;
+                for(int i=0;i<playerAfter.size();i++)p.getInventory().setItem(i,playerAfter.get(i).copy());
+                ((InventoryCheckpoint)p).velora$checkpoint(id);
+                try {persistCheckpoint(p);}
+                catch(java.io.IOException failure){p.connection.disconnect(Component.literal("Inventory storage interrupted. Reconnect to recover your transfer."));throw new IllegalStateException(failure);}
+                return true;
+            },committed->{busy=false;menu.broadcastFullState();if(!committed)p.sendSystemMessage(Component.literal("Inventory changed or vault is still saving. Your items were not moved; try again."));});
+        }
+
+        @Override public boolean deposit(net.scopenet.core.Item item) {
+            var stack = FabricItems.fromCore(item);
+            if (stack.isEmpty() || !fits(container, stack)) return false;
+            return container.addItem(stack.copy()).isEmpty();
+        }
+
+        @Override public void closeAll() {
+            for (ServerPlayer p : server.getPlayerList().getPlayers())
+                if (p.containerMenu instanceof net.minecraft.world.inventory.ChestMenu menu && menu.getContainer() == container) p.closeContainer();
+        }
+    }
+
+    @Override public VaultView createVault(String title, int rows, com.google.gson.JsonArray contents, Runnable changed,
+                                           java.util.function.Consumer<UUID> closed, UUID firstViewer) {
+        int size = Math.max(1, Math.min(7, rows)) * 9;
+        net.minecraft.world.SimpleContainer container = new net.minecraft.world.SimpleContainer(size);
+        ServerPlayer viewer = server.getPlayerList().getPlayer(firstViewer);
+        for (var element : contents) {
+            var entry = element.getAsJsonObject();
+            var stack = stackOf(entry);
+            int slot = entry.get("slot").getAsInt();
+            if (stack.isEmpty()) continue;
+            if (slot >= 0 && slot < size && container.getItem(slot).isEmpty()) container.setItem(slot, stack);
+            else {
+                if(viewer!=null)viewer.sendSystemMessage(Component.literal("Stored items exceed this vault's configured size. Ask staff to restore its rows before opening it."));
+                return null;
+            }
+        }
+        container.addListener(c -> changed.run());
+        return new CloudView(container, size / 9, title, closed);
+    }
+
+    @Override public boolean showVault(UUID id, VaultView view) {
+        ServerPlayer p = server.getPlayerList().getPlayer(id);
+        if (p == null || !(view instanceof CloudView v)) return false;
+        if (v.rows == 7 && !net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.canSend(p, new ResourceLocation("scopenet", "s2c"))) return false;
+        p.openMenu(new net.minecraft.world.SimpleMenuProvider((windowId, inventory, player) -> {
+            if (v.rows == 7) return new net.scopenet.core.vault.VaultMenu(windowId, inventory, v.container) {
+                @Override public void clicked(int slot,int button,net.minecraft.world.inventory.ClickType type,net.minecraft.world.entity.player.Player who){v.click(this,slot,button,type,who);}
+                @Override public void removed(net.minecraft.world.entity.player.Player who) { super.removed(who); v.closed.accept(who.getUUID()); }
+            };
+            return new net.minecraft.world.inventory.ChestMenu(CHEST_MENUS[v.rows - 1], windowId, inventory, v.container, v.rows) {
+                @Override public void clicked(int slot,int button,net.minecraft.world.inventory.ClickType type,net.minecraft.world.entity.player.Player who){v.click(this,slot,button,type,who);}
+                @Override public void removed(net.minecraft.world.entity.player.Player who) { super.removed(who); v.closed.accept(who.getUUID()); }
+            };
+        }, Component.literal(v.title)));
+        return true;
+    }
+    private void persistCheckpoint(ServerPlayer player) throws java.io.IOException {
+        java.nio.file.Path file=server.getWorldPath(net.minecraft.world.level.storage.LevelResource.PLAYER_DATA_DIR).resolve(player.getUUID()+".dat");
+        java.nio.file.Files.createDirectories(file.getParent());
+        java.nio.file.Path temporary=file.resolveSibling(file.getFileName()+".velora-"+java.util.UUID.randomUUID()+".tmp");
+        var tag=player.saveWithoutId(new net.minecraft.nbt.CompoundTag());
+        tag.putInt("DataVersion",net.minecraft.SharedConstants.getCurrentVersion().getDataVersion().getVersion());
+        try {
+            net.minecraft.nbt.NbtIo.writeCompressed(tag,temporary.toFile());
+            try(var channel=java.nio.channels.FileChannel.open(temporary,java.nio.file.StandardOpenOption.WRITE)){channel.force(true);}
+            java.nio.file.Files.move(temporary,file,java.nio.file.StandardCopyOption.ATOMIC_MOVE,java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            try(var channel=java.nio.channels.FileChannel.open(file,java.nio.file.StandardOpenOption.WRITE)){channel.force(true);}
+        } finally {java.nio.file.Files.deleteIfExists(temporary);}
+    }
+    @Override public String inventoryCheckpoint(UUID id){ServerPlayer p=server.getPlayerList().getPlayer(id);if(p==null)throw new IllegalStateException("player disconnected before recovery");return ((InventoryCheckpoint)p).velora$checkpoint();}
+    @Override public void lockInventory(UUID id,boolean locked){InventoryLocks.set(id,locked);}
+
+    @Override public com.google.gson.JsonArray vaultInsert(com.google.gson.JsonArray contents, int rows, net.scopenet.core.Item item) {
+        int size = Math.max(1, Math.min(7, rows)) * 9;
+        net.minecraft.world.SimpleContainer box = new net.minecraft.world.SimpleContainer(size);
+        com.google.gson.JsonArray kept = new com.google.gson.JsonArray();
+        for (var element : contents) {
+            var entry = element.getAsJsonObject();
+            int slot = entry.get("slot").getAsInt();
+            var stack = stackOf(entry);
+            if (slot >= 0 && slot < size && !stack.isEmpty() && box.getItem(slot).isEmpty()) box.setItem(slot, stack);
+            else kept.add(entry); // beyond a shrunken vault: left exactly as stored
+        }
+        var incoming = FabricItems.fromCore(item);
+        if (incoming.isEmpty() || !fits(box, incoming)) return null;
+        if (!box.addItem(incoming.copy()).isEmpty()) return null;
+        com.google.gson.JsonArray out = contentsOf(box);
+        kept.forEach(out::add);
+        return out;
+    }
+
+    @Override public com.google.gson.JsonArray localVaults(UUID owner) {
+        java.io.File file = vaultFile(owner);
+        if (!file.exists()) return null;
+        try {
+            net.minecraft.nbt.CompoundTag root = net.minecraft.nbt.NbtIo.readCompressed(file);
+            com.google.gson.JsonArray vaults = new com.google.gson.JsonArray();
+            for (String key : root.getAllKeys()) {
+                if (!key.matches("v[0-9]{1,2}")) continue;
+                int number = Integer.parseInt(key.substring(1));
+                if (number < 1 || number > 54) continue;
+                com.google.gson.JsonArray contents = new com.google.gson.JsonArray();
+                java.util.Set<Integer> used = new java.util.HashSet<>();
+                net.minecraft.nbt.ListTag saved = root.getList(key, 10);
+                for (int i = 0; i < saved.size(); i++) {
+                    net.minecraft.nbt.CompoundTag entry = saved.getCompound(i);
+                    var stack = net.minecraft.world.item.ItemStack.of(entry);
+                    int slot = entry.getInt("VSlot");
+                    if (stack.isEmpty() || slot < 0 || slot >= 63 || !used.add(slot)) continue;
+                    contents.add(stackJson(slot, stack));
+                }
+                com.google.gson.JsonObject vault = new com.google.gson.JsonObject();
+                vault.addProperty("number", number);
+                vault.add("contents", contents);
+                vaults.add(vault);
+            }
+            return vaults;
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException("local vault file for " + owner + " could not be read: " + e.getMessage(), e);
+        }
+    }
+
+    @Override public void localVaultsMigrated(UUID owner) {
+        java.io.File file = vaultFile(owner);
+        if (!file.exists()) return;
+        java.io.File kept = new java.io.File(file.getParentFile(), file.getName() + ".migrated");
+        if (!file.renameTo(kept)) System.err.println("[Velora Core] Could not set aside migrated vault file " + file);
+    }
+
+    private long nextPlayerSave;
+
+    @Override public boolean canPlaceOutpostFlag(Pos pos) {
+        ServerLevel world = level(pos.world());
+        BlockPos at = new BlockPos(pos.blockX(), pos.blockY(), pos.blockZ());
+        return world != null && world.hasChunkAt(at) && world.getWorldBorder().isWithinBounds(at)
+                && !world.isOutsideBuildHeight(at) && world.isEmptyBlock(at)
+                && world.getBlockState(at.below()).blocksMotion();
+    }
+    @Override public boolean placeOutpostFlag(Pos pos) {
+        if (!canPlaceOutpostFlag(pos)) return false;
+        return level(pos.world()).setBlock(new BlockPos(pos.blockX(), pos.blockY(), pos.blockZ()),
+                net.minecraft.world.level.block.Blocks.WHITE_BANNER.defaultBlockState(), 3);
+    }
+
+    /** Coalesced: one player-data save at most every two seconds, however many vault saves land. */
+    @Override public void savePlayer(UUID id) {
+        long now = System.currentTimeMillis();
+        if (now < nextPlayerSave) return;
+        nextPlayerSave = now + 2_000;
+        server.execute(() -> server.getPlayerList().saveAll());
+    }
+
+    /** Check the whole delivery before mutating a live vault; partial inserts must not be retried as full stacks. */
+    private static boolean fits(net.minecraft.world.Container container, net.minecraft.world.item.ItemStack incoming) {
+        int capacity = 0;
+        for (int slot = 0; slot < container.getContainerSize(); slot++) {
+            var existing = container.getItem(slot);
+            if (existing.isEmpty()) capacity += Math.min(container.getMaxStackSize(), incoming.getMaxStackSize());
+            else if (net.minecraft.world.item.ItemStack.isSameItemSameTags(existing, incoming))
+                capacity += Math.max(0, Math.min(container.getMaxStackSize(), existing.getMaxStackSize()) - existing.getCount());
+            if (capacity >= incoming.getCount()) return true;
         }
         return false;
     }

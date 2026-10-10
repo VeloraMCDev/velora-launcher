@@ -10,7 +10,7 @@
   let instances = $state<Instance[] | null>(null);
   let creating = $state(false);
   let busy = $state(false);
-  let draft = $state({ name: '', description: '', mc_version: '', loader: 'vanilla', loader_version: null as string | null, source: 'vanilla' });
+  let draft = $state({ name: 'Velora SMP', description: 'The Velora SMP experience', mc_version: '1.20.1', loader: 'fabric', loader_version: '0.16.10' as string | null, source: 'vanilla' });
 
   $effect(() => {
     get<Instance[]>('/api/admin/instances').then((i) => (instances = i)).catch(toastError);

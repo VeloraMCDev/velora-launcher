@@ -79,6 +79,27 @@ class ClaimIndexTest {
         assertFalse(index.mayModify(d, 2, 0, OUTSIDER, "build"));
     }
 
+    @Test void alliesPassOnlyForThePermissionsTheLandOwnerGranted() {
+        ClaimIndex index = new ClaimIndex();
+        UUID ally = UUID.fromString("0c4b6c2e-4a37-4b54-9d9a-3a4d1b4f0a11");
+        index.apply(json("""
+                {"revision":"1","unchanged":false,
+                 "guilds":[{"id":"g1","name":"Iron","tag":"IRON","allies":{"g2":["break","chests","fly"]}},
+                           {"id":"g3","name":"Gold","tag":"GOLD"}],
+                 "claims":[["minecraft:overworld",0,0,0],["minecraft:overworld",1,0,1]],
+                 "members":{"g1":["b50ad385-829d-3141-a216-7e7d7539ba7f"],"g2":["0c4b6c2e-4a37-4b54-9d9a-3a4d1b4f0a11"]}}"""));
+        String d = "minecraft:overworld";
+        assertTrue(index.mayModify(d, 0, 0, ally, "build", "break"), "granted: breaking");
+        assertFalse(index.mayModify(d, 0, 0, ally, "build", "place"), "not granted: placing");
+        assertTrue(index.mayModify(d, 0, 0, ally, "containers", "chests"));
+        assertFalse(index.mayModify(d, 0, 0, ally, "interact", "doors"));
+        assertFalse(index.mayModify(d, 0, 0, OUTSIDER, "build", "break"), "strangers get nothing from an alliance");
+        assertFalse(index.mayModify(d, 1, 0, ally, "build", "break"), "only the granting faction's land");
+        assertTrue(index.allyMay(d, 0, 0, ally, "fly"));
+        assertFalse(index.allyMay(d, 1, 0, ally, "fly"));
+        assertFalse(index.mayModify(d, 0, 0, ally, "build"), "checks without an ally action ignore alliances");
+    }
+
     @Test void answersLocallyAndTreatsWildernessAsOpen() {
         ClaimIndex index = new ClaimIndex();
         assertFalse(index.loaded());

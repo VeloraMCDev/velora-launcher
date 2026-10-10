@@ -857,10 +857,10 @@ pub async fn get_guild_relations(state: State<'_, AppState>, guild_id: String) -
 }
 
 #[tauri::command]
-pub async fn create_guild_relation(state: State<'_, AppState>, guild_id: String, other_guild_id: String, relation: String) -> Res<()> {
+pub async fn create_guild_relation(state: State<'_, AppState>, guild_id: String, other_guild_id: String, relation: String, reward_cents: Option<i64>, reward_bps: Option<i64>, duration_hours: Option<i64>) -> Res<()> {
     let resp = account_api(&state, reqwest::Method::POST, &format!("/guilds/{guild_id}/relations"))
         .await?
-        .json(&serde_json::json!({"other_guild_id":other_guild_id,"relation":relation}))
+        .json(&serde_json::json!({"other_guild_id":other_guild_id,"relation":relation,"reward_cents":reward_cents,"reward_bps":reward_bps,"duration_hours":duration_hours}))
         .send()
         .await
         .map_err(err)?;
@@ -871,10 +871,10 @@ pub async fn create_guild_relation(state: State<'_, AppState>, guild_id: String,
 }
 
 #[tauri::command]
-pub async fn respond_guild_relation(state: State<'_, AppState>, guild_id: String, relation_id: i64, accept: bool) -> Res<()> {
+pub async fn respond_guild_relation(state: State<'_, AppState>, guild_id: String, relation_id: i64, accept: bool, expected_revision: Option<String>) -> Res<()> {
     let resp = account_api(&state, reqwest::Method::POST, &format!("/guilds/{guild_id}/relations/{relation_id}/respond"))
         .await?
-        .json(&serde_json::json!({"accept":accept}))
+        .json(&serde_json::json!({"accept":accept,"expected_revision":expected_revision}))
         .send()
         .await
         .map_err(err)?;
@@ -1591,6 +1591,31 @@ pub async fn casino_post(
 }
 
 /// Buy orders and contracts, served from `/board/{server}`. Same path rules as the casino.
+#[tauri::command]
+pub async fn vault_get(state: State<'_, AppState>, server_id: i64) -> Res<serde_json::Value> {
+    let resp = account_api(&state, reqwest::Method::GET, &format!("/vaults/{server_id}"))
+        .await?.send().await.map_err(err)?;
+    ok_or_panel_error(resp, "unable to load vaults").await
+}
+
+#[tauri::command]
+pub async fn faction_upgrades(state: State<'_, AppState>, guild_id: String, body: Option<serde_json::Value>) -> Res<serde_json::Value> {
+    let method = if body.is_some() { reqwest::Method::POST } else { reqwest::Method::GET };
+    uuid::Uuid::parse_str(&guild_id).map_err(|_| "invalid faction ID".to_string())?;
+    let path = format!("/guilds/{guild_id}/upgrades");
+    let mut req = account_api(&state, method, &path).await?;
+    if let Some(body) = body { req = req.json(&body); }
+    ok_or_panel_error(req.send().await.map_err(err)?, "unable to access faction upgrades").await
+}
+
+#[tauri::command]
+pub async fn vault_post(state: State<'_, AppState>, server_id: i64, action: String, body: serde_json::Value) -> Res<serde_json::Value> {
+    if !matches!(action.as_str(), "move" | "buy") { return Err("unknown vault action".into()); }
+    let resp = account_api(&state, reqwest::Method::POST, &format!("/vaults/{server_id}/{action}"))
+        .await?.json(&body).send().await.map_err(err)?;
+    ok_or_panel_error(resp, "the vault refused that").await
+}
+
 #[tauri::command]
 pub async fn board_get(state: State<'_, AppState>, server_id: i64, path: String) -> Res<serde_json::Value> {
     let path = casino_path(&path)?;

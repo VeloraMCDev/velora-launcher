@@ -83,9 +83,10 @@ struct Order {
     filler_name: Option<String>,
     created_at: String,
     expires_at: String,
+    acceptance_minutes: Option<i64>,
 }
 
-const COLS: &str = "id, server_id, buyer_uuid, buyer_name, item_id, item_name, amount, total, status, claimer_uuid, claimer_name, claim_until, filler_name, created_at, expires_at";
+const COLS: &str = "id, server_id, buyer_uuid, buyer_name, item_id, item_name, amount, total, status, claimer_uuid, claimer_name, claim_until, filler_name, created_at, expires_at, acceptance_minutes";
 
 fn now() -> String {
     crate::db::now()
@@ -101,7 +102,7 @@ impl Order {
         self.status == "claimed" && self.claim_until.as_deref().is_some_and(|t| t > now().as_str())
     }
     fn state(&self) -> &str {
-        if self.status == "claimed" && !self.live_claim() { "open" } else { &self.status }
+        if self.status == "claimed" && !self.live_claim() { if self.acceptance_minutes.is_some() { "expired" } else { "open" } } else { &self.status }
     }
     fn view(&self, me: &str) -> Value {
         let live = self.live_claim();
@@ -110,6 +111,7 @@ impl Order {
             "total": self.total, "each": round2(self.total / self.amount.max(1) as f64), "status": self.state(),
             "claimer_name": if live { self.claimer_name.clone() } else { None }, "claim_until": if live { self.claim_until.clone() } else { None },
             "created_at": self.created_at, "expires_at": self.expires_at,
+            "acceptance_minutes": self.acceptance_minutes,
             "mine": self.buyer_uuid == me, "claimed_by_me": live && self.claimer_uuid.as_deref() == Some(me),
             "filler_name": self.filler_name,
         })
@@ -161,6 +163,7 @@ pub(crate) async fn board(state: &AppState, server: &ServerRow, me: &str) -> App
         "rules": {
             "max_open": cfg.max_open_per_player, "min_total": cfg.min_total, "max_total": cfg.max_total, "max_amount": cfg.max_amount,
             "expire_hours": cfg.expire_hours, "claim_minutes": cfg.claim_minutes, "max_claims": cfg.max_claims_per_player, "fee_percent": cfg.fee_percent,
+            "requester_deadlines":crate::velora_core::load(state).await?.is_some(),
         },
         "my_open": mine, "my_claims": claims,
     }))
@@ -188,6 +191,7 @@ pub struct WhoBody {
 #[derive(Deserialize)]
 pub struct CreateBody {
     pub item_id: String,
+    pub acceptance_minutes: Option<i64>,
     pub amount: i64,
     /// The whole price for all of it, held until someone fills the order.
     pub total: f64,
@@ -197,6 +201,13 @@ pub struct CreateBody {
 
 pub(crate) async fn create_core(state: &AppState, server: &ServerRow, who: &Actor<'_>, p: CreateBody, operation: &str) -> AppResult<Json<Value>> {
     let cfg = enabled(state).await?;
+    let core = crate::velora_core::load(state).await?.is_some();
+    let acceptance = if core {
+        let minutes = p.acceptance_minutes.ok_or_else(|| AppError::bad_request("choose an accepted-contract deadline in minutes"))?;
+        if !(5..=43200).contains(&minutes) { return Err(AppError::bad_request("contract deadline must be between 5 minutes and 30 days")); }
+        crate::velora_core::cents(p.total)?;
+        Some(minutes)
+    } else { None };
     let item_id = normalize_item(&p.item_id)?;
     if p.amount < 1 || p.amount > cfg.max_amount as i64 {
         return Err(AppError::bad_request(format!("Ask for between 1 and {} items.", cfg.max_amount)));
@@ -217,9 +228,9 @@ pub(crate) async fn create_core(state: &AppState, server: &ServerRow, who: &Acto
     }
     let balance = debit(&mut tx, server.economy_id, server.id, who.uuid, who.name, total, ORDERS, &format!("Buy order escrow: {}x {name}", p.amount)).await?;
     let id: i64 = sqlx::query_scalar(
-        "INSERT INTO buy_orders (server_id, buyer_uuid, buyer_name, item_id, item_name, amount, total, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id",
+        "INSERT INTO buy_orders (server_id, buyer_uuid, buyer_name, item_id, item_name, amount, total, created_at, expires_at, acceptance_minutes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id",
     )
-    .bind(server.id).bind(who.uuid).bind(who.name).bind(&item_id).bind(&name).bind(p.amount).bind(total).bind(now()).bind(at(cfg.expire_hours as i64 * 60))
+    .bind(server.id).bind(who.uuid).bind(who.name).bind(&item_id).bind(&name).bind(p.amount).bind(total).bind(now()).bind(at(cfg.expire_hours as i64 * 60)).bind(acceptance)
     .fetch_one(&mut *tx).await?;
     finish_operation(tx, server.id, operation, json!({
         "ok": true, "id": id, "balance": balance, "message": format!("Buy order #{id} posted: {}x {name} for ${total:.2}. The money is held until it is filled.", p.amount),
@@ -302,6 +313,8 @@ pub(crate) async fn claim_core(state: &AppState, server: &ServerRow, who: &Actor
         return Ok(Json(previous));
     }
     let o = load(&mut tx, server, id).await?;
+    if o.expires_at <= now() { return Err(AppError::conflict("contract expired")); }
+    if o.acceptance_minutes.is_some() && o.status == "claimed" { return Err(AppError::conflict("contract is already accepted; its deadline cannot be extended")); }
     if o.buyer_uuid == who.uuid {
         return Err(AppError::bad_request("You can't fill your own order."));
     }
@@ -313,12 +326,13 @@ pub(crate) async fn claim_core(state: &AppState, server: &ServerRow, who: &Actor
     if mine >= cfg.max_claims_per_player as i64 {
         return Err(AppError::conflict(format!("You can have {} orders picked up at once.", cfg.max_claims_per_player)));
     }
-    let until = at(cfg.claim_minutes as i64);
+    let duration = o.acceptance_minutes.unwrap_or(cfg.claim_minutes as i64);
+    let until = if o.acceptance_minutes.is_some() {at(duration)} else {at(duration).min(o.expires_at.clone())};
     sqlx::query("UPDATE buy_orders SET status = 'claimed', claimer_uuid = ?, claimer_name = ?, claim_until = ? WHERE id = ? AND status IN ('open', 'claimed')")
         .bind(who.uuid).bind(who.name).bind(&until).bind(id).execute(&mut *tx).await?;
     let response = finish_operation(tx, server.id, operation, json!({
         "ok": true, "claim_until": until,
-        "message": format!("Order #{id} is yours for {} minutes: bring {}x {} and use /orders fill {id}.", cfg.claim_minutes, o.amount, o.item_name),
+        "message": format!("Order #{id} is yours until {until}: bring {}x {} and use /orders fill {id}.", o.amount, o.item_name),
     })).await?;
     notifications::push(&state.db, &o.buyer_uuid, "order", "Your buy order was picked up", &format!("{} is gathering {}x {} for order #{id}.", who.name, o.amount, o.item_name), None).await;
     Ok(response)
@@ -332,6 +346,10 @@ pub(crate) async fn release_core(state: &AppState, server: &ServerRow, who: &Act
     let o = load(&mut tx, server, id).await?;
     if !(o.live_claim() && o.claimer_uuid.as_deref() == Some(who.uuid)) {
         return Err(AppError::conflict("You haven't picked that order up."));
+    }
+    if o.acceptance_minutes.is_some() {
+        close(&mut tx, server, &o, "cancelled", "released by contractor").await?;
+        return finish_operation(tx, server.id, operation, json!({"ok":true,"message":"Contract released; requester refunded"})).await;
     }
     sqlx::query("UPDATE buy_orders SET status = 'open', claimer_uuid = NULL, claimer_name = NULL, claim_until = NULL WHERE id = ? AND status = 'claimed'").bind(id).execute(&mut *tx).await?;
     finish_operation(tx, server.id, operation, json!({ "ok": true, "message": format!("Order #{id} is back on the board.") })).await
@@ -381,6 +399,9 @@ pub async fn server_fill(GameServer(server): GameServer, State(state): State<App
         return Ok(Json(previous));
     }
     let o = load(&mut tx, &server, p.order_id).await?;
+    if (o.acceptance_minutes.is_none() && o.expires_at <= now()) || (o.acceptance_minutes.is_some() && (!o.live_claim() || o.claimer_uuid.as_deref() != Some(p.uuid.as_str()))) {
+        return Err(AppError::conflict("accept this contract and submit before its deadline"));
+    }
     if o.buyer_uuid == p.uuid {
         return Err(AppError::bad_request("You can't fill your own order."));
     }
@@ -425,8 +446,8 @@ pub async fn server_fill(GameServer(server): GameServer, State(state): State<App
 /// Called by the scheduler: orders nobody filled in time come down and the escrow goes back to the buyer; lapsed reservations clear.
 pub async fn settle_due(state: &AppState) -> AppResult<String> {
     let now_s = now();
-    sqlx::query("UPDATE buy_orders SET status = 'open', claimer_uuid = NULL, claimer_name = NULL, claim_until = NULL WHERE status = 'claimed' AND claim_until <= ?").bind(&now_s).execute(&state.db).await?;
-    let due: Vec<Order> = sqlx::query_as(&format!("SELECT {COLS} FROM buy_orders WHERE status IN ('open', 'claimed') AND expires_at <= ? LIMIT 100")).bind(&now_s).fetch_all(&state.db).await?;
+    sqlx::query("UPDATE buy_orders SET status = 'open', claimer_uuid = NULL, claimer_name = NULL, claim_until = NULL WHERE status = 'claimed' AND claim_until <= ? AND acceptance_minutes IS NULL").bind(&now_s).execute(&state.db).await?;
+    let due: Vec<Order> = sqlx::query_as(&format!("SELECT {COLS} FROM buy_orders WHERE status IN ('open', 'claimed') AND ((expires_at <= ? AND (status='open' OR acceptance_minutes IS NULL)) OR (acceptance_minutes IS NOT NULL AND status='claimed' AND claim_until <= ?)) LIMIT 100")).bind(&now_s).bind(&now_s).fetch_all(&state.db).await?;
     let mut expired = 0;
     for o in due {
         let server = server_of(state, o.server_id).await?;

@@ -112,7 +112,7 @@ public record Settings(
         try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             Properties properties = new Properties();
             properties.load(reader);
-            return Boolean.parseBoolean(properties.getProperty("map.enabled", properties.getProperty("livemap.enabled", "true")));
+            return net.scopenet.core.CoreModules.local(properties).enabled("map") && Boolean.parseBoolean(properties.getProperty("map.enabled", properties.getProperty("livemap.enabled", "true")));
         } catch (IOException e) {
             return true;
         }

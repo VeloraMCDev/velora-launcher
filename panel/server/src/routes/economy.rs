@@ -35,7 +35,10 @@ pub(crate) async fn finish_operation(
     velora_experiences_storage::finish_operation(tx, server_id, operation_id, response).await.map(Json).map_err(storage_error)
 }
 pub(crate) async fn ensure_balance(tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>, server_id: i64, uuid: &str, name: &str) -> AppResult<()> {
-    let start = crate::progression::load(&mut **tx).await?.rules.starting_balance;
+    let start = match crate::velora_core::for_server(&mut **tx, server_id).await? {
+        Some(policy) => policy.starting_balance_cents as f64 / 100.0,
+        None => crate::progression::load(&mut **tx).await?.rules.starting_balance,
+    };
     velora_experiences_storage::ensure_balance(tx, server_id, uuid, name, start, || chrono::Utc::now().to_rfc3339())
         .await
         .map_err(storage_error)
@@ -258,7 +261,10 @@ pub async fn server_get_balance(
     let balance = match bal_opt {
         Some(b) => b,
         None => {
-            let starting_balance = crate::progression::load_pool(&state.db).await?.rules.starting_balance;
+            let starting_balance = match crate::velora_core::load(&state).await? {
+                Some(policy) => policy.starting_balance_cents as f64 / 100.0,
+                None => crate::progression::load_pool(&state.db).await?.rules.starting_balance,
+            };
             sqlx::query(
                 "INSERT INTO server_economy (server_id, uuid, username, balance, updated_at)
                  VALUES (?, ?, ?, ?, ?)
@@ -450,6 +456,7 @@ pub async fn server_market_list(
     if let Some(previous) = previous {
         return Ok(Json(previous));
     }
+    if crate::velora_core::for_server(&mut tx, server.id).await?.is_some() { crate::velora_core::cents(payload.price)?; }
     let limit = crate::progression::load(&mut tx).await?.rules.market_max_listings;
     if limit > 0 {
         let mine: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM server_market WHERE server_id = ? AND seller_uuid = ?")
@@ -554,6 +561,7 @@ pub(crate) async fn market_buy(state: &AppState, server: &crate::routes::servers
     let Some((seller_uuid, seller_name, item_id, item_name, amount, price, item_data, seller_guild)) = listing else {
         return Err(AppError::not_found("Listing not found"));
     };
+    let (proceeds, fee) = crate::velora_core::market_settlement(&mut tx, server.id, price).await?;
     // Guild sales only pay the guild if it still exists; otherwise the lister is paid.
     let seller_guild: Option<(String, String)> = match seller_guild {
         Some(id) => sqlx::query_as("SELECT id, tag FROM guilds WHERE id = ?").bind(id).fetch_optional(&mut *tx).await?,
@@ -610,14 +618,14 @@ pub(crate) async fn market_buy(state: &AppState, server: &crate::routes::servers
 
     // Seller is paid: the guild bank for guild listings, otherwise the player.
     let (to_uuid, to_name) = if let Some((guild_id, tag)) = &seller_guild {
-        crate::routes::guild_bank::adjust_wallet(&mut tx, server.economy_id, guild_id, price).await?;
+        crate::routes::guild_bank::adjust_wallet(&mut tx, server.economy_id, guild_id, proceeds).await?;
         crate::routes::guild_bank::log(
             &mut tx,
             server.economy_id,
             guild_id,
             &seller_uuid,
             "sale",
-            price,
+            proceeds,
             &format!("Market: {amount}x {item_name}"),
         )
         .await?;
@@ -626,7 +634,7 @@ pub(crate) async fn market_buy(state: &AppState, server: &crate::routes::servers
         // A seller without an account first gets the usual starting balance, then the sale on top.
         ensure_balance(&mut tx, server.economy_id, &seller_uuid, &seller_name).await?;
         sqlx::query("UPDATE server_economy SET balance = balance + ?, username = ?, updated_at = ? WHERE server_id = ? AND uuid = ?")
-            .bind(price)
+            .bind(proceeds)
             .bind(&seller_name)
             .bind(&now)
             .bind(server.economy_id)
@@ -656,11 +664,18 @@ pub(crate) async fn market_buy(state: &AppState, server: &crate::routes::servers
     })
     .bind(&to_uuid)
     .bind(&to_name)
-    .bind(price)
+    .bind(proceeds)
     .bind(&desc)
     .bind(&now)
     .execute(&mut *tx)
     .await?;
+
+    if fee > 0.0 {
+        sqlx::query("INSERT INTO economy_transactions(server_id,from_uuid,from_name,to_uuid,to_name,amount,description,created_at) VALUES(?,?,?,?,?,?,?,?)")
+            .bind(server.id).bind(match &buyer_guild { Some(m) => format!("guild:{}", m.guild_id), None => payload.buyer_uuid.clone() })
+            .bind(&payload.buyer_name).bind("server").bind("Virtual market fees").bind(fee)
+            .bind(format!("Virtual market fee: listing {}", payload.listing_id)).bind(&now).execute(&mut *tx).await?;
+    }
 
     if to_vault {
         sqlx::query("INSERT INTO market_mailbox (server_id, uuid, item_id, item_name, amount, item_data, note, created_at, to_vault) VALUES (?, ?, ?, ?, ?, ?, 'bought', ?, 1)")
@@ -687,6 +702,8 @@ pub(crate) async fn market_buy(state: &AppState, server: &crate::routes::servers
             "item_name": item_name,
             "amount": amount,
             "price": price,
+            "seller_proceeds": proceeds,
+            "fee": fee,
             "new_balance": new_balance,
             "to_vault": to_vault,
             "message": if to_vault { format!("Bought {amount}x {item_name} for ${price:.2}. It is waiting in your vault.") } else { format!("Bought {amount}x {item_name} for ${price:.2}.") },

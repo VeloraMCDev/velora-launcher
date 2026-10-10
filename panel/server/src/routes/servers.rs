@@ -26,6 +26,14 @@ const STALE_SECS: i64 = 90;
 /// through the launcher".
 const LAUNCHER_WINDOW_HOURS: i64 = 12;
 const EVENT_RETENTION_DAYS: i64 = 60;
+
+/// Retains aggregate stats and progression; only raw event history expires.
+pub(crate) async fn prune_events(state: &AppState) -> AppResult<String> {
+    let days = crate::velora_core::load(state).await?.map_or(EVENT_RETENTION_DAYS, |policy| policy.analytics_retention_days);
+    let cutoff = ago(chrono::Duration::days(days));
+    let removed = sqlx::query("DELETE FROM server_events WHERE created_at < ?").bind(cutoff).execute(&state.db).await?.rows_affected();
+    Ok(format!("{removed} events removed; {days}-day retention"))
+}
 const MAX_EVENTS_PER_SYNC: usize = 500;
 const MAX_ONLINE: usize = 5000;
 
@@ -209,6 +217,7 @@ pub async fn hello(
         "require_launcher": server.require_launcher,
         "map": json!({ "enabled": server.map_enabled && experience.enabled("maps") }),
         "experience_features": experience.features,
+        "velora_core": crate::velora_core::policy(&experience)?,
     })))
 }
 
@@ -399,6 +408,9 @@ pub async fn sync(GameServer(server): GameServer, State(state): State<AppState>,
         features.quests_enabled = Some(experience.enabled("quests") && features.quests_enabled.unwrap_or(true));
         features.achievements_enabled = Some(experience.enabled("achievements") && features.achievements_enabled.unwrap_or(true));
         features.guilds_enabled = Some(experience.enabled("guilds") && features.guilds_enabled.unwrap_or(true));
+        if let Some(policy) = crate::velora_core::policy(&experience)? {
+            if !policy.enabled("analytics") { s.stats.clear(); s.events.retain(|event| matches!(event.kind.as_str(), "join" | "leave") || (event.kind=="pvp_kill" && (policy.enabled("factions") || policy.enabled("casino")))); }
+        }
     }
     let at_now = now();
     let mut tx = state.db.begin().await?;
@@ -528,6 +540,11 @@ pub async fn sync(GameServer(server): GameServer, State(state): State<AppState>,
             .await?;
 
         // A player killing another player collects any bounties on the victim's head.
+        if kind == "pvp_kill" {
+            if let (Some(killer),Some(victim))=(e.uuid.as_deref().and_then(dashed),e.detail.as_deref().and_then(dashed)) {
+                crate::factions_core::reward_rival_kill(&mut tx,&server,&killer,e.name.as_deref().unwrap_or("Player"),&victim).await?;
+            }
+        }
         if casino_on && kind == "pvp_kill" {
             if let (Some(killer), Some(victim)) = (e.uuid.as_deref().and_then(dashed), e.detail.as_deref().and_then(dashed)) {
                 let killer_name = e.name.as_deref().map(|n| clip(n, 16)).unwrap_or_default();
@@ -645,8 +662,7 @@ pub async fn sync(GameServer(server): GameServer, State(state): State<AppState>,
 
     // Occasional housekeeping.
     if rand::thread_rng().gen_ratio(1, 50) {
-        let cutoff = ago(chrono::Duration::days(EVENT_RETENTION_DAYS));
-        sqlx::query("DELETE FROM server_events WHERE created_at < ?").bind(cutoff).execute(&state.db).await?;
+        prune_events(&state).await?;
     }
 
     // Players whose access was revoked while they were online.
@@ -670,6 +686,7 @@ pub async fn sync(GameServer(server): GameServer, State(state): State<AppState>,
     Ok(Json(json!({
         "ok": true, "kick": kick, "sync_interval_secs": SYNC_INTERVAL_SECS, "notifications": notifications,
         "chat": chat, "utilities": utilities, "custom_items": custom_items, "content": super::content::content_for_sync(&state).await?,
+        "velora_core": crate::velora_core::load(&state).await?,
     })))
 }
 

@@ -33,10 +33,11 @@ export type Order = {
   id: number; buyer_name: string; item_id: string; item_name: string; amount: number; total: number; each: number;
   status: 'open' | 'claimed' | 'filled' | 'cancelled' | 'expired'; claimer_name: string | null; claim_until: string | null;
   created_at: string; expires_at: string; mine: boolean; claimed_by_me: boolean; filler_name: string | null; resolved?: string;
+  acceptance_minutes?: number | null;
 };
 export type OrdersBoard = {
   enabled: boolean; balance: number | null; orders: Order[]; history: Order[]; my_open: number; my_claims: number;
-  rules: { max_open: number; min_total: number; max_total: number; max_amount: number; expire_hours: number; claim_minutes: number; max_claims: number; fee_percent: number };
+  rules: { max_open: number; min_total: number; max_total: number; max_amount: number; expire_hours: number; claim_minutes: number; max_claims: number; fee_percent: number;requester_deadlines?:boolean };
 };
 export type Contract = {
   id: number; kind: 'kill' | 'gather'; target: string; title: string; required: number; progress: number; reward: number; bonus: boolean;

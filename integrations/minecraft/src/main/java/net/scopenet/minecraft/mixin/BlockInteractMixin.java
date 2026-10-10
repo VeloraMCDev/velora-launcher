@@ -20,10 +20,12 @@ public abstract class BlockInteractMixin {
             InteractionHand hand, BlockHitResult hit, CallbackInfoReturnable<InteractionResult> cir) {
         // Chests and doors are separate rules on a claim; placing a block is a build on the neighbouring position.
         net.minecraft.core.BlockPos clicked = hit.getBlockPos();
-        String rule = level.getBlockEntity(clicked) instanceof net.minecraft.world.Container ? "containers" : "interact";
+        boolean container = level.getBlockEntity(clicked) instanceof net.minecraft.world.Container;
+        String rule = container ? "containers" : "interact";
+        String ally = container ? "chests" : Bridge.allyUse(level.getBlockState(clicked));
         boolean placing = stack.getItem() instanceof net.minecraft.world.item.BlockItem;
-        if (!Bridge.canModify(player, clicked, rule)
-                || (placing && !Bridge.canModify(player, clicked.relative(hit.getDirection()), "build"))) {
+        if (!Bridge.canModify(player, clicked, rule, ally)
+                || (placing && !Bridge.canModify(player, clicked.relative(hit.getDirection()), "build", "place"))) {
             cir.setReturnValue(InteractionResult.FAIL);
         }
     }

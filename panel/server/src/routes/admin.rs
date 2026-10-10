@@ -288,6 +288,10 @@ pub async fn create_instance(
     let id = store::unique_slug(&state, &input.name).await?;
     let now = crate::db::now();
     velora_panel_instances::mutations::create_instance(&state.db, &id, &instance_write(&input)?, &now).await?;
+    if input.mc_version == "1.20.1" && input.loader == Loader::Fabric {
+        sqlx::query("UPDATE instances SET experience=? WHERE id=?")
+            .bind(serde_json::to_string(&crate::velora_core::preset())?).bind(&id).execute(&state.db).await?;
+    }
     detail(&state, id).await.map(|Json(v)| Json(v.instance))
 }
 

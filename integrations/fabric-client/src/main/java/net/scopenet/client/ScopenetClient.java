@@ -27,6 +27,7 @@ public final class ScopenetClient implements ClientModInitializer {
     public static Link link() { return link; }
 
     @Override public void onInitializeClient() {
+        net.minecraft.client.gui.screens.MenuScreens.register(net.scopenet.core.vault.VaultMenu.TYPE, net.scopenet.client.screen.VaultScreen::new);
         config = ClientConfig.load();
         state = new ClientState();
         link = new Link(state, config);
@@ -39,9 +40,14 @@ public final class ScopenetClient implements ClientModInitializer {
 
         KeyMapping menu = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.scopenet.menu", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "key.categories.scopenet"));
         KeyMapping toggle = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.scopenet.toggle_hud", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "key.categories.scopenet"));
+        KeyMapping vault = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.scopenet.vault", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V, "key.categories.scopenet"));
+        KeyMapping map = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.scopenet.map", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_M, "key.categories.scopenet"));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            link.mapTick();
             while (menu.consumeClick()) if (client.screen == null && client.player != null) client.setScreen(new MenuScreen());
             while (toggle.consumeClick()) { config.enabled = !config.enabled; config.save(); }
+            while (vault.consumeClick()) if (client.screen == null && state.connected && config.module("vaults") && state.module("vaults")) Link.command("vault 1");
+            while (map.consumeClick()) if (client.screen == null && state.connected && config.module("map") && state.module("map")) client.setScreen(new net.scopenet.client.screen.MapScreen());
         });
     }
 }

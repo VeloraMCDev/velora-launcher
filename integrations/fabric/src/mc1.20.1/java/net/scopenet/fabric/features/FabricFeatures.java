@@ -53,6 +53,9 @@ public final class FabricFeatures implements Runnable {
     private PlayerCache cache;
     private ClientLink link;
     private Perms perms;
+    private FabricPermissions permissions;
+    private PhysicalShops physicalShops;
+    private final ThreadLocal<Boolean> formattingChat=ThreadLocal.withInitial(()->false);
     private FabricConfig config;
     private ActionPoller poller;
     private net.scopenet.core.RewardPoller rewards;
@@ -64,19 +67,38 @@ public final class FabricFeatures implements Runnable {
     CommandSet commandSet() { return commands; }
 
     @Override public void run() {
+        net.fabricmc.fabric.api.message.v1.ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message,sender,params)-> {
+            Integration integration=Bridge.integration();
+            if(formattingChat.get()||env==null||integration==null||!env.modules.get().enabled("permissions_chat")||!integration.chat().enabled())return true;
+            var registry=sender.level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.CHAT_TYPE);
+            var key=net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.CHAT_TYPE,new ResourceLocation("scopenet","core"));
+            if(params.chatType()!=registry.get(net.minecraft.network.chat.ChatType.CHAT.location())||registry.get(key.location())==null||!message.filterMask().isEmpty())return true;
+            var info=cache.info(sender.getUUID());
+            var guild=info==null?null:PlayerCache.obj(info,"guild");var global=info==null?null:PlayerCache.obj(info,"global");
+            String[] meta=Perms.luckPermsPresent()?LuckPermsLookup.meta(sender):new String[]{"","",""};
+            var parts=new net.scopenet.integration.ChatLayout.Parts(PlayerCache.str(guild,"tag",""),PlayerCache.str(guild,"name",""),PlayerCache.str(global,"title",""),PlayerCache.str(global,"title_glyph",""),meta[0],meta[1],meta[2],(int)PlayerCache.num(global,"level",0));
+            String text=String.format(java.util.Locale.ROOT,integration.chat().render(parts),sender.getGameProfile().getName(),integration.chat().message(message.decoratedContent().getString(),perms.has(sender,"scopenet.chat.colors")));
+            formattingChat.set(true);
+            try {sender.getServer().getPlayerList().broadcastChatMessage(message.withUnsignedContent(LegacyText.component(text)),sender,net.minecraft.network.chat.ChatType.bind(key,sender));}
+            finally {formattingChat.set(false);}
+            return false;
+        });
         ServerLifecycleEvents.SERVER_STARTED.register(this::started);
         ServerLifecycleEvents.SERVER_STOPPING.register(s -> stopping());
         ServerTickEvents.END_SERVER_TICK.register(s -> tick());
         ServerPlayConnectionEvents.DISCONNECT.register((handler, s) -> {
+            InventoryLocks.set(handler.getPlayer().getUUID(),false);
             if (link != null) link.disconnected(handler.getPlayer().getUUID());
             if (commands != null) commands.utilityHub.left(handler.getPlayer().getUUID());
             if (packs != null) packs.left(handler.getPlayer().getUUID());
         });
+        ServerPlayConnectionEvents.JOIN.register((handler,sender,s)->{if(commands!=null)commands.utilityHub.cloudVaults.recoverPlayer(handler.getPlayer().getUUID());});
         // Fall damage is waived for a moment after flight is switched off, so leaving your land mid-air isn't a trap.
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) ->
-                !(entity instanceof ServerPlayer sp && source.is(net.minecraft.tags.DamageTypeTags.IS_FALL) && platform != null && platform.waiveFall(sp.getUUID())));
+                !(entity instanceof ServerPlayer sp && (InventoryLocks.locked(sp.getUUID()) || source.is(net.minecraft.tags.DamageTypeTags.IS_FALL) && platform != null && platform.waiveFall(sp.getUUID()))));
         // /back also returns you to where you died.
         ServerLivingEntityEvents.ALLOW_DEATH.register((entity, source, amount) -> {
+            if(entity instanceof ServerPlayer p&&InventoryLocks.locked(p.getUUID()))return false;
             if (entity instanceof ServerPlayer p && commands != null) commands.essentials.remember(p.getUUID(), platform.wrap(p).pos());
             return true;
         });
@@ -91,6 +113,7 @@ public final class FabricFeatures implements Runnable {
         UseBlockCallback.EVENT.register((player, level, hand, hit) -> {
             if (level.isClientSide || hand != InteractionHand.MAIN_HAND || !(player instanceof ServerPlayer sp) || commands == null) return InteractionResult.PASS;
             BlockPos at = hit.getBlockPos();
+            if(physicalShops!=null&&physicalShops.use(sp,at))return InteractionResult.SUCCESS;
             Optional<ShopPoints.Shop> shop = commands.shops.at(level.dimension().location().toString(), at.getX(), at.getY(), at.getZ());
             if (shop.isEmpty()) return InteractionResult.PASS;
             CorePlayer p = platform.wrap(sp);
@@ -117,7 +140,10 @@ public final class FabricFeatures implements Runnable {
         Path dir = Path.of("config", "scopenet");
         env = new Env(platform, new PanelAdapter(integration), config.features(integration.settings()), dir, System::currentTimeMillis, new Random(), LOG);
         env.utilities = integration::utilities;
+        env.modules = () -> config.modules().intersect(integration.modules());
+        if(Perms.luckPermsPresent())permissions=new FabricPermissions(env,()->config.bool("integrations.luckperms.apply-panel-groups",false));
         commands = new CommandSet(env, config.essentials());
+        physicalShops = new PhysicalShops(env,commands,platform,s);
         cache = new PlayerCache(env);
         link = new ClientLink(env, cache, s.getMotd(), (player, bytes) -> {
             FriendlyByteBuf buf = PacketByteBufs.create();
@@ -125,6 +151,9 @@ public final class FabricFeatures implements Runnable {
             ServerPlayer target = s.getPlayerList().getPlayer(player.uuid());
             if (target != null && ServerPlayNetworking.canSend(target, TO_CLIENT)) ServerPlayNetworking.send(target, TO_CLIENT, buf);
         });
+        link.panelUrl(integration.settings().panel().toString());
+        link.localRequests((p,msg)->physicalShops.request(p,msg,link));
+        physicalShops.link(link);
         integration.onNotifications(events -> { link.onPanelEvents(events); net.scopenet.core.PanelMessages.deliver(platform, events); });
         Bridge.claimBypass = p -> perms.has(p, "scopenet.claims.bypass");
 
@@ -143,6 +172,8 @@ public final class FabricFeatures implements Runnable {
     }
 
     private void stopping() {
+        // Vaults are saved and released before the I/O pool stops.
+        if (commands != null) commands.utilityHub.cloudVaults.shutdown();
         ScopenetEconomy.uninstall();
         Bridge.claimBypass = p -> false;
         if (platform != null) platform.shutdown();
@@ -166,6 +197,13 @@ public final class FabricFeatures implements Runnable {
         if (commands == null) return;
         ticks++;
         if (ticks % 20 == 0) {
+            if(permissions!=null)permissions.tick();
+            if(physicalShops!=null)physicalShops.tick();
+            CoreModules modules = env.modules.get();
+            Features configured = config.features(Bridge.integration().settings());
+            env.features = new Features(configured.essentials(), configured.economy() && modules.enabled("economy"),
+                    configured.guilds() && modules.enabled("factions"), configured.social(), configured.landClaiming() && modules.enabled("factions"),
+                    configured.clientLink(), configured.currencySymbol());
             cache.tick(p -> link.pushState(p));
             link.tick();
             poller.tick();
@@ -180,6 +218,8 @@ public final class FabricFeatures implements Runnable {
     // ---- commands --------------------------------------------------------------------------
 
     private void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
+        dispatcher.register(Commands.literal("pshop").executes(ctx->{if(ctx.getSource().getPlayer()!=null)physicalShops.command(ctx.getSource().getPlayer(),"");return 1;})
+            .then(Commands.argument("args",StringArgumentType.greedyString()).executes(ctx->{if(ctx.getSource().getPlayer()!=null)physicalShops.command(ctx.getSource().getPlayer(),StringArgumentType.getString(ctx,"args"));return 1;})));
         List<CoreCommand> all = new ArrayList<>(commands.all());
         all.add(new ScopenetCommand(this));
         for (CoreCommand command : all) {

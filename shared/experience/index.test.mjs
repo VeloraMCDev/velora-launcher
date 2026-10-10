@@ -1,6 +1,17 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
-import { defaultExperience, preset, navigation, pageEnabled } from './index.ts';
+import { defaultExperience, preset, navigation, pageEnabled, coreFeatures } from './index.ts';
+test('Velora SMP exposes supported modules and excludes legacy systems', () => {
+  const e = preset('velora-smp');
+  assert.equal(e.modules.velora_core.starting_balance_cents, 100_000);
+  assert.equal(e.modules.velora_core.faction_max_members, 8);
+  for (const page of ['casino', 'market', 'guilds', 'map', 'stats', 'commands']) assert.equal(pageEnabled(e, page), true);
+  for (const page of ['quests', 'achievements', 'collections', 'events', 'companion', 'items']) assert.equal(pageEnabled(e, page), false);
+  const pages = navigation(e, [{ id: 'guilds', label: 'Guilds' }, { id: 'quests', label: 'Quests' }]);
+  assert.deepEqual(pages, [{ id: 'guilds', label: 'Factions' }]);
+  e.modules.velora_core.modules.economy = false;
+  assert.equal(coreFeatures(e.modules.velora_core).includes('economy'), false);
+});
 test('legacy SMP retains every existing capability', () => {
   for (const page of ['casino', 'market', 'guilds', 'quests', 'leveling', 'map']) assert.equal(pageEnabled(defaultExperience(), page), true);
 });

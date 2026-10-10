@@ -15,6 +15,6 @@ public abstract class BlockBreakMixin {
 
     @Inject(method = "destroyBlock", at = @At("HEAD"), cancellable = true)
     private void scopenet$protectBreak(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if (!Bridge.canModify(player, pos)) cir.setReturnValue(false);
+        if (!Bridge.canModify(player, pos, "build", "break")) cir.setReturnValue(false);
     }
 }

@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class BlockItemMixin {
     @Inject(method = "place(Lnet/minecraft/world/item/context/BlockPlaceContext;)Lnet/minecraft/world/InteractionResult;", at = @At("HEAD"), cancellable = true)
     private void scopenet$protectPlace(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
-        if (context.getPlayer() instanceof ServerPlayer player && !Bridge.canModify(player, context.getClickedPos())) {
+        if (context.getPlayer() instanceof ServerPlayer player && !Bridge.canModify(player, context.getClickedPos(), "build", "place")) {
             cir.setReturnValue(InteractionResult.FAIL);
         }
     }

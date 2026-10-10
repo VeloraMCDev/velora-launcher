@@ -8,6 +8,7 @@
   import Avatar from '../components/Avatar.svelte';
   import ChunkMap from '../components/ChunkMap.svelte';
   import GuildWallet from '../components/GuildWallet.svelte';
+  import FactionMarket from '@velora/board/FactionMarket.svelte';
   import LandRules from '../components/LandRules.svelte';
   import GuildEmblem from '../components/GuildEmblem.svelte';
   import GuildBanner from '../components/GuildBanner.svelte';
@@ -22,12 +23,12 @@
   let members = $state<GuildMember[]>([]);
   let posts = $state<GuildPost[]>([]);
   let activeTab = $state<'territory' | 'members' | 'feed' | 'wallet' | 'settings' | 'relations'>('territory');
-  type GuildRole = { id: number; name: string; can_invite: boolean; can_kick: boolean; can_claim: boolean; can_post: boolean; can_manage: boolean };
+  type GuildRole = { id: number; name: string; can_invite: boolean; can_kick: boolean; can_claim: boolean; can_post: boolean; can_manage: boolean; can_vault: boolean };
   type JoinRequest = { uuid: string; name: string; message: string; created_at: string };
   let roles = $state<GuildRole[]>([]);
   let joinRequests = $state<JoinRequest[]>([]);
   let newRoleName = $state('');
-  let roleFlags = $state({ can_invite: false, can_kick: false, can_claim: false, can_post: true, can_manage: false });
+  let roleFlags = $state({ can_invite: false, can_kick: false, can_claim: false, can_post: true, can_manage: false, can_vault: false });
   let guildEdit = $state({ description: '', motd: '', icon_url: '', banner_url: '' });
   const myRole = $derived(members.find((m) => m.uuid === activeAccount()?.uuid)?.role ?? '');
   const canManageDetails = $derived(myRole === 'leader' || myRole === 'officer' || !!roles.find((r) => r.name === myRole)?.can_manage);
@@ -36,6 +37,7 @@
   type Membership = { id: string; instance_id: string; name: string; tag: string; role: string; server_count: number; primary_server_count: number };
   let memberships = $state<Membership[]>([]);
   let relations = $state<GuildRelation[]>([]);
+  let rivalReward=$state(0), rivalPercent=$state(5), rivalHours=$state(0);
   let relationTarget = $state('');
   let relationKind = $state<'alliance' | 'rival'>('alliance');
 
@@ -118,7 +120,8 @@
   async function sendRelation() {
     if (!myGuild || !relationTarget) return;
     try {
-      await invoke('create_guild_relation', { guildId: myGuild.id, otherGuildId: relationTarget, relation: relationKind });
+      await invoke('create_guild_relation', { guildId: myGuild.id, otherGuildId: relationTarget, relation: relationKind,
+        rewardCents:relationKind==='rival'?Math.round(rivalReward*100):0,rewardBps:relationKind==='rival'?Math.round(rivalPercent*100):0,durationHours:rivalHours||null });
       relationTarget = '';
       relations = await invoke<GuildRelation[]>('get_guild_relations', { guildId: myGuild.id });
       toast('Relation request sent', 'ok');
@@ -127,7 +130,7 @@
   async function decideRelation(relation: GuildRelation, accept: boolean) {
     if (!myGuild) return;
     try {
-      await invoke('respond_guild_relation', { guildId: myGuild.id, relationId: relation.id, accept });
+      await invoke('respond_guild_relation', { guildId: myGuild.id, relationId: relation.id, accept,expectedRevision:relation.terms_revision });
       relations = await invoke<GuildRelation[]>('get_guild_relations', { guildId: myGuild.id });
       toast(accept ? 'Relation accepted' : 'Relation declined', 'ok');
     } catch (e: any) { toast(String(e), 'error'); }
@@ -487,6 +490,9 @@
         </div>
       {:else if activeTab === 'wallet'}
         <GuildWallet guild={myGuild} {members} servers={walletServers} instanceId={selectedInstId} />
+        {#if currentInstance?.experience?.kind === 'velora-smp'}<FactionMarket guildId={myGuild.id} canManage={canManageDetails}
+          get={(guildId) => invoke('faction_upgrades', { guildId, body: null })}
+          buy={(guildId, track, tiers, price) => invoke('faction_upgrades', { guildId, body: { track, expected_tiers: tiers, expected_price_cents: price } })} onchanged={() => void loadInstanceGuildData()} />{/if}
       {:else if activeTab === 'members'}
         <div class="members-tab">
           {#if joinRequests.length}
@@ -558,11 +564,12 @@
               </div>
             {/each}
           {/if}
-          {#if myGuild && canManageDetails}
+          {#if myGuild && myRole==='leader'}
             <h3>Alliance and rivalry requests</h3>
+            {#if relationKind==='rival'}<div class="relation-create"><label>Fixed kill reward ($)<input type="number" min="0" bind:value={rivalReward}/></label><label>Or victim balance (%)<input type="number" min="0" max="100" bind:value={rivalPercent}/></label><label>Duration (hours, 0 = permanent)<input type="number" min="0" max="8760" bind:value={rivalHours}/></label></div><p class="muted">Choose a fixed reward or percentage. Both factions must accept the terms. Repeat kills share a faction-wide victim cooldown.</p>{/if}
             <div class="relation-create"><select bind:value={relationTarget} aria-label="Other guild"><option value="">Choose a guild</option>{#each allGuilds.filter((g) => g.id !== myGuild?.id) as guild}<option value={guild.id}>[{guild.tag}] {guild.name}</option>{/each}</select><select bind:value={relationKind} aria-label="Relation type"><option value="alliance">Alliance</option><option value="rival">Rivalry</option></select><button class="primary sm" onclick={sendRelation} disabled={!relationTarget}>Send request</button></div>
             {#each relations as relation (relation.id)}
-              <div class="row"><span><strong>{relation.relation}: [{relation.tag}] {relation.name}</strong><small>{relation.status}</small></span><span class="spacer"></span>
+              <div class="row"><span><strong>{relation.relation}: [{relation.tag}] {relation.name}</strong><small>{relation.status}{#if relation.relation==='rival'} · {relation.reward_bps?(relation.reward_bps/100)+'%':'$'+((relation.reward_cents??0)/100)} per eligible kill · {relation.expires_at??'permanent'}{/if}</small></span><span class="spacer"></span>
                 {#if relation.status === 'pending' && relation.other_guild_id === myGuild.id}<button class="sm primary" onclick={() => decideRelation(relation, true)}>Accept</button><button class="sm ghost" onclick={() => decideRelation(relation, false)}>Decline</button>{/if}
               </div>
             {/each}
@@ -604,10 +611,10 @@
         {#if myRole === 'leader'}<div class="card col">
           <h3>Guild roles</h3>
           {#each roles as role}
-            <div class="row"><strong>{role.name}</strong><span class="tiny muted">{[role.can_invite && 'Invite', role.can_kick && 'Kick', role.can_claim && 'Claim', role.can_post && 'Post', role.can_manage && 'Manage'].filter(Boolean).join(', ') || 'No extra permissions'}</span><span class="spacer"></span><button class="sm danger" onclick={() => deleteRole(role)}>Delete</button></div>
+            <div class="row"><strong>{role.name}</strong><span class="tiny muted">{[role.can_invite && 'Invite', role.can_kick && 'Kick', role.can_claim && 'Claim', role.can_post && 'Post', role.can_manage && 'Manage', role.can_vault && 'Faction vault'].filter(Boolean).join(', ') || 'No extra permissions'}</span><span class="spacer"></span><button class="sm danger" onclick={() => deleteRole(role)}>Delete</button></div>
           {/each}
           <label>New role name<input bind:value={newRoleName} maxlength="24" /></label>
-          <div class="row"><label><input type="checkbox" bind:checked={roleFlags.can_invite} /> Invite</label><label><input type="checkbox" bind:checked={roleFlags.can_kick} /> Kick</label><label><input type="checkbox" bind:checked={roleFlags.can_claim} /> Claim</label><label><input type="checkbox" bind:checked={roleFlags.can_post} /> Post</label><label><input type="checkbox" bind:checked={roleFlags.can_manage} /> Manage</label></div>
+          <div class="row"><label><input type="checkbox" bind:checked={roleFlags.can_invite} /> Invite</label><label><input type="checkbox" bind:checked={roleFlags.can_kick} /> Kick</label><label><input type="checkbox" bind:checked={roleFlags.can_claim} /> Claim</label><label><input type="checkbox" bind:checked={roleFlags.can_post} /> Post</label><label><input type="checkbox" bind:checked={roleFlags.can_manage} /> Manage</label><label><input type="checkbox" bind:checked={roleFlags.can_vault} /> Faction vault</label></div>
           <button class="primary" onclick={createRole}>Create role</button>
         </div>{/if}
       {:else if activeTab === 'feed'}

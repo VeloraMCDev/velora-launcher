@@ -63,6 +63,56 @@ impl World {
 }
 
 #[tokio::test]
+async fn roulette_and_burst_receipts_prevent_duplicate_wagers() {
+    let w = world().await;
+    let wager = json!({"bet":100.0,"selection":"red","operation_id":uuid::Uuid::new_v4().to_string()});
+    let (s, first) = w.post("Alex", "roulette", wager.clone()).await;
+    assert_eq!(s, StatusCode::OK, "{first}");
+    let (_, retry) = w.post("Alex", "roulette", wager).await;
+    assert_eq!(first, retry, "retry must return the original spin");
+    assert_eq!(w.get("Alex", "history").await["rounds_played"], 1);
+    let before = w.balance("Alex").await;
+    let start = json!({"bet":100.0,"operation_id":uuid::Uuid::new_v4().to_string()});
+    let (s, round) = w.post("Alex", "burst/start", start.clone()).await;
+    assert_eq!(s, StatusCode::OK, "{round}");
+    assert_eq!(w.post("Alex", "burst/start", start).await.1, round);
+    assert_eq!(w.balance("Alex").await, before - 100.0);
+    let id = round["game"]["id"].as_i64().unwrap();
+    assert_eq!(w.get("Alex", "").await["burst"]["id"], id);
+    let cash = json!({"id":id,"expected_steps":0,"operation_id":uuid::Uuid::new_v4().to_string()});
+    assert_eq!(w.post("Steve", "burst/cashout", cash.clone()).await.0, StatusCode::CONFLICT);
+    let (s, receipt) = w.post("Alex", "burst/cashout", cash.clone()).await;
+    assert_eq!(s, StatusCode::OK, "{receipt}");
+    assert_eq!(receipt["payout"], 100.0, "cash out before risking a step returns the stake");
+    assert_eq!(w.post("Alex", "burst/cashout", cash).await.1, receipt);
+    assert_eq!(w.balance("Alex").await, before);
+    assert_eq!(w.post("Alex", "burst/advance", json!({"id":id,"expected_steps":0,"operation_id":uuid::Uuid::new_v4().to_string()})).await.0, StatusCode::CONFLICT);
+    assert_eq!(w.get("Alex", "history").await["rounds_played"], 2);
+}
+
+#[tokio::test]
+async fn burst_steps_use_snapshotted_rules_and_reject_stale_actions() {
+    let w = world().await;
+    let (_, mut config) = w.t.call("GET", "/api/admin/casino", Some(&w.admin), None).await;
+    config["config"]["burst"]["survival"] = json!(0.99);
+    w.t.call("PUT", "/api/admin/casino", Some(&w.admin), Some(config["config"].clone())).await;
+    let (_, start) = w.post("Alex", "burst/start", json!({"bet":100.0,"operation_id":uuid::Uuid::new_v4().to_string()})).await;
+    let id = start["game"]["id"].as_i64().unwrap();
+    // Deterministic fixture: the persisted round, rather than new settings, controls its odds.
+    sqlx::query("UPDATE casino_burst SET survival=1 WHERE id=?").bind(id).execute(&w.t.db).await.unwrap();
+    let next = json!({"id":id,"expected_steps":0,"operation_id":uuid::Uuid::new_v4().to_string()});
+    let (s, step) = w.post("Alex", "burst/advance", next.clone()).await;
+    assert_eq!(s, StatusCode::OK, "{step}");
+    assert_eq!(step["game"]["steps"], 1);
+    assert_eq!(w.post("Alex", "burst/advance", next).await.1, step);
+    assert_eq!(w.post("Alex", "burst/advance", json!({"id":id,"expected_steps":0,"operation_id":uuid::Uuid::new_v4().to_string()})).await.0, StatusCode::CONFLICT);
+    config["config"]["burst"]["enabled"] = json!(false);
+    w.t.call("PUT", "/api/admin/casino", Some(&w.admin), Some(config["config"].clone())).await;
+    assert_eq!(w.post("Alex", "burst/advance", json!({"id":id,"expected_steps":1,"operation_id":uuid::Uuid::new_v4().to_string()})).await.0, StatusCode::FORBIDDEN);
+    assert_eq!(w.post("Alex", "burst/cashout", json!({"id":id,"expected_steps":1,"operation_id":uuid::Uuid::new_v4().to_string()})).await.0, StatusCode::OK);
+}
+
+#[tokio::test]
 async fn instant_games_move_the_right_money() {
     let w = world().await;
     let state = w.get("Alex", "").await;
