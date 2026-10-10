@@ -1,0 +1,42 @@
+name: Velora Core jars
+# Manual: builds the Fabric 1.20.1 server and client jars and uploads them as workflow artifacts.
+# Nothing is published or deployed; download the artifact and install the jars by hand.
+on:
+  workflow_dispatch: null
+  push:
+    paths:
+      - integrations/**
+      - .github/workflows/velora-core.yml
+permissions:
+  contents: read
+jobs:
+  jars:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: integrations
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Normalize wrapper line endings
+        run: tr -d '\r' < toolchains/fabric-1.20.1/gradlew > gradlew.lf && cat gradlew.lf > toolchains/fabric-1.20.1/gradlew && rm gradlew.lf
+      - name: Server jar and common tests
+        run: sh toolchains/fabric-1.20.1/gradlew -p . -Ploader=fabric -PmcVersion=1.20.1 :fabric:build :common:test --no-daemon
+      - name: Client jar
+        run: sh toolchains/fabric-1.20.1/gradlew -p . -Ploader=fabric-client -PmcVersion=1.20.1 :fabric-client:build --no-daemon
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: velora-core-jars
+          path: |
+            integrations/fabric/build/libs/scopenet-fabric-1.20.1-*.jar
+            integrations/fabric-client/build/libs/scopenet-client-fabric-1.20.1-*.jar
+            !integrations/**/*-dev.jar
+            !integrations/**/*-sources.jar
+          if-no-files-found: error
+          retention-days: 14

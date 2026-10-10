@@ -124,6 +124,7 @@
   .shell { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; }
   .body { flex: 1; display: flex; min-height: 0; }
   main { flex: 1; min-width: 0; min-height: 0; position: relative; }
+  main > :global(*) { animation: page-in 0.38s var(--ease) both; }
   .center { flex: 1; display: grid; place-items: center; color: var(--accent); }
   .msg { padding: 2rem; max-width: 28rem; display: flex; flex-direction: column; gap: 0.8rem; color: var(--text); }
   .update { position: fixed; top: 3.2rem; left: 50%; transform: translateX(-50%); z-index: 40; display: flex; align-items: center; gap: 0.7rem; padding: 0.45rem 0.5rem 0.45rem 1rem; font-size: 0.87rem; border-radius: var(--radius); background: var(--surface); animation: fade 0.2s ease; }

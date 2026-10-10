@@ -1,6 +1,6 @@
 # Minecraft integrations
 
-Gradle common/api/paper builds plus opt-in Fabric, Forge and client companion builds. The neutral map producer lives in ../packages/java-map-producer.
+Gradle common build plus the Fabric 1.20.1 server and client builds. Paper, Forge and modern-version sources are in [../archive](../archive/README.md). The neutral map producer lives in ../packages/java-map-producer.
 
 Velora SMP's active target is **Velora Core**, with separate Fabric 1.20.1 server and client jars. See [its build guide](velora-core/README.md) and [implemented behavior and remaining work](../docs/VELORA_CORE.md).
 
@@ -12,6 +12,6 @@ sh toolchains/fabric-1.20.1/gradlew -p . -Ploader=fabric -PmcVersion=1.20.1 :fab
 sh toolchains/fabric-1.20.1/gradlew -p . -Ploader=fabric-client -PmcVersion=1.20.1 :fabric-client:build
 ```
 
-Run from this directory. Build each loader/version with its supported Gradle/JDK toolchain; do not combine incompatible Forge/Loom generations. Minecraft protocol and net.scopenet identifiers are compatibility contracts.
+Run from this directory. Build the server and client in separate invocations.
 
 See the root README for ownership, deployment and publication status.

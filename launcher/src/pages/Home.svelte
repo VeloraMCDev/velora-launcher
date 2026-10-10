@@ -98,17 +98,21 @@
 
 <style>
   .home { position: relative; height: 100%; display: grid; grid-template-columns: 1fr minmax(17rem, 22rem); grid-template-rows: 1fr auto; gap: 1.5rem 2.5rem; padding: 2rem 2rem 2rem 2.5rem; }
-  .hero { grid-column: 1; grid-row: 1; align-self: end; display: flex; flex-direction: column; gap: 0.75rem; animation: fade 0.3s ease; max-width: 38rem; padding-bottom: 0.5rem; }
+  .hero { grid-column: 1; grid-row: 1; align-self: end; display: flex; flex-direction: column; gap: 0.75rem; max-width: 38rem; padding-bottom: 0.5rem; }
   .greet { font-size: 0.88rem; }
   .greet strong { color: var(--text); font-weight: 560; }
   .chips { display: flex; gap: 0.45rem; flex-wrap: wrap; }
   .logo-wrap { max-width: 100%; display: flex; align-items: flex-end; min-height: 3rem; margin: 0.25rem 0; }
   .inst-logo { max-height: clamp(3.8rem, 8vw, 6.2rem); max-width: min(100%, 30rem); object-fit: contain; object-position: left bottom; filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)); }
-  h1 { font-size: clamp(2.2rem, 4.4vw, 3.2rem); line-height: 1.05; font-weight: 700; letter-spacing: -0.025em; }
+  h1 { font-size: clamp(2.2rem, 4.4vw, 3.2rem); line-height: 1.05; font-weight: 700; letter-spacing: -0.025em; background: linear-gradient(180deg, var(--text) 40%, color-mix(in srgb, var(--text) 62%, var(--accent))); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 14px rgba(0, 0, 0, 0.45)); }
+  .hero > *, .actions > :global(*) { animation: rise 0.55s var(--ease) both; }
+  .hero > :nth-child(2) { animation-delay: 0.06s; } .hero > :nth-child(3) { animation-delay: 0.12s; } .hero > :nth-child(4) { animation-delay: 0.18s; }
+  .actions { animation-delay: 0.22s; }
   .desc { font-size: 0.95rem; line-height: 1.6; color: var(--muted); max-width: 32rem; }
   .actions { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; gap: 0.8rem; animation: fade 0.3s ease both; }
   .tools { flex-wrap: wrap; gap: 0.6rem; }
   .tool { width: 2.75rem; height: 2.75rem; padding: 0; border-radius: var(--radius); color: color-mix(in srgb, var(--text) 75%, transparent); background: var(--surface); }
+  .tool:hover { color: var(--text); }
   .tool.live { width: auto; padding: 0 1rem; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 560; color: var(--text); border-color: color-mix(in srgb, var(--accent) 45%, transparent); background: color-mix(in srgb, var(--accent) 14%, var(--surface)); }
   .tool.live:hover { background: color-mix(in srgb, var(--accent) 24%, var(--surface)); }
   .tool.on { color: var(--text); border-color: var(--line-strong); background: color-mix(in srgb, var(--text) 8%, var(--surface)); }

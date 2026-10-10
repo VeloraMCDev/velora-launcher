@@ -42,14 +42,14 @@
   <div class="bottom">
     {#each pages as page (page.id)}
       {@const Icon = icons[page.id] ?? Home}
-      <button class="ghost icon big" class:on={app.view === page.id} onclick={() => (app.view = page.id as typeof app.view)} aria-label={page.label} title={page.label}><McIcon item={items[page.id]} fallback={Icon} size={22} /></button>
+      <button class="ghost icon big nav" class:on={app.view === page.id} onclick={() => (app.view = page.id as typeof app.view)} aria-label={page.label} data-label={page.label}><McIcon item={items[page.id]} fallback={Icon} size={22} /></button>
     {/each}
-    <button class="ghost icon big" class:on={app.view === 'social'} onclick={() => (app.view = 'social')} aria-label="Friends & Social" title="Friends & Social">
+    <button class="ghost icon big nav" class:on={app.view === 'social'} onclick={() => (app.view = 'social')} aria-label="Friends & Social" data-label="Friends & Social">
       <McIcon item={items.social} fallback={Users} size={22} />
     </button>
 
 
-    <button class="ghost icon big" class:on={app.view === 'settings'} onclick={() => (app.view = 'settings')} aria-label="Settings" title="Settings">
+    <button class="ghost icon big nav" class:on={app.view === 'settings'} onclick={() => (app.view = 'settings')} aria-label="Settings" data-label="Settings">
       <McIcon item={items.settings} fallback={Settings} size={22} />
       {#if app.update}<span class="dot"></span>{/if}
     </button>
@@ -93,14 +93,18 @@
   .tip { position: fixed; left: 5.2rem; transform: translateY(0); font-style: normal; font-size: 0.82rem; font-weight: 600; max-width: 16rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0.4rem 0.75rem; border-radius: 0.5rem; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); opacity: 0; pointer-events: none; transition: opacity 0.15s; z-index: 50; color: var(--text); }
   .inst:hover .tip { opacity: 1; }
   .bottom { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
-  .big { width: 2.6rem; height: 2.6rem; position: relative; border-radius: var(--radius-sm); transition: transform 0.12s; }
+  .big { width: 2.6rem; height: 2.6rem; position: relative; border-radius: var(--radius-sm); transition: transform 0.15s var(--ease), background 0.15s, box-shadow 0.2s; }
   .big:hover { transform: scale(1.05); }
-  .big.on { color: var(--text); background: color-mix(in srgb, var(--text) 12%, transparent); border-color: var(--line-strong); }
+  .big.on { color: var(--text); background: color-mix(in srgb, var(--accent) 16%, transparent); border-color: color-mix(in srgb, var(--accent) 40%, transparent); box-shadow: 0 0 14px -2px var(--glow); }
+  .big.on::before { content: ""; position: absolute; left: -0.95rem; top: 0.55rem; bottom: 0.55rem; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: fade 0.25s ease; }
+  .nav::after { content: attr(data-label); position: absolute; left: calc(100% + 0.9rem); top: 50%; transform: translate(-0.3rem, -50%); white-space: nowrap; font-size: 0.8rem; font-weight: 600; padding: 0.35rem 0.7rem; border-radius: 0.5rem; background: var(--surface); border: 1px solid var(--line-strong); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); opacity: 0; pointer-events: none; transition: opacity 0.15s, transform 0.15s var(--ease); z-index: 50; }
+  .nav:hover::after, .nav:focus-visible::after { opacity: 1; transform: translate(0, -50%); transition-delay: 0.25s; }
   .dot { position: absolute; top: 0.55rem; right: 0.55rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--accent); }
   .account { position: relative; margin-top: 0.3rem; }
   .me { padding: 0.15rem; border-radius: 30%; background: transparent; border-color: transparent; }
   .me:hover { border-color: var(--line-strong); background: transparent; }
-  .menu { position: absolute; left: calc(100% + 0.9rem); bottom: 0; width: 17rem; padding: 0.6rem; display: flex; flex-direction: column; gap: 0.25rem; background: var(--surface); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: 0 0.8rem 2.5rem -0.5rem rgba(0, 0, 0, 0.6); animation: fade 0.12s ease; z-index: 60; }
+  .menu { position: absolute; left: calc(100% + 0.9rem); bottom: 0; width: 17rem; padding: 0.6rem; display: flex; flex-direction: column; gap: 0.25rem; background: var(--surface); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: 0 0.8rem 2.5rem -0.5rem rgba(0, 0, 0, 0.6); animation: pop-in 0.16s var(--ease); z-index: 60; transform-origin: bottom left; }
+  @keyframes pop-in { from { opacity: 0; transform: translateX(-0.4rem) scale(0.96); } }
   .head { padding: 0.2rem 0.5rem 0.4rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
   .acc { display: flex; align-items: center; gap: 0.2rem; border-radius: var(--radius-sm); }
   .acc.current { background: color-mix(in srgb, var(--text) 6%, transparent); }
