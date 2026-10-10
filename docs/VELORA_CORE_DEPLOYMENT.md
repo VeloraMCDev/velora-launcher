@@ -56,4 +56,4 @@ Velora Core (Client) is not deployed by the extension. Players add `velora-core-
 
 - It does not restart servers or change startup commands. Add the `-javaagent` flag yourself.
 - It does not touch other mods, worlds or player data.
-- It has been written against the documented Calagopus extension API and compile-checked, but it has not yet been installed on a live Calagopus panel. Test on a disposable server first, as described in the extension README.
+- The extension is built, unit-tested and exported against Calagopus 1.2.4 (the supported version) and the next panel, `main`, by the Calagopus extension workflow. It has not yet been installed on a live Calagopus panel or run against a real Wings node, so the file operations (pull, checksum, delete, power state) are unproven end to end. Test on a disposable server first.

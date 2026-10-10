@@ -29,14 +29,16 @@ Extensions are built inside a checkout of the Calagopus panel:
 git clone --branch release-1.2.4 https://github.com/calagopus/panel.git
 cp -r integrations/calagopus/net_velora_core panel/backend-extensions/
 cd panel
+# `panel-rs extensions add` (and the heavy image) also write frontend/tsconfig.json and link the frontend into
+# frontend/extensions and the panel node_modules into backend-extensions; see the workflow for the manual equivalent.
 cargo test -p net_velora_core          # add --ignore-rust-version if your toolchain is older than the panel requires
 cd frontend && pnpm install && pnpm build:ci && cd ..
 panel-rs extensions export net.velora.core   # writes exported-extensions/net_velora_core.c7s.zip
 ```
 
-Install the `.c7s.zip` as described in the Calagopus guide, then restart the panel. The manual **Calagopus extension** GitHub workflow runs these steps and uploads the package as an artifact.
+Install the `.c7s.zip` as described in the Calagopus guide, then restart the panel. The manual **Calagopus extension** GitHub workflow (Actions tab, Run workflow) runs these steps and uploads the package as an artifact.
 
-`Metadata.toml` requires panel `>=1.2.0`. Raise `version` in `Cargo.toml` for each release of the extension.
+`Metadata.toml` requires panel `>=1.2.4`, the version this extension is built and tested against (release 1.2.4 must pass in CI; the next panel, `main`, is built as an informational check). Raise `version` in `Cargo.toml` for each release of the extension.
 
 ## First setup
 
@@ -46,4 +48,4 @@ Install the `.c7s.zip` as described in the Calagopus guide, then restart the pan
 
 ## Status
 
-Written to Calagopus' documented extension API and the panel's own route code. See the validation notes in [docs/VELORA_CORE_DEPLOYMENT.md](../../docs/VELORA_CORE_DEPLOYMENT.md) for what has and has not been exercised, and try it on a disposable server before using it on a live one.
+Supported panel: **1.2.4** (and newer). The Calagopus extension workflow compiles the backend, runs its tests, typechecks and bundles the frontend, and exports the `.c7s.zip` against both release 1.2.4 and `main`. What has not been exercised is a live install: the Wings file operations (pull, checksum, delete, power state) are unproven against a real node, so try it on a disposable server before using it on a live one. See [docs/VELORA_CORE_DEPLOYMENT.md](../../docs/VELORA_CORE_DEPLOYMENT.md).

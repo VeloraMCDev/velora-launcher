@@ -5,7 +5,6 @@ use std::{sync::LazyLock, time::{Duration, Instant}};
 #[derive(Debug, Clone, Deserialize)]
 pub struct CoreFile {
     pub name: String,
-    pub size: u64,
     pub sha256: String,
     /// Relative to the Velora Panel address.
     pub path: String,
@@ -169,7 +168,7 @@ mod tests {
 
     #[test]
     fn only_the_panels_own_jar_path_is_fetched() {
-        let file = |path: &str| CoreFile { name: "x.jar".into(), size: 1, sha256: "ab".repeat(32), path: path.into() };
+        let file = |path: &str| CoreFile { name: "x.jar".into(), sha256: "ab".repeat(32), path: path.into() };
         assert_eq!(download_url("https://v.example.com", &file("/api/v1/core/files/ab/x.jar")), Ok("https://v.example.com/api/v1/core/files/ab/x.jar".into()));
         assert!(download_url("https://v.example.com", &file("https://evil.example/x.jar")).is_err());
         assert!(download_url("https://v.example.com", &file("/api/v1/core/files/../../x.jar")).is_err());
