@@ -24,19 +24,34 @@ pub fn signed_message(version: &str, sha256: &str) -> String {
     format!("velora-launcher-release:v1\n{}\n{}", version.trim().trim_start_matches('v'), sha256.to_ascii_lowercase())
 }
 
+/// What the Velora Core workflow signs for each jar. A different domain from [`signed_message`], so a launcher
+/// signature can never be replayed as a mod release or the reverse.
+pub fn core_signed_message(version: &str, sha256: &str) -> String {
+    format!("velora-core-release:v1\n{}\n{}", version.trim().trim_start_matches('v'), sha256.to_ascii_lowercase())
+}
+
 /// Verifies an installer signature against the embedded release key.
 pub fn verify_release_signature(version: &str, sha256: &str, signature: &str) -> bool {
     verify_with_key(RELEASE_SIGNING_KEY, version, sha256, signature)
 }
 
+/// Verifies a Velora Core jar signature against the embedded release key.
+pub fn verify_core_signature(version: &str, sha256: &str, signature: &str) -> bool {
+    verify_message(RELEASE_SIGNING_KEY, &core_signed_message(version, sha256), sha256, signature)
+}
+
 fn verify_with_key(public_key: &str, version: &str, sha256: &str, signature: &str) -> bool {
+    verify_message(public_key, &signed_message(version, sha256), sha256, signature)
+}
+
+fn verify_message(public_key: &str, message: &str, sha256: &str, signature: &str) -> bool {
     use base64::Engine;
     let engine = base64::engine::general_purpose::STANDARD;
     let (Ok(key), Ok(sig)) = (engine.decode(public_key.trim()), engine.decode(signature.trim())) else { return false };
     if key.len() != 32 || sig.len() != 64 || sha256.len() != 64 || !sha256.bytes().all(|b| b.is_ascii_hexdigit()) {
         return false;
     }
-    ring::signature::UnparsedPublicKey::new(&ring::signature::ED25519, key).verify(signed_message(version, sha256).as_bytes(), &sig).is_ok()
+    ring::signature::UnparsedPublicKey::new(&ring::signature::ED25519, key).verify(message.as_bytes(), &sig).is_ok()
 }
 
 pub fn release_version(value: &str) -> Option<semver::Version> {
@@ -82,5 +97,25 @@ mod tests {
         assert!(!verify_with_key(&public, "1.3.0", &digest, "not base64"));
         assert!(!verify_release_signature("1.3.0", &digest, &signature), "only the Velora key is trusted");
         assert_eq!(engine.decode(RELEASE_SIGNING_KEY.trim()).unwrap().len(), 32);
+    }
+
+    #[test]
+    fn core_and_launcher_signatures_are_not_interchangeable() {
+        use base64::Engine;
+        use ring::signature::KeyPair;
+        let engine = base64::engine::general_purpose::STANDARD;
+        let pkcs8 = ring::signature::Ed25519KeyPair::generate_pkcs8(&ring::rand::SystemRandom::new()).unwrap();
+        let pair = ring::signature::Ed25519KeyPair::from_pkcs8(pkcs8.as_ref()).unwrap();
+        let public = engine.encode(pair.public_key().as_ref());
+        let digest = "ab".repeat(32);
+        let core = engine.encode(pair.sign(core_signed_message("0.6.0", &digest).as_bytes()).as_ref());
+        let launcher = engine.encode(pair.sign(signed_message("0.6.0", &digest).as_bytes()).as_ref());
+        assert!(verify_message(&public, &core_signed_message("v0.6.0", &digest.to_uppercase()), &digest, &core));
+        assert!(
+            !verify_message(&public, &core_signed_message("0.6.0", &digest), &digest, &launcher),
+            "a launcher signature is not a mod signature"
+        );
+        assert!(!verify_with_key(&public, "0.6.0", &digest, &core), "a mod signature is not a launcher signature");
+        assert!(!verify_core_signature("0.6.0", &digest, &core), "only the Velora key is trusted");
     }
 }

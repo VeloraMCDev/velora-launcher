@@ -21,13 +21,13 @@
 <ol class="steps">
   <li>
     <strong>Install Velora Core on the server</strong>
-    <span class="muted small">Velora Core runs on Fabric 1.20.1 with Fabric API. Put <code>scopenet-fabric-1.20.1-*.jar</code> (Velora Core Server) and Fabric API in the server's <code>mods</code> folder. Players add <code>scopenet-client-fabric-1.20.1-*.jar</code> (Velora Core Client) and Fabric API to their own <code>mods</code> folder for the map, vaults and in-game hub.</span>
+    <span class="muted small">Velora Core runs on Fabric 1.20.1 with Fabric API. Put <code>velora-core-server-1.20.1-*.jar</code> (Velora Core Server) and Fabric API in the server's <code>mods</code> folder. Players add <code>velora-core-client-1.20.1-*.jar</code> (Velora Core Client) and Fabric API to their own <code>mods</code> folder for the map, vaults and in-game hub.</span>
     <a class="dl" href="https://github.com/VeloraMCDev/velora-launcher/releases/latest" target="_blank" rel="noreferrer"><Download size={14} /> Download from Releases</a>
   </li>
   <li>
     <strong>Add the token</strong>
-    <span class="muted small">Start the server once. Velora Core creates the file below with every option explained. Set these two lines, then restart or run <code>/scopenet reload</code>.</span>
-    <span class="muted tiny"><code>config/scopenet.properties</code></span>
+    <span class="muted small">Start the server once. Velora Core creates the file below with every option explained. Set these two lines, then restart or run <code>/velora reload</code>.</span>
+    <span class="muted tiny"><code>config/velora-core.properties</code></span>
     <div class="code"><pre>{snippet}</pre><button class="ghost icon sm" aria-label="Copy config" onclick={() => copyText(snippet)}><Copy size={14} /></button></div>
   </li>
   <li>
@@ -41,7 +41,7 @@
   </li>
   <li>
     <strong>Check it worked</strong>
-    <span class="muted small">Join the server, then run <code>/scopenet status</code>. It shows the panel address, whether the token is set and which modules are on. The full guide is in the repository at <code>docs/VELORA_CORE_SETUP.md</code>.</span>
+    <span class="muted small">Join the server, then run <code>/velora status</code>. It shows the panel address, whether the token is set and which modules are on. The full guide is in the repository at <code>docs/VELORA_CORE_SETUP.md</code>; on Calagopus, the Velora Core extension does steps 1 to 3 for you (<code>docs/VELORA_CORE_DEPLOYMENT.md</code>).</span>
   </li>
 </ol>
 

@@ -223,7 +223,7 @@ pub struct Vault {
     pub count: i64,
     /// Rows in each vault (9 slots per row).
     pub rows: i64,
-    /// Vaults everyone gets; the rest need the permission scopenet.vault.<number>.
+    /// Vaults everyone gets; the rest need the permission velora.vault.<number>.
     pub free_count: i64,
 }
 impl Default for Vault {
@@ -356,7 +356,7 @@ pub struct InventoryKit {
     items: Vec<Value>,
 }
 
-/// The authenticated game integration checks scopenet.admin.kits before taking the snapshot.
+/// The authenticated game integration checks velora.admin.kits before taking the snapshot.
 pub async fn game_create_kit(
     crate::routes::servers::GameServer(_): crate::routes::servers::GameServer,
     State(state): State<AppState>,

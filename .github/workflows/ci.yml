@@ -41,7 +41,7 @@ jobs:
         working-directory: infra
       - run: node infra/scripts/check-workflows.mjs .
       - name: Launcher release signing
-        run: node --test scripts/sign-launcher-release.test.mjs
+        run: node --test scripts/sign-launcher-release.test.mjs scripts/sign-core-release.test.mjs
       - name: Mobile shell configuration
         run: node --test panel/mobile/config.test.mjs
       - run: npm ci --no-audit --no-fund

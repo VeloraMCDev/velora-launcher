@@ -187,7 +187,7 @@ class ClaimIndexTest {
         var region = index.byDimension().get("minecraft:overworld").get(0);
         assertTrue(region.admin());
         assertEquals(0x22c55e, region.color());
-        var overlay = net.scopenet.core.map.MapOverlay.toJson(net.scopenet.core.map.MapModel.build(new net.scopenet.core.map.MapModel.Sources(
+        var overlay = net.velora.core.map.MapOverlay.toJson(net.velora.core.map.MapModel.build(new net.velora.core.map.MapModel.Sources(
                 index.byDimension(), java.util.Map.of(), java.util.List.of(), java.util.Map.of(), java.util.Map.of(), java.util.List.of(),
                 new com.google.gson.JsonArray(), java.util.List.of(), "", false, java.util.Map.of())));
         var claim = overlay.getAsJsonArray("claims").get(0).getAsJsonObject();

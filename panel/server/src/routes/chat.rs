@@ -30,7 +30,7 @@ pub struct ChatSettings {
     pub level_format: String,
     /// `**bold**`, `*italic*`, `__underline__`, `~~strike~~` and `` `code` `` in messages.
     pub markdown: bool,
-    /// Players with `scopenet.chat.color` may use & colour codes and &#RRGGBB in their messages.
+    /// Players with `velora.chat.color` may use & colour codes and &#RRGGBB in their messages.
     pub allow_colors: bool,
 }
 

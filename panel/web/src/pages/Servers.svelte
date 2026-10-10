@@ -2,6 +2,7 @@
   import { Plus, Server, Users, Gauge, ShieldCheck, Rocket, ChevronRight } from '@lucide/svelte';
   import Modal from '../components/Modal.svelte';
   import ServerForm from '../components/ServerForm.svelte';
+  import CoreReleases from '../components/CoreReleases.svelte';
   import TokenReveal from '../components/TokenReveal.svelte';
   import { get, post, timeAgo } from '../lib/api';
   import { go, hashFor } from '../lib/router.svelte';
@@ -90,6 +91,7 @@
           <div class="metric {tpsTone(s.online ? s.tps : null)}"><Gauge size={14} /><strong>{s.online && s.tps != null ? s.tps.toFixed(1) : '–'}</strong><span class="muted">TPS</span></div>
           <div class="tags">
             <span class="badge">{accessLabel(s)}</span>
+            {#if s.plugin_version}<span class="badge" title="Velora Core version this server reports">Core {s.plugin_version}</span>{/if}
             {#if s.require_launcher}<span class="badge accent">Launcher only</span>{/if}
             {#if s.online_mode === false}<span class="badge warn">Offline mode</span>{/if}
           </div>
@@ -98,6 +100,8 @@
       {/each}
     </div>
   {/if}
+
+  <CoreReleases versions={servers?.map((s) => s.plugin_version) ?? []} />
 </div>
 
 <Modal bind:open={createOpen} title="Add server" width={540}>

@@ -1,0 +1,55 @@
+name: Calagopus extension
+# Checks out the Calagopus panel at a pinned tag, builds the Velora Core extension against it (Rust tests and
+# frontend typecheck) and uploads the package. Runs on manual dispatch and when the extension changes.
+# Nothing is published or installed anywhere.
+on:
+  push:
+    paths:
+      - integrations/calagopus/**
+      - .github/workflows/calagopus-extension.yml
+  workflow_dispatch:
+    inputs:
+      panel_ref:
+        description: Calagopus panel tag or branch to build against
+        required: true
+        default: release-1.2.4
+permissions:
+  contents: read
+jobs:
+  extension:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - name: Check out the Calagopus panel
+        env:
+          PANEL_REF: ${{ inputs.panel_ref || 'release-1.2.4' }}
+        run: |
+          git clone --depth 1 --branch "$PANEL_REF" https://github.com/calagopus/panel.git "$RUNNER_TEMP/panel"
+          cp -r integrations/calagopus/net_velora_core "$RUNNER_TEMP/panel/backend-extensions/"
+      - name: Install the panel's Rust toolchain
+        run: rustup toolchain install stable --profile minimal && rustup default stable
+      # The panel's Rust build embeds the built frontend, so the frontend (and this extension's typecheck) comes first.
+      - name: Frontend typecheck and build
+        working-directory: ${{ runner.temp }}/panel/frontend
+        run: |
+          npm install --global pnpm@11
+          pnpm install --frozen-lockfile=false
+          pnpm build:ci
+      - name: Rust tests
+        working-directory: ${{ runner.temp }}/panel
+        run: cargo test -p net_velora_core --ignore-rust-version
+      - name: Export the extension package
+        working-directory: ${{ runner.temp }}/panel
+        run: cargo run -p panel-rs --ignore-rust-version -- extensions export net.velora.core
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: net-velora-core-calagopus-extension
+          path: ${{ runner.temp }}/panel/exported-extensions/*.c7s.zip
+          if-no-files-found: error
+          retention-days: 14

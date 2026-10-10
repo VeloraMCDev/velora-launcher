@@ -75,7 +75,7 @@ async fn luckperms_ranks_mapping_and_sync_modes() {
         json!({
         "groups": [{"name": "vip", "weight": 10}, {"name": "moderator", "weight": 50}],
         "players": [
-            {"uuid": steve, "primary": "VIP", "display": "VIP", "prefix": "§6[VIP] ", "weight": 10, "groups": steve_groups, "permissions": ["scopenet.command.*", "essentials.fly"]},
+            {"uuid": steve, "primary": "VIP", "display": "VIP", "prefix": "§6[VIP] ", "weight": 10, "groups": steve_groups, "permissions": ["velora.command.*", "essentials.fly"]},
             {"uuid": alex, "primary": "default", "groups": ["default"]},
             {"uuid": "not-a-uuid", "primary": "x"}
         ]})

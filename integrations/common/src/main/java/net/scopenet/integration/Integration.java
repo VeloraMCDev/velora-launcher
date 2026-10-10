@@ -17,16 +17,16 @@ public final class Integration implements AutoCloseable {
     private final JsonObject hello;
     private final Consumer<String> log;
     private final BiConsumer<UUID, String> kick;
-    private final ExecutorService syncWorker = Executors.newSingleThreadExecutor(r -> daemon(r, "scopenet-sync"));
+    private final ExecutorService syncWorker = Executors.newSingleThreadExecutor(r -> daemon(r, "velora-sync"));
     private final ExecutorService loginWorker = new ThreadPoolExecutor(2, 4, 30, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<>(64), r -> daemon(r, "scopenet-login"), new ThreadPoolExecutor.AbortPolicy());
+            new ArrayBlockingQueue<>(64), r -> daemon(r, "velora-login"), new ThreadPoolExecutor.AbortPolicy());
     private final AtomicBoolean syncing = new AtomicBoolean();
     private volatile boolean closed;
     private volatile Consumer<JsonArray> notificationHandler;
     private volatile ChatLayout chat = ChatLayout.DEFAULT;
-    private volatile net.scopenet.core.CoreModules modules = net.scopenet.core.CoreModules.pending();
-    public net.scopenet.core.CoreModules modules() { return modules; }
-    private volatile net.scopenet.core.Utilities utilities = net.scopenet.core.Utilities.DEFAULT;
+    private volatile net.velora.core.CoreModules modules = net.velora.core.CoreModules.pending();
+    public net.velora.core.CoreModules modules() { return modules; }
+    private volatile net.velora.core.Utilities utilities = net.velora.core.Utilities.DEFAULT;
     private volatile MapSink map;
     private volatile java.util.function.Supplier<String> mapOverlay;
     private boolean registered;
@@ -96,7 +96,7 @@ public final class Integration implements AutoCloseable {
         if (!registered) {
             JsonObject response = client.post("hello", hello);
             if (!response.has("server_id")) throw new IllegalStateException("Invalid hello response");
-            modules = net.scopenet.core.CoreModules.fromPanel(response);
+            modules = net.velora.core.CoreModules.fromPanel(response);
             registered = true;
         }
         if (pending == null) {
@@ -116,10 +116,10 @@ public final class Integration implements AutoCloseable {
         if (!response.has("ok") || !response.get("ok").getAsBoolean() || !response.has("kick")
                 || !response.get("kick").isJsonArray()) throw new IllegalStateException("Invalid sync response");
         pending = null;
-        modules = net.scopenet.core.CoreModules.fromPanel(response);
+        modules = net.velora.core.CoreModules.fromPanel(response);
         if (response.has("chat") && response.get("chat").isJsonObject()) chat = ChatLayout.fromJson(response.getAsJsonObject("chat"));
         if (response.has("utilities") && response.get("utilities").isJsonObject()) {
-            utilities = net.scopenet.core.Utilities.fromJson(response.getAsJsonObject("utilities"),
+            utilities = net.velora.core.Utilities.fromJson(response.getAsJsonObject("utilities"),
                     response.has("custom_items") && response.get("custom_items").isJsonArray() ? response.getAsJsonArray("custom_items") : null,
                     response.has("content") && response.get("content").isJsonArray() ? response.getAsJsonArray("content") : null);
         }
@@ -145,7 +145,7 @@ public final class Integration implements AutoCloseable {
     }
 
     /** Utility-command settings, kits and custom items from the panel (defaults until the first sync). */
-    public net.scopenet.core.Utilities utilities() {
+    public net.velora.core.Utilities utilities() {
         return utilities;
     }
 

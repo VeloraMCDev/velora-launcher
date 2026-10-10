@@ -8,8 +8,8 @@ package; native release acceptance installs 1.3.0 first and verifies the upgrade
 
 Technical identities used by existing installs remain compatible: the desktop app
 and credential service use `net.scopenet.launcher`, mobile apps use
-`net.scopenet.player`, and Minecraft namespaces, permission nodes, plugin storage
-names and persisted configuration keys retain their existing values. Old environment
+`net.scopenet.player`. The Velora Core Minecraft mod uses Velora names; files and permission nodes created under the SCOPENET names are carried over or still honoured (see
+[VELORA_CORE.md](VELORA_CORE.md)). Persisted panel configuration keys retain their existing values. Old environment
 variables and HTTP instance headers remain accepted. Source provenance and frozen
 compatibility fixtures retain their original attribution and names.
 

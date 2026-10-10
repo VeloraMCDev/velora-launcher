@@ -32,7 +32,7 @@ public final class OperationLedger implements AutoCloseable {
     private final BiConsumer<String, JsonObject> done;
     private final Map<String, Pending> pending = new LinkedHashMap<>();
     private final ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor(r -> {
-        Thread t = new Thread(r, "scopenet-ledger");
+        Thread t = new Thread(r, "velora-ledger");
         t.setDaemon(true);
         return t;
     });

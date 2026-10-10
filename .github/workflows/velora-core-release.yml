@@ -1,0 +1,63 @@
+name: Velora Core release
+# Manual: builds the Velora Core server and client jars, signs them with the Velora release key and publishes a
+# GitHub release tagged velora-core-v<version>. Game servers receive it only after an admin approves the release
+# in the Panel (Servers > Velora Core), which then serves the jars to deployment tools such as the Calagopus extension.
+on:
+  workflow_dispatch: null
+permissions:
+  contents: read
+concurrency:
+  group: velora-core-release
+  cancel-in-progress: false
+jobs:
+  jars:
+    uses: ./.github/workflows/velora-core.yml
+  publish:
+    needs: jars
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: velora-core-jars
+          path: release
+      - name: Read the version and refuse to re-release it
+        id: read
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(grep -o "getOrElse('[0-9.]*')" integrations/build.gradle | grep -o "[0-9][0-9.]*" | head -1)
+          test -n "$version"
+          if gh release view "velora-core-v$version" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "::error::velora-core-v$version is already released; bump releaseVersion in integrations/build.gradle first"; exit 1
+          fi
+          find release -mindepth 2 -type f -name '*.jar' -exec mv {} release/ ';'
+          ls -la release
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Checksum and sign both jars
+        env:
+          VERSION: ${{ steps.read.outputs.version }}
+          VELORA_RELEASE_SIGNING_KEY: ${{ secrets.VELORA_RELEASE_SIGNING_KEY }}
+        run: node scripts/sign-core-release.mjs release "$VERSION" 1.20.1 "$GITHUB_SHA"
+      - name: Publish the GitHub release (awaits approval before reaching servers)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.read.outputs.version }}
+        run: |
+          cat > notes.md <<EOF
+          Velora Core ${VERSION} for Minecraft 1.20.1 (Fabric), built from ${GITHUB_SHA}.
+
+          Jars are signed with the Velora release key (see core-manifest.json).
+          Servers receive this release after an admin approves it in the Panel.
+          EOF
+          gh release create "velora-core-v${VERSION}" release/*.jar release/core-manifest.json release/SHA256SUMS --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" --title "Velora Core ${VERSION}" --notes-file notes.md

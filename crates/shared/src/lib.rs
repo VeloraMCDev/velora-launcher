@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 mod experience;
 mod updates;
 pub use experience::*;
-pub use updates::{newer_release, release_version, signed_message, verify_release_signature, LauncherUpdate, RELEASE_SIGNING_KEY};
+pub use updates::{core_signed_message, newer_release, release_version, signed_message, verify_core_signature, verify_release_signature, LauncherUpdate, RELEASE_SIGNING_KEY};
 
 pub const API_VERSION: u32 = 1;
 

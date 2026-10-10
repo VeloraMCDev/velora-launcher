@@ -8,7 +8,7 @@ public final class PanelClient {
     private volatile Settings settings;
     private final ClaimIndex claimIndex = new ClaimIndex();
     private final java.util.concurrent.ScheduledExecutorService claimSync = java.util.concurrent.Executors.newSingleThreadScheduledExecutor(task -> {
-        Thread t = new Thread(task, "scopenet-claims"); t.setDaemon(true); return t;
+        Thread t = new Thread(task, "velora-claims"); t.setDaemon(true); return t;
     });
     private final java.util.concurrent.atomic.AtomicBoolean claimRefreshQueued = new java.util.concurrent.atomic.AtomicBoolean();
     private volatile boolean claimSyncStarted;

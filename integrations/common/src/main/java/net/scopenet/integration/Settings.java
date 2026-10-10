@@ -1,5 +1,6 @@
 package net.scopenet.integration;
 
+import net.velora.core.Legacy;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
@@ -31,7 +32,7 @@ public record Settings(
         }
         token = token == null ? "" : token.trim();
         if (!token.matches("sn_[A-Za-z0-9]{40}")) {
-            throw new IllegalArgumentException("Set token in config/scopenet.properties (copy it from the panel's Servers page)");
+            throw new IllegalArgumentException("Set token in config/velora-core.properties (copy it from the panel's Servers page)");
         }
     }
 
@@ -112,7 +113,7 @@ public record Settings(
         try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             Properties properties = new Properties();
             properties.load(reader);
-            return net.scopenet.core.CoreModules.local(properties).enabled("map") && Boolean.parseBoolean(properties.getProperty("map.enabled", properties.getProperty("livemap.enabled", "true")));
+            return net.velora.core.CoreModules.local(properties).enabled("map") && Boolean.parseBoolean(properties.getProperty("map.enabled", properties.getProperty("livemap.enabled", "true")));
         } catch (IOException e) {
             return true;
         }
@@ -120,11 +121,11 @@ public record Settings(
 
     /** Writes the documented default file if none exists. Safe to call early; never overwrites. */
     public static void ensureDefault(Path path) throws IOException {
-        if (!Files.exists(path)) {
+        if (!Files.exists(path) && !Legacy.copyServerConfig(path)) {
             Path parent = path.toAbsolutePath().getParent();
             if (parent != null) Files.createDirectories(parent);
             String defaultProps = """
-                    # Velora Core (Server) configuration. Edit, then restart the server or run /scopenet reload.
+                    # Velora Core (Server) configuration. Edit, then restart the server or run /velora reload.
                     #
                     # 1. In the panel open Servers, create (or open) this server and copy its token.
                     # 2. Set panel-url to your panel's address and paste the token below.
@@ -146,8 +147,8 @@ public record Settings(
                     essentials.enabled=true
                     economy.enabled=true
 
-                    # Essentials limits. Players can exceed max_homes with the permission scopenet.homes.<number>
-                    # (or scopenet.homes.unlimited). Cooldowns are seconds, 0 = none; scopenet.cooldown.bypass skips them.
+                    # Essentials limits. Players can exceed max_homes with the permission velora.homes.<number>
+                    # (or velora.homes.unlimited). Cooldowns are seconds, 0 = none; velora.cooldown.bypass skips them.
                     essentials.max_homes=5
                     essentials.home_name_max_length=32
                     essentials.max_warps=0
