@@ -34,7 +34,7 @@ Admin routes are `GET /api/admin/core/releases` and `POST /api/admin/core/releas
 
 ## 3. Install it on a Calagopus server
 
-The extension in [`integrations/calagopus`](../integrations/calagopus/README.md) adds a **Velora Core** page to every server. It:
+The extension in [`integrations/calagopus`](https://github.com/VeloraMCDev/velora-launcher/blob/main/integrations/calagopus/README.md) adds a **Velora Core** page to every server. It:
 
 - shows the installed and approved versions;
 - installs the server jar into `mods/`, checks its SHA-256 on the node, then removes older Velora Core (or `scopenet-fabric`) jars;
