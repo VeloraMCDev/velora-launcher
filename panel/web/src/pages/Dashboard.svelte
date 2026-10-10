@@ -4,6 +4,7 @@
   import Avatar from '../components/Avatar.svelte';
   import { get, timeAgo } from '../lib/api';
   import { session } from '../lib/session.svelte';
+  import { hashFor } from '../lib/router.svelte';
 
   let stats = $state<any>(null);
   let instances = $state<any[]>([]);
@@ -35,7 +36,7 @@
     { done: instances.length > 0, label: 'Create your first instance', href: '#/instances', icon: Boxes },
     { done: !!stats?.launcher_download_url, label: 'Share the launcher download link', href: '#/settings', icon: Download },
     { done: total > 0, label: 'Launch the game once', href: '#/instances', icon: Rocket },
-    { done: !!stats?.live?.servers?.length, label: 'Connect a game server', href: '#/servers', icon: Server },
+    { done: !!stats?.live?.servers?.length, label: 'Connect a game server', href: hashFor('servers'), icon: Server },
   ]);
 </script>
 
@@ -53,7 +54,7 @@
 
   <div class="grid stats">
     {#each [
-      { label: 'Online now', value: stats?.live?.online_now, icon: Radio, tone: 'live', href: '#/servers' },
+      { label: 'Online now', value: stats?.live?.online_now, icon: Radio, tone: 'live', href: hashFor('servers') },
       { label: 'Active players (7d)', value: stats?.players_7d, icon: Activity, tone: 'accent' },
       { label: 'Accounts', value: stats?.users, icon: Users, tone: 'cyan' },
       { label: 'Awaiting approval', value: stats?.pending, icon: UserCheck, tone: 'warn', href: '#/users' },
@@ -95,10 +96,10 @@
 
     {#if stats?.live?.servers?.length}
       <section class="card servers">
-        <div class="section-title"><h2>Servers</h2><a class="hint" href="#/servers">View all</a></div>
+        <div class="section-title"><h2>Servers</h2><a class="hint" href={hashFor("servers")}>View all</a></div>
         <div class="list">
           {#each stats.live.servers as s}
-            <a class="srv" href="#/servers/{s.id}">
+            <a class="srv" href={hashFor(`servers/${s.id}`)}>
               <span class="dot" class:on={s.online}></span>
               <span class="name">{s.name}</span>
               <span class="muted small num">{s.online ? `${s.players} / ${s.max_players || '–'}` : 'offline'}</span>

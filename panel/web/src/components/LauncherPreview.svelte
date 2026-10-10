@@ -60,7 +60,7 @@
         {/if}
         <p>{b.tagline}</p>
         <div class="row">
-          <span class="play"><Play size={9} fill="currentColor" /> Play</span>
+          <span class="pv-play"><Play size={9} fill="currentColor" /> Play</span>
           {#if b.features.server_status}<span class="status"><i></i> 42/100 online</span>{/if}
         </div>
       </div>
@@ -113,7 +113,7 @@
   .chips { display: flex; gap: 0.4em; }
   .chips span { font-size: 0.7em; padding: 0.2em 0.55em; border-radius: 0.3em; background: rgba(255, 255, 255, 0.07); }
   .row { display: flex; align-items: center; gap: 0.8em; margin-top: 0.8em; }
-  .play { display: inline-flex; align-items: center; gap: 0.5em; padding: 0.85em 2.2em; border-radius: var(--r); font-weight: 600; font-size: 1em; color: white; background: var(--acc); }
+  .pv-play { display: inline-flex; align-items: center; gap: 0.5em; padding: 0.85em 2.2em; border-radius: var(--r); font-weight: 600; font-size: 1em; color: white; background: var(--acc); }
   .status { display: inline-flex; align-items: center; gap: 0.4em; font-size: 0.75em; padding: 0.7em 0.9em; border-radius: var(--r); background: var(--surf); border: 1px solid rgba(255, 255, 255, 0.07); color: var(--mut); }
   .status i { width: 0.45em; height: 0.45em; border-radius: 50%; background: var(--ok); }
   .news { width: 30%; display: flex; flex-direction: column; gap: 0.6em; }

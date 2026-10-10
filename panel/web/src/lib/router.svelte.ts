@@ -26,3 +26,11 @@ export function go(path: string) {
 }
 
 export function playPath(page = 'home') { return route.instanceId ? `#/play/instance/${encodeURIComponent(route.instanceId)}/${page}` : `#/play/${page}`; }
+
+/** The hash for an admin page, keeping the current instance, so plain links behave like go(). */
+export function hashFor(path: string) {
+  const clean = path.replace(/^\//, '');
+  const page = clean.split('/')[0];
+  const prefix = route.instanceId && !PLATFORM_PAGES.has(page) && !['play', 'landing', 'login', 'reset-password', 'instance'].includes(page) ? `instance/${encodeURIComponent(route.instanceId)}/` : '';
+  return '#/' + prefix + clean;
+}

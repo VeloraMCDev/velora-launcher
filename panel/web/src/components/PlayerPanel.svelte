@@ -4,6 +4,7 @@
   import CapePreview from './CapePreview.svelte';
   import { api, del, duration, get, put, timeAgo } from '../lib/api';
   import { toast, toastError } from '../lib/toast.svelte';
+  import { hashFor } from "../lib/router.svelte";
   import type { Cape, User, UserActivity } from '../lib/types';
 
   let { user, capes, onchange }: { user: User; capes: Cape[]; onchange: (u: User) => void } = $props();
@@ -102,7 +103,7 @@
         <thead><tr><th>Server</th><th class="num">Playtime</th><th class="num">Last seen</th></tr></thead>
         <tbody>
           {#each activity.servers as s (s.server_id)}
-            <tr><td><a href="#/servers/{s.server_id}">{s.server_name}</a></td><td class="num">{duration(s.playtime_secs)}</td><td class="num muted">{timeAgo(s.last_seen)}</td></tr>
+            <tr><td><a href={hashFor(`servers/${s.server_id}`)}>{s.server_name}</a></td><td class="num">{duration(s.playtime_secs)}</td><td class="num muted">{timeAgo(s.last_seen)}</td></tr>
           {/each}
         </tbody>
       </table>
