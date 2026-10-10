@@ -87,7 +87,7 @@ Before manual rollout:
 5. Finish missing gameplay above before advertising the full specification. Validate upkeep/grace timing, contract expiry/refund and rivalry transfer/replay with synthetic game clients. Casino rooms and blocks are deferred; define event limits and stage-load-test them when that work resumes.
 6. Activate the selected SMP instance in the admin editor only when ready for cutover. Stop/reconfigure old server processes separately. Packaging and release remain manual; no paid infrastructure is introduced.
 
-Build commands and acceptance limitations are in [the integration guide](../integrations/velora-core/README.md). This document records source behavior, not a successful production deployment.
+Build commands and acceptance limitations are in [the integration guide](https://github.com/VeloraMCDev/velora-launcher/blob/main/integrations/velora-core/README.md). This document records source behavior, not a successful production deployment.
 
 ## Local validation, 2026-10-09
 
