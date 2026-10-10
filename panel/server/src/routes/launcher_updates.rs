@@ -187,7 +187,7 @@ pub async fn download(State(state): State<AppState>, Path(digest): Path<String>)
     stream_file(file, &name).await
 }
 
-async fn stream_file(file: tokio::fs::File, name: &str) -> AppResult<Response> {
+pub(super) async fn stream_file(file: tokio::fs::File, name: &str) -> AppResult<Response> {
     let size = file.metadata().await?.len();
     let disposition = format!("attachment; filename=\"{name}\"");
     let stream = futures::stream::try_unfold(file, |mut file| async {

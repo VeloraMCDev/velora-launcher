@@ -1,8 +1,9 @@
 name: Velora Core jars
-# Manual: builds the Fabric 1.20.1 server and client jars and uploads them as workflow artifacts.
-# Nothing is published or deployed; download the artifact and install the jars by hand.
+# Builds the Fabric 1.20.1 server and client jars and uploads them as workflow artifacts. Nothing is published
+# or deployed here; velora-core-release.yml reuses this workflow and publishes the signed release.
 on:
   workflow_dispatch: null
+  workflow_call: null
   push:
     paths:
       - integrations/**

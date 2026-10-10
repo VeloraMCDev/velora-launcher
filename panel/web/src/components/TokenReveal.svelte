@@ -41,7 +41,7 @@
   </li>
   <li>
     <strong>Check it worked</strong>
-    <span class="muted small">Join the server, then run <code>/velora status</code>. It shows the panel address, whether the token is set and which modules are on. The full guide is in the repository at <code>docs/VELORA_CORE_SETUP.md</code>.</span>
+    <span class="muted small">Join the server, then run <code>/velora status</code>. It shows the panel address, whether the token is set and which modules are on. The full guide is in the repository at <code>docs/VELORA_CORE_SETUP.md</code>; on Calagopus, the Velora Core extension does steps 1 to 3 for you (<code>docs/VELORA_CORE_DEPLOYMENT.md</code>).</span>
   </li>
 </ol>
 

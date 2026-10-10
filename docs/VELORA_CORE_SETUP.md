@@ -9,6 +9,10 @@ Velora Core is the Fabric 1.20.1 integration for Velora SMP. It has two jars:
 
 Both need Fabric Loader 0.16.10 or newer, Fabric API and Java 17 or newer. Install the remapped jar from `build/libs`, not the development jar.
 
+## Using Calagopus
+
+If you run your servers on Calagopus, the Velora Core extension installs and updates the mod for you, writes the config and downloads authlib-injector. See [VELORA_CORE_DEPLOYMENT.md](VELORA_CORE_DEPLOYMENT.md). The steps below are what it automates.
+
 ## Upgrading from the SCOPENET names
 
 Earlier test builds used `scopenet` names. Replace both jars with the Velora Core ones, remove the old server jar from `mods`, and start the server. It copies `config/scopenet.properties` to `config/velora-core.properties` (the old file is left in place), moves `config/scopenet` to `config/velora-core`, and keeps honouring LuckPerms nodes named `scopenet.*`. New nodes are `velora.*`. `/scopenet` still works as an alias for `/velora`. Back up `config` first, and update the server and every client together, because the network channel is now `velora_core:s2c`/`c2s`.

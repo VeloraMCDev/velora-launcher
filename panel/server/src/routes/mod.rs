@@ -31,6 +31,7 @@ pub mod guilds;
 pub mod icon_library;
 pub mod integrations;
 pub mod landing;
+pub mod core_releases;
 pub mod launcher_releases;
 pub mod operations;
 pub mod launcher_updates;
@@ -73,6 +74,8 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .route("/mc/{kind}/{*file}", get(mc_assets::texture))
         .route("/launcher/manifest", get(public::manifest))
         .route("/launcher/update", get(launcher_updates::latest))
+        .route("/core/latest", get(core_releases::latest))
+        .route("/core/files/{digest}/{name}", get(core_releases::download))
         .route("/mobile-apps", get(mobile_apps::public_get))
         .route("/mobile-apps/altstore.json", get(mobile_apps::altstore))
         .route("/mobile-apps/{platform}/download", get(mobile_apps::download))
@@ -318,6 +321,8 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .route("/launcher/update", get(launcher_updates::admin_get).post(launcher_updates::upload).delete(launcher_updates::admin_remove))
         .route("/launcher/releases", get(launcher_releases::list))
         .route("/launcher/releases/{tag}/approve", post(launcher_releases::approve))
+        .route("/core/releases", get(core_releases::list))
+        .route("/core/releases/{tag}/approve", post(core_releases::approve))
         .route("/mobile-apps", get(mobile_apps::admin_get).post(mobile_apps::upload))
         .route("/mobile-apps/{platform}", delete(mobile_apps::remove))
         .route("/instances", get(admin::list_instances).post(admin::create_instance))

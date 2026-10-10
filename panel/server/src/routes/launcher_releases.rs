@@ -33,7 +33,7 @@ pub fn release_repo() -> String {
         .filter(|r| valid_repo(r))
         .unwrap_or_else(|| "VeloraMCDev/velora-launcher".into())
 }
-fn valid_repo(repo: &str) -> bool {
+pub(super) fn valid_repo(repo: &str) -> bool {
     let mut parts = repo.split('/');
     let ok = |p: Option<&str>| {
         p.is_some_and(|p| !p.is_empty() && p.len() <= 100 && p.bytes().all(|b| b.is_ascii_alphanumeric() || b"-_.".contains(&b)))
@@ -88,33 +88,33 @@ pub struct ReleasesView {
 }
 
 #[derive(Deserialize)]
-struct GithubRelease {
-    tag_name: String,
+pub(super) struct GithubRelease {
+    pub(super) tag_name: String,
     #[serde(default)]
-    name: Option<String>,
+    pub(super) name: Option<String>,
     #[serde(default)]
-    body: Option<String>,
+    pub(super) body: Option<String>,
     #[serde(default)]
-    draft: bool,
+    pub(super) draft: bool,
     #[serde(default)]
-    prerelease: bool,
+    pub(super) prerelease: bool,
     #[serde(default)]
-    published_at: Option<String>,
+    pub(super) published_at: Option<String>,
     #[serde(default)]
-    html_url: String,
+    pub(super) html_url: String,
     #[serde(default)]
-    assets: Vec<GithubAsset>,
+    pub(super) assets: Vec<GithubAsset>,
 }
 #[derive(Deserialize)]
-struct GithubAsset {
-    name: String,
-    browser_download_url: String,
-    size: u64,
+pub(super) struct GithubAsset {
+    pub(super) name: String,
+    pub(super) browser_download_url: String,
+    pub(super) size: u64,
     #[serde(default)]
-    digest: Option<String>,
+    pub(super) digest: Option<String>,
 }
 
-fn github(state: &AppState, url: &str) -> reqwest::RequestBuilder {
+pub(super) fn github(state: &AppState, url: &str) -> reqwest::RequestBuilder {
     state
         .http
         .get(url)
@@ -124,6 +124,11 @@ fn github(state: &AppState, url: &str) -> reqwest::RequestBuilder {
 }
 
 async fn github_releases(state: &AppState, repo: &str) -> AppResult<Vec<GithubRelease>> {
+    github_releases_prefixed(state, repo, TAG_PREFIX).await
+}
+
+/// Published (non-draft) releases of `repo` whose tag starts with `prefix`.
+pub(super) async fn github_releases_prefixed(state: &AppState, repo: &str, prefix: &str) -> AppResult<Vec<GithubRelease>> {
     let response = github(state, &format!("https://api.github.com/repos/{repo}/releases?per_page=30"))
         .send()
         .await
@@ -133,7 +138,7 @@ async fn github_releases(state: &AppState, repo: &str) -> AppResult<Vec<GithubRe
     }
     let releases: Vec<GithubRelease> =
         response.json().await.map_err(|_| AppError::bad_request("GitHub sent an unexpected release list"))?;
-    Ok(releases.into_iter().filter(|r| !r.draft && r.tag_name.starts_with(TAG_PREFIX)).collect())
+    Ok(releases.into_iter().filter(|r| !r.draft && r.tag_name.starts_with(prefix)).collect())
 }
 
 /// `GET /api/admin/launcher/releases`: GitHub releases waiting for (or past) approval.
@@ -202,11 +207,22 @@ fn installer_name_ok(platform: &str, name: &str) -> bool {
 
 /// Streams one installer into the downloads directory, enforcing its size and checksum.
 async fn fetch_installer(state: &AppState, asset: &GithubAsset, expected: &ManifestAsset, dest: &std::path::Path) -> Result<(), String> {
-    if asset.size != expected.size {
+    fetch_verified(state, asset, expected.size, &expected.sha256, dest).await
+}
+
+/// Streams a release asset to `dest`, refusing anything whose size or SHA-256 differs from what was signed.
+pub(super) async fn fetch_verified(
+    state: &AppState,
+    asset: &GithubAsset,
+    size: u64,
+    sha256: &str,
+    dest: &std::path::Path,
+) -> Result<(), String> {
+    if asset.size != size {
         return Err(format!("{} on GitHub differs in size from the manifest", asset.name));
     }
     if let Some(digest) = asset.digest.as_deref().and_then(|d| d.strip_prefix("sha256:")) {
-        if !digest.eq_ignore_ascii_case(&expected.sha256) {
+        if !digest.eq_ignore_ascii_case(sha256) {
             return Err(format!("GitHub's checksum for {} differs from the manifest", asset.name));
         }
     }
@@ -228,14 +244,14 @@ async fn fetch_installer(state: &AppState, asset: &GithubAsset, expected: &Manif
         while let Some(chunk) = stream.next().await {
             let chunk = chunk.map_err(|e| format!("downloading {}: {e}", asset.name))?;
             written += chunk.len() as u64;
-            if written > expected.size {
+            if written > size {
                 return Err(format!("{} is larger than its manifest entry", asset.name));
             }
             hasher.update(&chunk);
             file.write_all(&chunk).await.map_err(|e| e.to_string())?;
         }
         file.flush().await.map_err(|e| e.to_string())?;
-        if written != expected.size || !hex::encode(hasher.finalize()).eq_ignore_ascii_case(&expected.sha256) {
+        if written != size || !hex::encode(hasher.finalize()).eq_ignore_ascii_case(sha256) {
             return Err(format!("{} failed checksum verification", asset.name));
         }
         tokio::fs::rename(&part, dest).await.map_err(|e| e.to_string())
