@@ -456,8 +456,19 @@ pub async fn scope_request(State(platform): State<AppState>, mut req: Request, n
                 }
             }
             let experience: Experience = serde_json::from_str(&instance.experience)?;
+            if !instance.enabled && !path.starts_with("/api/admin/") {
+                return Err(AppError::forbidden("this experience is disabled"));
+            }
+            if let Some(policy) = crate::velora_core::policy(&experience)? {
+                if let Some(module) = crate::velora_core::module_for_path(&path) {
+                    if !policy.enabled(module) {
+                        return Err(AppError::forbidden("this Velora Core module is disabled"));
+                    }
+                }
+            }
             if let Some(feature) = feature_for_path(&path) {
-                if !experience.enabled(feature) {
+                let core_transport = experience.kind == crate::velora_core::KIND && path == "/api/server/v1/companion";
+                if !core_transport && !experience.enabled(feature) {
                     return Err(AppError::forbidden("this feature is disabled for the instance"));
                 }
             }
@@ -477,9 +488,15 @@ pub async fn configure(
     _: auth::AdminUser,
     State(state): State<AppState>,
     axum::extract::Path(id): axum::extract::Path<String>,
-    Json(experience): Json<Experience>,
+    Json(mut experience): Json<Experience>,
 ) -> AppResult<Json<Experience>> {
-    store::get_instance(&state, &id).await?;
+    let instance = store::get_instance(&state, &id).await?;
+    if let Some(policy) = crate::velora_core::policy(&experience)? {
+        if instance.mc_version != "1.20.1" || instance.loader != "fabric" {
+            return Err(AppError::bad_request("Velora SMP requires Fabric 1.20.1"));
+        }
+        experience.features = policy.features();
+    }
     if experience.features.iter().any(|f| !EXPERIENCE_FEATURES.contains(&f.as_str())) {
         return Err(AppError::bad_request("unknown experience capability"));
     }

@@ -89,7 +89,7 @@ public final class SettingsScreen extends Screen {
         addRenderableWidget(toggle(x2, y, colW, "Error toasts", () -> config.notifications.errors, v -> config.notifications.errors = v));
         y += step + 8;
 
-        addRenderableWidget(Button.builder(Component.literal("Edit HUD layout…"), b -> minecraft.setScreen(new HudEditorScreen(this))).bounds(x1, y, colW, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Modules…"), b -> minecraft.setScreen(new ModulesScreen(this))).bounds(x1, y, colW, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Done"), b -> onClose()).bounds(x2, y, colW, 20).build());
     }
 

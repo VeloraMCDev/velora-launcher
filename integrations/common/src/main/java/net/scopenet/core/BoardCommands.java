@@ -63,7 +63,7 @@ final class BoardCommands {
         env.io(() -> env.panel.call("economy/orders", who(p)).getAsJsonObject(), r -> {
             JsonArray list = r.has("orders") && r.get("orders").isJsonArray() ? r.getAsJsonArray("orders") : new JsonArray();
             p.send(Format.GOLD + "=== Buy Orders ===");
-            if (list.size() == 0) p.send(Format.GRAY + "Nothing is wanted right now. Ask for something with " + Format.YELLOW + "/orders request <amount> <total price> [item]");
+            if (list.size() == 0) p.send(Format.GRAY + "Nothing is wanted right now. Ask for something with " + Format.YELLOW + "/orders request <amount> <total price> <item> <deadline minutes>");
             int shown = 0;
             for (JsonElement e : list) {
                 if (shown++ >= 15) { p.send(Format.GRAY + "...and " + (list.size() - 15) + " more in the launcher."); break; }
@@ -78,7 +78,7 @@ final class BoardCommands {
         }, e -> p.send(Format.RED + "Could not load buy orders: " + e));
     }
 
-    /** {@code /orders request <amount> <total price> [item]}: the item defaults to what is in your hand. */
+    /** SMP requires a requester-selected deadline. Legacy panels still accept the old held-item syntax. */
     private void request(CorePlayer p, String[] args) {
         if (args.length < 3) { p.send(Format.RED + "Usage: /orders request <amount> <total price> [item]  (hold the item, or name it, e.g. DIAMOND)"); return; }
         int amount;
@@ -96,9 +96,15 @@ final class BoardCommands {
         body.addProperty("item_id", item);
         body.addProperty("amount", amount);
         body.addProperty("total", total);
+        if (args.length >= 5) {
+        int deadline;
+        try { deadline = Integer.parseInt(args[4]); } catch (NumberFormatException e) { p.send(Format.RED + "Deadline must be whole minutes."); return; }
+        if (deadline < 5 || deadline > 43200) { p.send(Format.RED + "Deadline must be between 5 minutes and 30 days."); return; }
+        body.addProperty("acceptance_minutes", deadline);
+        }
         env.io(() -> { body.addProperty("operation_id", UUID.randomUUID().toString()); return env.panel.call("economy/orders/create", body).getAsJsonObject(); },
                 r -> p.send(Format.GREEN + str(r, "message", "Buy order posted.")),
-                e -> p.send(Format.RED + "Could not post the order: " + e));
+                e -> p.send(Format.RED + "Could not post the order: " + e + ". SMP usage: /orders request <amount> <total> <item> <deadline minutes>"));
     }
 
     private void simple(CorePlayer p, String[] args, String endpoint, String usage) {

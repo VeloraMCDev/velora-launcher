@@ -101,7 +101,7 @@
         <Toggle bind:checked={u.vault.enabled} label="Vaults enabled" help="Portable chests: /vault 1, /vault 2 …" />
         <div class="row">
           <label>Vaults<input type="number" min="1" max="54" bind:value={u.vault.count} /></label>
-          <label>Rows each<input type="number" min="1" max="6" bind:value={u.vault.rows} /><small>{u.vault.rows * 9} slots</small></label>
+          <label>Rows each<input type="number" min="1" max="7" bind:value={u.vault.rows} /><small>{u.vault.rows * 9} slots · Seven rows require Velora Core Client</small></label>
           <label>Free for everyone<input type="number" min="0" max={u.vault.count} bind:value={u.vault.free_count} /></label>
         </div>
         <p class="perm">Vaults after the free ones need <code>scopenet.vault.2</code>, <code>scopenet.vault.3</code> … (give them by rank with LuckPerms).</p>

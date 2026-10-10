@@ -21,6 +21,8 @@
     crash: { enabled: boolean; min_bet: number; max_bet: number; house_edge: number; max_multiplier: number };
     dice: { enabled: boolean; min_bet: number; max_bet: number; house_edge: number; min_chance: number; max_chance: number };
     coinflip: { enabled: boolean; min_bet: number; max_bet: number; payout: number };
+    roulette: { enabled: boolean; min_bet: number; max_bet: number };
+    burst: { enabled: boolean; min_bet: number; max_bet: number; survival: number; house_edge: number; max_steps: number };
     double: { enabled: boolean; win_chance: number; max_streak: number; offer_minutes: number };
     chaos: { enabled: boolean; surge_chance: number; curse_chance: number };
     bounties: { enabled: boolean; min_amount: number; max_amount: number; tax_percent: number; expire_days: number; max_active_per_player: number; claim_cooldown_minutes: number; allow_anonymous: boolean; allow_cancel: boolean };
@@ -60,6 +62,8 @@
     { id: 'crash', label: 'Crash', icon: Rocket },
     { id: 'dice', label: 'Dice', icon: Dices },
     { id: 'coinflip', label: 'Coin Flip', icon: Coins },
+    { id: 'roulette', label: 'Roulette', icon: Coins },
+    { id: 'burst', label: 'Burst', icon: Flame },
     { id: 'double', label: 'Double or Nothing', icon: Flame },
     { id: 'chaos', label: 'Chaos', icon: Shuffle },
     { id: 'daily', label: 'Daily spin', icon: Gift },
@@ -371,6 +375,11 @@
         <button type="button" class="ghost reset" onclick={() => resetGame('dice')}><RotateCcw size={14} /> Standard settings</button>
       </section>
 
+    {:else if tab === 'roulette' || tab === 'burst'}
+      <section class="panel"><header class="sec"><h2>{tab==='roulette'?'Roulette':'Burst'}</h2><Toggle bind:checked={cfg[tab].enabled} label="Open"/></header>
+      <div class="fields"><label>Smallest bet ($)<input type="number" min="0.01" bind:value={cfg[tab].min_bet}/></label><label>Biggest bet ($)<input type="number" min="0.01" bind:value={cfg[tab].max_bet}/></label>
+      {#if tab==='burst'}<label>Step survival probability<input type="number" min="0.1" max="0.95" step="0.01" bind:value={cfg.burst.survival}/></label><label>House edge<input type="number" min="0" max="0.25" step="0.01" bind:value={cfg.burst.house_edge}/></label><label>Maximum steps<input type="number" min="1" max="20" bind:value={cfg.burst.max_steps}/></label>{/if}</div>
+      <p>{tab==='roulette'?'Single-zero European wheel: 37 equal pockets, 36× straight bets and 2×/3× outside bets.':'A round keeps the odds and payout cap it started with. Closing Burst still allows existing players to cash out.'}</p></section>
     {:else if tab === 'coinflip' && preview}
       <section class="card">
         <header class="sec"><h2><Coins size={18} /> Coin Flip</h2><Toggle bind:checked={cfg.coinflip.enabled} label="Open" /></header>

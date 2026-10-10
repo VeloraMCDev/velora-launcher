@@ -10,7 +10,7 @@ import net.scopenet.client.Ui;
 
 /** The hub (press K): who you are on this server, and the way into the market and settings. */
 public final class MenuScreen extends Screen {
-    private static final int W = 236, H = 176;
+    private static final int W = 236, H = 236;
     private final ClientState state = ScopenetClient.state();
 
     public MenuScreen() { super(Component.literal("Velora")); }
@@ -18,12 +18,17 @@ public final class MenuScreen extends Screen {
     @Override protected void init() {
         int left = (width - W) / 2, top = (height - H) / 2;
         int bw = 104, gap = 8, x1 = left + 10, x2 = left + W - 10 - bw;
-        boolean eco = state.connected && state.featEconomy;
-        Button market = Button.builder(Component.literal("Market"), b -> minecraft.setScreen(new MarketScreen())).bounds(x1, top + 86, W - 20, 20).build();
+        boolean eco = state.connected && state.featEconomy && state.module("economy") && ScopenetClient.config().module("economy");
+        Button market = Button.builder(Component.literal("Market"), b -> minecraft.setScreen(new MarketScreen())).bounds(x1, top + 86, bw, 20).build();
         market.active = eco;
         addRenderableWidget(market);
-        addRenderableWidget(Button.builder(Component.literal("HUD layout"), b -> minecraft.setScreen(new HudEditorScreen(this))).bounds(x1, top + 86 + 20 + gap, bw, 20).build());
-        addRenderableWidget(Button.builder(Component.literal("Settings"), b -> minecraft.setScreen(new SettingsScreen(this))).bounds(x2, top + 86 + 20 + gap, bw, 20).build());
+        Button darknet=Button.builder(Component.literal("Darknet"),b->minecraft.setScreen(new DarknetScreen())).bounds(x2,top+86,bw,20).build();darknet.active=eco;addRenderableWidget(darknet);
+        Button casino=Button.builder(Component.literal("Casino"),b->minecraft.setScreen(new CasinoScreen())).bounds(x1,top+114,bw,20).build();casino.active=eco&&state.module("casino")&&ScopenetClient.config().module("casino");addRenderableWidget(casino);
+        Button faction=Button.builder(Component.literal("Faction"),b->minecraft.setScreen(new FactionScreen())).bounds(x2,top+114,bw,20).build();faction.active=state.connected&&state.module("factions")&&ScopenetClient.config().module("factions");addRenderableWidget(faction);
+        Button map=Button.builder(Component.literal("Map"),b->minecraft.setScreen(new MapScreen())).bounds(x1,top+142,bw,20).build();map.active=state.connected&&state.module("map")&&ScopenetClient.config().module("map");addRenderableWidget(map);
+        Button vault=Button.builder(Component.literal("Vault 1"),b->{net.scopenet.client.Link.command("vault 1");onClose();}).bounds(x2,top+142,bw,20).build();vault.active=state.connected&&state.module("vaults")&&ScopenetClient.config().module("vaults");addRenderableWidget(vault);
+        addRenderableWidget(Button.builder(Component.literal("HUD layout"), b -> minecraft.setScreen(new HudEditorScreen(this))).bounds(x1, top + 170, bw, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Settings"), b -> minecraft.setScreen(new SettingsScreen(this))).bounds(x2, top + 170, bw, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Close"), b -> onClose()).bounds(left + (W - 80) / 2, top + H - 26, 80, 18).build());
     }
 

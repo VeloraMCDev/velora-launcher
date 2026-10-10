@@ -13,6 +13,8 @@ const config = {
   crash: { enabled: true, min_bet: 10, max_bet: 5000, house_edge: 0.04, max_multiplier: 1000 },
   dice: { enabled: true, min_bet: 10, max_bet: 5000, house_edge: 0.03, min_chance: 1, max_chance: 95 },
   coinflip: { enabled: true, min_bet: 10, max_bet: 5000, payout: 1.96 },
+  roulette: { enabled: true, min_bet: 10, max_bet: 5000 },
+  burst: { enabled: true, min_bet: 10, max_bet: 5000, survival: .72, house_edge: .04, max_steps: 12 },
   double: { enabled: true, win_chance: 0.49, max_streak: 5, offer_minutes: 5 },
   chaos: { enabled: true, surge_chance: 0.04, curse_chance: 0.06 },
   bounties: { enabled: true }, betting: { enabled: true },
@@ -56,13 +58,16 @@ const done: any[] = [
 function iso(ms: number) { return new Date(Date.now() + ms).toISOString(); }
 const err = (m: string) => { throw m; };
 
+let burst: any = null;
+let burstId = 0;
+const burstView = () => burst && { ...burst, multiplier: burst.steps ? .96 / .72 ** burst.steps : 1, cashout: burst.status === 'lost' ? 0 : Math.round(burst.bet * (burst.steps ? .96 / .72 ** burst.steps : 1) * 100) / 100 };
 function state() {
   const tables: any = {};
   for (const r of config.plinko.risks) { tables[r] = {}; for (let n = config.plinko.min_rows; n <= config.plinko.max_rows; n++) tables[r][n] = plinkoTable(n, r, config.plinko.rtp); }
   return {
     enabled: true, server: { id: 1, name: 'Survival SMP' }, me: ME, balance, config, plinko_tables: tables,
-    rtp: { slots: 0.953, slots_hit: 0.55, wheel: 0.948, plinko: 0.96, mines: 0.96, blackjack: 0.99, crash: 0.96, dice: 0.97, coinflip: 0.98, double: 0.98, chaos: 1 },
-    crash: crashView(), blackjack: bjView(), double: offerView(),
+    rtp: { slots: 0.953, slots_hit: 0.55, wheel: 0.948, plinko: 0.96, mines: 0.96, blackjack: 0.99, crash: 0.96, dice: 0.97, coinflip: 0.98, roulette:36/37,burst:0.96,double: 0.98, chaos: 1 },
+    crash: crashView(), blackjack: bjView(), double: offerView(), burst: burst?.status === 'active' ? burstView() : null,
     free: { per_day: 1, used: 1 - freeLeft, left: freeLeft, resets_at: iso(6.5 * 3600e3) }, mines: mines && minesView(mines),
     lost_today: 0, bounty_on_me: 990,
     feed: [{ name: 'Mia', game: 'plinko', bet: 200, payout: 4400, at: iso(-9 * 60e3) }, { name: 'Steve', game: 'slots', bet: 100, payout: 8700, at: iso(-52 * 60e3) }, { name: 'Notch', game: 'wheel', bet: 500, payout: 5000, at: iso(-3 * 3600e3) }],
@@ -159,7 +164,34 @@ export function casinoGet(path: string): any {
   err('unknown casino request');
 }
 
-export function casinoPost(path: string, body: any): any {
+const gameReceipts=new Map<string,any>();
+export function casinoPost(path:string,body:any):any {
+  const key=body.operation_id?`${path}:${body.operation_id}`:null;
+  if(key&&gameReceipts.has(key))return structuredClone(gameReceipts.get(key));
+  const result=casinoPlay(path,body);
+  if(key)gameReceipts.set(key,structuredClone(result));
+  return result;
+}
+function casinoPlay(path: string, body: any): any {
+  if (path === '/roulette') {
+    const n = Math.floor(Math.random() * 37), red = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36].includes(n);
+    const wins: Record<string, boolean> = { straight:n === body.number, red, black:n > 0 && !red, odd:n > 0 && n % 2 === 1, even:n > 0 && n % 2 === 0, low:n >= 1 && n <= 18, high:n >= 19, first:n >= 1 && n <= 12, second:n >= 13 && n <= 24, third:n >= 25 };
+    return play('roulette', body.bet, wins[body.selection] ? body.selection === 'straight' ? 36 : ['first','second','third'].includes(body.selection) ? 3 : 2 : 0, {number:n,red});
+  }
+  if (path === '/burst/start') {
+    if (burst?.status === 'active') return err('Finish your current round.');
+    if (body.bet > balance) return err('Insufficient funds.');
+    balance = Math.round((balance - body.bet)*100)/100; burst = {id:++burstId,bet:body.bet,steps:0,max_steps:12,survival:.72,status:'active'}; return {game:burstView(),balance};
+  }
+  if (path === '/burst/advance' || path === '/burst/cashout') {
+    if (burst?.status !== 'active' || burst.id !== body.id || burst.steps !== body.expected_steps) return err('Round changed.');
+    if (path.endsWith('advance')) { if (Math.random() >= .72) burst.status='lost'; else {burst.steps++; if(burst.steps===12)burst.status='cashed';} }
+    else burst.status='cashed';
+    const game=burstView(), payout=burst.status==='cashed'?game.cashout:0;
+    balance=Math.round((balance+payout)*100)/100;
+    if(burst.status!=='active')rounds.unshift({game:'burst',bet:burst.bet,payout,at:iso(0)});
+    return {game,balance,payout};
+  }
   if (path === '/slots') {
     const ws = config.slots.symbols.map((s) => s.weight);
     const reels = [pickW(ws), pickW(ws), pickW(ws)];

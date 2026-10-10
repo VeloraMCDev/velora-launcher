@@ -19,6 +19,7 @@ public final class ClaimBorders {
 
     public void render(WorldRenderContext context) {
         Minecraft mc = Minecraft.getInstance();
+        if (!config.module("factions") || !state.module("factions")) return;
         if (!config.enabled || !config.hud.claimBorders || !state.connected || !state.featClaims || state.claimCells.isEmpty() || mc.player == null) return;
         if (config.hud.claimBordersOnlyWhenSneaking && !mc.player.isShiftKeyDown()) return;
         if (context.consumers() == null) return;

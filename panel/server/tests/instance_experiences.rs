@@ -54,6 +54,218 @@ impl Platform {
         assert_eq!(status, StatusCode::OK, "{body}");
         body["id"].as_str().unwrap().into()
     }
+    async fn core_instance(&self) -> String {
+        let id = self.instance("Velora SMP").await;
+        sqlx::query("UPDATE instances SET mc_version='1.20.1',loader='fabric',loader_version='0.16.10' WHERE id=?")
+            .bind(&id).execute(&self.state.db).await.unwrap();
+        let (status, body) = self.call("POST", &format!("/api/admin/instances/{id}/velora-core/activate"), None, &self.token, Some(json!({}))).await;
+        assert_eq!(status, StatusCode::OK, "{body}"); id
+    }
+    async fn player(&self,name:&str)->(String,String) {
+        let (status,user)=self.call("POST","/api/admin/users",None,&self.token,Some(json!({"username":name,"password":"synthetic-test-pass"}))).await;
+        assert_eq!(status,StatusCode::OK,"{user}");
+        let (_,login)=self.call("POST","/api/v1/auth/login",None,"",Some(json!({"username":name,"password":"synthetic-test-pass"}))).await;
+        let token=login["token"].as_str().unwrap().to_owned();
+        let user=auth::find_user_by_name(&self.state,name).await.unwrap().unwrap();
+        (user.uuid,token)
+    }
+}
+
+#[tokio::test]
+async fn core_activation_retains_old_records_and_blocks_disabled_experiences() {
+    let p = Platform::new().await;
+    let old = p.instance("Retained legacy").await;
+    let core = p.core_instance().await;
+    let old_row = velora_panel::store::get_instance(&p.state, &old).await.unwrap();
+    assert!(!old_row.enabled);
+    assert_eq!(old_row.mc_version, "1.21.1");
+    let (status, _) = p.call("GET", "/api/v1/economy/me", Some(&old), &p.token, None).await;
+    assert_eq!(status, StatusCode::FORBIDDEN);
+    let (status, _) = p.call("GET", "/api/admin/progression", Some(&old), &p.token, None).await;
+    assert_eq!(status, StatusCode::OK, "retained experiences remain manageable by admins");
+    let (status, _) = p.call("GET", "/api/v1/quests", Some(&core), &p.token, None).await;
+    assert_eq!(status, StatusCode::FORBIDDEN);
+    let scoped = p.state.experiences.state(&p.state, &core).await.unwrap();
+    assert_eq!(velora_panel::routes::utilities::load(&scoped).await.unwrap().vault.rows, 7);
+    assert_eq!(velora_panel::routes::utilities::load(&scoped).await.unwrap().vault.free_count, 1);
+}
+
+#[tokio::test]
+async fn core_market_fee_is_atomic_and_replay_does_not_double_charge() {
+    let p = Platform::new().await;
+    let core = p.core_instance().await;
+    let (status, server) = p.call("POST", "/api/admin/servers", Some(&core), &p.token,
+        Some(json!({"name":"Synthetic SMP","instance_id":core}))).await;
+    assert_eq!(status, StatusCode::OK, "{server}");
+    let token = server["token"].as_str().unwrap();
+    let sid = server["server"]["id"].as_i64().unwrap();
+    let seller = uuid::Uuid::new_v4().to_string();
+    let buyer = uuid::Uuid::new_v4().to_string();
+    let listing = json!({"operation_id":"core-list","seller_uuid":seller,"seller_name":"SyntheticSeller","item_id":"DIAMOND","item_name":"Diamond","amount":1,"price":100.05});
+    let (status, listed) = p.call("POST", "/api/server/v1/economy/market/list", None, token, Some(listing)).await;
+    assert_eq!(status, StatusCode::OK, "{listed}");
+    let buy = json!({"operation_id":"core-buy","listing_id":listed["id"],"buyer_uuid":buyer,"buyer_name":"SyntheticBuyer"});
+    let (status, bought) = p.call("POST", "/api/server/v1/economy/market/buy", None, token, Some(buy.clone())).await;
+    assert_eq!(status, StatusCode::OK, "{bought}");
+    assert_eq!(bought["fee"], 10.01); assert_eq!(bought["seller_proceeds"], 90.04);
+    let (status, again) = p.call("POST", "/api/server/v1/economy/market/buy", None, token, Some(buy)).await;
+    assert_eq!(status, StatusCode::OK); assert_eq!(again, bought);
+    let scoped = p.state.experiences.state(&p.state, &core).await.unwrap();
+    let seller_balance: f64 = sqlx::query_scalar("SELECT balance FROM server_economy WHERE server_id=? AND uuid=?")
+        .bind(sid).bind(&seller).fetch_one(&scoped.db).await.unwrap();
+    let buyer_balance: f64 = sqlx::query_scalar("SELECT balance FROM server_economy WHERE server_id=? AND uuid=?")
+        .bind(sid).bind(&buyer).fetch_one(&scoped.db).await.unwrap();
+    assert!((seller_balance - 1090.04).abs() < 0.00001); assert!((buyer_balance - 899.95).abs() < 0.00001);
+    let sum: f64 = sqlx::query_scalar("SELECT SUM(amount) FROM economy_transactions WHERE server_id=?")
+        .bind(sid).fetch_one(&scoped.db).await.unwrap(); assert!((sum - 100.05).abs() < 0.00001);
+}
+
+#[tokio::test]
+async fn core_faction_creation_charges_once_and_preserves_existing_membership() {
+    let p = Platform::new().await;
+    let core = p.core_instance().await;
+    let (status, server) = p.call("POST", "/api/admin/servers", Some(&core), &p.token,
+        Some(json!({"name":"Synthetic faction server","instance_id":core}))).await;
+    assert_eq!(status, StatusCode::OK, "{server}");
+    let sid = server["server"]["id"].as_i64().unwrap();
+    let request = json!({"instance_id":core,"name":"Synthetic Faction","tag":"SYN"});
+    let (status, faction) = p.call("POST", "/api/v1/guilds", Some(&core), &p.token, Some(request.clone())).await;
+    assert_eq!(status, StatusCode::OK, "{faction}"); assert_eq!(faction["max_claims"], 16);
+    let (status, _) = p.call("POST", "/api/v1/guilds", Some(&core), &p.token, Some(request)).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+    let scoped = p.state.experiences.state(&p.state, &core).await.unwrap();
+    let owner = auth::find_user_by_name(&p.state, "admin").await.unwrap().unwrap();
+    let balance: f64 = sqlx::query_scalar("SELECT balance FROM server_economy WHERE server_id=? AND uuid=?")
+        .bind(sid).bind(&owner.uuid).fetch_one(&scoped.db).await.unwrap(); assert_eq!(balance, 250.0);
+    let charges: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM economy_transactions WHERE description='Faction creation'")
+        .fetch_one(&scoped.db).await.unwrap(); assert_eq!(charges, 1);
+    let achievements: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM user_achievements").fetch_one(&scoped.db).await.unwrap();
+    assert_eq!(achievements, 0, "retired achievement system must not run in SMP");
+}
+
+#[tokio::test]
+async fn core_darknet_queues_one_offline_delivery_and_rejects_spoofed_identity() {
+    let p = Platform::new().await;
+    let core = p.core_instance().await;
+    let (status, server) = p.call("POST", "/api/admin/servers", Some(&core), &p.token,
+        Some(json!({"name":"Synthetic Darknet server","instance_id":core}))).await;
+    assert_eq!(status, StatusCode::OK, "{server}"); let sid = server["server"]["id"].as_i64().unwrap();
+    let (status, _) = p.call("PUT", "/api/admin/economy/darknet", Some(&core), &p.token,
+        Some(json!([{"id":"barrier","item_id":"minecraft:barrier","item_name":"Barrier","amount":1,"price_cents":50000,"enabled":true}]))).await;
+    assert_eq!(status, StatusCode::OK);
+    let operation = uuid::Uuid::new_v4().to_string();
+    let request = json!({"product_id":"barrier","operation_id":operation});
+    let path = format!("/api/v1/board/{sid}/darknet/buy");
+    let (status, _) = p.call("POST", &path, Some(&core), &p.token,
+        Some(json!({"product_id":"barrier","operation_id":uuid::Uuid::new_v4(),"expected_price_cents":1}))).await;
+    assert_eq!(status, StatusCode::CONFLICT, "a changed catalog price requires a new review");
+    let (status, first) = p.call("POST", &path, Some(&core), &p.token, Some(request.clone())).await;
+    assert_eq!(status, StatusCode::OK, "{first}"); assert_eq!(first["balance"], 500.0); assert_eq!(first["to_vault"], true);
+    let (status, second) = p.call("POST", &path, Some(&core), &p.token, Some(request.clone())).await;
+    assert_eq!(status, StatusCode::OK); assert_eq!(first, second);
+    let mut spoofed = request; spoofed["uuid"] = json!(uuid::Uuid::new_v4());
+    assert_eq!(p.call("POST", &path, Some(&core), &p.token, Some(spoofed)).await.0, StatusCode::UNPROCESSABLE_ENTITY);
+    let scoped = p.state.experiences.state(&p.state, &core).await.unwrap();
+    let deliveries: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM market_mailbox WHERE server_id=?")
+        .bind(sid).fetch_one(&scoped.db).await.unwrap(); assert_eq!(deliveries, 1);
+}
+
+#[tokio::test]
+async fn core_upkeep_is_once_per_utc_day_and_freezes_only_new_claims_after_three_days() {
+    let p = Platform::new().await;
+    let core = p.core_instance().await;
+    let (_, server) = p.call("POST", "/api/admin/servers", Some(&core), &p.token,
+        Some(json!({"name":"Synthetic upkeep server","instance_id":core}))).await;
+    let sid = server["server"]["id"].as_i64().unwrap();
+    let (status, faction) = p.call("POST", "/api/v1/guilds", Some(&core), &p.token,
+        Some(json!({"instance_id":core,"name":"Synthetic Upkeep","tag":"BILL"}))).await;
+    assert_eq!(status, StatusCode::OK, "{faction}");
+    let guild = faction["id"].as_str().unwrap();
+    let path = format!("/api/v1/guilds/{guild}/claims");
+    let claim = json!({"server_id":sid,"chunk_x":0,"chunk_z":0});
+    assert_eq!(p.call("POST", &path, Some(&core), &p.token, Some(claim)).await.0, StatusCode::OK);
+    let state = p.state.experiences.state(&p.state, &core).await.unwrap();
+    velora_panel::factions_core::settle_upkeep(&state).await.unwrap();
+    let status = velora_panel::factions_core::upkeep_view(&state,guild).await.unwrap();
+    assert_eq!(status["daily_cents"], 300, "one chunk at $2 plus one member at $1");
+    assert_eq!(status["grace_days"], 3);
+    assert_eq!(status["claims_frozen"], false);
+    let old = (chrono::Utc::now()-chrono::Duration::days(3)).format("%Y-%m-%d").to_string();
+    let billed=(chrono::Utc::now()-chrono::Duration::days(3)-chrono::Duration::seconds(1)).to_rfc3339_opts(chrono::SecondsFormat::Secs,true);
+    sqlx::query("UPDATE faction_upkeep SET day=?,billed_at=? WHERE guild_id=?").bind(old).bind(billed).bind(guild).execute(&state.db).await.unwrap();
+    assert_eq!(p.call("POST", &path, Some(&core), &p.token, Some(json!({"server_id":sid,"chunk_x":1,"chunk_z":0}))).await.0, StatusCode::FORBIDDEN);
+    let retained:i64=sqlx::query_scalar("SELECT COUNT(*) FROM guild_claims WHERE guild_id=?").bind(guild).fetch_one(&state.db).await.unwrap();
+    assert_eq!(retained,1, "upkeep never deletes existing claims");
+    sqlx::query("UPDATE guild_wallets SET balance=20 WHERE guild_id=?").bind(guild).execute(&state.db).await.unwrap();
+    velora_panel::factions_core::settle_upkeep(&state).await.unwrap();
+    velora_panel::factions_core::settle_upkeep(&state).await.unwrap();
+    let balance:f64=sqlx::query_scalar("SELECT balance FROM guild_wallets WHERE guild_id=?").bind(guild).fetch_one(&state.db).await.unwrap();
+    assert_eq!(balance,14.0, "old and current bills paid once each");
+    assert_eq!(velora_panel::factions_core::upkeep_view(&state,guild).await.unwrap()["claims_frozen"],false);
+    assert_eq!(p.call("POST", &path, Some(&core), &p.token, Some(json!({"server_id":sid,"chunk_x":1,"chunk_z":0}))).await.0, StatusCode::OK);
+}
+
+#[tokio::test]
+async fn core_contract_deadline_cannot_be_extended_and_expiry_refunds_once() {
+    let p=Platform::new().await;let core=p.core_instance().await;
+    let (worker,token)=p.player("SyntheticWorker").await;
+    let (_,srv)=p.call("POST","/api/admin/servers",Some(&core),&p.token,Some(json!({"name":"Synthetic contracts","instance_id":core}))).await;
+    let sid=srv["server"]["id"].as_i64().unwrap();
+    let path=format!("/api/v1/board/{sid}/orders");
+    assert_eq!(p.call("POST",&path,Some(&core),&p.token,Some(json!({"item_id":"DIAMOND","amount":4,"total":100}))).await.0,StatusCode::BAD_REQUEST);
+    let (status,order)=p.call("POST",&path,Some(&core),&p.token,Some(json!({"item_id":"DIAMOND","amount":4,"total":100,"acceptance_minutes":45}))).await;
+    assert_eq!(status,StatusCode::OK,"{order}");let id=order["id"].as_i64().unwrap();
+    let state=p.state.experiences.state(&p.state,&core).await.unwrap();
+    let listing_end=(chrono::Utc::now()+chrono::Duration::minutes(5)).to_rfc3339_opts(chrono::SecondsFormat::Secs,true);
+    sqlx::query("UPDATE buy_orders SET expires_at=? WHERE id=?").bind(listing_end).bind(id).execute(&state.db).await.unwrap();
+    let claim=format!("{path}/{id}/claim");
+    assert_eq!(p.call("POST",&claim,Some(&core),&token,Some(json!({}))).await.0,StatusCode::OK);
+    assert_eq!(p.call("POST",&claim,Some(&core),&token,Some(json!({}))).await.0,StatusCode::CONFLICT,"reaccepting cannot extend a deadline");
+    let minutes: i64=sqlx::query_scalar("SELECT acceptance_minutes FROM buy_orders WHERE id=?").bind(id).fetch_one(&state.db).await.unwrap();assert_eq!(minutes,45);
+    let until:String=sqlx::query_scalar("SELECT claim_until FROM buy_orders WHERE id=?").bind(id).fetch_one(&state.db).await.unwrap();
+    assert!((chrono::DateTime::parse_from_rfc3339(&until).unwrap().with_timezone(&chrono::Utc)-chrono::Utc::now()).num_minutes()>=44,"listing expiry must not shorten the chosen acceptance deadline");
+    sqlx::query("UPDATE buy_orders SET claim_until='2000-01-01T00:00:00Z' WHERE id=?").bind(id).execute(&state.db).await.unwrap();
+    let (status,_)=p.call("POST","/api/server/v1/economy/orders/fill",None,srv["token"].as_str().unwrap(),Some(json!({"uuid":worker,"name":"SyntheticWorker","order_id":id,"item_id":"DIAMOND","amount":4,"operation_id":"expired-fill"}))).await;
+    assert_eq!(status,StatusCode::CONFLICT);
+    velora_panel::routes::orders::settle_due(&state).await.unwrap();velora_panel::routes::orders::settle_due(&state).await.unwrap();
+    let owner=auth::find_user_by_name(&p.state,"admin").await.unwrap().unwrap();
+    let balance:f64=sqlx::query_scalar("SELECT balance FROM server_economy WHERE uuid=? AND server_id=?").bind(owner.uuid).bind(sid).fetch_one(&state.db).await.unwrap();assert_eq!(balance,1000.0);
+    let status:String=sqlx::query_scalar("SELECT status FROM buy_orders WHERE id=?").bind(id).fetch_one(&state.db).await.unwrap();assert_eq!(status,"expired");
+}
+
+#[tokio::test]
+async fn core_rival_rewards_require_acceptance_and_cool_down_repeated_victim_kills() {
+    let p=Platform::new().await;let core=p.core_instance().await;
+    let (victim,token)=p.player("SyntheticRival").await;
+    let owner=auth::find_user_by_name(&p.state,"admin").await.unwrap().unwrap();
+    let (_,srv)=p.call("POST","/api/admin/servers",Some(&core),&p.token,Some(json!({"name":"Synthetic rivals","instance_id":core}))).await;
+    let sid=srv["server"]["id"].as_i64().unwrap();
+    let (_,a)=p.call("POST","/api/v1/guilds",Some(&core),&p.token,Some(json!({"name":"Synthetic Alpha","tag":"ALP","instance_id":core}))).await;
+    let (_,b)=p.call("POST","/api/v1/guilds",Some(&core),&token,Some(json!({"name":"Synthetic Beta","tag":"BET","instance_id":core}))).await;
+    let a=a["id"].as_str().unwrap();let b=b["id"].as_str().unwrap();
+    let relation_path=format!("/api/v1/guilds/{a}/relations");
+    let (status,r)=p.call("POST",&relation_path,Some(&core),&p.token,Some(json!({"other_guild_id":b,"relation":"rival","reward_bps":1000,"duration_hours":24}))).await;
+    assert_eq!(status,StatusCode::OK,"{r}");
+    let kill=|batch:&str|json!({"batch_id":batch,"online":[],"stats":[],"events":[{"uuid":owner.uuid,"name":"admin","kind":"pvp_kill","detail":victim}]});
+    let state=p.state.experiences.state(&p.state,&core).await.unwrap();
+    let before=uuid::Uuid::new_v4().to_string();
+    assert_eq!(p.call("POST","/api/server/v1/sync",None,srv["token"].as_str().unwrap(),Some(kill(&before))).await.0,StatusCode::OK);
+    let (_,relations)=p.call("GET",&relation_path,Some(&core),&p.token,None).await;
+    let rid=relations[0]["id"].as_i64().unwrap();
+    assert_eq!(p.call("POST",&format!("/api/v1/guilds/{b}/relations/{rid}/respond"),Some(&core),&token,Some(json!({"accept":true,"expected_revision":"stale-terms"}))).await.0,StatusCode::CONFLICT);
+    let (status,r)=p.call("POST",&format!("/api/v1/guilds/{b}/relations/{rid}/respond"),Some(&core),&token,Some(json!({"accept":true,"expected_revision":relations[0]["terms_revision"]}))).await;
+    assert_eq!(status,StatusCode::OK,"{r}");
+    let first=uuid::Uuid::new_v4().to_string();let repeat=uuid::Uuid::new_v4().to_string();
+    for batch in [&first,&first,&repeat] {
+        let (status,r)=p.call("POST","/api/server/v1/sync",None,srv["token"].as_str().unwrap(),Some(kill(batch))).await;assert_eq!(status,StatusCode::OK,"{r}");
+    }
+    let teammate=uuid::Uuid::new_v4().to_string();
+    sqlx::query("INSERT INTO guild_members(guild_id,uuid,name,role,joined_at) VALUES(?,?,'SyntheticTeammate','member',?)").bind(a).bind(&teammate).bind(db::now()).execute(&state.db).await.unwrap();
+    let (status,r)=p.call("POST","/api/server/v1/sync",None,srv["token"].as_str().unwrap(),Some(json!({"batch_id":uuid::Uuid::new_v4().to_string(),"online":[],"stats":[],"events":[{"uuid":teammate,"name":"SyntheticTeammate","kind":"pvp_kill","detail":victim}]}))).await;
+    assert_eq!(status,StatusCode::OK,"{r}");
+    let rewards:i64=sqlx::query_scalar("SELECT COUNT(*) FROM faction_rival_kills").fetch_one(&state.db).await.unwrap();assert_eq!(rewards,1);
+    let total:f64=sqlx::query_scalar("SELECT SUM(balance) FROM server_economy WHERE server_id=?").bind(sid).fetch_one(&state.db).await.unwrap();assert_eq!(total,500.0,"kill transfers conserve money after two creation charges");
+    let balance:f64=sqlx::query_scalar("SELECT balance FROM server_economy WHERE server_id=? AND uuid=?").bind(sid).bind(&victim).fetch_one(&state.db).await.unwrap();assert_eq!(balance,225.0,"10% of $250 transferred once");
 }
 
 #[tokio::test]

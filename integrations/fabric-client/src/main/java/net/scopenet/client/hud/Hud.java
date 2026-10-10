@@ -49,6 +49,9 @@ public final class Hud {
         g.pose().pushPose();
         g.pose().scale(scale, scale, 1f);
         for (HudWidget widget : Widgets.ALL) {
+            String module = switch (widget.id) { case "balance" -> "economy"; case "guild", "claim" -> "factions"; default -> "analytics"; };
+            if (!config.module(module) || !state.module(module)) continue;
+            if (widget.id.equals("quests") && state.modules != null) continue;
             WidgetConfig c = config.widget(widget.id);
             if (!c.enabled || !widget.available(state)) continue;
             int w = widget.width(font, state, c), h = widget.height(font, state, c);
@@ -56,5 +59,11 @@ public final class Hud {
             widget.draw(g, font, state, c, at[0], at[1], config.hud.opacity);
         }
         g.pose().popPose();
+        WidgetConfig minimap = config.widget("minimap");
+        if (minimap.enabled && config.module("map") && state.module("map")) {
+            int size = minimap.compact ? 88 : 116;
+            int[] at = place(minimap, g.guiWidth(), g.guiHeight(), size, size);
+            net.scopenet.client.ScopenetClient.link().map.render(g, at[0], at[1], size, size, mc.player.getX(), mc.player.getZ(), config.minimapScale, net.scopenet.client.CoreMap.dimension(), false);
+        }
     }
 }

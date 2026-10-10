@@ -133,6 +133,7 @@ pub async fn server_bank_info(GameServer(server): GameServer, State(state): Stat
         "role": m.role,
         "can_spend": m.can_spend(),
         "balance": balance,
+        "upkeep": crate::factions_core::upkeep_view(&state,&m.guild_id).await?,
         "my_balance": player_balance(&mut conn, server.economy_id, &p.uuid).await?,
         "recent": recent.into_iter().map(|(kind, who, amount, note, at)| json!({ "kind": kind, "who": who, "amount": amount, "note": note, "at": at })).collect::<Vec<_>>(),
     })))

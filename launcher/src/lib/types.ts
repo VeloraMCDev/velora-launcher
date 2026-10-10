@@ -228,6 +228,8 @@ export interface Guild {
 }
 
 export interface GuildRelation {
+  terms_revision?:string;
+  reward_cents?: number; reward_bps?: number; expires_at?: string | null;
   id: number;
   guild_id: string;
   other_guild_id: string;

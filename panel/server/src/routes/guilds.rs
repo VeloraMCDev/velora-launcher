@@ -225,7 +225,7 @@ pub async fn guild_wallet(
         .await?
         .unwrap_or(1000.0);
     Ok(Json(
-        serde_json::json!({"balance":balance,"role":role,"my_balance":my_balance,"currency_symbol":"$","transactions":rows.into_iter().map(|(id,actor,kind,amount,created_at,note)| serde_json::json!({"id":id,"actor_uuid":actor,"kind":kind,"amount":amount,"created_at":created_at,"note":note})).collect::<Vec<_>>()}),
+        serde_json::json!({"balance":balance,"role":role,"my_balance":my_balance,"currency_symbol":"$","upkeep":crate::factions_core::upkeep_view(&state,&guild_id).await?,"transactions":rows.into_iter().map(|(id,actor,kind,amount,created_at,note)| serde_json::json!({"id":id,"actor_uuid":actor,"kind":kind,"amount":amount,"created_at":created_at,"note":note})).collect::<Vec<_>>()}),
     ))
 }
 
@@ -340,9 +340,16 @@ async fn wallet_transfer(
 
 /// Refuse a new member when the guild is at the admin-set member limit (0 = no limit).
 pub async fn check_room(conn: &mut sqlx::SqliteConnection, guild_id: &str) -> AppResult<()> {
-    let limit: i64 = sqlx::query_scalar("SELECT COALESCE((SELECT CAST(value AS INTEGER) FROM kv WHERE key = 'rule_guild_max_members'), 0)")
+    let mut limit: i64 = sqlx::query_scalar("SELECT COALESCE((SELECT CAST(value AS INTEGER) FROM kv WHERE key = 'rule_guild_max_members'), 0)")
         .fetch_one(&mut *conn)
         .await?;
+    let raw: Option<String> = sqlx::query_scalar("SELECT i.experience FROM instances i JOIN guilds g ON g.instance_id=i.id WHERE g.id=?")
+        .bind(guild_id).fetch_optional(&mut *conn).await?;
+    if let Some(raw) = raw {
+        if let Some(policy) = crate::velora_core::policy(&serde_json::from_str(&raw)?)? {
+            limit = policy.faction_max_members + crate::factions_core::tiers(&mut *conn, guild_id, "members").await? * policy.upgrade_members_slots;
+        }
+    }
     if limit > 0 {
         let members: i64 =
             sqlx::query_scalar("SELECT COUNT(*) FROM guild_members WHERE guild_id = ?").bind(guild_id).fetch_one(&mut *conn).await?;
@@ -503,7 +510,9 @@ pub async fn create_guild(
     let guild_id = format!("guild_{}", uuid::Uuid::new_v4().simple());
     let now = chrono::Utc::now().to_rfc3339();
 
-    let base_claims = crate::progression::load(&mut tx).await?.rules.guild_base_claims;
+    if state.instance_id.as_ref().is_some_and(|id| *id != payload.instance_id) { return Err(AppError::forbidden("faction belongs to another experience")); }
+    let policy = crate::velora_core::charge_faction(&mut tx, &payload.instance_id, &auth.uuid, &auth.username).await?;
+    let base_claims = match policy { Some(policy) => policy.faction_base_claims, None => crate::progression::load(&mut tx).await?.rules.guild_base_claims };
     sqlx::query(
         "INSERT INTO guilds (id, instance_id, name, tag, description, motd, leader_uuid, icon_url, banner_url, level, xp, max_claims, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?)",
@@ -541,7 +550,8 @@ pub async fn create_guild(
     .execute(&mut *tx)
     .await?;
 
-    // Record achievement event for founding a guild
+    // Retired achievement/reward systems must not run for Velora SMP.
+    if crate::velora_core::load(&state).await?.is_none() {
     sqlx::query(
         "INSERT OR IGNORE INTO user_achievements (user_uuid, achievement_id, unlocked_at)
          VALUES (?, 'ach_guild_initiate', ?)",
@@ -552,6 +562,7 @@ pub async fn create_guild(
     .await?;
 
     crate::routes::leveling::grant_rewards(&mut tx, &auth.uuid, &now).await?;
+    }
     tx.commit().await?;
 
     fetch_guild_detail(&state, &guild_id).await.map(Json)
@@ -718,6 +729,8 @@ pub struct GuildRoleInput {
     pub can_post: bool,
     #[serde(default)]
     pub can_manage: bool,
+    #[serde(default)]
+    pub can_vault: bool,
 }
 
 pub(crate) async fn guild_can(state: &AppState, guild_id: &str, uuid: &str, action: &str) -> AppResult<bool> {
@@ -741,6 +754,7 @@ pub(crate) async fn guild_can(state: &AppState, guild_id: &str, uuid: &str, acti
         "claim" => "can_claim",
         "post" => "can_post",
         "manage" => "can_manage",
+        "vault" => "can_vault",
         _ => return Ok(false),
     };
     let allowed: Option<i64> = sqlx::query_scalar(&format!("SELECT {column} FROM guild_roles WHERE guild_id=? AND name=?"))
@@ -772,9 +786,9 @@ pub async fn list_guild_roles(auth: AuthUser, Path(id): Path<String>, State(stat
     if !member {
         return Err(AppError::forbidden("Guild membership is required"));
     }
-    let roles: Vec<(i64,String,i64,i64,i64,i64,i64,i64)> = sqlx::query_as("SELECT id,name,priority,can_invite,can_kick,can_claim,can_post,can_manage FROM guild_roles WHERE guild_id=? ORDER BY priority DESC,name")
+    let roles: Vec<(i64,String,i64,i64,i64,i64,i64,i64,i64)> = sqlx::query_as("SELECT id,name,priority,can_invite,can_kick,can_claim,can_post,can_manage,can_vault FROM guild_roles WHERE guild_id=? ORDER BY priority DESC,name")
         .bind(&id).fetch_all(&state.db).await?;
-    Ok(Json(json!(roles.into_iter().map(|(id,name,priority,invite,kick,claim,post,manage)| json!({"id":id,"name":name,"priority":priority,"can_invite":invite!=0,"can_kick":kick!=0,"can_claim":claim!=0,"can_post":post!=0,"can_manage":manage!=0})).collect::<Vec<_>>())))
+    Ok(Json(json!(roles.into_iter().map(|(id,name,priority,invite,kick,claim,post,manage,vault)| json!({"id":id,"name":name,"priority":priority,"can_invite":invite!=0,"can_kick":kick!=0,"can_claim":claim!=0,"can_post":post!=0,"can_manage":manage!=0,"can_vault":vault!=0})).collect::<Vec<_>>())))
 }
 
 pub async fn create_guild_role(
@@ -803,7 +817,7 @@ pub async fn create_guild_role(
         return Err(AppError::conflict("A role with this name already exists"));
     }
     let inserted = sqlx::query(
-        "INSERT INTO guild_roles(guild_id,name,priority,can_invite,can_kick,can_claim,can_post,can_manage) VALUES(?,?,?,?,?,?,?,?)",
+        "INSERT INTO guild_roles(guild_id,name,priority,can_invite,can_kick,can_claim,can_post,can_manage,can_vault) VALUES(?,?,?,?,?,?,?,?,?)",
     )
     .bind(&id)
     .bind(name)
@@ -813,6 +827,7 @@ pub async fn create_guild_role(
     .bind(role.can_claim)
     .bind(role.can_post)
     .bind(role.can_manage)
+    .bind(role.can_vault)
     .execute(&state.db)
     .await?;
     Ok(Json(json!({"ok":true,"id":inserted.last_insert_rowid()})))
@@ -912,7 +927,7 @@ pub async fn add_guild_member(
     .execute(&state.db)
     .await?;
 
-    // Record achievement event for joining a guild
+    if crate::velora_core::load(&state).await?.is_none() {
     sqlx::query(
         "INSERT OR IGNORE INTO user_achievements (user_uuid, achievement_id, unlocked_at)
          VALUES (?, 'ach_guild_initiate', ?)",
@@ -921,6 +936,8 @@ pub async fn add_guild_member(
     .bind(&now)
     .execute(&state.db)
     .await?;
+
+    }
 
     Ok(Json(serde_json::json!({ "ok": true })))
 }
@@ -1109,10 +1126,18 @@ pub async fn claim_chunk(
     }
     let dim = payload.dimension.unwrap_or_else(|| "minecraft:overworld".into());
     let now = chrono::Utc::now().to_rfc3339();
+    let core_policy = crate::velora_core::load(&state).await?;
+    let mut tx = state.db.begin().await?;
+    sqlx::query("UPDATE guilds SET id=id WHERE id=?").bind(&guild_id).execute(&mut *tx).await?;
+    let count:i64=sqlx::query_scalar("SELECT COUNT(*) FROM guild_claims WHERE guild_id=?").bind(&guild_id).fetch_one(&mut *tx).await?;
+    if count>=max_claims { return Err(AppError::bad_request("faction claim capacity is full")); }
+    let outpost = if let Some(policy)=core_policy {
+        crate::factions_core::claims_allowed(&mut tx,&policy,&guild_id,server_id,&dim,payload.chunk_x,payload.chunk_z).await?
+    } else { None };
 
     let res = sqlx::query_scalar::<_, i64>(
-        "INSERT INTO guild_claims (guild_id, server_id, dimension, chunk_x, chunk_z, claimed_by_uuid, claimed_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id",
+        "INSERT INTO guild_claims (guild_id, server_id, dimension, chunk_x, chunk_z, claimed_by_uuid, claimed_at,outpost_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?,?) RETURNING id",
     )
     .bind(&guild_id)
     .bind(server_id)
@@ -1121,12 +1146,14 @@ pub async fn claim_chunk(
     .bind(payload.chunk_z)
     .bind(&auth.uuid)
     .bind(&now)
-    .fetch_one(&state.db)
+    .bind(outpost)
+    .fetch_one(&mut *tx)
     .await;
 
     let claim_id = res.map_err(|_| AppError::bad_request("Chunk is already claimed"))?;
+    tx.commit().await?;
 
-    // Award achievement for claiming land
+    if crate::velora_core::load(&state).await?.is_none() {
     sqlx::query(
         "INSERT OR IGNORE INTO user_achievements (user_uuid, achievement_id, unlocked_at)
          VALUES (?, 'ach_land_claim', ?)",
@@ -1135,6 +1162,8 @@ pub async fn claim_chunk(
     .bind(&now)
     .execute(&state.db)
     .await?;
+
+    }
 
     let detail = fetch_guild_detail(&state, &guild_id).await?;
     Ok(Json(serde_json::to_value(
@@ -1330,6 +1359,11 @@ async fn disband_guild_now(state: &AppState, id: &str, refund_to: Option<(&str, 
     let members = guild_member_uuids(state, id).await;
     let guild_name: String = sqlx::query_scalar("SELECT name FROM guilds WHERE id = ?").bind(id).fetch_optional(&state.db).await?.unwrap_or_default();
     let mut tx = state.db.begin().await?;
+    // Faction vault items have no other owner: they must be taken out before the faction can end.
+    let stored: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM cloud_vaults WHERE owner = ? AND contents <> '[]')")
+        .bind(format!("faction:{id}")).fetch_one(&mut *tx).await?;
+    if stored { return Err(AppError::bad_request("empty the faction vaults before disbanding")); }
+    sqlx::query("DELETE FROM cloud_vaults WHERE owner = ?").bind(format!("faction:{id}")).execute(&mut *tx).await?;
     let wallets: Vec<(i64, f64)> = sqlx::query_as("SELECT server_id, balance FROM guild_wallets WHERE guild_id = ? AND balance > 0")
         .bind(id)
         .fetch_all(&mut *tx)
@@ -1492,11 +1526,16 @@ pub async fn admin_delete_guild(_admin: AdminUser, Path(id): Path<String>, State
 pub struct RelationPayload {
     pub other_guild_id: String,
     pub relation: String,
+    pub reward_cents: Option<i64>,
+    pub reward_bps: Option<i64>,
+    pub duration_hours: Option<i64>,
+    pub ally_permissions: Option<std::collections::BTreeMap<String,bool>>,
 }
 
 #[derive(Deserialize)]
 pub struct RelationDecisionPayload {
     pub accept: bool,
+    pub expected_revision: Option<String>,
 }
 
 /// List alliance and rivalry requests for a guild.
@@ -1504,25 +1543,38 @@ pub async fn list_relations(auth: AuthUser, Path(id): Path<String>, State(state)
     let member: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM guild_members WHERE guild_id=? AND uuid=?)")
         .bind(&id).bind(&auth.uuid).fetch_one(&state.db).await?;
     if !member { return Err(AppError::forbidden("You are not a member of this guild")); }
-    let rows: Vec<(i64,String,String,String,String,String,String)> = sqlx::query_as(
-        "SELECT r.id,r.guild_id,r.other_guild_id,r.relation,r.status,g.name,g.tag
+    let rows: Vec<(i64,String,String,String,String,String,String,i64,i64,Option<String>,String,String)> = sqlx::query_as(
+        "SELECT r.id,r.guild_id,r.other_guild_id,r.relation,r.status,g.name,g.tag,r.reward_cents,r.reward_bps,r.expires_at,r.ally_permissions,r.terms_revision
          FROM guild_relations r JOIN guilds g ON g.id=CASE WHEN r.guild_id=? THEN r.other_guild_id ELSE r.guild_id END
          WHERE r.guild_id=? OR r.other_guild_id=? ORDER BY r.updated_at DESC")
         .bind(&id).bind(&id).bind(&id).fetch_all(&state.db).await?;
-    Ok(Json(json!(rows.into_iter().map(|(rid,gid,other,relation,status,name,tag)| json!({"id":rid,"guild_id":gid,"other_guild_id":other,"relation":relation,"status":status,"name":name,"tag":tag})).collect::<Vec<_>>())))
+    Ok(Json(json!(rows.into_iter().map(|(rid,gid,other,relation,status,name,tag,cents,bps,expiry,permissions,revision)| json!({"id":rid,"guild_id":gid,"other_guild_id":other,"relation":relation,"status":status,"name":name,"tag":tag,"reward_cents":cents,"reward_bps":bps,"expires_at":expiry,"ally_permissions":serde_json::from_str::<Value>(&permissions).unwrap_or(json!({})),"terms_revision":revision})).collect::<Vec<_>>())))
 }
 
 /// Create a pending alliance or rivalry request. Relations are symmetric and
 /// restricted to guilds belonging to the same launcher instance.
 pub async fn create_relation(auth: AuthUser, Path(id): Path<String>, State(state): State<AppState>, Json(payload): Json<RelationPayload>) -> AppResult<Json<Value>> {
+    if crate::velora_core::load(&state).await?.is_some() { require_leader(&state,&id,&auth.uuid).await?; }
     if !guild_can(&state, &id, &auth.uuid, "manage").await? { return Err(AppError::forbidden("Your guild role cannot manage relations")); }
     if payload.relation != "alliance" && payload.relation != "rival" { return Err(AppError::bad_request("relation must be alliance or rival")); }
     let instance: Option<String> = sqlx::query_scalar("SELECT instance_id FROM guilds WHERE id=? AND id<>?").bind(&payload.other_guild_id).bind(&id).fetch_optional(&state.db).await?;
     let own: Option<String> = sqlx::query_scalar("SELECT instance_id FROM guilds WHERE id=?").bind(&id).fetch_optional(&state.db).await?;
     if instance.is_none() || instance != own { return Err(AppError::bad_request("Guilds must belong to the same instance")); }
+    let cents=payload.reward_cents.unwrap_or(0); let bps=payload.reward_bps.unwrap_or(0);
+    if !(0..=100_000_000_000).contains(&cents) || !(0..=10000).contains(&bps) || (cents>0&&bps>0) {return Err(AppError::bad_request("choose a fixed kill reward or percentage, not both"));}
+    let expires=match payload.duration_hours { Some(hours) if (1..=8760).contains(&hours)=>Some((chrono::Utc::now()+chrono::Duration::hours(hours)).to_rfc3339_opts(chrono::SecondsFormat::Secs,true)),Some(_)=>return Err(AppError::bad_request("rivalry duration must be 1–8760 hours")),None=>None };
+    let permissions=payload.ally_permissions.unwrap_or_default();
+    if permissions.keys().any(|key|!matches!(key.as_str(),"place"|"break"|"fly"|"chests"|"doors"|"buttons")) {return Err(AppError::bad_request("unknown ally permission"));}
     let now = crate::db::now();
+    let mut relation_tx = state.db.begin().await?;
     sqlx::query("INSERT INTO guild_relations(instance_id,guild_id,other_guild_id,relation,status,actor_uuid,created_at,updated_at) VALUES(?,?,?,?, 'pending',?,?,?) ON CONFLICT(instance_id,guild_id,other_guild_id) DO UPDATE SET relation=excluded.relation,status='pending',actor_uuid=excluded.actor_uuid,updated_at=excluded.updated_at")
-        .bind(own.unwrap()).bind(&id).bind(&payload.other_guild_id).bind(&payload.relation).bind(&auth.uuid).bind(&now).bind(&now).execute(&state.db).await?;
+        .bind(own.unwrap()).bind(&id).bind(&payload.other_guild_id).bind(&payload.relation).bind(&auth.uuid).bind(&now).bind(&now).execute(&mut *relation_tx).await?;
+    sqlx::query("UPDATE guild_relations SET reward_cents=?,reward_bps=?,expires_at=?,ally_permissions=?,terms_revision=? WHERE guild_id=? AND other_guild_id=?")
+        .bind(cents).bind(bps).bind(expires).bind(serde_json::to_string(&permissions)?).bind(uuid::Uuid::new_v4().to_string()).bind(&id).bind(&payload.other_guild_id).execute(&mut *relation_tx).await?;
+    // Remove the old reverse grant: it must not become a second request with stale terms.
+    sqlx::query("DELETE FROM guild_relations WHERE guild_id=? AND other_guild_id=?")
+        .bind(&payload.other_guild_id).bind(&id).execute(&mut *relation_tx).await?;
+    relation_tx.commit().await?;
     Ok(Json(json!({"ok":true,"status":"pending"})))
 }
 
@@ -1534,6 +1586,10 @@ pub async fn decide_relation(
     State(state): State<AppState>,
     Json(payload): Json<RelationDecisionPayload>,
 ) -> AppResult<Json<Value>> {
+    if crate::velora_core::load(&state).await?.is_some() {
+        require_leader(&state,&id,&auth.uuid).await?;
+        if payload.expected_revision.as_ref().is_none_or(|v|v.is_empty()) {return Err(AppError::bad_request("review the current relation terms before deciding"));}
+    }
     if !guild_can(&state, &id, &auth.uuid, "manage").await? {
         return Err(AppError::forbidden("Your guild role cannot manage relations"));
     }
@@ -1547,15 +1603,20 @@ pub async fn decide_relation(
     if status != "pending" {
         return Err(AppError::bad_request("relation is no longer pending"));
     }
-    sqlx::query("UPDATE guild_relations SET status=?,updated_at=? WHERE id=?")
-        .bind(next).bind(crate::db::now()).bind(relation_id).execute(&state.db).await?;
+    let mut tx = state.db.begin().await?;
+    let changed = sqlx::query("UPDATE guild_relations SET status=?,updated_at=? WHERE id=? AND status='pending' AND (? IS NULL OR terms_revision=?)")
+        .bind(next).bind(crate::db::now()).bind(relation_id).bind(&payload.expected_revision).bind(&payload.expected_revision).execute(&mut *tx).await?.rows_affected();
+    if changed != 1 { return Err(AppError::conflict("relation changed; reload before deciding")); }
     if payload.accept {
         sqlx::query(
-            "INSERT OR IGNORE INTO guild_relations(instance_id,guild_id,other_guild_id,relation,status,actor_uuid,created_at,updated_at)
-             SELECT instance_id,?,?,relation,'accepted',?,?,? FROM guild_relations WHERE id=?",
+            // Accepted alliance permissions are mutual: each faction grants the other the reviewed terms.
+            "INSERT INTO guild_relations(instance_id,guild_id,other_guild_id,relation,status,actor_uuid,created_at,updated_at,reward_cents,reward_bps,expires_at,ally_permissions,terms_revision)
+             SELECT instance_id,?,?,relation,'accepted',?,?,?,reward_cents,reward_bps,expires_at,ally_permissions,terms_revision FROM guild_relations WHERE id=?
+             ON CONFLICT(instance_id,guild_id,other_guild_id) DO UPDATE SET relation=excluded.relation,status='accepted',reward_cents=excluded.reward_cents,reward_bps=excluded.reward_bps,expires_at=excluded.expires_at,ally_permissions=excluded.ally_permissions,terms_revision=excluded.terms_revision,updated_at=excluded.updated_at",
         ).bind(&other_guild_id).bind(&guild_id).bind(&auth.uuid).bind(crate::db::now()).bind(crate::db::now()).bind(relation_id)
-            .execute(&state.db).await?;
+            .execute(&mut *tx).await?;
     }
+    tx.commit().await?;
     Ok(Json(json!({ "ok": true, "status": next })))
 }
 
@@ -1683,9 +1744,34 @@ pub async fn server_claim_index(
         });
         claims.push(json!([dimension, x, z, i]));
     }
+    // What each claiming guild lets its accepted allies do (place, break, chests, doors, buttons, fly).
+    let alliances: Vec<(String, String, String)> = sqlx::query_as(
+        "SELECT guild_id, other_guild_id, ally_permissions FROM guild_relations
+         WHERE relation = 'alliance' AND status = 'accepted' AND ally_permissions <> '{}'
+           AND guild_id IN (SELECT DISTINCT guild_id FROM guild_claims WHERE server_id = ?)",
+    )
+    .bind(server.id)
+    .fetch_all(&state.db)
+    .await?;
+    let mut allied: std::collections::BTreeSet<String> = Default::default();
+    for (guild_id, other, permissions) in alliances {
+        let granted: Vec<String> = serde_json::from_str::<std::collections::BTreeMap<String, bool>>(&permissions)
+            .unwrap_or_default().into_iter().filter(|(_, on)| *on).map(|(key, _)| key).collect();
+        if granted.is_empty() { continue; }
+        if let Some(&i) = index.get(&guild_id) {
+            guilds[i]["allies"][&other] = json!(granted);
+            allied.insert(other);
+        }
+    }
     let mut roster: std::collections::BTreeMap<String, Vec<String>> = Default::default();
     for (guild, uuid) in members {
         roster.entry(guild).or_default().push(uuid);
+    }
+    // Allies without land on this server still need a roster for their permissions to apply.
+    let missing: Vec<String> = allied.into_iter().filter(|other| !roster.contains_key(other)).collect();
+    for other in missing {
+        let uuids: Vec<String> = sqlx::query_scalar("SELECT uuid FROM guild_members WHERE guild_id = ?").bind(&other).fetch_all(&state.db).await?;
+        roster.insert(other, uuids);
     }
     Ok(Json(json!({ "revision": revision, "unchanged": false, "guilds": guilds, "claims": claims, "members": roster })))
 }
@@ -1774,9 +1860,17 @@ pub async fn server_claim_chunk(
     }
 
     let now = chrono::Utc::now().to_rfc3339();
+    let core_policy = crate::velora_core::load(&state).await?;
+    let mut tx = state.db.begin().await?;
+    sqlx::query("UPDATE guilds SET id=id WHERE id=?").bind(&guild_id).execute(&mut *tx).await?;
+    let count:i64=sqlx::query_scalar("SELECT COUNT(*) FROM guild_claims WHERE guild_id=?").bind(&guild_id).fetch_one(&mut *tx).await?;
+    if count>=max_claims { return Err(AppError::bad_request("faction claim capacity is full")); }
+    let outpost = if let Some(policy)=core_policy {
+        crate::factions_core::claims_allowed(&mut tx,&policy,&guild_id,server.id,&payload.dimension,payload.chunk_x,payload.chunk_z).await?
+    } else { None };
     let res = sqlx::query(
-        "INSERT INTO guild_claims (guild_id, server_id, dimension, chunk_x, chunk_z, claimed_by_uuid, claimed_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO guild_claims (guild_id, server_id, dimension, chunk_x, chunk_z, claimed_by_uuid, claimed_at,outpost_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?,?)",
     )
     .bind(&guild_id)
     .bind(server.id)
@@ -1785,13 +1879,15 @@ pub async fn server_claim_chunk(
     .bind(payload.chunk_z)
     .bind(&payload.uuid)
     .bind(&now)
-    .execute(&state.db)
+    .bind(outpost)
+    .execute(&mut *tx)
     .await;
 
     if let Err(e) = res {
         tracing::warn!("server claim chunk failed: {e}");
         return Err(AppError::bad_request("Chunk is already claimed by another guild"));
     }
+    tx.commit().await?;
 
     let guild_name: String = sqlx::query_scalar("SELECT name FROM guilds WHERE id = ?")
         .bind(&guild_id)
@@ -1939,7 +2035,8 @@ pub async fn server_create_guild(
 
     let mut tx = state.db.begin().await?;
 
-    let base_claims = crate::progression::load(&mut tx).await?.rules.guild_base_claims;
+    let policy = crate::velora_core::charge_faction(&mut tx, &server.instance_id, &payload.uuid, &payload.username).await?;
+    let base_claims = match policy { Some(policy) => policy.faction_base_claims, None => crate::progression::load(&mut tx).await?.rules.guild_base_claims };
     let res = sqlx::query(
         "INSERT INTO guilds (id, instance_id, name, tag, description, motd, leader_uuid, max_claims, created_at)
          VALUES (?, ?, ?, ?, '', 'Welcome to the guild!', ?, ?, ?)",

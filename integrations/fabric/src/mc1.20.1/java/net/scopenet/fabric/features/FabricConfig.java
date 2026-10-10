@@ -31,6 +31,7 @@ final class FabricConfig {
 
     boolean bool(String key, boolean fallback) { return Boolean.parseBoolean(p.getProperty(key, String.valueOf(fallback)).trim()); }
     String text(String key, String fallback) { return p.getProperty(key, fallback).trim(); }
+    net.scopenet.core.CoreModules modules() { return net.scopenet.core.CoreModules.local(p); }
 
     EssentialsConfig essentials() {
         java.util.Map<String, Integer> cooldowns = new java.util.HashMap<>();

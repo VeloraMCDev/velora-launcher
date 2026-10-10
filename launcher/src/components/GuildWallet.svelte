@@ -1,6 +1,6 @@
 <script lang="ts">
   import PlayerLink from './PlayerLink.svelte';
-  import { onMount } from 'svelte';
+  import { onMount,untrack } from 'svelte';
   import {
     Landmark, ArrowDownToLine, ArrowUpFromLine, Wallet, Lock, Server, History, Coins, LoaderCircle, RefreshCw, TrendingUp
   } from '@lucide/svelte';
@@ -10,7 +10,7 @@
   import type { Guild, GuildMember } from '../lib/types';
 
   type Tx = { id: number; actor_uuid: string; kind: string; amount: number; created_at: string; note?: string };
-  type WalletData = { balance: number; my_balance?: number; role?: string; currency_symbol?: string; transactions: Tx[] };
+  type WalletData = { balance: number; my_balance?: number; role?: string; currency_symbol?: string; transactions: Tx[]; upkeep?: {daily_cents:number;arrears_cents:number;grace_days:number;freezes_at:string|null;claims_frozen:boolean}|null };
 
   let { guild, members, servers, instanceId }: {
     guild: Guild;
@@ -38,9 +38,9 @@
   const afterGuild = $derived(wallet && validAmount ? wallet.balance + (mode === 'deposit' ? value : -value) : null);
   const afterMine = $derived(wallet?.my_balance != null && validAmount ? wallet.my_balance + (mode === 'deposit' ? -value : value) : null);
   // Money the guild receives (deposits, shop and market sales, payments from guilds) vs. spends.
-  const isOut = (kind: string) => kind === 'withdraw' || kind === 'purchase' || kind === 'transfer_out';
+  const isOut = (kind: string) => kind === 'withdraw' || kind === 'purchase' || kind === 'transfer_out' || kind === 'upkeep';
   const verbs: Record<string, string> = {
-    deposit: 'deposited', withdraw: 'withdrew', sale: 'sold items', purchase: 'bought', transfer_in: 'received a payment', transfer_out: 'paid a guild'
+    deposit: 'deposited', withdraw: 'withdrew', sale: 'sold items', purchase: 'bought', transfer_in: 'received a payment', transfer_out: 'paid a guild', upkeep: 'paid daily upkeep'
   };
   const totals = $derived({
     in: wallet?.transactions.filter((t) => !isOut(t.kind)).reduce((n, t) => n + t.amount, 0) ?? 0,
@@ -63,9 +63,10 @@
   let frame = 0;
   $effect(() => {
     const target = wallet?.balance ?? 0;
-    const from = shown;
+    const from = untrack(()=>shown);
     const start = performance.now();
     cancelAnimationFrame(frame);
+    if(document.hidden){shown=target;return;}
     const step = (now: number) => {
       const t = Math.min(1, (now - start) / 550);
       shown = from + (target - from) * (1 - Math.pow(1 - t, 3));
@@ -141,6 +142,9 @@
               <button class="ghost icon sm refresh" onclick={load} aria-label="Refresh wallet" title="Refresh"><RefreshCw size={14} class={loading ? 'spin' : ''} /></button>
             </div>
             <div class="amount">{money(shown)}</div>
+            {#if wallet.upkeep}<p class="tiny">Daily upkeep {money(wallet.upkeep.daily_cents/100)} · {wallet.upkeep.grace_days}-day grace period.</p>
+              {#if wallet.upkeep.arrears_cents>0}<p class="warn tiny">Unpaid: {money(wallet.upkeep.arrears_cents/100)}. {wallet.upkeep.claims_frozen?'New claims are frozen.':`New claims freeze on ${wallet.upkeep.freezes_at} UTC.`} Deposit funds to settle outstanding bills within a minute. Existing claims remain protected.</p>{/if}
+            {/if}
             <div class="t-stats">
               <div><span class="k"><TrendingUp size={12} /> Money in</span><strong class="in">{money(totals.in)}</strong></div>
               <div><span class="k"><ArrowUpFromLine size={12} /> Money out</span><strong class="out">{money(totals.out)}</strong></div>

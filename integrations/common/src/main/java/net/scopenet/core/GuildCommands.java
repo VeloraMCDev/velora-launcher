@@ -25,6 +25,8 @@ final class GuildCommands {
     private final EssentialsService ess;
     private final Path homesFile;
     private final Map<String, Pos> guildHomes = new ConcurrentHashMap<>();
+    /** Faction vaults; set once the utility hub exists. */
+    CloudVaults vaults;
 
     GuildCommands(Env env, Jobs jobs, EconomyCommands economy, EssentialsService ess, Path homesFile) {
         this.manage = new GuildManage(env);
@@ -41,7 +43,7 @@ final class GuildCommands {
 
     List<CoreCommand> build() {
         List<CoreCommand> out = new ArrayList<>();
-        out.add(Cmd.of("guild", List.of("g", "clan"), this::guild).completing((p, a) -> CommandSuggestions.choices("guild", a, EssentialsCommands.names(env, p), p::hasPermission)));
+        out.add(Cmd.of("guild", List.of("g", "clan", "faction", "f"), this::guild).completing((p, a) -> CommandSuggestions.choices("guild", a, EssentialsCommands.names(env, p), p::hasPermission)));
         out.add(Cmd.of("claim", List.of(), (p, a) -> claim(p)));
         out.add(Cmd.of("unclaim", List.of(), (p, a) -> unclaim(p)));
         return out;
@@ -87,6 +89,9 @@ final class GuildCommands {
             case "decline", "deny" -> answer(p, rest, false);
             case "sell" -> economy.sell(p, rest, true);
             case "market" -> economy.market(p, rest, true);
+            case "upgrade", "upgrades" -> upgrade(p, rest);
+            case "outpost" -> outpost(p, rest);
+            case "vault", "storage" -> factionVault(p, rest);
             default -> { if (GuildManage.handles(sub, rest.length)) manage.run(p, sub, rest); else help(p); }
         }
     }
@@ -108,6 +113,9 @@ final class GuildCommands {
             {"/guild motd <text> / desc <text>", "Set the message of the day or the description"},
             {"/guild flags [<rule> <on|off>]", "See or change what happens on your guild's land"},
             {"/guild post <title> | <text> / posts", "Announcements for your guild"},
+            {"/guild upgrade [claims|members|outposts|vault] [tier]", "Buy faction upgrades from the bank (leaders and officers)"},
+            {"/guild vault [page]", "Open your faction's shared vault"},
+            {"/faction outpost place", "Place the held Outpost Flag; claim its chunk first, then up to 12 nearby chunks"},
         };
         for (String[] r : rows) p.send(Format.YELLOW + r[0] + Format.GRAY + " - " + r[1]);
     }
@@ -317,6 +325,65 @@ final class GuildCommands {
     Map<String, Pos> guildHomes() { return Map.copyOf(guildHomes); }
 
     // ---- bank ---------------------------------------------------------------
+
+    /** Shared faction storage. Pages are bought with /guild upgrade vault; roles can be denied access in the launcher. */
+    private void factionVault(CorePlayer p, String[] args) {
+        if (vaults == null || !vaults.supported() || !env.modules.get().enabled("vaults")) { p.send(Format.RED + "Faction vaults are not available on this server."); return; }
+        int page = 1;
+        if (args.length > 0) {
+            try { page = Integer.parseInt(args[0]); } catch (NumberFormatException e) { p.send(Format.RED + "Usage: /guild vault [page]"); return; }
+        }
+        if (page < 1 || page > 9) { p.send(Format.RED + "Faction vault pages are numbered 1 to 9."); return; }
+        vaults.open(p, "faction", page, "Faction vault " + page);
+    }
+
+    private void outpost(CorePlayer p, String[] args) {
+        if (!env.modules.get().enabled("factions") || !env.modules.get().enabled("economy")) { p.send(Format.RED + "Outposts are disabled."); return; }
+        if (args.length != 1 || !args[0].equalsIgnoreCase("place")) { p.send(Format.YELLOW + "Buy a flag with /faction upgrade outposts, collect it from /vault, then /faction outpost place."); return; }
+        Item held = p.heldItem().orElse(null);
+        if (held == null || held.count() != 1 || !Item.registryId(held.id()).equals("minecraft:white_banner")) { p.send(Format.RED + "Hold a single purchased Outpost Flag."); return; }
+        var match = java.util.regex.Pattern.compile("VeloraOutpostId\\s*:\\s*\"([0-9a-fA-F-]{36})\"").matcher(held.data());
+        if (!match.find()) { p.send(Format.RED + "This banner is not a purchased Outpost Flag."); return; }
+        Pos at = p.pos();
+        if (!env.platform.canPlaceOutpostFlag(at)) { p.send(Format.RED + "Stand in an empty block above solid ground to place the flag."); return; }
+        JsonObject body = uuidBody(p);
+        body.addProperty("id", match.group(1)); body.addProperty("dimension", at.world());
+        body.addProperty("x", at.blockX()); body.addProperty("y", at.blockY()); body.addProperty("z", at.blockZ());
+        env.io(() -> env.panel.call("guilds/outposts/place", body), r -> {
+            if (env.platform.player(p.uuid()).isEmpty() || !p.heldItem().filter(held::equals).isPresent() || !env.platform.placeOutpostFlag(at)) {
+                p.send(Format.YELLOW + "The flag location is registered. Keep the flag and retry at the same location when it is clear."); return;
+            }
+            p.clearHeld(); env.platform.savePlayer(p.uuid());
+            p.send(Format.GREEN + "Outpost placed. Claim this chunk, then adjacent chunks within 3 chunks of the flag. Maximum: 12 claims.");
+        }, e -> p.send(Format.RED + "Outpost: " + e));
+    }
+
+    /** Faction upgrades (Velora SMP). Buying names the tier just shown, so repeating the command cannot buy twice. */
+    private void upgrade(CorePlayer p, String[] args) {
+        JsonObject body = uuidBody(p);
+        String track = args.length > 0 ? args[0].toLowerCase(Locale.ROOT) : null;
+        if (track != null && !List.of("claims", "members", "outposts", "vault").contains(track)) { p.send(Format.RED + "Usage: /guild upgrade [claims|members|outposts|vault] [tier]"); return; }
+        if (track != null && args.length > 1) {
+            int tier;
+            try { tier = Integer.parseInt(args[1]); } catch (NumberFormatException e) { p.send(Format.RED + "The tier must be a number."); return; }
+            body.addProperty("track", track);
+            body.addProperty("expected_tiers", tier - 1);
+        }
+        env.io(() -> env.panel.call("guilds/upgrades", body).getAsJsonObject(), r -> {
+            if (r.has("ok")) { p.send(Format.GREEN + "Bought " + track + " tier " + r.get("tiers").getAsLong() + "."); r = r.getAsJsonObject("upgrades"); }
+            JsonObject tracks = r.getAsJsonObject("tracks");
+            p.send(Format.GOLD + "=== Faction upgrades " + Format.GRAY + "(bank " + env.money(r.get("bank_cents").getAsLong() / 100.0) + ")");
+            for (String name : List.of("claims", "members", "outposts", "vault")) {
+                if (track != null && !track.equals(name)) continue;
+                JsonObject t = tracks.getAsJsonObject(name);
+                long have = t.get("tiers").getAsLong(), max = t.get("max").getAsLong();
+                String next = have >= max ? Format.DARK_GRAY + "maxed" : Format.YELLOW + "/guild upgrade " + name + " " + (have + 1) + Format.GRAY + " for " + env.money(t.get("price_cents").getAsLong() / 100.0);
+                p.send(Format.WHITE + " " + name + Format.GRAY + " " + have + "/" + max + "  " + next);
+            }
+            p.send(Format.GRAY + "Outposts: " + r.get("outposts").getAsLong() + "/" + r.get("outpost_limit").getAsLong()
+                    + "  ·  +" + r.get("claims_per_tier").getAsLong() + " chunks or +" + r.get("members_per_tier").getAsLong() + " members per tier");
+        }, e -> p.send(Format.RED + "Faction upgrades: " + e));
+    }
 
     private void bank(CorePlayer p, String[] args) {
         if (args.length >= 2 && (args[0].equalsIgnoreCase("deposit") || args[0].equalsIgnoreCase("withdraw"))) {

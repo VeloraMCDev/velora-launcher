@@ -21,7 +21,7 @@ final class FabricItems {
         if (!item.data().isEmpty()) {
             try {
                 ItemStack stack = ItemStack.of(TagParser.parseTag(item.data()));
-                if (!stack.isEmpty()) return stack;
+                if (!stack.isEmpty()) { stack.setCount(Math.max(1,item.count())); return stack; }
             } catch (Exception ignored) {
                 // Another platform's serialisation: fall through to id and count.
             }

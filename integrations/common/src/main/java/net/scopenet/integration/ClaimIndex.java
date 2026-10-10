@@ -16,7 +16,9 @@ import java.util.UUID;
  * The panel is polled for a new copy only when its revision changes.
  */
 public final class ClaimIndex {
-    private record Guild(String id, String name, String tag, String icon, boolean admin, String description, int color, Map<String, Boolean> flags) {}
+    /** {@code allies}: allied guild id to what its members may do here (place, break, chests, doors, buttons, fly). */
+    private record Guild(String id, String name, String tag, String icon, boolean admin, String description, int color, Map<String, Boolean> flags,
+                         Map<String, Set<String>> allies) {}
 
     private record Snapshot(String revision, Map<String, Map<Long, Guild>> claims, Map<String, Set<UUID>> members, int total) {}
 
@@ -62,10 +64,30 @@ public final class ClaimIndex {
      * rule for {@code flag} (build, interact, containers) is on. Admin claims have no members, so for them it is the flag alone.
      */
     public boolean mayModify(String dimension, int chunkX, int chunkZ, UUID player, String flag) {
+        return mayModify(dimension, chunkX, chunkZ, player, flag, null);
+    }
+
+    /** Like {@link #mayModify(String, int, int, UUID, String)}, also letting allies through when this guild granted them {@code ally}. */
+    public boolean mayModify(String dimension, int chunkX, int chunkZ, UUID player, String flag, String ally) {
         ChunkCheckResult here = check(dimension, chunkX, chunkZ, player);
         if (!here.claimed() || here.allowed()) return true;
+        if (ally != null && allyMay(dimension, chunkX, chunkZ, player, ally)) return true;
         Boolean open = claimFlag(dimension, chunkX, chunkZ, flag);
         return open != null && open;
+    }
+
+    /** Did the guild claiming this chunk grant {@code action} to an accepted ally that {@code player} belongs to? */
+    public boolean allyMay(String dimension, int chunkX, int chunkZ, UUID player, String action) {
+        Snapshot s = snapshot;
+        if (s == null) return false;
+        Map<Long, Guild> dim = s.claims().get(dimension);
+        Guild g = dim == null ? null : dim.get(key(chunkX, chunkZ));
+        if (g == null) return false;
+        for (Map.Entry<String, Set<String>> ally : g.allies().entrySet()) {
+            Set<UUID> members = s.members().get(ally.getKey());
+            if (ally.getValue().contains(action) && members != null && members.contains(player)) return true;
+        }
+        return false;
     }
 
     /** What each flag means when an admin claim says nothing (mirrors the panel): build, interact, containers, griefing and fire are off. */
@@ -154,6 +176,18 @@ public final class ClaimIndex {
         return flags;
     }
 
+    private static Map<String, Set<String>> alliesOf(JsonObject g) {
+        Map<String, Set<String>> allies = new HashMap<>();
+        if (g.has("allies") && g.get("allies").isJsonObject())
+            g.getAsJsonObject("allies").entrySet().forEach(e -> {
+                if (!e.getValue().isJsonArray()) return;
+                Set<String> actions = new HashSet<>();
+                e.getValue().getAsJsonArray().forEach(a -> { if (a.isJsonPrimitive()) actions.add(a.getAsString()); });
+                allies.put(e.getKey(), Set.copyOf(actions));
+            });
+        return allies;
+    }
+
     private static int parseColor(String hex) {
         if (hex == null || !hex.matches("#[0-9a-fA-F]{6}")) return -1;
         return Integer.parseInt(hex.substring(1), 16);
@@ -172,7 +206,7 @@ public final class ClaimIndex {
                     g.has("admin") && g.get("admin").isJsonPrimitive() && g.get("admin").getAsBoolean(),
                     g.has("description") && g.get("description").isJsonPrimitive() ? g.get("description").getAsString() : "",
                     parseColor(g.has("color") && g.get("color").isJsonPrimitive() ? g.get("color").getAsString() : null),
-                    flagsOf(g));
+                    flagsOf(g), alliesOf(g));
         }
         Map<String, Map<Long, Guild>> claims = new HashMap<>();
         JsonArray claimList = response.getAsJsonArray("claims");

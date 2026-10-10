@@ -11,6 +11,11 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public final class Bridge {
+    public static void pvpKill(ServerPlayer killer, ServerPlayer victim) {
+        Integration current = integration;
+        if (current != null && (current.modules().enabled("factions") || current.modules().enabled("casino") || current.modules().enabled("analytics")))
+            current.activity.event(killer.getUUID(), killer.getName().getString(), "pvp_kill", victim.getUUID().toString());
+    }
     private static volatile Integration integration;
     private static final Map<UUID, String> online = new HashMap<>();
     private static int mapTicks;
@@ -83,31 +88,43 @@ public final class Bridge {
 
     public static void stat(ServerPlayer player, String key, int amount) {
         Integration current = integration;
-        if (current == null) return;
+        if (current == null || !current.modules().enabled("analytics")) return;
         current.activity.add(player.getUUID(), player.getName().getString(), key, amount);
         if (key.equals("deaths")) current.activity.event(player.getUUID(), player.getName().getString(), "death", null);
     }
 
     public static void action(ServerPlayer player, String action, int amount) {
         Integration current = integration;
-        if (current != null) current.activity.action(player.getUUID(), player.getName().getString(), action, amount);
+        if (current != null && current.modules().enabled("analytics")) current.activity.action(player.getUUID(), player.getName().getString(), action, amount);
     }
 
     /** Fail closed while a claim lookup is pending or the panel is unavailable. Building: members, or visitors where the claim allows it. */
-    public static boolean canModify(ServerPlayer player, BlockPos pos) { return canModify(player, pos, "build", true); }
+    public static boolean canModify(ServerPlayer player, BlockPos pos) { return canModify(player, pos, "build", null, true); }
 
     /** Like {@link #canModify(ServerPlayer, BlockPos)} for one kind of change: {@code build}, {@code interact} or {@code containers}. */
-    public static boolean canModify(ServerPlayer player, BlockPos pos, String flag) { return canModify(player, pos, flag, true); }
+    public static boolean canModify(ServerPlayer player, BlockPos pos, String flag) { return canModify(player, pos, flag, null, true); }
+
+    /**
+     * Also lets allies of the claiming faction through when it granted them {@code ally}: place, break, chests, doors or buttons.
+     */
+    public static boolean canModify(ServerPlayer player, BlockPos pos, String flag, String ally) { return canModify(player, pos, flag, ally, true); }
 
     /** The same answer without telling the player (for checks the game makes on its own, like a bucket's reach). */
-    public static boolean mayModify(ServerPlayer player, BlockPos pos, String flag) { return canModify(player, pos, flag, false); }
+    public static boolean mayModify(ServerPlayer player, BlockPos pos, String flag) { return canModify(player, pos, flag, null, false); }
 
-    private static boolean canModify(ServerPlayer player, BlockPos pos, String flag, boolean tell) {
+    /** The ally permission that covers using this block: doors (doors, trapdoors, gates) or buttons (everything else). */
+    public static String allyUse(net.minecraft.world.level.block.state.BlockState state) {
+        net.minecraft.world.level.block.Block block = state.getBlock();
+        return block instanceof net.minecraft.world.level.block.DoorBlock || block instanceof net.minecraft.world.level.block.TrapDoorBlock
+                || block instanceof net.minecraft.world.level.block.FenceGateBlock ? "doors" : "buttons";
+    }
+
+    private static boolean canModify(ServerPlayer player, BlockPos pos, String flag, String ally, boolean tell) {
         Integration current = integration;
         if (current == null) return false;
         if (!current.settings().guildsEnabled() || !current.settings().landClaimingEnabled()) return true;
         if (claimBypass.test(player)) return true;
-        if (current.mayModify(Compat.dimension(player), pos.getX() >> 4, pos.getZ() >> 4, player.getUUID(), flag)) return true;
+        if (current.mayModify(Compat.dimension(player), pos.getX() >> 4, pos.getZ() >> 4, player.getUUID(), flag, ally)) return true;
         if (tell) Compat.actionbar(player, Component.literal("This land is protected by a guild or the claim check is unavailable."));
         return false;
     }

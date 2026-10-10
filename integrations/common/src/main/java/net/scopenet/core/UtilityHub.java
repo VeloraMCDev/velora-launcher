@@ -22,6 +22,8 @@ public final class UtilityHub {
     private final Supplier<Utilities> settings;
     private final UtilityStore store;
     private final VaultDeliveries vaultDeliveries;
+    /** Vaults kept in the panel (Fabric); Paper keeps its local vault files. */
+    public final CloudVaults cloudVaults;
     /** Called after a player puts on or takes off a cosmetic with /cosmetic, so the platform can show the change at once. */
     public volatile java.util.function.Consumer<CorePlayer> cosmeticsChanged = p -> { };
     /** Players who switched flight on with /fly. */
@@ -33,7 +35,8 @@ public final class UtilityHub {
         this.env = env;
         this.settings = settings;
         this.store = store;
-        this.vaultDeliveries = new VaultDeliveries(env, settings, store);
+        this.cloudVaults = new CloudVaults(env);
+        this.vaultDeliveries = new VaultDeliveries(env, settings, store, cloudVaults);
     }
 
     // ---- commands ----------------------------------------------------------------------------------------
@@ -116,7 +119,9 @@ public final class UtilityHub {
         Pos pos = p.pos();
         ChunkCheckResult r = env.panel.check(pos.world(), Math.floorDiv(pos.blockX(), 16), Math.floorDiv(pos.blockZ(), 16), p.uuid());
         ClaimIndex.ClaimInfo info = env.panel.info(pos.world(), Math.floorDiv(pos.blockX(), 16), Math.floorDiv(pos.blockZ(), 16));
-        return r.claimed() && r.allowed() && (info == null || !info.admin());
+        // Allies count as home when the land's faction granted them flight.
+        boolean ally = r.claimed() && env.panel.allyMay(pos.world(), Math.floorDiv(pos.blockX(), 16), Math.floorDiv(pos.blockZ(), 16), p.uuid(), "fly");
+        return r.claimed() && (r.allowed() || ally) && (info == null || !info.admin());
     }
 
     private void fly(CorePlayer p, String[] args) {
@@ -141,6 +146,7 @@ public final class UtilityHub {
     private void vault(CorePlayer p, String[] args) {
         Utilities.Vault v = settings.get().vault;
         if (!v.enabled()) { p.send(Format.RED + "Vaults are switched off on this server."); return; }
+        if (cloudVaults.supported()) { cloudVault(p, args, v); return; }
         if (args.length == 0 && v.count() > 1) {
             p.send(Format.GOLD + "Your vaults " + Format.GRAY + "(" + v.rows() * 9 + " slots each)");
             for (int n = 1; n <= v.count(); n++) {
@@ -155,6 +161,58 @@ public final class UtilityHub {
         if (n < 1 || n > v.count()) { p.send(Format.RED + "Pick a vault from 1 to " + v.count() + "."); return; }
         if (!mayOpenVault(p, n, v)) { p.send(Format.RED + "Vault " + n + " is locked for your rank."); return; }
         env.platform.openVault(p.uuid(), n, v.rows());
+    }
+
+    /** /vault [n] | /vault buy <n> [confirm]: panel-stored vaults. The panel decides which vaults are unlocked. */
+    private void cloudVault(CorePlayer p, String[] args, Utilities.Vault v) {
+        if (args.length >= 2 && args[0].equalsIgnoreCase("buy")) { buyVault(p, args, v); return; }
+        if (args.length == 0 && v.count() > 1) {
+            env.io(() -> env.panel.call("vault/entitlements", uuidBody(p)).getAsJsonObject(), r -> {
+                java.util.Set<Integer> owned = new java.util.HashSet<>();
+                r.getAsJsonArray("owned").forEach(e -> owned.add(e.getAsInt()));
+                p.send(Format.GOLD + "Your vaults " + Format.GRAY + "(" + v.rows() * 9 + " slots each, also in the launcher)");
+                for (int n = 1; n <= v.count(); n++) {
+                    boolean open = mayOpenVault(p, n, v) || owned.contains(n);
+                    String price = r.has("price_cents") && !r.get("price_cents").isJsonNull() ? Format.GRAY + " - /vault buy " + n + " (" + env.money(r.get("price_cents").getAsLong() / 100.0) + ")" : "";
+                    p.send(" " + Format.YELLOW + "/vault " + n + (open ? "" : Format.DARK_GRAY + "  locked" + price));
+                }
+            }, e -> p.send(Format.RED + "Could not list your vaults: " + e));
+            return;
+        }
+        int n = 1;
+        if (args.length > 0) {
+            try { n = Integer.parseInt(args[0]); } catch (NumberFormatException e) { p.send(Format.RED + "Usage: /vault <1-" + v.count() + "> or /vault buy <number>"); return; }
+        }
+        if (n < 1 || n > v.count()) { p.send(Format.RED + "Pick a vault from 1 to " + v.count() + "."); return; }
+        cloudVaults.open(p, "player", n, "Vault " + n);
+    }
+
+    private void buyVault(CorePlayer p, String[] args, Utilities.Vault v) {
+        int n;
+        try { n = Integer.parseInt(args[1]); } catch (NumberFormatException e) { p.send(Format.RED + "Usage: /vault buy <number> [confirm]"); return; }
+        boolean confirm = args.length > 2 && args[2].equalsIgnoreCase("confirm");
+        env.io(() -> env.panel.call("vault/entitlements", uuidBody(p)).getAsJsonObject(), r -> {
+            if (!r.has("price_cents") || r.get("price_cents").isJsonNull()) { p.send(Format.RED + "Vaults cannot be bought on this server."); return; }
+            long price = r.get("price_cents").getAsLong();
+            if (!confirm) {
+                p.send(Format.GOLD + "Vault " + n + Format.GRAY + " costs " + Format.GREEN + env.money(price / 100.0) + Format.GRAY + ". Type " + Format.YELLOW + "/vault buy " + n + " confirm" + Format.GRAY + " to buy it.");
+                return;
+            }
+            JsonObject body = uuidBody(p);
+            body.addProperty("username", p.name());
+            body.addProperty("number", n);
+            body.addProperty("expected_price_cents", price);
+            body.addProperty("operation_id", UUID.randomUUID().toString());
+            env.io(() -> env.panel.call("vault/buy", body).getAsJsonObject(),
+                    ok -> p.send(Format.GREEN + "Vault " + n + " unlocked. Open it with /vault " + n + "."),
+                    e -> p.send(Format.RED + "Could not buy vault " + n + ": " + e));
+        }, e -> p.send(Format.RED + "Could not price vault " + n + ": " + e));
+    }
+
+    private static JsonObject uuidBody(CorePlayer p) {
+        JsonObject o = new JsonObject();
+        o.addProperty("uuid", p.uuid().toString());
+        return o;
     }
 
     private void echest(CorePlayer p, String[] args) {
@@ -390,6 +448,7 @@ public final class UtilityHub {
     /** Call about once a second from the server thread. */
     public void tick() {
         vaultDeliveries.tick();
+        cloudVaults.tick();
         Utilities u = settings.get();
         for (CorePlayer p : env.platform.online()) {
             Pos pos = p.pos();

@@ -14,6 +14,7 @@ public final class Env {
     public volatile Features features;
     /** Utility-command settings from the panel; platforms point this at the integration. */
     public volatile java.util.function.Supplier<Utilities> utilities = () -> Utilities.DEFAULT;
+    public volatile java.util.function.Supplier<CoreModules> modules = CoreModules::all;
     public final Path dataDir;
     public final LongSupplier clock;
     public final Random rng;

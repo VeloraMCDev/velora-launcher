@@ -24,11 +24,33 @@ final class EconomyCommands {
         out.add(Cmd.of("pay", List.of(), this::pay).completing((p, a) -> a.length <= 1 ? EssentialsCommands.names(env, p) : List.of()));
         out.add(Cmd.of("baltop", List.of("richest"), (p, a) -> baltop(p)));
         out.add(Cmd.of("shop", List.of(), (p, a) -> shop(p)));
+        out.add(Cmd.of("darknet", List.of(), this::darknet));
         out.add(Cmd.of("sell", List.of(), (p, a) -> sell(p, a, false)).completing((p, a) -> a.length <= 1 ? List.of("hand") : List.of()));
         out.add(Cmd.of("market", List.of("ah", "auction"), (p, a) -> market(p, a, false)).completing((p, a) -> a.length <= 1 ? List.of("sell", "auction", "bid", "buy", "cancel", "claim", "point") : a.length == 2 && a[0].equalsIgnoreCase("point") ? List.of("add", "remove", "list") : List.of()));
         out.add(Cmd.of("trade", List.of(), (p, a) -> p.send(Format.RED + "/trade needs the chest window, which isn't available on this platform yet. Use /market or /pay.")).completing((p, a) -> a.length == 1 ? EssentialsCommands.names(env, p) : List.of()));
         out.add(Cmd.of("transactions", List.of(), (p, a) -> transactions(p)));
         return out;
+    }
+
+    private void darknet(CorePlayer p, String[] args) {
+        JsonObject body = who(p);
+        if (args.length == 0) {
+            env.io(() -> env.panel.call("economy/darknet", body).getAsJsonObject(), catalog -> {
+                p.send(Format.GOLD + "=== Darknet ===");
+                JsonArray products = catalog.getAsJsonArray("products");
+                if (products == null || products.isEmpty()) { p.send(Format.GRAY + "The catalog is empty."); return; }
+                for (JsonElement value : products) {
+                    JsonObject product = value.getAsJsonObject();
+                    p.send(Format.YELLOW + product.get("id").getAsString() + Format.WHITE + " · " + product.get("amount").getAsInt() + "x "
+                            + product.get("item_name").getAsString() + " · " + env.money(product.get("price_cents").getAsLong() / 100.0));
+                }
+                p.send(Format.GRAY + "Purchase with /darknet buy <product>. Items go to your vault.");
+            }, error -> p.send(Format.RED + error));
+            return;
+        }
+        if (args.length != 2 || !args[0].equalsIgnoreCase("buy")) { p.send(Format.RED + "Usage: /darknet [buy <product>]"); return; }
+        body.addProperty("product_id", args[1]); body.addProperty("operation_id", UUID.randomUUID().toString());
+        env.io(() -> env.panel.call("economy/darknet/buy", body), result -> p.send(Format.GREEN + "Purchased. Delivery is queued for your /vault."), error -> p.send(Format.RED + error));
     }
 
     private JsonObject who(CorePlayer p) {

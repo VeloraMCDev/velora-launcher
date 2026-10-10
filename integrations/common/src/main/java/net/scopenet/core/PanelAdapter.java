@@ -24,6 +24,10 @@ public final class PanelAdapter implements Panel {
         return integration.client().claims().info(dimension, chunkX, chunkZ);
     }
 
+    @Override public boolean allyMay(String dimension, int chunkX, int chunkZ, UUID player, String action) {
+        return integration.client().allyMay(dimension, chunkX, chunkZ, player, action);
+    }
+
     @Override public boolean adminAllows(String dimension, int chunkX, int chunkZ, String flag) {
         return integration.adminAllows(dimension, chunkX, chunkZ, flag);
     }

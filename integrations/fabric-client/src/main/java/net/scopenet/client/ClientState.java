@@ -19,6 +19,8 @@ public final class ClientState {
     public volatile String server = "";
     public volatile String currency = "$";
     public volatile boolean featEconomy, featGuilds, featClaims, featEssentials;
+    public volatile JsonObject modules;
+    public boolean module(String id) { return modules == null || bool(modules, id); }
 
     public volatile boolean hasState;
     public volatile String name = "";
@@ -43,6 +45,10 @@ public final class ClientState {
     public String[] handle(String json) {
         JsonObject m;
         try { m = JsonParser.parseString(json).getAsJsonObject(); } catch (RuntimeException e) { return null; }
+        if (m.has("modules") && m.get("modules").isJsonObject()) {
+            modules = m.getAsJsonObject("modules").deepCopy();
+            featEconomy = module("economy"); featGuilds = module("factions"); featClaims = module("factions");
+        }
         switch (str(m, "t")) {
             case "hello" -> {
                 connected = true;
@@ -99,7 +105,7 @@ public final class ClientState {
     }
 
     public void reset() {
-        connected = false; hasState = false; guild = null; claimOwner = null; claimCells = ""; market = List.of();
+        connected = false; hasState = false; guild = null; claimOwner = null; claimCells = ""; market = List.of(); modules = null;
     }
 
     private static Quest quest(JsonObject o) { return o == null ? new Quest(0, 0) : new Quest((int) lng(o, "done", 0), (int) lng(o, "total", 0)); }

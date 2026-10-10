@@ -29,6 +29,11 @@ pub struct TaskDef {
 
 pub const TASKS: &[TaskDef] = &[
     TaskDef {
+        id: "analytics_retention", name: "Prune raw analytics events",
+        description: "Applies the configured event retention period while preserving aggregate stats and progression.",
+        category: "Maintenance", default_interval_secs: 86_400, driven: true, history: true, default_settings: "{}",
+    },
+    TaskDef {
         id: "purge_deleted_players",
         name: "Purge deleted players",
         description: "Removes leaderboard rows, levels, stats, quests, economy and guild data for players whose account no longer exists. \
@@ -99,6 +104,10 @@ pub const TASKS: &[TaskDef] = &[
         driven: true,
         history: false,
         default_settings: "{}",
+    },
+    TaskDef {
+        id: "faction_upkeep", name: "Faction daily upkeep", description: "Records daily faction bills, pays them from faction banks and freezes new claims after the grace period.",
+        category: "Economy", default_interval_secs: 60, driven: true, history: false, default_settings: "{}",
     },
     TaskDef {
         id: "settle_casino",
@@ -244,8 +253,10 @@ async fn available(state: &AppState, id: &str) -> bool {
         return true;
     };
     let feature = match id {
+        "analytics_retention" => "progression",
         "refresh_titles" | "default_money" | "reward_queue" => "progression",
         "economy_accounts" | "settle_auctions" | "settle_orders" => "economy",
+        "faction_upkeep" => "guilds",
         "settle_casino" => "casino",
         _ => return true,
     };
@@ -263,6 +274,7 @@ pub async fn run_now(state: &AppState, id: &str) -> Result<String, String> {
     let started = Instant::now();
     let settings = settings_of(state, id).await;
     let result = match id {
+        "analytics_retention" => crate::routes::servers::prune_events(state).await.map_err(|e| e.message),
         "purge_deleted_players" => purge_deleted_players(state, &settings).await.map_err(|e| e.message),
         "refresh_titles" => crate::routes::leveling::refresh_global_titles(state)
             .await
@@ -273,6 +285,7 @@ pub async fn run_now(state: &AppState, id: &str) -> Result<String, String> {
         "economy_accounts" => crate::routes::economy_admin::repair_all(state).await.map_err(|e| e.message),
         "settle_auctions" => crate::routes::auctions::settle_due(state).await.map_err(|e| e.message),
         "settle_orders" => crate::routes::orders::settle_due(state).await.map_err(|e| e.message),
+        "faction_upkeep" => crate::factions_core::settle_upkeep(state).await.map_err(|e| e.message),
         "settle_casino" => crate::routes::casino::settle_due(state).await.map_err(|e| e.message),
         "reward_queue" => crate::rewards::process_queue(state).await.map(|n| format!("applied {n} rewards")).map_err(|e| e.message),
         "discord_role_sync" => crate::routes::discord::sync_all(state)

@@ -52,9 +52,13 @@ final class Kit {
         boolean heard(String text) { return inbox.stream().anyMatch(s -> s.contains(text)); }
     }
 
-    static final class FakePlatform implements Platform {
+    static class FakePlatform implements Platform {
         final Map<UUID, Player> online = new LinkedHashMap<>();
         boolean safe = true;
+        boolean outpostPlaceable;
+        final List<Pos> outpostFlags = new ArrayList<>();
+        public boolean canPlaceOutpostFlag(Pos p) { return outpostPlaceable; }
+        public boolean placeOutpostFlag(Pos p) { if (!outpostPlaceable) return false; outpostFlags.add(p); return true; }
         Player add(String name) { Player p = new Player(name); online.put(p.id, p); return p; }
         public Optional<CorePlayer> player(UUID u) { return Optional.ofNullable(online.get(u)); }
         public Optional<CorePlayer> playerByName(String n) { return online.values().stream().filter(p -> p.name.equalsIgnoreCase(n)).map(p -> (CorePlayer) p).findFirst(); }

@@ -105,6 +105,17 @@ public final class PanelClient {
         return claimIndex.mayModify(dimension, chunkX, chunkZ, uuid, flag);
     }
 
+    /** {@link #mayModify(String, int, int, java.util.UUID, String)} that also honours what the claiming guild grants its allies. */
+    public boolean mayModify(String dimension, int chunkX, int chunkZ, java.util.UUID uuid, String flag, String ally) {
+        if (!settings.guildsEnabled() || !settings.landClaimingEnabled()) return true;
+        return claimIndex.mayModify(dimension, chunkX, chunkZ, uuid, flag, ally);
+    }
+
+    /** Did the guild claiming this chunk grant {@code action} to an ally this player belongs to? */
+    public boolean allyMay(String dimension, int chunkX, int chunkZ, java.util.UUID uuid, String action) {
+        return settings.guildsEnabled() && settings.landClaimingEnabled() && claimIndex.allyMay(dimension, chunkX, chunkZ, uuid, action);
+    }
+
     /** Any claim's flag at this chunk (admin claim or guild land), or null for wilderness. See {@link ClaimIndex#claimFlag}. */
     public Boolean claimFlag(String dimension, int chunkX, int chunkZ, String flag) {
         return settings.guildsEnabled() && settings.landClaimingEnabled() ? claimIndex.claimFlag(dimension, chunkX, chunkZ, flag) : null;

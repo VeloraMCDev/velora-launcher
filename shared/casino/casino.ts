@@ -21,17 +21,20 @@ export type CasinoState = {
     crash: { enabled: boolean; min_bet: number; max_bet: number; house_edge: number; max_multiplier: number };
     dice: { enabled: boolean; min_bet: number; max_bet: number; house_edge: number; min_chance: number; max_chance: number };
     coinflip: { enabled: boolean; min_bet: number; max_bet: number; payout: number };
+    roulette: { enabled: boolean; min_bet: number; max_bet: number };
+    burst: { enabled: boolean; min_bet: number; max_bet: number; survival: number; house_edge: number; max_steps: number };
     double: { enabled: boolean; win_chance: number; max_streak: number; offer_minutes: number };
     chaos: { enabled: boolean; surge_chance: number; curse_chance: number };
     bounties: { enabled: boolean };
     betting: { enabled: boolean };
   };
   plinko_tables: Record<string, Record<string, number[]>>;
-  rtp: { slots: number; slots_hit: number; wheel: number; plinko: number; mines: number; blackjack: number; crash: number; dice: number; coinflip: number; double: number; chaos: number };
+  rtp: { slots: number; slots_hit: number; wheel: number; plinko: number; mines: number; blackjack: number; crash: number; dice: number; coinflip: number; roulette:number;burst:number;double: number; chaos: number };
   free: { per_day: number; used: number; left: number; resets_at: string };
   mines: MinesGame | null;
   crash: CrashGame | null;
   blackjack: BlackjackGame | null;
+  burst: BurstGame | null;
   double: DoubleOffer | null;
   lost_today: number;
   bounty_on_me: number;
@@ -69,12 +72,13 @@ export function card(id: number) {
 }
 
 export type Round = { game: string; bet: number; multiplier: number; payout: number; profit: number; balance: number; result: any };
+export type BurstGame = { id: number; bet: number; steps: number; max_steps: number; survival: number; multiplier: number; cashout: number; status: 'active' | 'lost' | 'cashed' };
 
 export const cget = <T>(serverId: number, path = '') => hostGet<T>(serverId, path);
 // Chaos mode is the player's choice, round by round: the instant games carry the switch with the bet.
 const CHAOS_GAMES = new Set(['/slots', '/wheel', '/plinko', '/dice', '/coinflip']);
 export const cpost = <T>(serverId: number, path: string, body: Record<string, unknown> = {}) =>
-  hostPost<T>(serverId, path, CHAOS_GAMES.has(path) ? { ...body, chaos: cprefs.chaos } : body);
+  hostPost<T>(serverId, path, { operation_id: crypto.randomUUID(), ...body, ...(CHAOS_GAMES.has(path) ? { chaos: cprefs.chaos } : {}) });
 
 export const money = (v: number | null | undefined, digits = 2) =>
   v == null ? '—' : '$' + v.toLocaleString(undefined, { minimumFractionDigits: v % 1 === 0 && digits === 2 ? 0 : digits, maximumFractionDigits: digits });

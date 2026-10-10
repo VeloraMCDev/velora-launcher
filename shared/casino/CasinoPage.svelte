@@ -19,13 +19,15 @@
   import Crash from './Crash.svelte';
   import Dice from './Dice.svelte';
   import CoinFlip from './CoinFlip.svelte';
+  import Roulette from './Roulette.svelte';
+  import BurstGame from './BurstGame.svelte';
   import DoubleOrNothing from './DoubleOrNothing.svelte';
   import Bounties from './Bounties.svelte';
   import Betting from './Betting.svelte';
   import { cget, money, mult, ago, type CasinoState } from './casino';
   import { errorText } from './host';
 
-  type Tab = 'lobby' | 'slots' | 'wheel' | 'plinko' | 'mines' | 'blackjack' | 'crash' | 'dice' | 'coinflip' | 'bounties' | 'betting';
+  type Tab = 'lobby' | 'slots' | 'wheel' | 'plinko' | 'mines' | 'blackjack' | 'crash' | 'dice' | 'coinflip' | 'roulette' | 'burst' | 'bounties' | 'betting';
   type Hist = { rounds: { game: string; bet: number; payout: number; at: string }[]; wagered: number; won: number; rounds_played: number };
 
   let { servers, initialServerId = null, compact = false, onbalance }: { servers: CasinoServer[]; initialServerId?: number | null; compact?: boolean; onbalance?: (v: number) => void } = $props();
@@ -42,6 +44,7 @@
   $effect(() => { void serverId; untrack(() => { visited = { [tab]: true }; }); });
   let error = $state('');
   let loading = $state(false);
+  let refreshId=0;
   let now = $state(Date.now());
   let sound = $state(soundOn());
   let help = $state(false);
@@ -71,23 +74,25 @@
   const sessionNet = $derived(hist && base ? (hist.won - hist.wagered) - (base.won - base.wagered) : 0);
   const sessionRounds = $derived(hist && base ? hist.rounds_played - base.rounds : 0);
   const recent = $derived((hist?.rounds ?? []).slice(0, 8));
-  function setBalance(v: number) { balance = v; onbalance?.(v); }
+  function setBalance(v: number) { refreshId++; balance = v; onbalance?.(v); }
 
   $effect(() => { if (serverId == null && servers.length) serverId = initialServerId ?? servers[0].id; });
   $effect(() => { if (!servers.length) error = 'No servers to play on yet.'; else if (error === 'No servers to play on yet.') error = ''; });
   async function refresh(quiet = true) {
     if (serverId == null) return;
+    const sid=serverId,request=++refreshId;
     if (!quiet) loading = true;
     try {
-      const [s, h] = await Promise.all([cget<CasinoState>(serverId, ''), cget<Hist>(serverId, '/history')]);
+      const [s, h] = await Promise.all([cget<CasinoState>(sid, ''), cget<Hist>(sid, '/history')]);
+      if (request!==refreshId || sid!==serverId) return;
       st = s; hist = h; balance = s.balance; if (s.balance != null) onbalance?.(s.balance); error = '';
-    } catch (e) { error = errorText(e); } finally { loading = false; }
+    } catch (e) { if(request===refreshId&&sid===serverId)error = errorText(e); } finally { if(request===refreshId)loading = false; }
   }
   onMount(() => { const t = setInterval(() => (now = Date.now()), 1000); const p = setInterval(() => void refresh(), 30000); return () => { clearInterval(t); clearInterval(p); }; });
-  $effect(() => { void serverId; st = null; void refresh(false); });
+  $effect(() => { void serverId; st = null; hist=null; base=null; resumed=false; void refresh(false); });
   // A table left mid-game (a Crash round, a Blackjack hand, Mines) opens on that game so nothing is forgotten.
   let resumed = false;
-  $effect(() => { if (st && !resumed) { resumed = true; if (st.crash) tab = 'crash'; else if (st.blackjack) tab = 'blackjack'; else if (st.mines) tab = 'mines'; } });
+  $effect(() => { if (st && !resumed) { resumed = true; if (st.crash) tab = 'crash'; else if (st.blackjack) tab = 'blackjack'; else if (st.mines) tab = 'mines'; else if (st.burst) tab = 'burst'; } });
 
   const GAMES = [
     { id: 'slots', label: 'Slots', icon: Gem, blurb: 'Three reels, one pay line. Match them for up to', hue: ['#f59e0b', '#b45309'], key: 'slots' },
@@ -98,6 +103,8 @@
     { id: 'crash', label: 'Crash', icon: Rocket, blurb: 'Ride the multiplier and cash out before it crashes. Nobody knows when.', hue: ['#f43f5e', '#6d28d9'], key: 'crash' },
     { id: 'dice', label: 'Dice', icon: Dices, blurb: 'Pick your own odds. The riskier the roll, the bigger the payout, up to', hue: ['#38bdf8', '#1d4ed8'], key: 'dice' },
     { id: 'coinflip', label: 'Coin Flip', icon: Coins, blurb: 'Heads or tails. One toss, nearly double your bet.', hue: ['#f5b942', '#92400e'], key: 'coinflip' },
+    { id: 'roulette', label: 'Roulette', icon: CircleDollarSign, blurb: 'Single-zero roulette. Choose a number, color or range.', hue: ['#e65772', '#176244'], key: 'roulette' },
+    { id: 'burst', label: 'Burst', icon: Zap, blurb: 'Climb the risk ladder. Advance or cash out after every step.', hue: ['#c18aff', '#5b2b82'], key: 'burst' },
   ] as const;
   const open = (id: string) => st?.config[id as 'slots']?.enabled !== false;
   const top = (id: string) => {
@@ -110,6 +117,7 @@
   };
   const NAV: { id: Tab; label: string; icon: typeof Home }[] = [
     { id: 'lobby', label: 'Lobby', icon: Home }, { id: 'slots', label: 'Slots', icon: Gem }, { id: 'plinko', label: 'Plinko', icon: Triangle }, { id: 'mines', label: 'Mines', icon: Bomb },
+    { id: 'roulette', label: 'Roulette', icon: CircleDollarSign }, { id: 'burst', label: 'Burst', icon: Zap },
     { id: 'wheel', label: 'Wheel', icon: CircleDollarSign }, { id: 'blackjack', label: 'Blackjack', icon: Spade }, { id: 'crash', label: 'Crash', icon: Rocket }, { id: 'dice', label: 'Dice', icon: Dices }, { id: 'coinflip', label: 'Coin Flip', icon: Coins }, { id: 'bounties', label: 'Bounties', icon: Crosshair }, { id: 'betting', label: 'Betting', icon: Swords },
   ];
   const net = $derived(hist ? hist.won - hist.wagered : 0);
@@ -212,7 +220,7 @@
                 <kbd class="hk" aria-hidden="true">{i + 1}</kbd>
                 <b>{g.label}</b>
                 <span class="blurb">{g.blurb}{#if top(g.id)}{' '}<em>{top(g.id)}</em>{/if}</span>
-                <span class="rtp">{open(g.id) ? 'Pays back ' + (st.rtp[g.id as 'slots'] * 100).toFixed(0) + '%' : 'Closed'}</span>
+                <span class="rtp">{open(g.id) ? 'Base return ' + (st.rtp[g.id as 'slots'] * 100).toFixed(0) + '%' : 'Closed'}</span>
               </button>
             {/each}
             <button class="tile wide" style="--a:#ef4444;--b:#7f1d1d" disabled={!st.config.bounties.enabled} onclick={() => (tab = 'bounties')}>
@@ -252,6 +260,8 @@
       {#if visited.crash}<div class="pane" data-game="crash" hidden={tab !== 'crash'}><Pane active={tab === 'crash'}><Crash {st} {balance} onbalance={setBalance} onplayed={() => refresh()} /></Pane></div>{/if}
       {#if visited.dice}<div class="pane" data-game="dice" hidden={tab !== 'dice'}><Pane active={tab === 'dice'}><Dice {st} {balance} onbalance={setBalance} onplayed={() => refresh()} /></Pane></div>{/if}
       {#if visited.coinflip}<div class="pane" data-game="coinflip" hidden={tab !== 'coinflip'}><Pane active={tab === 'coinflip'}><CoinFlip {st} {balance} onbalance={setBalance} onplayed={() => refresh()} /></Pane></div>{/if}
+      {#if visited.roulette}<div class="pane" data-game="roulette" hidden={tab !== 'roulette'}><Pane active={tab === 'roulette'}><Roulette {st} {balance} onbalance={setBalance} onplayed={() => refresh()} /></Pane></div>{/if}
+      {#if visited.burst}<div class="pane" data-game="burst" hidden={tab !== 'burst'}><Pane active={tab === 'burst'}><BurstGame {st} {balance} onbalance={setBalance} onplayed={() => refresh()} /></Pane></div>{/if}
       {#if tab === 'bounties'}<Bounties {st} {balance} onbalance={setBalance} onplayed={() => refresh()} />
       {:else if tab === 'betting'}<Betting {st} {balance} onbalance={setBalance} onplayed={() => refresh()} />
       {/if}

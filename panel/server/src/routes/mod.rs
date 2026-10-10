@@ -15,6 +15,7 @@ pub mod content;
 pub mod contracts;
 pub mod cosmetics;
 pub mod dev_api;
+pub mod darknet;
 pub mod discord;
 pub mod discord_commands;
 pub mod discord_studio;
@@ -22,6 +23,7 @@ pub mod economy;
 pub mod economy_admin;
 pub mod emails;
 pub mod events;
+pub mod factions;
 pub mod guild_bank;
 pub mod guild_flags;
 pub mod guild_game;
@@ -50,6 +52,10 @@ pub mod rewards;
 pub mod servers;
 pub mod social;
 pub mod utilities;
+pub mod vaults;
+pub mod vault_transfers;
+pub mod physical_shops;
+pub mod outposts;
 pub mod worldmap;
 
 use crate::state::AppState;
@@ -159,6 +165,7 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .route("/guilds/{id}/claims", post(guilds::claim_chunk).delete(guilds::unclaim_chunk))
         .route("/guilds/{id}/relations", get(guilds::list_relations).post(guilds::create_relation))
         .route("/guilds/{id}/relations/{relation_id}/respond", post(guilds::decide_relation))
+        .route("/guilds/{id}/upgrades", get(factions::get_upgrades).post(factions::buy_upgrade))
         .route("/guilds/{id}/claim", post(guilds::claim_chunk))
         .route("/guilds/{id}/unclaim", post(guilds::unclaim_chunk))
         // Economy
@@ -181,6 +188,10 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .route("/casino/{sid}/plinko", post(casino::plinko))
         .route("/casino/{sid}/dice", post(casino::dice))
         .route("/casino/{sid}/coinflip", post(casino::coinflip))
+        .route("/casino/{sid}/roulette", post(casino::roulette))
+        .route("/casino/{sid}/burst/start", post(casino::burst_start))
+        .route("/casino/{sid}/burst/advance", post(casino::burst_advance))
+        .route("/casino/{sid}/burst/cashout", post(casino::burst_cashout))
         .route("/casino/{sid}/double", post(casino::double))
         .route("/casino/{sid}/crash/start", post(casino::crash_start))
         .route("/casino/{sid}/crash/status", get(casino::crash_status))
@@ -199,6 +210,11 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .route("/casino/{sid}/markets/{id}/bet", post(casino::place_bet))
         .route("/casino/{sid}/markets/{id}/cancel", post(casino::cancel_market))
         .route("/economy/me", get(economy::get_my_balances))
+        .route("/board/{sid}/darknet", get(darknet::player_catalog))
+        .route("/vaults/{sid}", get(vaults::player_list))
+        .route("/vaults/{sid}/move", post(vaults::player_move))
+        .route("/vaults/{sid}/buy", post(vaults::player_buy))
+        .route("/board/{sid}/darknet/buy", post(darknet::player_buy))
         .route("/economy/balances", get(economy::get_my_balances))
         .route("/economy/balance/{server_id}", get(economy::get_my_balance_on))
         .route("/economy/transactions", get(economy::get_my_transactions))
@@ -232,6 +248,8 @@ pub fn api(state: &AppState) -> Router<AppState> {
 
     let admin = Router::new()
         .route("/instances/{id}/experience", axum::routing::put(crate::experience::configure))
+        .route("/instances/{id}/velora-core/activate", post(crate::velora_core::activate))
+        .route("/economy/darknet", get(darknet::admin_get).put(darknet::admin_put))
         .route("/icons/packs", get(icon_library::packs))
         .route("/mc-textures", get(mc_assets::admin_get).delete(mc_assets::admin_clear))
         .route("/mc-textures/fetch", post(mc_assets::admin_fetch))
@@ -438,12 +456,20 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .route("/player/friends", post(dev_api::friends))
         .route("/guild/info", post(dev_api::guild))
         .route("/guilds/bank", post(guild_bank::server_bank_info))
+        .route("/guilds/upgrades", post(factions::server_upgrades))
         .route("/guilds/bank/transfer", post(guild_bank::server_bank_transfer))
         .route("/guilds/bank/credit", post(guild_bank::server_bank_credit))
         .route("/guilds/bank/pay", post(guild_bank::server_bank_pay))
         .route("/economy/balance", post(economy::server_get_balance))
         .route("/economy/pay", post(economy::server_transfer))
         .route("/economy/transfer", post(economy::server_transfer))
+        .route("/economy/darknet", post(darknet::game_catalog))
+        .route("/economy/darknet/buy", post(darknet::game_buy))
+        .route("/economy/physical-shops", post(physical_shops::index))
+        .route("/economy/physical-shops/create", post(physical_shops::create).layer(DefaultBodyLimit::max(2 * 1024 * 1024)))
+        .route("/economy/physical-shops/buy", post(physical_shops::buy))
+        .route("/economy/physical-shops/promote", post(physical_shops::promote))
+        .route("/economy/physical-shops/update", post(physical_shops::update))
         .route("/economy/adjust", post(economy::server_adjust_balance))
         .route("/economy/market", post(economy::server_market_read))
         .route("/economy/sync-balance", post(economy::server_sync_balance))
@@ -465,6 +491,16 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .route("/economy/market/mailbox/claim", post(auctions::server_mailbox_claim))
         .route("/economy/market/vault", post(auctions::server_vault_pull))
         .route("/economy/market/vault/ack", post(auctions::server_vault_ack))
+        .route("/vault/open", post(vaults::game_open))
+        .route("/vault/transfers/prepare", post(vault_transfers::prepare).layer(DefaultBodyLimit::max(8 * 1024 * 1024)))
+        .route("/vault/transfers/finish", post(vault_transfers::finish))
+        .route("/vault/transfers/pending", post(vault_transfers::pending))
+        .route("/guilds/outposts/place", post(outposts::place))
+        .route("/vault/save", post(vaults::game_save).layer(DefaultBodyLimit::max(8 * 1024 * 1024)))
+        .route("/vault/renew", post(vaults::game_renew))
+        .route("/vault/import", post(vaults::game_import).layer(DefaultBodyLimit::max(64 * 1024 * 1024)))
+        .route("/vault/buy", post(vaults::game_buy))
+        .route("/vault/entitlements", post(vaults::game_entitlements))
         .layer(DefaultBodyLimit::max(2 * 1024 * 1024));
 
     // Map ingest: tile batches are larger than the other game calls.
