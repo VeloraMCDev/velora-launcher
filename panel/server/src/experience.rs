@@ -348,7 +348,7 @@ pub fn platform_path(path: &str) -> bool {
         Some(
             "auth" | "auth-server" | "account" | "profile" | "social" | "friends" | "messages" | "invites" | "members" | "users" | "groups"
             | "capes" | "instances" | "branding" | "settings" | "landing" | "uploads" | "avatar" | "email" | "email-templates" | "meta"
-            | "icons" | "mc" | "mc-textures" | "launcher" | "launcher-updates" | "mobile-apps" | "connections" | "emails" | "activity",
+            | "icons" | "mc" | "mc-textures" | "core" | "launcher" | "launcher-updates" | "mobile-apps" | "connections" | "emails" | "activity",
         ) => true,
         _ => !path.starts_with("/api/"),
     }
@@ -581,5 +581,20 @@ mod platform_path_tests {
         for path in ["/api/v1/mc/status", "/api/v1/mc/item/diamond_sword.png", "/api/v1/mc/gui/hud/heart/full.png", "/api/admin/mc-textures", "/api/admin/mc-textures/upload"] {
             assert!(super::platform_path(path), "{path}");
         }
+    }
+
+    /// Velora Core releases belong to the platform, not to any one instance: deployment tools such as the Calagopus
+    /// extension call these without an instance header, and the Panel serves several instances.
+    #[test]
+    fn velora_core_releases_need_no_instance_selection() {
+        for path in [
+            "/api/v1/core/latest",
+            "/api/v1/core/files/abababababababababababababababababababababababababababababababab/velora-core-server-1.20.1-0.6.0.jar",
+            "/api/admin/core/releases",
+            "/api/admin/core/releases/velora-core-v0.6.0/approve",
+        ] {
+            assert!(super::platform_path(path), "{path}");
+        }
+        assert!(!super::platform_path("/api/v1/corefoo/latest"), "only the exact core segment is platform-level");
     }
 }
