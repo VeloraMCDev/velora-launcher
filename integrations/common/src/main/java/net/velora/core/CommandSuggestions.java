@@ -14,8 +14,8 @@ public final class CommandSuggestions {
         String name = command.toLowerCase(Locale.ROOT), sub = args[0].toLowerCase(Locale.ROOT);
         if (name.equals("velora")) return args.length == 1 ? List.of("help", "panel", "status", "map", "reload").stream()
                 .filter(s -> permission.test("velora.command.velora." + (s.equals("map") ? "status" : s))).toList() : List.of();
-        if (name.equals("guild")) {
-            if (args.length == 1) return GUILD.stream().filter(s -> permission.test("velora.command.guild." + s)).toList();
+        if (name.equals("faction") || name.equals("guild")) {
+            if (args.length == 1) return GUILD.stream().filter(s -> permission.test("velora.command.faction." + s)).toList();
             if (args.length == 2 && Set.of("invite", "accept", "decline", "approve", "reject", "kick", "promote", "demote", "role", "transfer", "pay").contains(sub)) return players;
             if (args.length == 2 && sub.equals("bank")) return List.of("deposit", "withdraw");
             if (args.length == 2 && sub.equals("flags")) return GUILD_RULES;

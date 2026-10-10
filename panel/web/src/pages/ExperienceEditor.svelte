@@ -5,22 +5,13 @@
   import { toast, toastError } from '../lib/toast.svelte';
   import { route } from '../lib/router.svelte';
   import InstanceGroupLinks from '../components/InstanceGroupLinks.svelte';
+  import DarknetCatalog from '../components/DarknetCatalog.svelte';
   import type { Branding } from '../lib/types';
   const initial = structuredClone($state.snapshot(experienceContext.instance?.experience ?? defaultExperience()));
   let form = $state<Experience>(initial);
   let core = $state<CorePolicy>(structuredClone({ ...corePolicy(), ...(initial.modules.velora_core as CorePolicy | undefined) }));
   let advanced = $state(JSON.stringify({ navigation: initial.navigation, widgets: initial.widgets, modules: initial.modules }, null, 2));
   let saving = $state(false);
-  let catalog = $state('[]');
-  let catalogBusy = $state(false);
-  async function loadCatalog() {
-    try { catalog = JSON.stringify(await get('/api/admin/economy/darknet'), null, 2); } catch (e) { toastError(e); }
-  }
-  async function saveCatalog() {
-    catalogBusy = true;
-    try { await put('/api/admin/economy/darknet', JSON.parse(catalog)); toast('Darknet catalog saved'); }
-    catch (e) { toastError(e); } finally { catalogBusy = false; }
-  }
   function applyPreset(kind: 'velora-smp') {
     const next = preset(kind);
     form = { ...next, branding: form.branding };
@@ -105,14 +96,10 @@
     <p>Activate this Fabric 1.20.1 installation as the sole visible experience. Activation restores default module settings and preserves existing files, accounts and game data.</p>
     <button disabled={saving} onclick={activate}>Activate Velora SMP and hide other experiences</button>
   </section>
-  <section><h2>Darknet catalog</h2><p>Prices use integer cents. Products are delivered to vaults. Item IDs must exist in the installed modpack; test each product in staging before offering it.</p>
-    <p>Example: {JSON.stringify({ id: 'barrier', item_id: 'minecraft:barrier', item_name: 'Barrier', amount: 1, price_cents: 1000000, enabled: true })}</p>
-    <label>Catalog JSON<textarea rows="8" bind:value={catalog} spellcheck="false"></textarea></label>
-    <div class="row"><button disabled={catalogBusy} onclick={loadCatalog}>Load catalog</button><button disabled={catalogBusy} onclick={saveCatalog}>Save catalog</button></div>
-  </section>
+  <DarknetCatalog />
   {:else}
   <section><h2>Enabled systems</h2><div class="features">
-    {#each FEATURES as feature}<label class="feature"><input type="checkbox" checked={form.features.includes(feature)} onchange={() => toggle(feature)} /> {feature}</label>{/each}
+    {#each FEATURES as feature}<label class="feature"><input type="checkbox" checked={form.features.includes(feature)} onchange={() => toggle(feature)} /> {feature === 'guilds' ? 'Factions' : feature}</label>{/each}
   </div><p>Disabled systems are hidden from navigation and rejected by the instance API. Their stored data is preserved.</p></section>
   {/if}
   <section><h2>Instance identity</h2>

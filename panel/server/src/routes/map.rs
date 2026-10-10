@@ -195,7 +195,7 @@ pub async fn create_invite(
         None => false,
     };
     if !allowed {
-        return Err(AppError::forbidden("Your guild role cannot invite players"));
+        return Err(AppError::forbidden("Your faction role cannot invite players"));
     }
     let target: Option<String> = sqlx::query_scalar("SELECT username FROM users WHERE uuid = ? AND status = 'active'")
         .bind(target_uuid)
@@ -212,7 +212,7 @@ pub async fn create_invite(
     .fetch_one(&mut *conn)
     .await?;
     if taken {
-        return Err(AppError::bad_request(format!("{target_name} is already in a guild here")));
+        return Err(AppError::bad_request(format!("{target_name} is already in a faction here")));
     }
     let recent: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM guild_invites WHERE inviter_uuid = ? AND created_at > ?")
         .bind(inviter_uuid)
@@ -304,7 +304,7 @@ pub async fn respond(state: &AppState, uuid: &str, name: &str, invite: Option<i6
                 .await?
         }
     };
-    let Some((id, guild_id)) = row else { return Err(AppError::not_found("You have no open guild invitation")) };
+    let Some((id, guild_id)) = row else { return Err(AppError::not_found("You have no open faction invitation")) };
     sqlx::query("UPDATE guild_invites SET status = ? WHERE id = ?")
         .bind(if accept { "accepted" } else { "declined" })
         .bind(id)
@@ -323,7 +323,7 @@ pub async fn respond(state: &AppState, uuid: &str, name: &str, invite: Option<i6
             .await;
         if res.is_err() {
             // The database refuses a second guild on the same instance.
-            return Err(AppError::bad_request("You're already in a guild here. Leave it first."));
+            return Err(AppError::bad_request("You're already in a faction here. Leave it first."));
         }
         sqlx::query("INSERT OR IGNORE INTO user_achievements (user_uuid, achievement_id, unlocked_at) VALUES (?, 'ach_guild_initiate', ?)")
             .bind(uuid)
@@ -377,7 +377,7 @@ pub async fn server_invite_send(
     .bind(&server.instance_id)
     .fetch_optional(&state.db)
     .await?;
-    let guild = guild.ok_or_else(|| AppError::forbidden("You must lead or officiate a guild to invite players"))?;
+    let guild = guild.ok_or_else(|| AppError::forbidden("You must lead or officiate a faction to invite players"))?;
     Ok(Json(create_invite(&state, &p.uuid, &inviter, &guild, &target).await?))
 }
 

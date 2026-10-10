@@ -3,21 +3,21 @@ use shared::extensions::settings::{
     ExtensionSettings, SettingsDeserializeExt, SettingsDeserializer, SettingsSerializeExt, SettingsSerializer,
 };
 
-/// What the operator configures once: where the Velora Panel lives and whether linked servers update themselves.
+/// What the operator configures once: where the Velora Panel lives. Mod installation is manual.
 /// The Velora server token is never stored here; it is written straight into the server's own config file.
 #[derive(Clone, Serialize, Deserialize)]
 pub struct ExtensionSettingsData {
     /// Public address of the Velora Panel, such as `https://velora.example.com`. Empty until configured.
     pub panel_url: compact_str::CompactString,
-    /// Install new approved releases on linked servers while they are stopped.
+    /// Retained for stored-setting compatibility; automatic mod updates are disabled.
     pub auto_update: bool,
-    /// Servers that opted in to automatic updates.
+    /// Previous opt-ins, ignored by this version.
     pub linked: Vec<uuid::Uuid>,
 }
 
 impl Default for ExtensionSettingsData {
     fn default() -> Self {
-        Self { panel_url: Default::default(), auto_update: true, linked: Vec::new() }
+        Self { panel_url: Default::default(), auto_update: false, linked: Vec::new() }
     }
 }
 
@@ -38,7 +38,7 @@ impl SettingsDeserializeExt for ExtensionSettingsDataDeserializer {
     async fn deserialize_boxed(&self, mut deserializer: SettingsDeserializer<'_>) -> Result<ExtensionSettings, anyhow::Error> {
         Ok(Box::new(ExtensionSettingsData {
             panel_url: deserializer.take_raw_setting("panel_url").unwrap_or_default(),
-            auto_update: deserializer.take_raw_setting("auto_update").map(|v| v != "false").unwrap_or(true),
+            auto_update: false,
             linked: deserializer.read_serde_setting("linked").unwrap_or_default(),
         }))
     }

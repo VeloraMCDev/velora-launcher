@@ -16,3 +16,12 @@ test('configuration cannot add unknown or disabled navigation pages', () => {
   experience.navigation = [{ id: 'casino', label: 'Override' }, { id: 'unknown', label: 'Remote script' }];
   assert.deepEqual(navigation(experience, [{ id: 'home', label: 'Home' }, { id: 'casino', label: 'Casino' }]), [{ id: 'home', label: 'Home' }]);
 });
+
+test('persisted Guild navigation displays Factions without changing IDs or configuration', () => {
+  const experience = defaultExperience();
+  experience.navigation = [{ id: 'guilds', label: 'Guilds & Claims' }, { id: 'home', label: 'Home' }];
+  const pages = navigation(experience, [{ id: 'home', label: 'Overview' }, { id: 'guilds', label: 'Factions' }]);
+  assert.deepEqual(pages, [{ id: 'guilds', label: 'Factions & Claims' }, { id: 'home', label: 'Home' }]);
+  assert.equal(experience.navigation[0].label, 'Guilds & Claims');
+  assert.equal(pageEnabled(experience, 'guilds'), true);
+});

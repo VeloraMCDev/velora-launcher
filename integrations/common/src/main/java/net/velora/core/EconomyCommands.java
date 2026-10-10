@@ -124,7 +124,7 @@ final class EconomyCommands {
     /** {@code guild}: the proceeds go to the player's guild bank. */
     void sell(CorePlayer p, String[] args, boolean guild) {
         if (args.length == 0 || !args[0].equalsIgnoreCase("hand")) {
-            p.send(Format.YELLOW + "Hold the items you want to sell and use /" + (guild ? "guild sell" : "sell") + " hand." + Format.GRAY + " See prices with /shop.");
+            p.send(Format.YELLOW + "Hold the items you want to sell and use /" + (guild ? "faction sell" : "sell") + " hand." + Format.GRAY + " See prices with /shop.");
             return;
         }
         if (!guild && !p.hasPermission("velora.command.sell.hand")) { p.send(Format.RED + "You do not have permission to use /sell hand."); return; }
@@ -152,7 +152,7 @@ final class EconomyCommands {
             if (!asGuild && !p.hasPermission("velora.command.market.buy")) { p.send(Format.RED + "You do not have permission to buy from the market."); return; }
             long listing;
             try { listing = Long.parseLong(args[1].replace("#", "")); } catch (NumberFormatException e) {
-                p.send(Format.RED + "Usage: /" + (asGuild ? "guild market" : "market") + " buy <listing number> (shown as #n in /market)");
+                p.send(Format.RED + "Usage: /" + (asGuild ? "faction market" : "market") + " buy <listing number> (shown as #n in /market)");
                 return;
             }
             JsonObject payload = new JsonObject();
@@ -257,7 +257,7 @@ final class EconomyCommands {
             for (JsonElement e : list) {
                 JsonObject l = e.getAsJsonObject();
                 String guild = l.has("seller_guild") && l.get("seller_guild").isJsonPrimitive() ? l.get("seller_guild").getAsString() : null;
-                String seller = guild != null ? Format.GOLD + "[" + guild + "] guild" : Format.WHITE + l.get("seller_name").getAsString();
+                String seller = guild != null ? Format.GOLD + "[" + guild + "] faction" : Format.WHITE + l.get("seller_name").getAsString();
                 boolean auction = l.has("kind") && "auction".equals(l.get("kind").getAsString());
                 String head = Format.DARK_GRAY + "#" + l.get("id").getAsLong() + " " + Format.WHITE + l.get("item_name").getAsString() + Format.GRAY + " x" + l.get("amount").getAsInt() + " ";
                 if (auction) {

@@ -24,9 +24,9 @@
 {#if enabled(experienceContext.instance?.experience, 'maps')}<Toggle
   bind:checked={draft.map_enabled}
   label="Velora Map"
-  help="The server plugin/mod draws this world in the background and sends only what changed, with players, guild land and shops. Players get a Live Map button in the launcher and you get it here. Nothing else to install or host."
+  help="The server plugin/mod draws this world in the background and sends only what changed, with players, faction land and shops. Players get a Live Map button in the launcher and you get it here. Nothing else to install or host."
 />{/if}
-{#if enabled(experienceContext.instance?.experience, 'economy')}<label class="field">Shared economy group<input bind:value={draft.economy_group} maxlength="32" placeholder="Leave empty for a separate economy" /><span class="tiny muted">Servers with the same group name share player balances and guild banks, so one wallet follows players across servers in this instance. Existing per-server balances aren't merged.</span></label>{/if}
+{#if enabled(experienceContext.instance?.experience, 'economy')}<label class="field">Shared economy group<input bind:value={draft.economy_group} maxlength="32" placeholder="Leave empty for a separate economy" /><span class="tiny muted">Servers with the same group name share player balances and faction banks, so one wallet follows players across servers in this instance. Existing per-server balances aren't merged.</span></label>{/if}
 <div class="field">
   <span class="lbl">Who can join</span>
   <div class="opts">

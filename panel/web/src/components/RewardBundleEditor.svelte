@@ -21,7 +21,7 @@
     { id: 'unlock', label: 'Cosmetic', icon: Sparkles, blurb: 'Unlock a title, particle, pet, message or modelled cosmetic from the Cosmetics Studio' },
     { id: 'permission', label: 'Permission', icon: KeyRound, blurb: 'Grant an in-game permission (LuckPerms)' },
     { id: 'group', label: 'Group', icon: Users, blurb: 'Add them to a permission group' },
-    { id: 'claim_chunks', label: 'Claim chunks', icon: MapIcon, blurb: 'Raise their guild’s land limit' },
+    { id: 'claim_chunks', label: 'Claim chunks', icon: MapIcon, blurb: 'Raise their faction’s land limit' },
     { id: 'badge', label: 'Badge', icon: Award, blurb: 'Show a badge on their profile' },
     { id: 'message', label: 'Message', icon: MessageSquare, blurb: 'Tell them something in game' },
     { id: 'command', label: 'Command', icon: Terminal, blurb: 'Run a console command (the server must allow it)' }

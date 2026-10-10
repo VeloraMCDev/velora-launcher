@@ -30,7 +30,7 @@
       guilds = (g || []).map((x: any) => ({
         id: x.id || '',
         instance_id: x.instance_id || '',
-        name: x.name || 'Unnamed Guild',
+        name: x.name || 'Unnamed Faction',
         tag: x.tag || '',
         description: x.description || '',
         motd: x.motd || '',
@@ -77,7 +77,7 @@
     renameBusy = true;
     try {
       await put(`/api/admin/guilds/${renaming.id}`, { name: renameName.trim(), tag: renameTag.trim() });
-      toast(`Guild renamed to [${renameTag.trim().toUpperCase()}] ${renameName.trim()}`);
+      toast(`Faction renamed to [${renameTag.trim().toUpperCase()}] ${renameName.trim()}`);
       renameOpen = false; renaming = null;
       await loadData();
     } catch (e) {
@@ -90,7 +90,7 @@
   async function remove(g: Guild) {
     try {
       await del(`/api/admin/guilds/${g.id}`);
-      toast(`Guild [${g.tag}] ${g.name} disbanded`);
+      toast(`Faction [${g.tag}] ${g.name} disbanded`);
       deleteConfirm = null;
       await loadData();
     } catch (e) {
@@ -102,14 +102,14 @@
 <div class="page">
   <header>
     <div>
-      <h1>Guilds & Land Claims Management</h1>
-      <p>View instances' guilds, member counts, active chunk claims, and moderate guilds.</p>
+      <h1>Factions & Land Claims Management</h1>
+      <p>View instances' factions, member counts, active chunk claims, and moderate factions.</p>
     </div>
   </header>
 
   <div class="stats-row">
     <div class="stat-card">
-      <span class="label">Total Guilds</span>
+      <span class="label">Total Factions</span>
       <span class="value">{guilds.length}</span>
     </div>
     <div class="stat-card">
@@ -125,7 +125,7 @@
   <div class="toolbar">
     <div class="search-box">
       <Search size={16} />
-      <input type="text" placeholder="Search guilds by name, tag, or id..." bind:value={search} />
+      <input type="text" placeholder="Search factions by name, tag, or id..." bind:value={search} />
     </div>
 
     <div class="filters">
@@ -139,15 +139,15 @@
   </div>
 
   {#if loading}
-    <div class="empty">Loading guilds...</div>
+    <div class="empty">Loading factions...</div>
   {:else if filtered.length === 0}
-    <div class="empty">No guilds found.</div>
+    <div class="empty">No factions found.</div>
   {:else}
     <div class="table-wrap">
       <table>
         <thead>
           <tr>
-            <th>Guild</th>
+            <th>Faction</th>
             <th>Tag</th>
             <th>Instance</th>
             <th>Leader</th>
@@ -200,10 +200,10 @@
                 <span class="date-text">{new Date(g.created_at).toLocaleDateString()}</span>
               </td>
               <td>
-                <button class="ghost icon" title="Rename guild" aria-label="Rename guild" onclick={() => openRename(g)}>
+                <button class="ghost icon" title="Rename faction" aria-label="Rename faction" onclick={() => openRename(g)}>
                   <Pencil size={15} />
                 </button>
-                <button class="ghost icon danger" title="Disband guild" onclick={() => { deleteConfirm = g; deleteOpen = true; }}>
+                <button class="ghost icon danger" title="Disband faction" onclick={() => { deleteConfirm = g; deleteOpen = true; }}>
                   <Trash2 size={15} />
                 </button>
               </td>
@@ -216,7 +216,7 @@
 </div>
 
 {#if renaming}
-  <Modal bind:open={renameOpen} title="Rename Guild">
+  <Modal bind:open={renameOpen} title="Rename Faction">
     <div class="rename-form">
       <label>Name<input bind:value={renameName} maxlength="32" /></label>
       <label>Tag<input bind:value={renameTag} maxlength="6" /></label>
@@ -230,12 +230,12 @@
 {/if}
 
 {#if deleteConfirm}
-  <Modal bind:open={deleteOpen} title="Disband Guild">
+  <Modal bind:open={deleteOpen} title="Disband Faction">
     <p>Are you sure you want to forcibly disband <strong>[{deleteConfirm.tag}] {deleteConfirm.name}</strong>?</p>
-    <p class="warn-note">This will kick all {deleteConfirm.member_count} members and unclaim all {deleteConfirm.claims_count} chunks of land. Whatever is in the guild treasury is paid to its leader.</p>
+    <p class="warn-note">This will kick all {deleteConfirm.member_count} members and unclaim all {deleteConfirm.claims_count} chunks of land. Whatever is in the faction treasury is paid to its leader.</p>
     <div class="modal-actions">
       <button class="ghost" onclick={() => { deleteOpen = false; deleteConfirm = null; }}>Cancel</button>
-      <button class="danger" onclick={() => { if (deleteConfirm) { remove(deleteConfirm); deleteOpen = false; } }}>Disband Guild</button>
+      <button class="danger" onclick={() => { if (deleteConfirm) { remove(deleteConfirm); deleteOpen = false; } }}>Disband Faction</button>
     </div>
   </Modal>
 {/if}

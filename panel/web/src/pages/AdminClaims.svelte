@@ -30,7 +30,7 @@
     const next = guildRules.map((x) => (x.id === r.id ? { ...x, editable: !x.editable } : x));
     try {
       guildRules = (await put<{ catalog: GuildRule[] }>('/api/admin/guild-flag-policy', { editable: next.filter((x) => x.editable).map((x) => x.id) })).catalog;
-      toast(`${r.label}: ${r.editable ? 'now managed by you' : 'guilds can change it'}`);
+      toast(`${r.label}: ${r.editable ? 'now managed by you' : 'factions can change it'}`);
     } catch (e) { toastError(e); }
   }
 
@@ -95,13 +95,13 @@
   </section>
 
   <details class="card guild-rules">
-    <summary><Users size={16} /> Guild land rules <small>which rules guild leaders may change on their own claims</small></summary>
-    <p class="hint">Guilds can open their land to visitors or tighten it from the Land tab in the player panel and launcher. Switch a rule off here to keep it at its default for every guild.</p>
+    <summary><Users size={16} /> Faction land rules <small>which rules faction leaders may change on their own claims</small></summary>
+    <p class="hint">Factions can open their land to visitors or tighten it from the Land tab in the player panel and launcher. Switch a rule off here to keep it at its default for every faction.</p>
     <div class="rule-grid">
       {#each guildRules as r (r.id)}
         <button type="button" class="rule" class:on={r.editable} role="switch" aria-checked={r.editable} onclick={() => toggleGuildRule(r)} title={r.help}>
           <span><b>{r.label}</b><small>{r.group} · default {r.default ? 'on' : 'off'}</small></span>
-          <span class="state">{r.editable ? 'Guilds choose' : 'Locked'}</span>
+          <span class="state">{r.editable ? 'Factions choose' : 'Locked'}</span>
         </button>
       {/each}
     </div>
@@ -141,7 +141,7 @@
       </details>
       <details>
         <summary>Add or remove land</summary>
-        <p class="hint">Enter two opposite corners in <b>block</b> coordinates (press F3 in game). Land that already belongs to a guild is skipped.</p>
+        <p class="hint">Enter two opposite corners in <b>block</b> coordinates (press F3 in game). Land that already belongs to a faction is skipped.</p>
         <div class="row coords">
           <label>Dimension<select bind:value={area[c.id].dimension}><option>minecraft:overworld</option><option>minecraft:the_nether</option><option>minecraft:the_end</option></select></label>
           <label>X 1<input type="number" bind:value={area[c.id].x1} /></label><label>Z 1<input type="number" bind:value={area[c.id].z1} /></label>

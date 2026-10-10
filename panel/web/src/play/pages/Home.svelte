@@ -85,7 +85,7 @@
 
   const allTiles: { id: string; label: string; icon: Component<any>; hue: string }[] = [
     { id: 'market', label: 'Market', icon: Store, hue: '--accent' }, { id: 'casino', label: 'Casino', icon: Dices, hue: '--warn' }, { id: 'quests', label: 'Quests', icon: Target, hue: '--good' },
-    { id: 'social', label: 'Friends', icon: Users, hue: '--accent-2' }, { id: 'wallet', label: 'Wallet', icon: Banknote, hue: '--good' }, { id: 'guilds', label: 'Guilds', icon: Shield, hue: '--accent' },
+    { id: 'social', label: 'Friends', icon: Users, hue: '--accent-2' }, { id: 'wallet', label: 'Wallet', icon: Banknote, hue: '--good' }, { id: 'guilds', label: 'Factions', icon: Shield, hue: '--accent' },
     { id: 'stats', label: 'Ranks', icon: Trophy, hue: '--warn' }, { id: 'map', label: 'Live map', icon: MapIcon, hue: '--accent-2' }, { id: 'launcher', label: 'Launcher', icon: Download, hue: '--accent' },
   ];
   const tiles = $derived(allTiles.filter(t => (!nativeApp || t.id !== 'launcher') && pageEnabled(instance?.experience, t.id)));

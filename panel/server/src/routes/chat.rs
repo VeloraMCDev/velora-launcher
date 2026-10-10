@@ -52,7 +52,7 @@ impl Default for ChatSettings {
 const PARTS: &[&str] = &["guild", "title", "rank_title", "group", "prefix", "name", "suffix", "level", "message"];
 
 fn check(s: &ChatSettings) -> AppResult<()> {
-    for (label, v) in [("Layout", &s.format), ("Guild", &s.guild_format), ("Title", &s.title_format), ("Group", &s.group_format), ("Level", &s.level_format)] {
+    for (label, v) in [("Layout", &s.format), ("Faction", &s.guild_format), ("Title", &s.title_format), ("Group", &s.group_format), ("Level", &s.level_format)] {
         if v.chars().count() > 300 {
             return Err(AppError::bad_request(format!("{label} template is too long (300 characters at most)")));
         }

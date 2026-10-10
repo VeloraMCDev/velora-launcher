@@ -29,7 +29,7 @@ public final class CommandSet {
                 "Essentials", () -> env.features.essentials());
         add(env, economy.build(), "Economy", () -> env.features.economy());
         add(env, new BoardCommands(env, jobs).build(), "Economy", () -> env.features.economy());
-        add(env, guilds.build(), "Guilds", () -> env.features.guilds());
+        add(env, guilds.build(), "Factions", () -> env.features.guilds());
         utilityHub = new UtilityHub(env, () -> env.utilities.get(), new UtilityStore(dir.resolve("utility-state.json")));
         add(env, utilityHub.commands(), "Utility commands", () -> true);
     }
@@ -42,7 +42,7 @@ public final class CommandSet {
 
     /** Run a command by name as this player, with the same checks as typing it. */
     public void run(String name, CorePlayer player, String... args) {
-        for (CoreCommand c : commands) if (c.name().equals(name)) { c.run(player, args); return; }
+        for (CoreCommand c : commands) if (c.name().equals(name) || c.aliases().contains(name)) { c.run(player, args); return; }
         throw new IllegalArgumentException("no command " + name);
     }
 

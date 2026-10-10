@@ -40,7 +40,7 @@
   // Money the guild receives (deposits, shop and market sales, payments from guilds) vs. spends.
   const isOut = (kind: string) => kind === 'withdraw' || kind === 'purchase' || kind === 'transfer_out' || kind === 'upkeep';
   const verbs: Record<string, string> = {
-    deposit: 'deposited', withdraw: 'withdrew', sale: 'sold items', purchase: 'bought', transfer_in: 'received a payment', transfer_out: 'paid a guild', upkeep: 'paid daily upkeep'
+    deposit: 'deposited', withdraw: 'withdrew', sale: 'sold items', purchase: 'bought', transfer_in: 'received a payment', transfer_out: 'paid a faction', upkeep: 'paid daily upkeep'
   };
   const totals = $derived({
     in: wallet?.transactions.filter((t) => !isOut(t.kind)).reduce((n, t) => n + t.amount, 0) ?? 0,
@@ -83,7 +83,7 @@
       wallet = await invoke<WalletData>('get_guild_wallet', { guildId: guild.id, serverId });
       if (!canWithdraw) mode = 'deposit';
     } catch (e: any) {
-      toast(typeof e === 'string' ? e : e?.message ?? 'Unable to load the guild wallet', 'error');
+      toast(typeof e === 'string' ? e : e?.message ?? 'Unable to load the faction wallet', 'error');
     } finally {
       loading = false;
     }
@@ -116,7 +116,7 @@
     <div class="empty glass">
       <span class="empty-icon"><Server size={26} /></span>
       <h3>No game server linked</h3>
-      <p class="muted">The guild treasury lives on a game server's economy. Ask an admin to link a server to this instance in the panel.</p>
+      <p class="muted">The faction treasury lives on a game server's economy. Ask an admin to link a server to this instance in the panel.</p>
     </div>
   {:else}
     {#if instanceServers.length > 1}
@@ -137,7 +137,7 @@
           <section class="treasury">
             <div class="glow" aria-hidden="true"></div>
             <div class="t-top">
-              <span class="t-label"><Landmark size={14} /> Guild treasury</span>
+              <span class="t-label"><Landmark size={14} /> Faction treasury</span>
               <span class="tag">[{guild.tag}]</span>
               <button class="ghost icon sm refresh" onclick={load} aria-label="Refresh wallet" title="Refresh"><RefreshCw size={14} class={loading ? 'spin' : ''} /></button>
             </div>
@@ -163,7 +163,7 @@
                 aria-selected={mode === 'withdraw'}
                 class:on={mode === 'withdraw'}
                 disabled={!canWithdraw}
-                title={canWithdraw ? '' : 'Only guild leaders and officers can withdraw'}
+                title={canWithdraw ? '' : 'Only faction leaders and officers can withdraw'}
                 onclick={() => (mode = 'withdraw')}
               >
                 {#if canWithdraw}<ArrowUpFromLine size={15} />{:else}<Lock size={14} />{/if} Withdraw
@@ -190,7 +190,7 @@
             {:else if overLimit}
               <p class="warn tiny">{mode === 'deposit' ? "That's more than your wallet holds." : "That's more than the treasury holds."}</p>
             {:else}
-              <p class="muted tiny">Use up to two decimals. Transfers are instant and recorded for the whole guild.</p>
+              <p class="muted tiny">Use up to two decimals. Transfers are instant and recorded for the whole faction.</p>
             {/if}
 
             <button class="primary go" disabled={busy || !validAmount || overLimit} onclick={submit}>
@@ -206,7 +206,7 @@
             <div class="none">
               <Coins size={28} />
               <p>No transfers yet.</p>
-              <p class="tiny muted">Be the first to fund the guild treasury.</p>
+              <p class="tiny muted">Be the first to fund the faction treasury.</p>
             </div>
           {:else}
             <ul>

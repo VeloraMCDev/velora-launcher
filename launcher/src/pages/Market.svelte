@@ -153,7 +153,7 @@
         <ItemTile id={l.item_id} amount={l.amount} />
         <div class="title">
           <strong title={l.item_name}>{l.item_name.replace(/§./g, '')}</strong>
-          <small>{#if l.seller_guild}<Shield size={11} /> [{l.seller_guild}] guild{:else}by {l.seller_name}{/if}</small>
+          <small>{#if l.seller_guild}<Shield size={11} /> [{l.seller_guild}] faction{:else}by {l.seller_name}{/if}</small>
         </div>
         <span class="kind" class:a={l.kind === 'auction'}>{#if l.kind === 'auction'}<Gavel size={11} /> Auction{:else}<Tag size={11} /> Buy now{/if}</span>
       </div>
@@ -185,7 +185,9 @@
   {#if tab === 'vaults' && serverId != null}
     <Vaults {serverId} get={(id) => invoke('vault_get', { serverId: id })} post={(id, action, body) => invoke('vault_post', { serverId: id, action, body })} onbalance={(value) => (balance = value)} />
   {:else if tab === 'darknet' && serverId != null}
-    <Darknet {serverId} onbalance={(value) => (balance = value)} />
+    <Darknet {serverId} onbalance={(value) => (balance = value)}>
+      {#snippet item(id: string, amount: number)}<ItemTile {id} {amount} size={4.5} />{/snippet}
+    </Darknet>
   {:else if tab === 'orders' && serverId != null}
     {#key serverId}<Orders {serverId} onbalance={(v) => (balance = v)} />{/key}
   {:else if tab === 'contracts' && serverId != null}
@@ -242,7 +244,7 @@
   {#if target}
     {@const t = target}
     <div class="dlg">
-      <div class="who"><ItemTile id={t.item_id} amount={t.amount} size={3.6} /><div><strong>{t.item_name.replace(/§./g, '')}</strong><small>{t.amount}× · {t.seller_guild ? `[${t.seller_guild}] guild` : t.seller_name}</small></div></div>
+      <div class="who"><ItemTile id={t.item_id} amount={t.amount} size={3.6} /><div><strong>{t.item_name.replace(/§./g, '')}</strong><small>{t.amount}× · {t.seller_guild ? `[${t.seller_guild}] faction` : t.seller_name}</small></div></div>
       {#if t.mine}
         {#if t.kind === 'auction' && t.bid_count}
           <p class="muted">Bidding has started ({t.bid_count} bid{t.bid_count === 1 ? '' : 's'}, top {money(t.current_bid)}), so this auction can't be cancelled. It ends in {left(t.ends_at)}.</p>

@@ -9,7 +9,7 @@ Velora Core release workflow ──► GitHub release (signed jars)
                          Velora Panel serves the jars
                                        │  /api/v1/core/latest
                                        ▼
-                 Calagopus extension installs / updates them on each server
+                 Operator downloads Server / Client jars and uploads them manually
 ```
 
 ## 1. Publish a release
@@ -21,7 +21,7 @@ Signatures cover `velora-core-release:v1`, the version and the jar's SHA-256. Th
 
 ## 2. Approve it in the Panel
 
-Open **Servers** in the admin panel and use **Velora Core** at the bottom. **Check for releases** lists signed releases; **Approve** downloads both jars, verifies size, checksum and signature, and starts serving them. Servers that report an older version show a badge. The previous three approved releases stay downloadable, and approving an older release rolls back.
+Open **Instance setup / Mod downloads** in the admin panel and use **Velora Core**. **Check for releases** lists signed releases; **Approve** downloads both jars, verifies size, checksum and signature, and starts serving them. Servers that report an older version show a badge. The previous three approved releases stay downloadable, and approving an older release rolls back.
 
 The Panel exposes two public, read-only endpoints (the jars are public GitHub assets):
 
@@ -32,25 +32,16 @@ The Panel exposes two public, read-only endpoints (the jars are public GitHub as
 
 Admin routes are `GET /api/admin/core/releases` and `POST /api/admin/core/releases/{tag}/approve`.
 
-## 3. Install it on a Calagopus server
+## 3. Install the jars manually
 
-The extension in [`integrations/calagopus`](https://github.com/VeloraMCDev/velora-launcher/blob/main/integrations/calagopus/README.md) adds a **Velora Core** page to every server. It:
+1. In **Instance setup / Mod downloads**, download the **Server jar** and **Client jar**. Each download includes its filename, size and SHA-256 checksum.
+2. Stop the dedicated server. Upload the Server jar to its `mods/` folder, remove the previous Velora Core server jar, then restart.
+3. Upload the Client jar to the instance modpack's `mods/` folder in **Version & modpack**, or put it in each player's local Minecraft `mods/` folder. Remove previous client jars.
+4. Install Fabric and Fabric API for the release's Minecraft version on both sides.
 
-- shows the installed and approved versions;
-- installs the server jar into `mods/`, checks its SHA-256 on the node, then removes older Velora Core (or `scopenet-fabric`) jars;
-- writes `config/velora-core.properties` with the Panel address and the server token you paste (the token goes only to the server's own file; Calagopus does not keep it);
-- downloads `authlib-injector.jar` and shows the `-javaagent` start flag;
-- optionally updates the server by itself.
+Approval makes verified jars downloadable; it does not modify a server or an instance modpack. The Calagopus extension has no automatic updater or mod-install endpoint. Existing automatic-update settings are ignored. Ordinary launcher modpack synchronization still installs files that an admin explicitly includes in an instance.
 
-### Automatic updates
-
-A server opts in on its Velora Core page. When a newer release is approved, the extension installs it **only while the server is stopped**, so the next restart picks it up and players are never interrupted. It never replaces a jar under a running server. While a server waits for that moment the extension checks every few seconds; otherwise every five minutes. A manual **Update now** needs the server stopped too, except for a first install.
-
-Automatic updates can be switched off for the whole Panel in the extension settings. The extension reports the last thing it did to each server on the page and in the Panel log.
-
-### Players
-
-Velora Core (Client) is not deployed by the extension. Players add `velora-core-client-1.20.1-<version>.jar` and Fabric API to their own `mods` folder; both jars are on the release.
+The optional extension reports installed versions, writes `config/velora-core.properties` using the token you paste, and can download authlib-injector and show its startup flag. It does not install or replace mod jars.
 
 ## What this does not do
 

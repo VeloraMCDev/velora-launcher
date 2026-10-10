@@ -18,7 +18,7 @@ class LinkTest {
         link.receive(alex,msg("{\"t\":\"request\",\"id\":\"claim-one\",\"operation\":\"claim_edit\",\"args\":{\"action\":\"claim\",\"x\":-2,\"z\":3,\"uuid\":\"forged\",\"dimension\":\"forged\"}}"));
         int index=kit.panel.calls.indexOf("guilds/claim");assertTrue(index>=0);JsonObject body=kit.panel.bodies.get(index);assertEquals(alex.uuid().toString(),body.get("uuid").getAsString());assertEquals(alex.pos().world(),body.get("dimension").getAsString());assertTrue(kit.panel.claimsRefreshed);
         kit.now.addAndGet(1000);link.receive(alex,msg("{\"t\":\"request\",\"id\":\"claim-two\",\"operation\":\"claim_edit\",\"args\":{\"action\":\"claim\",\"x\":1.5,\"z\":3}}"));assertEquals(1,kit.panel.calls.stream().filter("guilds/claim"::equals).count());
-        alex.denied.add("velora.command.guild.claim");kit.now.addAndGet(1000);link.receive(alex,msg("{\"t\":\"request\",\"id\":\"claim-three\",\"operation\":\"claim_edit\",\"args\":{\"action\":\"claim\",\"x\":1,\"z\":3}}"));assertEquals(1,kit.panel.calls.stream().filter("guilds/claim"::equals).count());
+        alex.denied.add("velora.command.faction.claim");kit.now.addAndGet(1000);link.receive(alex,msg("{\"t\":\"request\",\"id\":\"claim-three\",\"operation\":\"claim_edit\",\"args\":{\"action\":\"claim\",\"x\":1,\"z\":3}}"));assertEquals(1,kit.panel.calls.stream().filter("guilds/claim"::equals).count());
     }
     static final String INFO = "{\"exists\":true,\"name\":\"Alex\",\"joined\":\"2026-01-02T03:04:05Z\",\"global\":{\"level\":12,\"xp\":5000,\"next_level_xp\":6000,\"current_level_xp\":4800,\"progress_pct\":16.6,\"title\":\"Miner\",\"rank\":3},"
             + "\"server\":{\"level\":4,\"xp\":300,\"progress_pct\":50.0,\"rank_name\":\"Initiate\"},\"guild\":{\"id\":\"g\",\"name\":\"Iron\",\"tag\":\"IRON\",\"role\":\"leader\",\"claims\":3},"
@@ -172,17 +172,17 @@ class LinkTest {
         kit.panel.on("companion", "{}");
         link.receive(alex,msg("{\"t\":\"hello\",\"protocol\":2}"));
         // Management commands use the root guild node; there is no requests node in Paper.
-        alex.denied.add("velora.command.guild.requests");
+        alex.denied.add("velora.command.faction.requests");
         kit.now.addAndGet(1000);
         link.receive(alex,msg("{\"t\":\"request\",\"id\":\"one\",\"operation\":\"guild_requests\"}"));
         assertEquals(1,kit.panel.calls.stream().filter("companion"::equals).count());
-        alex.denied.add("velora.command.guild");
+        alex.denied.add("velora.command.faction");
         kit.now.addAndGet(1000);
         link.receive(alex,msg("{\"t\":\"request\",\"id\":\"two\",\"operation\":\"guilds\"}"));
         assertEquals(1,kit.panel.calls.stream().filter("companion"::equals).count());
         assertTrue(last("response").get("json").getAsString().contains("permission"));
-        alex.denied.remove("velora.command.guild");
-        alex.denied.add("velora.command.guild.bank");
+        alex.denied.remove("velora.command.faction");
+        alex.denied.add("velora.command.faction.bank");
         kit.now.addAndGet(1000);
         link.receive(alex,msg("{\"t\":\"request\",\"id\":\"three\",\"operation\":\"guild_bank\"}"));
         assertEquals(1,kit.panel.calls.stream().filter("companion"::equals).count());

@@ -72,8 +72,8 @@
     <div class="pl-skel" style="height:140px"></div>
   {:else}
     <p class="sub intro">
-      {#if rules.can_edit}Decide what happens on your guild's land. Your members are never held back by the visitor rules. Changes reach the game within seconds.
-      {:else}These are your guild's land rules. The leader and officers can change them.{/if}
+      {#if rules.can_edit}Decide what happens on your faction's land. Your members are never held back by the visitor rules. Changes reach the game within seconds.
+      {:else}These are your faction's land rules. The leader and officers can change them.{/if}
     </p>
     {#each groups as g (g.name)}
       <div class="grp">

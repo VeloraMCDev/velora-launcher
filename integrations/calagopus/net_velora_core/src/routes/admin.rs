@@ -1,4 +1,4 @@
-//! Operator settings: where the Velora Panel is and whether linked servers update themselves.
+//! Operator settings: where the Velora Panel is. Mod installation is manual.
 use super::State;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
@@ -48,8 +48,8 @@ mod get {
         };
         ApiResponse::new_serialized(Response {
             panel_url: config.panel_url.to_string(),
-            auto_update: config.auto_update,
-            linked_servers: config.linked.len(),
+            auto_update: false,
+            linked_servers: 0,
             latest: latest.map(|l| Release { version: l.version, minecraft: l.minecraft, server_jar: l.server.name }),
             error,
         })
@@ -71,7 +71,8 @@ mod put {
     #[derive(ToSchema, Deserialize)]
     pub struct Payload {
         panel_url: String,
-        auto_update: bool,
+        #[serde(default, rename = "auto_update")]
+        _auto_update: bool,
     }
 
     #[derive(ToSchema, Serialize)]
@@ -93,7 +94,8 @@ mod put {
         };
         settings::update(&state.0, |s| {
             s.panel_url = panel_url.into();
-            s.auto_update = data.auto_update;
+            s.auto_update = false;
+            s.linked.clear();
         })
         .await?;
         ApiResponse::new_serialized(Response {}).ok()

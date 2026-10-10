@@ -102,7 +102,7 @@ class UtilityHubTest {
 
         alex.denied.remove("guild.fly");
         run(alex, "fly");
-        assertTrue(alex.heard("inside your own guild"), "wilderness");
+        assertTrue(alex.heard("inside your own faction"), "wilderness");
         kit.panel.claims.put("minecraft:overworld:0:0", new ChunkCheckResult(true, true, "Iron", "IRON"));
         run(alex, "fly");
         assertEquals(Boolean.TRUE, kit.platform.flight.get(alex.id));
@@ -111,7 +111,7 @@ class UtilityHubTest {
         alex.pos = new Pos("minecraft:overworld", 100, 64, 0, 0, 0);
         hub.tick();
         assertEquals(Boolean.FALSE, kit.platform.flight.get(alex.id));
-        assertTrue(alex.heard("left your guild"));
+        assertTrue(alex.heard("left your faction"));
 
         // A rival guild's land doesn't count, and neither does an admin claim.
         kit.panel.claims.put("minecraft:overworld:6:0", new ChunkCheckResult(true, false, "Void", "VOID"));

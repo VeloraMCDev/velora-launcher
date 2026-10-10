@@ -212,7 +212,9 @@
       {#if tab === 'vaults' && play.serverId != null}
         <Vaults serverId={play.serverId} get={(id) => get(`/api/v1/vaults/${id}`)} post={(id, action, body) => post(`/api/v1/vaults/${id}/${action}`, body)} onbalance={(value) => value != null && balanceChanged(value)} />
       {:else if tab === 'darknet' && play.serverId != null}
-        <Darknet serverId={play.serverId} onbalance={(value) => value != null && balanceChanged(value)} />
+        <Darknet serverId={play.serverId} onbalance={(value) => value != null && balanceChanged(value)}>
+          {#snippet item(id: string, amount: number)}<MoneyItem {id} {amount} size={72} />{/snippet}
+        </Darknet>
       {:else if tab === 'orders' && play.serverId != null}
         {#key play.serverId}<Orders serverId={play.serverId} onbalance={(v) => v != null && balanceChanged(v)} />{/key}
       {:else if tab === 'contracts' && play.serverId != null}
@@ -283,7 +285,7 @@
 <Sheet bind:open={sheetOpen} title={target?.mine ? 'Manage listing' : target?.kind === 'auction' ? 'Place a bid' : 'Confirm purchase'}>
   {#if target}
     {@const t = target}
-    <div class="who"><MoneyItem id={t.item_id} amount={t.amount} size={58} /><div><strong>{clean(t)}</strong><small>{t.amount}× · {t.seller_guild ? `[${t.seller_guild}] guild` : t.seller_name}</small></div></div>
+    <div class="who"><MoneyItem id={t.item_id} amount={t.amount} size={58} /><div><strong>{clean(t)}</strong><small>{t.amount}× · {t.seller_guild ? `[${t.seller_guild}] faction` : t.seller_name}</small></div></div>
     {#if t.mine}
       {#if t.kind === 'auction' && t.bid_count}
         <p class="muted">Bidding has started ({t.bid_count} bid{t.bid_count === 1 ? '' : 's'}, top {money(t.current_bid)}), so this auction can't be cancelled. It ends in {timeLeft(t.ends_at, now)}.</p>

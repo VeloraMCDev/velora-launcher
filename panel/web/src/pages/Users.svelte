@@ -264,7 +264,7 @@
 </Modal>
 
 <Modal bind:open={confirmOpen} title="Delete {confirm?.username}?">
-  <p class="muted">This removes the account <strong>and all of its data</strong>: levels, XP, quests, achievements, stats, friends, messages, profile and posts, economy balance and market listings, and guild membership. Guilds they lead pass to the next member (or are dissolved if they're alone). Their name stays reserved so nobody can impersonate them. This can't be undone.</p>
+  <p class="muted">This removes the account <strong>and all of its data</strong>: levels, XP, quests, achievements, stats, friends, messages, profile and posts, economy balance and market listings, and faction membership. Factions they lead pass to the next member (or are dissolved if they're alone). Their name stays reserved so nobody can impersonate them. This can't be undone.</p>
   {#snippet footer()}
     <button class="ghost" onclick={() => (confirmOpen = false)}>Cancel</button>
     <button class="danger" onclick={removeUser}><Trash2 size={16} /> Delete</button>

@@ -2,7 +2,7 @@
   import { app, saveSettings } from '../lib/store.svelte';
   import Toggle from './Toggle.svelte';
   const c = $derived(app.settings!.companion);
-  const labels: Record<string,string> = {level:'Progression',balance:'Wallet',guild:'Guild',claim:'Territory',quests:'Quest tracker',clock:'Clock'};
+  const labels: Record<string,string> = {level:'Progression',balance:'Wallet',guild:'Faction',claim:'Territory',quests:'Quest tracker',clock:'Clock'};
   const examples: Record<string,string> = {level:'Level 27 · 62%',balance:'$12,840.50',guild:'[IRON] Iron Wolves',claim:'Iron Wolves territory',quests:'Mine iron · 42 / 64',clock:'21:43'};
   let preview: HTMLDivElement;
   let dragging = $state<string|null>(null);
@@ -24,7 +24,7 @@
 <p class="lead">Build your in-game interface. Drag modules into place, choose what matters, and set quick actions in Controls.</p>
 <div class="card glass col">
   <Toggle bind:checked={c.enabled} onchange={saveSettings} label="Enable companion interface" help="Requires the Velora Companion and Fabric API in a Fabric 26.3 instance."/>
-  <Toggle bind:checked={c.notifications} onchange={saveSettings} label="In-game notifications" help="Level-ups, achievements and guild events."/>
+  <Toggle bind:checked={c.notifications} onchange={saveSettings} label="In-game notifications" help="Level-ups, achievements and faction events."/>
   <Toggle bind:checked={c.claimBorders} onchange={saveSettings} label="Show nearby claim borders" help="Green outlines show allowed territory; red outlines show restricted claims."/>
   <label class="field"><span>HUD scale · {Math.round(c.scale*100)}%</span><input type="range" min=".5" max="2" step=".05" bind:value={c.scale} oninput={saveSettings}/></label>
   <label class="field"><span>Panel opacity · {Math.round(c.opacity*100)}%</span><input type="range" min=".2" max="1" step=".01" bind:value={c.opacity} oninput={saveSettings}/></label>

@@ -28,7 +28,7 @@
   const TABS = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'players', label: 'Players', icon: Users },
-    { id: 'guilds', label: 'Guilds', icon: Landmark },
+    { id: 'guilds', label: 'Factions', icon: Landmark },
     { id: 'market', label: 'Market', icon: Store },
     { id: 'ledger', label: 'Ledger', icon: ScrollText },
   ] as const;
@@ -260,7 +260,7 @@
   <header class="page-head">
     <div>
       <h1>Economy</h1>
-      <p>Balances, guild banks and the market for each server.</p>
+      <p>Balances, faction banks and the market for each server.</p>
     </div>
     {#if servers.length}
       <label class="srv"><span class="muted small">Server</span>
@@ -290,7 +290,7 @@
           <div class="tile"><span><Coins size={14} /> In circulation</span><b>{money(ov.totals.circulation)}</b><small>{ov.totals.accounts.toLocaleString()} accounts</small></div>
           <div class="tile"><span><Users size={14} /> Average balance</span><b>{money(ov.totals.average)}</b><small>median {money(ov.totals.median)}</small></div>
           <div class="tile"><span><TrendingUp size={14} /> Volume (7d)</span><b>{money(ov.volume.last_7d)}</b><small>{ov.volume.tx_7d.toLocaleString()} transactions · {money(ov.volume.today)} today</small></div>
-          <div class="tile"><span><Landmark size={14} /> Guild banks</span><b>{money(ov.totals.guild_wallets_total)}</b><small>{ov.totals.guild_wallets_count} wallets</small></div>
+          <div class="tile"><span><Landmark size={14} /> Faction banks</span><b>{money(ov.totals.guild_wallets_total)}</b><small>{ov.totals.guild_wallets_count} wallets</small></div>
           <div class="tile"><span><Store size={14} /> Active listings</span><b>{ov.market.fixed_listings + ov.market.auctions}</b><small>{ov.market.fixed_listings} fixed · {ov.market.auctions} auctions</small></div>
           {#if ov.totals.richest}<div class="tile"><span>Richest player</span><b>{money(ov.totals.richest.balance)}</b><small><PlayerLink uuid={ov.totals.richest.uuid} name={ov.totals.richest.name} /></small></div>{/if}
         </div>
@@ -414,15 +414,15 @@
 
     {:else if tab === 'guilds'}
       <section class="card">
-        <div class="section-title"><h2>Guild banks</h2><span class="hint">{guilds?.length ?? 0} guilds</span></div>
+        <div class="section-title"><h2>Faction banks</h2><span class="hint">{guilds?.length ?? 0} factions</span></div>
         {#if !guilds}
           {#each Array(4) as _}<div class="skeleton line"></div>{/each}
         {:else if !guilds.length}
-          <div class="empty"><Landmark size={28} /><h3>No guilds on this server</h3></div>
+          <div class="empty"><Landmark size={28} /><h3>No factions on this server</h3></div>
         {:else}
           <div class="table-wrap">
             <table class="table">
-              <thead><tr><th>Guild</th><th class="n">Members</th><th class="n">Bank balance</th><th></th></tr></thead>
+              <thead><tr><th>Faction</th><th class="n">Members</th><th class="n">Bank balance</th><th></th></tr></thead>
               <tbody>
                 {#each guilds as g (g.id)}
                   <tr>
@@ -518,7 +518,7 @@
   {/if}
 </div>
 
-<Modal bind:open={adjOpen} title={target ? `Adjust ${target.kind === 'guild' ? 'guild bank' : 'balance'}: ${target.name}` : 'Adjust'} width={440}>
+<Modal bind:open={adjOpen} title={target ? `Adjust ${target.kind === 'guild' ? 'faction bank' : 'balance'}: ${target.name}` : 'Adjust'} width={440}>
   {#if target}
     <div class="segmented wide">
       <button class:active={mode === 'add'} onclick={() => (mode = 'add')}><Plus size={13} /> Add</button>

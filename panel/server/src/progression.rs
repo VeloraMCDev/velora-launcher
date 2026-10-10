@@ -184,10 +184,10 @@ impl Progression {
             return bad("Starting balance must be between 0 and 1,000,000,000.");
         }
         for (name, v, max) in [
-            ("Guild base claims", rules.guild_base_claims, 100_000),
+            ("Faction base claims", rules.guild_base_claims, 100_000),
             ("Claims per member", rules.guild_claims_per_member, 10_000),
-            ("Claims per guild level", rules.guild_claims_per_level, 10_000),
-            ("Guild member limit", rules.guild_max_members, 10_000),
+            ("Claims per faction level", rules.guild_claims_per_level, 10_000),
+            ("Faction member limit", rules.guild_max_members, 10_000),
             ("Market listing limit", rules.market_max_listings, 10_000),
         ] {
             if !(0..=max).contains(&v) {

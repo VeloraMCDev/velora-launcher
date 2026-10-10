@@ -54,7 +54,7 @@ public final class Widgets {
     }
 
     static final class Guild extends HudWidget {
-        Guild() { super("guild", "Guild"); }
+        Guild() { super("guild", "Faction"); }
         @Override public boolean available(ClientState s) { return s.hasState && s.featGuilds && s.guild != null; }
         @Override public int width(Font f, ClientState s, WidgetConfig c) { return c.compact ? 86 : 124; }
         @Override public int height(Font f, ClientState s, WidgetConfig c) { return c.compact ? 18 : 30; }

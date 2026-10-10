@@ -321,8 +321,8 @@ public final class ClientLink {
             switch (kind) {
                 case "level_up" -> { title = "Level up!"; text = ("server".equals(PlayerCache.str(d, "scope", "")) ? "Server level " : "Level ") + (long) PlayerCache.num(d, "level", 0); }
                 case "achievement" -> { title = "Achievement unlocked"; text = PlayerCache.str(d, "title", ""); }
-                case "guild_join" -> { title = "Guild"; text = "Joined " + PlayerCache.str(d, "guild", "a guild"); }
-                case "guild_leave" -> { title = "Guild"; text = "Left " + PlayerCache.str(d, "guild", "your guild"); }
+                case "guild_join" -> { title = "Faction"; text = "Joined " + PlayerCache.str(d, "guild", "a faction"); }
+                case "guild_leave" -> { title = "Faction"; text = "Left " + PlayerCache.str(d, "guild", "your faction"); }
                 default -> { continue; }
             }
             final String t = title, x = text, k = kind;

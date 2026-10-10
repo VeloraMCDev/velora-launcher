@@ -1,6 +1,14 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import { defaultExperience, preset, navigation, pageEnabled, coreFeatures } from './index.ts';
+
+test('saved Guild labels display Factions and retain route and capability identities', () => {
+  const experience = defaultExperience();
+  experience.navigation = [{ id: 'guilds', label: 'Guilds & Claims' }];
+  assert.deepEqual(navigation(experience, [{ id: 'guilds', label: 'Factions' }]), [{ id: 'guilds', label: 'Factions & Claims' }]);
+  assert.equal(experience.navigation[0].label, 'Guilds & Claims');
+  assert.equal(pageEnabled(experience, 'guilds'), true);
+});
 test('Velora SMP exposes supported modules and excludes legacy systems', () => {
   const e = preset('velora-smp');
   assert.equal(e.modules.velora_core.starting_balance_cents, 100_000);

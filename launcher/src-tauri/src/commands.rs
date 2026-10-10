@@ -793,7 +793,7 @@ pub async fn get_guilds(state: State<'_, AppState>, instance_id: Option<String>)
     let q = instance_id.map(|i| format!("?instance_id={i}")).unwrap_or_default();
     let resp = account_api(&state, reqwest::Method::GET, &format!("/guilds{q}")).await?.send().await.map_err(err)?;
     if !resp.status().is_success() {
-        return Err("unable to load guilds".into());
+        return Err("unable to load factions".into());
     }
     resp.json().await.map_err(err)
 }
@@ -828,7 +828,7 @@ pub async fn get_my_guild_memberships(state: State<'_, AppState>, instance_id: O
     }
     let resp = req.send().await.map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not load guild memberships").await);
+        return Err(guild_response_error(resp, "could not load faction memberships").await);
     }
     resp.json().await.map_err(err)
 }
@@ -842,7 +842,7 @@ pub async fn set_primary_guild(state: State<'_, AppState>, guild_id: String, ser
         .await
         .map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not set primary guild").await);
+        return Err(guild_response_error(resp, "could not set primary faction").await);
     }
     Ok(())
 }
@@ -851,7 +851,7 @@ pub async fn set_primary_guild(state: State<'_, AppState>, guild_id: String, ser
 pub async fn get_guild_relations(state: State<'_, AppState>, guild_id: String) -> Res<Vec<serde_json::Value>> {
     let resp = account_api(&state, reqwest::Method::GET, &format!("/guilds/{guild_id}/relations")).await?.send().await.map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not load guild relations").await);
+        return Err(guild_response_error(resp, "could not load faction relations").await);
     }
     resp.json().await.map_err(err)
 }
@@ -865,7 +865,7 @@ pub async fn create_guild_relation(state: State<'_, AppState>, guild_id: String,
         .await
         .map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not create guild relation").await);
+        return Err(guild_response_error(resp, "could not create faction relation").await);
     }
     Ok(())
 }
@@ -879,7 +879,7 @@ pub async fn respond_guild_relation(state: State<'_, AppState>, guild_id: String
         .await
         .map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not respond to guild relation").await);
+        return Err(guild_response_error(resp, "could not respond to faction relation").await);
     }
     Ok(())
 }
@@ -919,7 +919,7 @@ pub async fn request_guild_join(state: State<'_, AppState>, guild_id: String, me
     let req = account_api(&state, reqwest::Method::POST, &format!("/guilds/{guild_id}/requests")).await?;
     let resp = req.json(&serde_json::json!({"message": message})).send().await.map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not request to join guild").await);
+        return Err(guild_response_error(resp, "could not request to join faction").await);
     }
     Ok(())
 }
@@ -928,7 +928,7 @@ pub async fn request_guild_join(state: State<'_, AppState>, guild_id: String, me
 pub async fn get_guild_join_requests(state: State<'_, AppState>, guild_id: String) -> Res<serde_json::Value> {
     let resp = account_api(&state, reqwest::Method::GET, &format!("/guilds/{guild_id}/requests")).await?.send().await.map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not load guild requests").await);
+        return Err(guild_response_error(resp, "could not load faction requests").await);
     }
     resp.json().await.map_err(err)
 }
@@ -938,7 +938,7 @@ pub async fn respond_guild_join_request(state: State<'_, AppState>, guild_id: St
     let req = account_api(&state, reqwest::Method::POST, &format!("/guilds/{guild_id}/requests/{uuid}/respond")).await?;
     let resp = req.json(&serde_json::json!({"accept": accept})).send().await.map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not review guild request").await);
+        return Err(guild_response_error(resp, "could not review faction request").await);
     }
     Ok(())
 }
@@ -947,7 +947,7 @@ pub async fn respond_guild_join_request(state: State<'_, AppState>, guild_id: St
 pub async fn get_guild_roles(state: State<'_, AppState>, guild_id: String) -> Res<serde_json::Value> {
     let resp = account_api(&state, reqwest::Method::GET, &format!("/guilds/{guild_id}/roles")).await?.send().await.map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not load guild roles").await);
+        return Err(guild_response_error(resp, "could not load faction roles").await);
     }
     resp.json().await.map_err(err)
 }
@@ -957,7 +957,7 @@ pub async fn create_guild_role(state: State<'_, AppState>, guild_id: String, rol
     let resp =
         account_api(&state, reqwest::Method::POST, &format!("/guilds/{guild_id}/roles")).await?.json(&role).send().await.map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not create guild role").await);
+        return Err(guild_response_error(resp, "could not create faction role").await);
     }
     Ok(())
 }
@@ -971,7 +971,7 @@ pub async fn assign_guild_role(state: State<'_, AppState>, guild_id: String, uui
         .await
         .map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not assign guild role").await);
+        return Err(guild_response_error(resp, "could not assign faction role").await);
     }
     Ok(())
 }
@@ -1007,7 +1007,7 @@ pub async fn delete_guild_role(state: State<'_, AppState>, guild_id: String, rol
     let resp =
         account_api(&state, reqwest::Method::DELETE, &format!("/guilds/{guild_id}/roles/{role_id}")).await?.send().await.map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not delete guild role").await);
+        return Err(guild_response_error(resp, "could not delete faction role").await);
     }
     Ok(())
 }
@@ -1028,7 +1028,7 @@ pub async fn update_guild(
         .await
         .map_err(err)?;
     if !resp.status().is_success() {
-        return Err(guild_response_error(resp, "could not update guild").await);
+        return Err(guild_response_error(resp, "could not update faction").await);
     }
     Ok(())
 }
@@ -1058,7 +1058,7 @@ pub async fn create_guild(
         .map_err(err)?;
     if !resp.status().is_success() {
         let body: serde_json::Value = resp.json().await.unwrap_or_default();
-        return Err(body["error"].as_str().unwrap_or("unable to create guild").to_string());
+        return Err(body["error"].as_str().unwrap_or("unable to create faction").to_string());
     }
     resp.json().await.map_err(err)
 }
@@ -1131,7 +1131,7 @@ pub async fn rename_guild(state: State<'_, AppState>, guild_id: String, name: St
     let resp = req.json(&serde_json::json!({ "name": name, "tag": tag })).send().await.map_err(err)?;
     if !resp.status().is_success() {
         let body: serde_json::Value = resp.json().await.unwrap_or_default();
-        return Err(body["error"].as_str().unwrap_or("unable to rename the guild").to_string());
+        return Err(body["error"].as_str().unwrap_or("unable to rename the faction").to_string());
     }
     resp.json().await.map_err(err)
 }
@@ -1143,7 +1143,7 @@ pub async fn disband_guild(state: State<'_, AppState>, guild_id: String) -> Res<
     let resp = req.send().await.map_err(err)?;
     if !resp.status().is_success() {
         let body: serde_json::Value = resp.json().await.unwrap_or_default();
-        return Err(body["error"].as_str().unwrap_or("unable to disband the guild").to_string());
+        return Err(body["error"].as_str().unwrap_or("unable to disband the faction").to_string());
     }
     resp.json().await.map_err(err)
 }
@@ -1160,7 +1160,7 @@ pub async fn get_guild_posts(state: State<'_, AppState>, guild_id: String) -> Re
     let req = account_api(&state, reqwest::Method::GET, &format!("/guilds/{guild_id}/posts")).await?;
     let resp = req.send().await.map_err(err)?;
     if !resp.status().is_success() {
-        return Err("unable to load guild posts".into());
+        return Err("unable to load faction posts".into());
     }
     resp.json().await.map_err(err)
 }
@@ -1212,7 +1212,7 @@ pub async fn transfer_guild_wallet(
     let resp = req.json(&serde_json::json!({"server_id":server_id,"amount":amount})).send().await.map_err(err)?;
     if !resp.status().is_success() {
         let body: serde_json::Value = resp.json().await.unwrap_or_default();
-        return Err(body["error"].as_str().unwrap_or("Guild wallet transfer failed").to_string());
+        return Err(body["error"].as_str().unwrap_or("Faction wallet transfer failed").to_string());
     }
     resp.json().await.map_err(err)
 }

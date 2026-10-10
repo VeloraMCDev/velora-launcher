@@ -1,4 +1,4 @@
-import { Alert, Badge, Group, Stack, Switch, Text, TextInput } from '@mantine/core';
+import { Alert, Badge, Group, Stack, Text, TextInput } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { httpErrorToHuman } from '@/api/axios.ts';
 import Button from '@/elements/buttons/Button.tsx';
@@ -11,7 +11,6 @@ export default function VeloraCoreSettings() {
   const { addToast } = useToast();
   const [loaded, setLoaded] = useState<AdminSettings | null>(null);
   const [panelUrl, setPanelUrl] = useState('');
-  const [autoUpdate, setAutoUpdate] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const load = () =>
@@ -19,7 +18,6 @@ export default function VeloraCoreSettings() {
       .then((settings) => {
         setLoaded(settings);
         setPanelUrl(settings.panel_url);
-        setAutoUpdate(settings.auto_update);
       })
       .catch((err) => addToast(httpErrorToHuman(err), 'error'));
   // biome-ignore lint/correctness/useExhaustiveDependencies: load once
@@ -30,7 +28,7 @@ export default function VeloraCoreSettings() {
   const save = async () => {
     setSaving(true);
     try {
-      await saveAdminSettings(panelUrl, autoUpdate);
+      await saveAdminSettings(panelUrl);
       addToast('Velora Core settings saved.', 'success');
       await load();
     } catch (err) {
@@ -49,20 +47,14 @@ export default function VeloraCoreSettings() {
   }
 
   return (
-    <AdminContentContainer title='Velora Core' subtitle='Where the Velora Panel lives, and whether servers update themselves.'>
+    <AdminContentContainer title='Velora Core' subtitle='Connect to the Velora Panel. Mod installation is managed manually.'>
       <Stack gap='md' maw={640}>
         <TextInput
           label='Velora Panel address'
-          description='The public address players and servers use, for example https://velora.example.com. Wings nodes download the mod from here.'
+          description='The public address players and servers use, for example https://velora.example.com. Download approved Server and Client jars from the Velora Admin Panel.'
           placeholder='https://velora.example.com'
           value={panelUrl}
           onChange={(event) => setPanelUrl(event.currentTarget.value)}
-        />
-        <Switch
-          label='Allow automatic updates'
-          description='Servers that opt in are updated to the newest approved release while they are stopped. Nothing is ever replaced under a running server.'
-          checked={autoUpdate}
-          onChange={(event) => setAutoUpdate(event.currentTarget.checked)}
         />
         <Group>
           <Button loading={saving} onClick={save}>
@@ -73,8 +65,7 @@ export default function VeloraCoreSettings() {
         {loaded.panel_url && !loaded.error && (
           <Group gap='xs'>
             <Text size='sm'>Approved release:</Text>
-            {loaded.latest ? <Badge>{loaded.latest.version} for Minecraft {loaded.latest.minecraft}</Badge> : <Badge color='gray'>None approved yet. Approve one in the Velora Panel under Servers.</Badge>}
-            <Text size='sm' c='dimmed'>{loaded.linked_servers} {loaded.linked_servers === 1 ? 'server updates' : 'servers update'} automatically</Text>
+            {loaded.latest ? <Badge>{loaded.latest.version} for Minecraft {loaded.latest.minecraft}</Badge> : <Badge color='gray'>None approved yet. Approve one in the Velora Panel under Instance setup / Mod downloads.</Badge>}
           </Group>
         )}
       </Stack>

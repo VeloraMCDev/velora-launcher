@@ -85,7 +85,7 @@ public final class SettingsScreen extends Screen {
         addRenderableWidget(toggle(x1, y, colW, "Level-up toasts", () -> config.notifications.levelUp, v -> config.notifications.levelUp = v));
         addRenderableWidget(toggle(x2, y, colW, "Achievement toasts", () -> config.notifications.achievements, v -> config.notifications.achievements = v));
         y += step;
-        addRenderableWidget(toggle(x1, y, colW, "Guild toasts", () -> config.notifications.guild, v -> config.notifications.guild = v));
+        addRenderableWidget(toggle(x1, y, colW, "Faction toasts", () -> config.notifications.guild, v -> config.notifications.guild = v));
         addRenderableWidget(toggle(x2, y, colW, "Error toasts", () -> config.notifications.errors, v -> config.notifications.errors = v));
         y += step + 8;
 

@@ -19,7 +19,7 @@
   const pages: Item[] = [
     { id: 'p-home', label: 'Home', group: 'Go to', hint: 'Play and server status', icon: Home, run: go('home') },
     { id: 'p-quests', label: 'Quests & objectives', group: 'Go to', icon: Target, run: go('quests'), keywords: 'daily weekly achievements level' },
-    { id: 'p-guilds', label: 'Guilds & claims', group: 'Go to', icon: Shield, run: go('guilds'), keywords: 'land bank clan' },
+    { id: 'p-guilds', label: 'Factions & claims', group: 'Go to', icon: Shield, run: go('guilds'), keywords: 'land bank clan' },
     { id: 'p-market', label: 'Market & auctions', group: 'Go to', icon: Store, run: go('market'), keywords: 'buy sell bid shop' },
     { id: 'p-casino', label: 'Casino', group: 'Go to', icon: Dice5, run: go('casino'), keywords: 'slots wheel plinko mines bounty bet gamble' },
     { id: 'p-social', label: 'Friends & social', group: 'Go to', icon: Users, run: go('social'), keywords: 'messages dm chat profile' },

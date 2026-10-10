@@ -1,7 +1,7 @@
 name: Velora Core release
 # Manual: builds the Velora Core server and client jars, signs them with the Velora release key and publishes a
 # GitHub release tagged velora-core-v<version>. Game servers receive it only after an admin approves the release
-# in the Panel (Servers > Velora Core), which then serves the jars to deployment tools such as the Calagopus extension.
+# in the Panel (Instance setup > Mod downloads), which then serves the jars for manual installation.
 on:
   workflow_dispatch: null
 permissions:
@@ -57,7 +57,7 @@ jobs:
           Velora Core ${VERSION} for Minecraft 1.20.1 (Fabric), built from ${GITHUB_SHA}.
 
           Jars are signed with the Velora release key (see core-manifest.json).
-          Servers receive this release after an admin approves it in the Panel.
+          After an admin approves this release in the Panel, download the jars from Instance setup > Mod downloads and install them manually.
           EOF
           gh release create "velora-core-v${VERSION}" release/*.jar release/core-manifest.json release/SHA256SUMS --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" --title "Velora Core ${VERSION}" --notes-file notes.md

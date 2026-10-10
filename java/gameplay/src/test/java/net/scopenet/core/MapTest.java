@@ -146,7 +146,7 @@ class MapTest {
         String detail = data.pins().stream().filter(p -> p.kind().equals("market")).findFirst().orElseThrow().detail();
         assertTrue(detail.contains("2 listings"));
         assertTrue(detail.contains("Diamond x3 &middot; 99.50"));
-        assertTrue(detail.contains("[IRON] guild"));
+        assertTrue(detail.contains("[IRON] faction"));
         assertFalse(detail.contains("<b>Hack"), "listing names can't inject HTML");
         assertTrue(MapModel.build(sources(Map.of(), List.of(shop), new JsonArray(), false)).pins().stream().anyMatch(p -> p.detail().contains("No listings")));
     }
@@ -290,7 +290,7 @@ class MapTest {
         assertTrue(alex.last().contains("declined"));
         alex.denied.add("scopenet.command.guild.invite");
         set.run("guild", alex, "invite", "x");
-        assertTrue(alex.last().contains("permission to use /guild invite"));
+        assertTrue(alex.last().contains("permission to use /faction invite"));
     }
 
     @Test void mapServiceAssemblesEverythingOnTheServerSide() {

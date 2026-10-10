@@ -32,15 +32,11 @@ const server = (uuid: string) => `/api/client/servers/${uuid}/velora-core`;
 const admin = '/api/admin/extensions/net.velora.core';
 
 export const getStatus = async (uuid: string): Promise<ServerStatus> => (await axiosInstance.get(server(uuid))).data;
-export const install = async (uuid: string): Promise<string> => (await axiosInstance.post(`${server(uuid)}/install`, {})).data.message;
 export const connect = async (uuid: string, token: string, overwrite: boolean): Promise<string> =>
   (await axiosInstance.post(`${server(uuid)}/connect`, { token, overwrite })).data.message;
 export const installAuthlib = async (uuid: string): Promise<string> => (await axiosInstance.post(`${server(uuid)}/authlib`, {})).data.message;
-export const setAutoUpdate = async (uuid: string, enabled: boolean): Promise<void> => {
-  await axiosInstance.put(`${server(uuid)}/auto-update`, { enabled });
-};
 
 export const getAdminSettings = async (): Promise<AdminSettings> => (await axiosInstance.get(admin)).data;
-export const saveAdminSettings = async (panelUrl: string, autoUpdate: boolean): Promise<void> => {
-  await axiosInstance.put(admin, { panel_url: panelUrl, auto_update: autoUpdate });
+export const saveAdminSettings = async (panelUrl: string): Promise<void> => {
+  await axiosInstance.put(admin, { panel_url: panelUrl, auto_update: false });
 };

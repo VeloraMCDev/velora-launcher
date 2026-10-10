@@ -126,7 +126,7 @@ public final class ClientLink {
         if ((op.startsWith("casino")&&!p.hasPermission("velora.command.casino")) || (op.startsWith("darknet")&&!p.hasPermission("velora.command.darknet"))) {
             result(p,id,null,"You do not have permission to use this screen.");return;
         }
-        if (op.startsWith("guild") && !p.hasPermission("velora.command.guild") || op.equals("guild_bank") && !p.hasPermission("velora.command.guild.bank")) {
+        if (op.startsWith("guild") && !p.hasPermission("velora.command.faction") || op.equals("guild_bank") && !p.hasPermission("velora.command.faction.bank")) {
             result(p, id, null, "You do not have permission to use this screen."); return;
         }
         if (!requests.add(p.uuid())) { result(p, id, null, "A request is already running."); return; }
@@ -158,7 +158,7 @@ public final class ClientLink {
             if (!Set.of("claim","unclaim").contains(action)) throw new IllegalArgumentException();
             int x=args.get("x").getAsBigDecimal().intValueExact(), z=args.get("z").getAsBigDecimal().intValueExact();
             if (Math.abs((long)x)>1_875_000 || Math.abs((long)z)>1_875_000) throw new IllegalArgumentException();
-            if (!p.hasPermission("velora.command.guild."+action)) { result(p,id,null,"You do not have permission to edit claims."); return; }
+            if (!p.hasPermission("velora.command.faction."+action)) { result(p,id,null,"You do not have permission to edit claims."); return; }
             if (!requests.add(p.uuid())) { result(p,id,null,"A request is already running."); return; }
             JsonObject body=new JsonObject(); body.addProperty("uuid",p.uuid().toString());
             body.addProperty("dimension",p.pos().world()); body.addProperty("chunk_x",x); body.addProperty("chunk_z",z);
@@ -355,8 +355,8 @@ public final class ClientLink {
             switch (kind) {
                 case "level_up" -> { title = "Level up!"; text = ("server".equals(PlayerCache.str(d, "scope", "")) ? "Server level " : "Level ") + (long) PlayerCache.num(d, "level", 0); }
                 case "achievement" -> { title = "Achievement unlocked"; text = PlayerCache.str(d, "title", ""); }
-                case "guild_join" -> { title = "Guild"; text = "Joined " + PlayerCache.str(d, "guild", "a guild"); }
-                case "guild_leave" -> { title = "Guild"; text = "Left " + PlayerCache.str(d, "guild", "your guild"); }
+                case "guild_join" -> { title = "Faction"; text = "Joined " + PlayerCache.str(d, "guild", "a faction"); }
+                case "guild_leave" -> { title = "Faction"; text = "Left " + PlayerCache.str(d, "guild", "your faction"); }
                 default -> { continue; }
             }
             final String t = title, x = text, k = kind;

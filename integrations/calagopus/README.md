@@ -1,11 +1,11 @@
 # Velora Core for Calagopus
 
-A [Calagopus](https://calagopus.com) panel extension (`net.velora.core`) that connects a game server to the Velora Panel and installs and updates the Velora Core mod from it. How the pieces fit together, and how a release gets here, is in [docs/VELORA_CORE_DEPLOYMENT.md](../../docs/VELORA_CORE_DEPLOYMENT.md).
+A [Calagopus](https://calagopus.com) panel extension (`net.velora.core`) that connects a game server to the Velora Panel and reports its manually installed Velora Core version. How the pieces fit together, and how a release gets here, is in [docs/VELORA_CORE_DEPLOYMENT.md](../../docs/VELORA_CORE_DEPLOYMENT.md).
 
 It adds:
 
-- a **Velora Core** page to every server (install, update, connect, authlib-injector, automatic updates);
-- **Admin → Extensions → Velora Core** settings (Velora Panel address, global switch for automatic updates);
+- a **Velora Core** page to every server (version status, manual installation guidance, connection config and authlib-injector);
+- **Admin → Extensions → Velora Core** settings (Velora Panel address);
 - the permissions `velora-core.read` and `velora-core.manage` (server) and `velora-core.manage` (admin). Server owners and admins have them; grant them to subusers as needed.
 
 Calagopus extensions are native Rust plus React code that is compiled into the panel, so installing one needs the **`:heavy`** image or a development setup. See Calagopus' [installing extensions](https://calagopus.com/docs/panel/extensions/installing-extensions) guide.
@@ -44,8 +44,8 @@ Install the `.c7s.zip` as described in the Calagopus guide, then restart the pan
 
 1. In the Velora Panel, approve a Velora Core release (Servers → Velora Core).
 2. In Calagopus open Admin → Extensions → Velora Core and enter the Velora Panel's public address.
-3. On a server, open **Velora Core**: install the mod, paste the server token from the Velora Panel's Servers page, download authlib-injector, add the shown `-javaagent` flag to the startup command, then restart.
+3. On a server, open **Velora Core**: download the Server jar from the Velora Admin Panel and upload it to the stopped server's `mods/` folder, paste the server token from the Velora Panel's Servers page, download authlib-injector, add the shown `-javaagent` flag to the startup command, then restart.
 
 ## Status
 
-Supported panel: **1.2.4** (and newer). The Calagopus extension workflow compiles the backend, runs its tests, typechecks and bundles the frontend, and exports the `.c7s.zip` against both release 1.2.4 and `main`. What has not been exercised is a live install: the Wings file operations (pull, checksum, delete, power state) are unproven against a real node, so try it on a disposable server before using it on a live one. See [docs/VELORA_CORE_DEPLOYMENT.md](../../docs/VELORA_CORE_DEPLOYMENT.md).
+Supported panel: **1.2.4** (and newer). The Calagopus extension workflow compiles the backend, runs its tests, typechecks and bundles the frontend, and exports the `.c7s.zip` against both release 1.2.4 and `main`. What has not been exercised is a live install: the Wings config, authlib download and status operations are unproven against a real node, so try it on a disposable server before using it on a live one. See [docs/VELORA_CORE_DEPLOYMENT.md](../../docs/VELORA_CORE_DEPLOYMENT.md).

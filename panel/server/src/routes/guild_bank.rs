@@ -69,7 +69,7 @@ pub async fn adjust_wallet(conn: &mut SqliteConnection, server_id: i64, guild_id
     .bind(delta)
     .fetch_optional(&mut *conn)
     .await?;
-    balance.ok_or_else(|| AppError::bad_request("The guild bank doesn't have enough funds"))
+    balance.ok_or_else(|| AppError::bad_request("The faction bank doesn't have enough funds"))
 }
 
 pub async fn log(
@@ -164,9 +164,9 @@ pub async fn server_bank_transfer(
     if let Some(previous) = previous {
         return Ok(Json(previous));
     }
-    let m = membership(&mut tx, &server, &p.uuid).await?.ok_or_else(|| AppError::forbidden("You are not in a guild"))?;
+    let m = membership(&mut tx, &server, &p.uuid).await?.ok_or_else(|| AppError::forbidden("You are not in a faction"))?;
     if withdraw && !m.can_spend() {
-        return Err(AppError::forbidden("Only guild leaders and officers can withdraw"));
+        return Err(AppError::forbidden("Only faction leaders and officers can withdraw"));
     }
     ensure_balance(&mut tx, server.economy_id, &p.uuid, &p.username).await?;
     let (guild_delta, player_delta) = if withdraw { (-p.amount, p.amount) } else { (p.amount, -p.amount) };
@@ -218,7 +218,7 @@ pub async fn server_bank_credit(
     if let Some(previous) = previous {
         return Ok(Json(previous));
     }
-    let m = membership(&mut tx, &server, &p.uuid).await?.ok_or_else(|| AppError::forbidden("You are not in a guild"))?;
+    let m = membership(&mut tx, &server, &p.uuid).await?.ok_or_else(|| AppError::forbidden("You are not in a faction"))?;
     let balance = adjust_wallet(&mut tx, server.economy_id, &m.guild_id, p.amount).await?;
     let note = if p.description.is_empty() { "Items sold to the server shop" } else { &p.description };
     log(&mut tx, server.economy_id, &m.guild_id, &p.uuid, "sale", p.amount, note).await?;
@@ -244,9 +244,9 @@ pub async fn server_bank_pay(GameServer(server): GameServer, State(state): State
     if let Some(previous) = previous {
         return Ok(Json(previous));
     }
-    let m = membership(&mut tx, &server, &p.uuid).await?.ok_or_else(|| AppError::forbidden("You are not in a guild"))?;
+    let m = membership(&mut tx, &server, &p.uuid).await?.ok_or_else(|| AppError::forbidden("You are not in a faction"))?;
     if !m.can_spend() {
-        return Err(AppError::forbidden("Only guild leaders and officers can spend guild money"));
+        return Err(AppError::forbidden("Only faction leaders and officers can spend faction money"));
     }
     let target: Option<(String, String, String)> =
         sqlx::query_as("SELECT id, name, tag FROM guilds WHERE instance_id = ? AND tag = ? COLLATE NOCASE AND id <> ?")
@@ -255,7 +255,7 @@ pub async fn server_bank_pay(GameServer(server): GameServer, State(state): State
             .bind(&m.guild_id)
             .fetch_optional(&mut *tx)
             .await?;
-    let (target_id, target_name, target_tag) = target.ok_or_else(|| AppError::not_found("No other guild with that tag"))?;
+    let (target_id, target_name, target_tag) = target.ok_or_else(|| AppError::not_found("No other faction with that tag"))?;
     let balance = adjust_wallet(&mut tx, server.economy_id, &m.guild_id, -p.amount).await?;
     adjust_wallet(&mut tx, server.economy_id, &target_id, p.amount).await?;
     let note = p.note.chars().take(60).collect::<String>();

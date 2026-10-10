@@ -2,11 +2,11 @@
   import { ChevronRight, Menu, Search, Smartphone } from '@lucide/svelte';
   import NotificationBell from './NotificationBell.svelte';
   import { experienceContext } from '../lib/experience.svelte';
-  import { findAdminItem } from '../lib/adminNav';
+  import { findAdminItem, navigationParent } from '../lib/adminNav';
   import { route } from '../lib/router.svelte';
 
   let { brandName = 'Velora', logo = null, onmenu, onsearch }: { brandName?: string; logo?: string | null; onmenu?: () => void; onsearch?: () => void } = $props();
-  const here = $derived(findAdminItem(route.name));
+  const here = $derived(findAdminItem(navigationParent(route.name)));
 </script>
 
 <header class="top">
@@ -18,7 +18,7 @@
       {#if here.group.label !== here.label}<span class="group">{here.group.label}</span><ChevronRight size={13} />{/if}
       <strong>{here.label}</strong>
     {:else}
-      <strong>{route.name === 'control' ? 'Overview' : route.name === 'experience' ? 'Experience design' : brandName}</strong>
+      <strong>{route.name === 'control' ? 'Overview' : route.instanceId && ['experience', 'installation', 'servers'].includes(route.name) ? 'Instance setup' : brandName}</strong>
     {/if}
   </nav>
   <div class="grow"></div>

@@ -87,7 +87,7 @@
         if (land.length) { dimension = d.id; myLand = land; break; }
       }
     }
-    if (!land.length) { toast('Your guild has no claimed land yet.', 'info'); return; }
+    if (!land.length) { toast('Your faction has no claimed land yet.', 'info'); return; }
     focus = {
       minX: Math.min(...land.map((c) => c.chunk_x)), maxX: Math.max(...land.map((c) => c.chunk_x)),
       minZ: Math.min(...land.map((c) => c.chunk_z)), maxZ: Math.max(...land.map((c) => c.chunk_z)), nonce: (focus?.nonce ?? 0) + 1
@@ -169,7 +169,7 @@
     </div>
     <div class="group">
       {#if player}<span class="position">You: {Math.floor(player.x)}, {Math.floor(player.z)}</span>{:else}<span class="position">Player position unavailable</span>{/if}
-      <button class="ghost sm" onclick={showMyLand} disabled={!myGuildId} title="Zoom the map to all of your guild's claimed land"><Landmark size={15} /> My land</button>
+      <button class="ghost sm" onclick={showMyLand} disabled={!myGuildId} title="Zoom the map to all of your faction's claimed land"><Landmark size={15} /> My land</button>
       <button class="ghost sm" onclick={centerOnPlayer} disabled={!player} title="Center on your current position"><LocateFixed size={15} /> Find me</button>
       <button class="ghost icon sm" onclick={loadClaims} title="Refresh claims" aria-label="Refresh claims"><RefreshCw size={15} class={loading ? 'spin' : ''} /></button>
     </div>
@@ -184,8 +184,8 @@
     <div class="notice">The map is switched off for this server. An admin can turn it on under Servers in the panel.</div>
   {/if}
   <div class="footer">
-    <span><Shield size={14} /> Your guild: {myLand.length || myClaimsCount} {(myLand.length || myClaimsCount) === 1 ? 'chunk' : 'chunks'} in this dimension</span>
-    <span class="legend"><i class="mine"></i> Your guild <i class="other"></i> Other guilds</span>
+    <span><Shield size={14} /> Your faction: {myLand.length || myClaimsCount} {(myLand.length || myClaimsCount) === 1 ? 'chunk' : 'chunks'} in this dimension</span>
+    <span class="legend"><i class="mine"></i> Your faction <i class="other"></i> Other factions</span>
     {#if painting}<span>Updating claims…</span>{/if}
     {#if !player}<span class="hint">Your position appears once you are in game and the server's map is running.</span>{/if}
   </div>

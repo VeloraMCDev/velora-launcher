@@ -1,6 +1,6 @@
 <script lang="ts">
   import { ChevronDown, ExternalLink, Globe, LogOut, Search, Smartphone, X } from '@lucide/svelte';
-  import { adminGroups } from '../lib/adminNav';
+  import { adminGroups, navigationParent } from '../lib/adminNav';
   import { experienceContext } from '../lib/experience.svelte';
   import { PLATFORM_PAGES } from '@velora/experience';
   import { route } from '../lib/router.svelte';
@@ -16,7 +16,8 @@
   const read = (): string[] => { try { return JSON.parse(localStorage.getItem(KEY) ?? '["overview"]'); } catch { return ['overview']; } };
   let opened = $state<string[]>(read());
   const groups = $derived(adminGroups(route.instanceId, experienceContext.instance?.experience));
-  const activeGroup = $derived(groups.find((g) => g.items.some((i) => i.id === route.name))?.id);
+  const activePage = $derived(navigationParent(route.name));
+  const activeGroup = $derived(groups.find((g) => g.items.some((i) => navigationParent(i.id) === activePage))?.id);
   const isOpen = (id: string) => id === activeGroup || opened.includes(id);
   function toggle(id: string) {
     opened = opened.includes(id) ? opened.filter((c) => c !== id) : [...opened, id];
@@ -54,7 +55,7 @@
         {#if expanded}
           <div class="items">
             {#each g.items as item (item.id)}
-              <a href={route.instanceId && !PLATFORM_PAGES.has(item.id) ? `#/instance/${encodeURIComponent(route.instanceId)}/${item.id}` : `#/${item.id}`} class:active={route.name === item.id} aria-current={route.name === item.id ? 'page' : undefined}>
+              <a href={route.instanceId && !PLATFORM_PAGES.has(item.id) ? `#/instance/${encodeURIComponent(route.instanceId)}/${item.id}` : `#/${item.id}`} class:active={activePage === navigationParent(item.id)} aria-current={activePage === item.id ? 'page' : undefined}>
                 <McIcon item={NAV_ITEMS[item.id]} fallback={item.icon} size={20} />
                 <span>{item.label}</span>
               </a>

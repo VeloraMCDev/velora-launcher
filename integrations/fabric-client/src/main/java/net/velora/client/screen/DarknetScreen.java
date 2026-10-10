@@ -40,7 +40,13 @@ public final class DarknetScreen extends Screen {
     }
     @Override public void render(GuiGraphics g,int mx,int my,float delta){
         renderBackground(g);Ui.window(g,left,top,320,222);g.drawString(font,"Darknet",left+10,top+10,Ui.ACCENT,true);g.drawString(font,Ui.money("$",balance),left+207,top+10,Ui.GOLD,true);
-        if(products!=null)for(int i=0;i<5&&page*5+i<products.size();i++){JsonObject p=products.get(page*5+i).getAsJsonObject();g.drawString(font,font.plainSubstrByWidth(p.get("item_name").getAsString(),185),left+10,top+44+i*27,Ui.TEXT,false);g.drawString(font,"Quantity: "+p.get("amount").getAsInt(),left+10,top+55+i*27,Ui.MUTED,false);}
+        if(products!=null)for(int i=0;i<5&&page*5+i<products.size();i++){
+            JsonObject p=products.get(page*5+i).getAsJsonObject();int y=top+42+i*27;
+            Ui.card(g,left+8,y,304,25,Ui.ACCENT,0.8f);
+            g.renderItem(Ui.stackFor(p.get("item_id").getAsString(),p.get("amount").getAsInt()),left+14,y+4);
+            g.drawString(font,font.plainSubstrByWidth(p.get("item_name").getAsString(),160),left+36,y+3,Ui.TEXT,false);
+            g.drawString(font,p.get("amount").getAsInt()+"x · "+(p.has("vault_number")?"Permanent vault":"Vault delivery"),left+36,y+14,Ui.MUTED,false);
+        }
         g.drawString(font,font.plainSubstrByWidth(message,298),left+10,top+30,Ui.MUTED,false);super.render(g,mx,my,delta);
     }
     @Override public boolean isPauseScreen(){return false;}

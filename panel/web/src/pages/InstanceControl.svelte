@@ -12,7 +12,7 @@
   <h1>{instance?.name ?? 'Select an instance'}</h1>
   <p class="muted">{instance?.description}</p>
   <div class="identity"><span>{instance?.experience?.kind ?? 'smp'}</span><span>{instance?.mc_version} · {instance?.loader}</span></div>
-  <div class="actions"><button class="primary" onclick={() => go('experience')}>Design this experience</button><button onclick={() => go('installation')}>Version & modpack</button></div>
+  <div class="actions"><button class="primary" onclick={() => go('experience')}>Open instance setup</button></div>
   <ExperienceWidgets experience={instance?.experience} />
   {#each groups as group (group.id)}
     <section><h2>{group.label}</h2><div class="systems">

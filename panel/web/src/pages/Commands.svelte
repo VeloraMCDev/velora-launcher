@@ -93,7 +93,7 @@
       <section class="card">
         <h3><Plane size={16} /> /fly</h3>
         <Toggle bind:checked={u.fly.enabled} label="Enabled" />
-        <p class="perm"><code>free.fly</code> — fly anywhere<br /><code>guild.fly</code> — fly only inside your own guild's claims (flight switches off when you leave)</p>
+        <p class="perm"><code>free.fly</code> — fly anywhere<br /><code>faction.fly</code> — fly only inside your own faction's claims (flight switches off when you leave)</p>
       </section>
 
       <section class="card">

@@ -2,7 +2,6 @@
   import { Plus, Server, Users, Gauge, ShieldCheck, Rocket, ChevronRight } from '@lucide/svelte';
   import Modal from '../components/Modal.svelte';
   import ServerForm from '../components/ServerForm.svelte';
-  import CoreReleases from '../components/CoreReleases.svelte';
   import TokenReveal from '../components/TokenReveal.svelte';
   import { get, post, timeAgo } from '../lib/api';
   import { go, hashFor } from '../lib/router.svelte';
@@ -101,7 +100,7 @@
     </div>
   {/if}
 
-  <CoreReleases versions={servers?.map((s) => s.plugin_version) ?? []} />
+  <section class="card"><h3>Velora Core mods</h3><p class="muted">Download Server and Client jars, then upload them to the correct mods folders.</p><button onclick={() => go('experience/downloads')}>Open mod downloads</button></section>
 </div>
 
 <Modal bind:open={createOpen} title="Add server" width={540}>

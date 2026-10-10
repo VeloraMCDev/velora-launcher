@@ -194,7 +194,7 @@ async fn dispatch(server: super::servers::ServerRow, state: AppState, auth: Auth
             )
             .await?
             .0
-            .ok_or_else(|| AppError::forbidden("Guild membership is required"))?;
+            .ok_or_else(|| AppError::forbidden("Faction membership is required"))?;
             guilds::guild_wallet(auth, Path(guild.guild.id), Query(guilds::GuildWalletQuery { server_id: sid }), State(state)).await
         }
         "guild_requests" => {

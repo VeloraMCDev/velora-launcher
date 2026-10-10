@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
-/** /guild (and its subcommands), /claim, /unclaim: same behaviour and permission nodes as the Paper plugin. */
+/** /faction (and its subcommands), /claim, /unclaim: same behaviour and permission nodes as the Paper plugin. */
 final class GuildCommands {
     private static final Gson GSON = new Gson();
     private static final Set<String> GATED = Set.of("create", "leave", "rename", "disband", "claim", "unclaim", "map", "chat", "sethome", "home", "members", "bank", "sell", "market", "pay", "invite", "accept", "decline");
@@ -43,30 +43,31 @@ final class GuildCommands {
 
     List<CoreCommand> build() {
         List<CoreCommand> out = new ArrayList<>();
-        out.add(Cmd.of("guild", List.of("g", "clan", "faction", "f"), this::guild).completing((p, a) -> CommandSuggestions.choices("guild", a, EssentialsCommands.names(env, p), p::hasPermission)));
+        out.add(new Cmd("faction", List.of("guild", "g", "clan", "f"), "velora.command.faction", this::guild,
+                (p, a) -> CommandSuggestions.choices("faction", a, EssentialsCommands.names(env, p), p::hasPermission)));
         out.add(Cmd.of("claim", List.of(), (p, a) -> claim(p)));
         out.add(Cmd.of("unclaim", List.of(), (p, a) -> unclaim(p)));
         return out;
     }
 
     private void guild(CorePlayer p, String[] args) {
-        if (!env.features.guilds()) { p.send(Format.RED + "Guilds are disabled."); return; }
+        if (!env.features.guilds()) { p.send(Format.RED + "Factions are disabled."); return; }
         if (args.length == 0 || (args.length == 1 && (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("gui")))) {
-            if (!p.hasPermission("velora.command.guild.info")) { p.send(Format.RED + "You do not have permission to use /guild info."); return; }
+            if (!p.hasPermission("velora.command.faction.info")) { p.send(Format.RED + "You do not have permission to use /faction info."); return; }
             info(p);
             return;
         }
         String sub = args[0].toLowerCase(Locale.ROOT);
         String node = sub.equals("c") ? "chat" : sub;
-        if (GATED.contains(node) && !p.hasPermission("velora.command.guild." + node)) {
-            p.send(Format.RED + "You do not have permission to use /guild " + node + ".");
+        if (GATED.contains(node) && !p.hasPermission("velora.command.faction." + node)) {
+            p.send(Format.RED + "You do not have permission to use /faction " + node + ".");
             return;
         }
         String detail = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "";
         String fine = sub.equals("sell") && detail.equals("hand") ? "sell.hand"
                 : sub.equals("market") && (detail.equals("sell") || detail.equals("buy")) ? "market." + detail : null;
-        if (fine != null && !p.hasPermission("velora.command.guild." + fine)) {
-            p.send(Format.RED + "You do not have permission to use /guild " + sub + " " + detail + ".");
+        if (fine != null && !p.hasPermission("velora.command.faction." + fine)) {
+            p.send(Format.RED + "You do not have permission to use /faction " + sub + " " + detail + ".");
             return;
         }
         String[] rest = Arrays.copyOfRange(args, 1, args.length);
@@ -97,24 +98,24 @@ final class GuildCommands {
     }
 
     private void help(CorePlayer p) {
-        p.send(Format.GOLD + "=== Velora Guild Commands ===");
+        p.send(Format.GOLD + "=== Velora Faction Commands ===");
         String[][] rows = {
-            {"/guild", "Your guild overview"}, {"/guild create <name> <tag>", "Create a new guild"}, {"/guild leave", "Leave your current guild"}, {"/guild rename <name> [tag]", "Rename your guild (leader)"}, {"/guild disband", "Disband your guild (leader)"},
-            {"/claim", "Claim current chunk (also /guild claim)"}, {"/unclaim", "Unclaim current chunk (also /guild unclaim)"},
-            {"/guild map", "Show nearby land claims"}, {"/guild chat <msg>", "Send message to guild members"},
-            {"/guild sethome / /guild home", "Guild waypoint base"}, {"/guild bank [deposit|withdraw <amount>]", "Guild money"},
-            {"/guild sell [hand]", "Sell items to the shop for the guild bank"}, {"/guild market sell <price> | buy <#id>", "Trade on the market as a guild"},
-            {"/guild pay <tag> <amount>", "Pay another guild"},
-            {"/guild invite <player>", "Invite a player (leaders and officers)"}, {"/guild accept [tag] | decline [tag]", "Answer a guild invitation"},
-            {"/guild list / info <name>", "Browse the guilds on this server"}, {"/guild join <name> [message]", "Ask to join a guild"},
-            {"/guild requests / approve / reject <player>", "Review join requests (leaders and officers)"},
-            {"/guild kick <player>", "Remove a member"}, {"/guild promote / demote <player>", "Make someone an officer, or a member again (leader)"},
-            {"/guild roles / role <player> <role>", "See and hand out roles (leader)"}, {"/guild transfer <player> confirm", "Hand over leadership"},
-            {"/guild motd <text> / desc <text>", "Set the message of the day or the description"},
-            {"/guild flags [<rule> <on|off>]", "See or change what happens on your guild's land"},
-            {"/guild post <title> | <text> / posts", "Announcements for your guild"},
-            {"/guild upgrade [claims|members|outposts|vault] [tier]", "Buy faction upgrades from the bank (leaders and officers)"},
-            {"/guild vault [page]", "Open your faction's shared vault"},
+            {"/faction", "Your faction overview"}, {"/faction create <name> <tag>", "Create a new faction"}, {"/faction leave", "Leave your current faction"}, {"/faction rename <name> [tag]", "Rename your faction (leader)"}, {"/faction disband", "Disband your faction (leader)"},
+            {"/claim", "Claim current chunk (also /faction claim)"}, {"/unclaim", "Unclaim current chunk (also /faction unclaim)"},
+            {"/faction map", "Show nearby land claims"}, {"/faction chat <msg>", "Send message to faction members"},
+            {"/faction sethome / /faction home", "Faction waypoint base"}, {"/faction bank [deposit|withdraw <amount>]", "Faction money"},
+            {"/faction sell [hand]", "Sell items to the shop for the faction bank"}, {"/faction market sell <price> | buy <#id>", "Trade on the market as a faction"},
+            {"/faction pay <tag> <amount>", "Pay another faction"},
+            {"/faction invite <player>", "Invite a player (leaders and officers)"}, {"/faction accept [tag] | decline [tag]", "Answer a faction invitation"},
+            {"/faction list / info <name>", "Browse the factions on this server"}, {"/faction join <name> [message]", "Ask to join a faction"},
+            {"/faction requests / approve / reject <player>", "Review join requests (leaders and officers)"},
+            {"/faction kick <player>", "Remove a member"}, {"/faction promote / demote <player>", "Make someone an officer, or a member again (leader)"},
+            {"/faction roles / role <player> <role>", "See and hand out roles (leader)"}, {"/faction transfer <player> confirm", "Hand over leadership"},
+            {"/faction motd <text> / desc <text>", "Set the message of the day or the description"},
+            {"/faction flags [<rule> <on|off>]", "See or change what happens on your faction's land"},
+            {"/faction post <title> | <text> / posts", "Announcements for your faction"},
+            {"/faction upgrade [claims|members|outposts|vault] [tier]", "Buy faction upgrades from the bank (leaders and officers)"},
+            {"/faction vault [page]", "Open your faction's shared vault"},
             {"/faction outpost place", "Place the held Outpost Flag; claim its chunk first, then up to 12 nearby chunks"},
         };
         for (String[] r : rows) p.send(Format.YELLOW + r[0] + Format.GRAY + " - " + r[1]);
@@ -136,17 +137,17 @@ final class GuildCommands {
     }
 
     void claim(CorePlayer p) {
-        if (!env.features.guilds()) { p.send(Format.RED + "Guilds are disabled."); return; }
+        if (!env.features.guilds()) { p.send(Format.RED + "Factions are disabled."); return; }
         JsonObject body = chunkBody(p);
         p.send(Format.GRAY + "Claiming chunk [" + body.get("chunk_x").getAsInt() + ", " + body.get("chunk_z").getAsInt() + "]...");
         env.io(() -> { JsonObject r = env.panel.call("guilds/claim", body).getAsJsonObject(); env.panel.claimsChanged(); return r; }, r -> {
-            String name = r.has("guild_name") ? r.get("guild_name").getAsString() : "your guild";
+            String name = r.has("guild_name") ? r.get("guild_name").getAsString() : "your faction";
             p.send(Format.GREEN + "Chunk claimed successfully for " + Format.YELLOW + name + Format.GREEN + "!");
         }, e -> p.send(Format.RED + "Claim failed: " + e));
     }
 
     void unclaim(CorePlayer p) {
-        if (!env.features.guilds()) { p.send(Format.RED + "Guilds are disabled."); return; }
+        if (!env.features.guilds()) { p.send(Format.RED + "Factions are disabled."); return; }
         JsonObject body = chunkBody(p);
         int cx = body.get("chunk_x").getAsInt(), cz = body.get("chunk_z").getAsInt();
         p.send(Format.GRAY + "Unclaiming chunk [" + cx + ", " + cz + "]...");
@@ -155,47 +156,47 @@ final class GuildCommands {
     }
 
     private void create(CorePlayer p, String[] args) {
-        if (args.length < 3) { p.send(Format.RED + "Usage: /guild create <name> <tag>"); return; }
+        if (args.length < 3) { p.send(Format.RED + "Usage: /faction create <name> <tag>"); return; }
         String name = args[1], tag = args[2];
-        p.send(Format.GRAY + "Founding guild " + name + " [" + tag + "]...");
+        p.send(Format.GRAY + "Founding faction " + name + " [" + tag + "]...");
         JsonObject body = uuidBody(p);
         body.addProperty("username", p.name());
         body.addProperty("name", name);
         body.addProperty("tag", tag);
         env.io(() -> { JsonObject r = env.panel.call("guilds/create", body).getAsJsonObject(); env.panel.claimsChanged(); return r; },
-                r -> p.send(Format.GREEN + "Guild " + Format.YELLOW + name + Format.GOLD + " [" + tag + "]" + Format.GREEN + " founded successfully! You are the Guild Leader."),
-                e -> p.send(Format.RED + "Failed to create guild: " + e));
+                r -> p.send(Format.GREEN + "Faction " + Format.YELLOW + name + Format.GOLD + " [" + tag + "]" + Format.GREEN + " founded successfully! You are the Faction Leader."),
+                e -> p.send(Format.RED + "Failed to create faction: " + e));
     }
 
     private void rename(CorePlayer p, String[] args) {
-        if (args.length < 2) { p.send(Format.RED + "Usage: /guild rename <name> [tag]"); return; }
+        if (args.length < 2) { p.send(Format.RED + "Usage: /faction rename <name> [tag]"); return; }
         JsonObject body = uuidBody(p);
         body.addProperty("name", args[1]);
         if (args.length > 2) body.addProperty("tag", args[2]);
-        p.send(Format.GRAY + "Renaming guild...");
+        p.send(Format.GRAY + "Renaming faction...");
         env.io(() -> { JsonObject r = env.panel.call("guilds/rename", body).getAsJsonObject(); env.panel.claimsChanged(); return r; },
-                r -> p.send(Format.GREEN + "Your guild is now " + Format.YELLOW + r.get("name").getAsString() + Format.GOLD + " [" + r.get("tag").getAsString() + "]" + Format.GREEN + "."),
-                e -> p.send(Format.RED + "Could not rename the guild: " + e));
+                r -> p.send(Format.GREEN + "Your faction is now " + Format.YELLOW + r.get("name").getAsString() + Format.GOLD + " [" + r.get("tag").getAsString() + "]" + Format.GREEN + "."),
+                e -> p.send(Format.RED + "Could not rename the faction: " + e));
     }
 
     private void disband(CorePlayer p, String[] args) {
         if (args.length < 2 || !args[1].equalsIgnoreCase("confirm")) {
-            p.send(Format.RED + "This permanently deletes your guild, frees all its land and pays the treasury to you.");
-            p.send(Format.YELLOW + "Type " + Format.GOLD + "/guild disband confirm" + Format.YELLOW + " to go ahead.");
+            p.send(Format.RED + "This permanently deletes your faction, frees all its land and pays the treasury to you.");
+            p.send(Format.YELLOW + "Type " + Format.GOLD + "/faction disband confirm" + Format.YELLOW + " to go ahead.");
             return;
         }
         env.io(() -> { JsonObject r = env.panel.call("guilds/disband", uuidBody(p)).getAsJsonObject(); env.panel.claimsChanged(); return r; }, r -> {
             double refunded = r.has("refunded") ? r.get("refunded").getAsDouble() : 0;
-            p.send(Format.YELLOW + "Your guild was disbanded." + (refunded > 0 ? Format.GREEN + " " + refunded + " from the treasury was paid to you." : ""));
-        }, e -> p.send(Format.RED + "Could not disband the guild: " + e));
+            p.send(Format.YELLOW + "Your faction was disbanded." + (refunded > 0 ? Format.GREEN + " " + refunded + " from the treasury was paid to you." : ""));
+        }, e -> p.send(Format.RED + "Could not disband the faction: " + e));
     }
 
     private void leave(CorePlayer p) {
-        p.send(Format.GRAY + "Leaving guild...");
+        p.send(Format.GRAY + "Leaving faction...");
         env.io(() -> { JsonObject r = env.panel.call("guilds/leave", uuidBody(p)).getAsJsonObject(); env.panel.claimsChanged(); return r; }, r -> {
             boolean disbanded = r.has("disbanded") && r.get("disbanded").getAsBoolean();
-            p.send(disbanded ? Format.YELLOW + "You were the last member. The guild was disbanded." : Format.GREEN + "You left your guild.");
-        }, e -> p.send(Format.RED + "Error leaving guild: " + e));
+            p.send(disbanded ? Format.YELLOW + "You were the last member. The faction was disbanded." : Format.GREEN + "You left your faction.");
+        }, e -> p.send(Format.RED + "Error leaving faction: " + e));
     }
 
     /** The guild the player is in, or an error message sent to them. Runs {@code then} on the server thread. */
@@ -207,21 +208,21 @@ final class GuildCommands {
     }
 
     private void info(CorePlayer p) {
-        p.send(Format.GRAY + "Loading guild info...");
+        p.send(Format.GRAY + "Loading faction info...");
         env.io(() -> env.panel.call("guilds/player", uuidBody(p)).getAsJsonObject(), r -> {
             if (!r.has("in_guild") || !r.get("in_guild").getAsBoolean()) {
-                p.send(Format.YELLOW + "You are not in a guild! Create one with " + Format.GOLD + "/guild create <name> <tag>");
+                p.send(Format.YELLOW + "You are not in a faction! Create one with " + Format.GOLD + "/faction create <name> <tag>");
                 return;
             }
             JsonObject g = r.getAsJsonObject("guild");
             int members = g.has("members") ? g.getAsJsonArray("members").size() : 0;
-            p.send(Format.GOLD + "=== Guild: " + Format.YELLOW + g.get("name").getAsString() + " " + Format.GOLD + "[" + g.get("tag").getAsString() + "] ===");
+            p.send(Format.GOLD + "=== Faction: " + Format.YELLOW + g.get("name").getAsString() + " " + Format.GOLD + "[" + g.get("tag").getAsString() + "] ===");
             p.send(Format.GRAY + "Your role: " + Format.GREEN + g.get("role").getAsString().toUpperCase(Locale.ROOT) + Format.GRAY + "   Level: " + Format.GOLD
                     + (g.has("level") ? g.get("level").getAsInt() : 1) + Format.GRAY + "   Members: " + Format.WHITE + members);
             p.send(Format.GRAY + "Claimed chunks: " + Format.YELLOW + (g.has("claims_count") ? g.get("claims_count").getAsLong() : 0)
                     + Format.GRAY + " / " + Format.GREEN + (g.has("max_claims") ? g.get("max_claims").getAsLong() : 16));
-            p.send(Format.GRAY + "/claim, /unclaim, /guild map, /guild members, /guild bank");
-        }, e -> p.send(Format.RED + "Failed to load guild: " + e));
+            p.send(Format.GRAY + "/claim, /unclaim, /faction map, /faction members, /faction bank");
+        }, e -> p.send(Format.RED + "Failed to load faction: " + e));
     }
 
     private void map(CorePlayer p) {
@@ -241,18 +242,18 @@ final class GuildCommands {
             p.send(row.toString());
         }
         p.send(Format.GRAY + "   S (+Z)");
-        p.send(Format.GOLD + "[P]" + Format.YELLOW + " You  " + Format.GREEN + "+ " + Format.GRAY + "Your Guild  " + Format.RED + "x " + Format.GRAY + "Other Guild  "
+        p.send(Format.GOLD + "[P]" + Format.YELLOW + " You  " + Format.GREEN + "+ " + Format.GRAY + "Your Faction  " + Format.RED + "x " + Format.GRAY + "Other Faction  "
                 + Format.DARK_GRAY + ". " + Format.GRAY + "Wilderness");
     }
 
     private void chat(CorePlayer p, String[] args) {
-        if (args.length < 2) { p.send(Format.RED + "Usage: /guild chat <message>"); return; }
+        if (args.length < 2) { p.send(Format.RED + "Usage: /faction chat <message>"); return; }
         String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-        withGuild(p, "You are not in a guild.", g -> {
+        withGuild(p, "You are not in a faction.", g -> {
             String tag = g.get("tag").getAsString();
             Set<String> names = new HashSet<>();
             if (g.has("members")) g.getAsJsonArray("members").forEach(m -> names.add(m.getAsJsonObject().get("name").getAsString().toLowerCase(Locale.ROOT)));
-            String line = Format.GREEN + "[Guild " + tag + "] " + Format.YELLOW + p.name() + ": " + Format.WHITE + message;
+            String line = Format.GREEN + "[Faction " + tag + "] " + Format.YELLOW + p.name() + ": " + Format.WHITE + message;
             // Only guild members read guild chat.
             for (CorePlayer other : env.platform.online()) if (names.contains(other.name().toLowerCase(Locale.ROOT)) || other.uuid().equals(p.uuid())) other.send(line);
         });
@@ -265,31 +266,31 @@ final class GuildCommands {
             try (Writer w = Files.newBufferedWriter(tmp)) { GSON.toJson(new TreeMap<>(guildHomes), w); }
             Files.move(tmp, homesFile, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            env.log.warning("Failed to save guild homes: " + e.getMessage());
+            env.log.warning("Failed to save faction homes: " + e.getMessage());
         }
     }
 
     private void setHome(CorePlayer p) {
-        withGuild(p, "You must be in a guild to set a guild home.", g -> {
+        withGuild(p, "You must be in a faction to set a faction home.", g -> {
             String role = g.get("role").getAsString();
-            if (!role.equals("leader") && !role.equals("officer")) { p.send(Format.RED + "Only guild leaders and officers can set the guild home."); return; }
+            if (!role.equals("leader") && !role.equals("officer")) { p.send(Format.RED + "Only faction leaders and officers can set the faction home."); return; }
             guildHomes.put(g.get("id").getAsString(), p.pos());
             save();
-            p.send(Format.GREEN + "Guild home waypoint set at your location!");
+            p.send(Format.GREEN + "Faction home waypoint set at your location!");
         });
     }
 
     private void home(CorePlayer p) {
-        withGuild(p, "You are not in a guild.", g -> {
+        withGuild(p, "You are not in a faction.", g -> {
             Pos at = guildHomes.get(g.get("id").getAsString());
-            if (at == null) { p.send(Format.RED + "Your guild has not set a guild home yet! Use /guild sethome"); return; }
+            if (at == null) { p.send(Format.RED + "Your faction has not set a faction home yet! Use /faction sethome"); return; }
             ess.teleportTo(p, at);
-            p.send(Format.GREEN + "Teleported to guild home base.");
+            p.send(Format.GREEN + "Teleported to faction home base.");
         });
     }
 
     private void members(CorePlayer p) {
-        withGuild(p, "You are not in a guild.", g -> {
+        withGuild(p, "You are not in a faction.", g -> {
             p.send(Format.GOLD + "=== Members of " + Format.YELLOW + g.get("name").getAsString() + Format.GOLD + " ===");
             for (JsonElement el : g.getAsJsonArray("members")) {
                 JsonObject m = el.getAsJsonObject();
@@ -303,7 +304,7 @@ final class GuildCommands {
     // ---- invitations ------------------------------------------------------------
 
     private void invite(CorePlayer p, String[] args) {
-        if (args.length < 1) { p.send(Format.RED + "Usage: /guild invite <player>"); return; }
+        if (args.length < 1) { p.send(Format.RED + "Usage: /faction invite <player>"); return; }
         JsonObject body = uuidBody(p);
         body.addProperty("target", args[0]);
         env.io(() -> env.panel.call("guilds/invite/send", body).getAsJsonObject(),
@@ -331,7 +332,7 @@ final class GuildCommands {
         if (vaults == null || !vaults.supported() || !env.modules.get().enabled("vaults")) { p.send(Format.RED + "Faction vaults are not available on this server."); return; }
         int page = 1;
         if (args.length > 0) {
-            try { page = Integer.parseInt(args[0]); } catch (NumberFormatException e) { p.send(Format.RED + "Usage: /guild vault [page]"); return; }
+            try { page = Integer.parseInt(args[0]); } catch (NumberFormatException e) { p.send(Format.RED + "Usage: /faction vault [page]"); return; }
         }
         if (page < 1 || page > 9) { p.send(Format.RED + "Faction vault pages are numbered 1 to 9."); return; }
         vaults.open(p, "faction", page, "Faction vault " + page);
@@ -362,7 +363,7 @@ final class GuildCommands {
     private void upgrade(CorePlayer p, String[] args) {
         JsonObject body = uuidBody(p);
         String track = args.length > 0 ? args[0].toLowerCase(Locale.ROOT) : null;
-        if (track != null && !List.of("claims", "members", "outposts", "vault").contains(track)) { p.send(Format.RED + "Usage: /guild upgrade [claims|members|outposts|vault] [tier]"); return; }
+        if (track != null && !List.of("claims", "members", "outposts", "vault").contains(track)) { p.send(Format.RED + "Usage: /faction upgrade [claims|members|outposts|vault] [tier]"); return; }
         if (track != null && args.length > 1) {
             int tier;
             try { tier = Integer.parseInt(args[1]); } catch (NumberFormatException e) { p.send(Format.RED + "The tier must be a number."); return; }
@@ -377,7 +378,7 @@ final class GuildCommands {
                 if (track != null && !track.equals(name)) continue;
                 JsonObject t = tracks.getAsJsonObject(name);
                 long have = t.get("tiers").getAsLong(), max = t.get("max").getAsLong();
-                String next = have >= max ? Format.DARK_GRAY + "maxed" : Format.YELLOW + "/guild upgrade " + name + " " + (have + 1) + Format.GRAY + " for " + env.money(t.get("price_cents").getAsLong() / 100.0);
+                String next = have >= max ? Format.DARK_GRAY + "maxed" : Format.YELLOW + "/faction upgrade " + name + " " + (have + 1) + Format.GRAY + " for " + env.money(t.get("price_cents").getAsLong() / 100.0);
                 p.send(Format.WHITE + " " + name + Format.GRAY + " " + have + "/" + max + "  " + next);
             }
             p.send(Format.GRAY + "Outposts: " + r.get("outposts").getAsLong() + "/" + r.get("outpost_limit").getAsLong()
@@ -388,7 +389,7 @@ final class GuildCommands {
     private void bank(CorePlayer p, String[] args) {
         if (args.length >= 2 && (args[0].equalsIgnoreCase("deposit") || args[0].equalsIgnoreCase("withdraw"))) {
             String action = args[0].toLowerCase(Locale.ROOT);
-            if (!p.hasPermission("velora.command.guild.bank." + action)) { p.send(Format.RED + "You do not have permission to " + action + " guild money."); return; }
+            if (!p.hasPermission("velora.command.faction.bank." + action)) { p.send(Format.RED + "You do not have permission to " + action + " faction money."); return; }
             Double value = Format.amount(args[1]);
             if (value == null) { p.send(Format.RED + "Enter an amount of at least 0.01, for example 25 or 12.50."); return; }
             JsonObject payload = uuidBody(p);
@@ -399,11 +400,11 @@ final class GuildCommands {
             return;
         }
         if (args.length > 0 && !args[0].equalsIgnoreCase("balance") && !args[0].equalsIgnoreCase("info")) {
-            p.send(Format.RED + "Usage: /guild bank [deposit|withdraw <amount>]");
+            p.send(Format.RED + "Usage: /faction bank [deposit|withdraw <amount>]");
             return;
         }
         env.io(() -> env.panel.call("guilds/bank", uuidBody(p)).getAsJsonObject(), info -> {
-            if (!info.has("guild") || info.get("guild").isJsonNull()) { p.send(Format.RED + "You are not in a guild on this server."); return; }
+            if (!info.has("guild") || info.get("guild").isJsonNull()) { p.send(Format.RED + "You are not in a faction on this server."); return; }
             JsonObject g = info.getAsJsonObject("guild");
             p.send(Format.GOLD + "=== [" + g.get("tag").getAsString() + "] " + g.get("name").getAsString() + " Bank ===");
             p.send(Format.YELLOW + "Balance: " + Format.GREEN + env.money(info.get("balance").getAsDouble()) + Format.GRAY + "   Your wallet: "
@@ -415,12 +416,12 @@ final class GuildCommands {
                 p.send(Format.GRAY + " " + (out ? Format.RED + "-" : Format.GREEN + "+") + env.money(row.get("amount").getAsDouble()) + Format.GRAY + " "
                         + kind.replace('_', ' ') + " by " + row.get("who").getAsString());
             }
-            p.send(Format.GRAY + "/guild bank deposit|withdraw <amount>, /guild sell, /guild market, /guild pay <tag> <amount>");
-        }, e -> p.send(Format.RED + "Could not load the guild bank: " + e));
+            p.send(Format.GRAY + "/faction bank deposit|withdraw <amount>, /faction sell, /faction market, /faction pay <tag> <amount>");
+        }, e -> p.send(Format.RED + "Could not load the faction bank: " + e));
     }
 
     private void pay(CorePlayer p, String[] args) {
-        if (args.length < 2) { p.send(Format.RED + "Usage: /guild pay <guild tag> <amount>"); return; }
+        if (args.length < 2) { p.send(Format.RED + "Usage: /faction pay <faction tag> <amount>"); return; }
         Double value = Format.amount(args[1]);
         if (value == null) { p.send(Format.RED + "Enter an amount of at least 0.01, for example 25 or 12.50."); return; }
         JsonObject payload = uuidBody(p);

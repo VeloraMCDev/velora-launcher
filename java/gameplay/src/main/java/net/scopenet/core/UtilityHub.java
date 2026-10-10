@@ -126,12 +126,12 @@ public final class UtilityHub {
         boolean want = args.length > 0 ? args[0].equalsIgnoreCase("on") : !flying.contains(p.uuid());
         if (args.length > 0 && !want && !args[0].equalsIgnoreCase("off")) { p.send(Format.YELLOW + "Usage: /fly [on|off]"); return; }
         if (want && !free && !inOwnGuildLand(p)) {
-            p.send(Format.RED + "You can only fly inside your own guild's land.");
+            p.send(Format.RED + "You can only fly inside your own faction's land.");
             return;
         }
         if (want) flying.add(p.uuid()); else flying.remove(p.uuid());
         env.platform.setFlight(p.uuid(), want);
-        p.send(want ? Format.GREEN + "Flight enabled." + (free ? "" : Format.GRAY + " It switches off when you leave your guild's land.") : Format.YELLOW + "Flight disabled.");
+        p.send(want ? Format.GREEN + "Flight enabled." + (free ? "" : Format.GRAY + " It switches off when you leave your faction's land.") : Format.YELLOW + "Flight disabled.");
     }
 
     // ---- /vault and /echest ------------------------------------------------------------------------------
@@ -315,7 +315,7 @@ public final class UtilityHub {
             case "info" -> {
                 ClaimIndex.ClaimInfo info = env.panel.info(pos.world(), Math.floorDiv(pos.blockX(), 16), Math.floorDiv(pos.blockZ(), 16));
                 if (info == null) p.send(Format.GRAY + "You're standing in the wilderness.");
-                else p.send(Format.GOLD + (info.admin() ? "Admin claim " : "Guild claim ") + Format.YELLOW + info.name()
+                else p.send(Format.GOLD + (info.admin() ? "Admin claim " : "Faction claim ") + Format.YELLOW + info.name()
                         + (info.description().isBlank() ? "" : Format.GRAY + " - " + info.description()));
                 return;
             }
@@ -407,7 +407,7 @@ public final class UtilityHub {
             if (flying.contains(p.uuid()) && !p.hasPermission("free.fly") && (!u.fly || !p.hasPermission("guild.fly") || !inOwnGuildLand(p))) {
                 flying.remove(p.uuid());
                 env.platform.setFlight(p.uuid(), false);
-                p.send(Format.YELLOW + "Flight disabled - you left your guild's land.");
+                p.send(Format.YELLOW + "Flight disabled - you left your faction's land.");
             }
         }
     }

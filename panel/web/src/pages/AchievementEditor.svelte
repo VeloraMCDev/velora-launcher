@@ -201,7 +201,7 @@
       <select id="filter-cat" bind:value={filterCategory}>
         <option value="all">All Categories</option>
         {#each categories as cat}
-          <option value={cat}>{cat.toUpperCase()}</option>
+          <option value={cat}>{cat === 'guilds' ? 'FACTIONS' : cat.toUpperCase()}</option>
         {/each}
       </select>
 
@@ -243,7 +243,7 @@
             <h3>{a.title}</h3>
             <p>{a.description}</p>
             <div class="ach-meta">
-              <span class="meta-tag">{a.category}</span>
+              <span class="meta-tag">{a.category === 'guilds' ? 'factions' : a.category}</span>
               {#if a.stat_type}
                 <code class="meta-trigger">{a.stat_type} &ge; {a.target_count}</code>
               {:else if a.event_type}
@@ -355,7 +355,7 @@
           <label for="a-cat">Category</label>
           <select id="a-cat" bind:value={draft.category}>
             {#each categories as cat}
-              <option value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+              <option value={cat}>{cat === 'guilds' ? 'Factions' : cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
             {/each}
           </select>
         </div>

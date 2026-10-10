@@ -62,8 +62,8 @@
     <p class="tiny muted">Loading…</p>
   {:else}
     <p class="tiny muted">
-      {#if rules.can_edit}Decide what happens on your guild's land. Members are never held back by the visitor rules. Changes reach the game within seconds.
-      {:else}Your guild's land rules. The leader and officers can change them.{/if}
+      {#if rules.can_edit}Decide what happens on your faction's land. Members are never held back by the visitor rules. Changes reach the game within seconds.
+      {:else}Your faction's land rules. The leader and officers can change them.{/if}
     </p>
     {#each groups as g (g.name)}
       <div class="grp">

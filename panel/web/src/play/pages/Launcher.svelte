@@ -42,7 +42,7 @@
   const instances = $derived(play.manifest?.instances ?? []);
   const steps = [
     ['Install', 'Download the launcher on your Windows PC and run it.'],
-    ['Sign in', 'Use this same account. Your balance, guild and friends follow you.'],
+    ['Sign in', 'Use this same account. Your balance, faction and friends follow you.'],
     ['Play', 'Pick an instance and press Play. Java, mods and updates are automatic.'],
   ];
 </script>
