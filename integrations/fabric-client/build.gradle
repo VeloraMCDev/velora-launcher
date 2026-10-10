@@ -14,4 +14,4 @@ processResources {
     inputs.property 'version', project.version
     filesMatching('fabric.mod.json') { expand(version: project.version) }
 }
-base.archivesName = 'scopenet-client-fabric-1.20.1'
+base.archivesName = 'velora-core-client-1.20.1'

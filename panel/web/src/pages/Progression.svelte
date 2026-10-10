@@ -350,7 +350,7 @@
 
       <section class="card">
         <div class="section-title"><h2><Info size={16} /> Economy &amp; guild rules</h2></div>
-        <p class="muted small">Apply on every server. Home limits, cooldowns and RTP are set per server in the plugin/mod config, and ranks can raise home limits with permission nodes (scopenet.homes.10).</p>
+        <p class="muted small">Apply on every server. Home limits, cooldowns and RTP are set per server in the plugin/mod config, and ranks can raise home limits with permission nodes (velora.homes.10).</p>
         <div class="rates">
           <label class="field"><span class="lab">Starting balance <span class="unit">$</span></span><input type="number" min="0" step="50" bind:value={s.rules.starting_balance} /></label>
           <label class="field"><span class="lab">Guild claims at creation <span class="unit">chunks</span></span><input type="number" min="0" step="1" bind:value={s.rules.guild_base_claims} /></label>

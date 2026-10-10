@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.velora.fabric.features.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "velora.refmap.json",
+  "mixins": ["InventoryCheckpointMixin", "InventoryLockMixin", "PickupLockMixin", "ShopHopperMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.velora.minecraft.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "velora.refmap.json",
+  "mixins": ["DedicatedMixin", "ServerMixin", "LoginMixin", "PlayerMixin", "BlockItemMixin", "BlockBreakMixin", "BlockInteractMixin", "ChatMixin", "CommandMixin", "AdvancementMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

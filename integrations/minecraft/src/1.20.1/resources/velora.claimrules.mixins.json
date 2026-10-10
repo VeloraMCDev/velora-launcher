@@ -1,0 +1,9 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "net.velora.minecraft.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "velora.refmap.json",
+  "mixins": ["RulePvpMixin", "RuleExplosionMixin", "RuleFireMixin", "RuleFluidMixin", "RuleSpawnMixin", "RuleReachMixin"],
+  "injectors": { "defaultRequire": 0 }
+}

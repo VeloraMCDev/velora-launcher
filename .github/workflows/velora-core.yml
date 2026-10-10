@@ -34,8 +34,8 @@ jobs:
         with:
           name: velora-core-jars
           path: |
-            integrations/fabric/build/libs/scopenet-fabric-1.20.1-*.jar
-            integrations/fabric-client/build/libs/scopenet-client-fabric-1.20.1-*.jar
+            integrations/fabric/build/libs/velora-core-server-1.20.1-*.jar
+            integrations/fabric-client/build/libs/velora-core-client-1.20.1-*.jar
             !integrations/**/*-dev.jar
             !integrations/**/*-sources.jar
           if-no-files-found: error

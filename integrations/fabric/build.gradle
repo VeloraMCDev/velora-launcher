@@ -2,9 +2,9 @@ plugins { id 'fabric-loom' version '1.8.13' }
 def mc = (providers.gradleProperty('mcVersion').orNull ?: project.findProperty('mcVersion') ?: '1.20.1').toString().trim()
 if (mc != '1.20.1') throw new GradleException("Velora Core targets Minecraft 1.20.1 (got '${mc}'); other versions are archived under archive/integrations")
 def targetJava = mc == '1.20.1' ? 17 : 21
-loom { mixin { defaultRefmapName = 'scopenet.refmap.json' } }
+loom { mixin { defaultRefmapName = 'velora.refmap.json' } }
 if (providers.gradleProperty('verifyMixins').isPresent()) {
-    loom { runs { server { vmArg '-Dscopenet.verifyMixins=true' } } }
+    loom { runs { server { vmArg '-Dvelora.verifyMixins=true' } } }
 }
 if (providers.gradleProperty('verificationRunDir').isPresent()) {
     loom { runs { server { runDir providers.gradleProperty('verificationRunDir').get() } } }
@@ -31,11 +31,11 @@ sourceSets.main.java.srcDirs += ['../minecraft/src/main/java', "../minecraft/src
 sourceSets.main.resources.srcDirs += ['../minecraft/src/main/resources', "../minecraft/src/${mc}/resources"]
 apply from: '../minecraft/build-info.gradle'
 processResources {
-    inputs.properties(version: project.version, mc: mc, java: targetJava, coreMixin: features ? 'scopenet.core.mixins.json' : 'scopenet.core-disabled.mixins.json')
-    filesMatching('fabric.mod.json') { expand(version: project.version, mc: mc, java: targetJava, coreMixin: features ? 'scopenet.core.mixins.json' : 'scopenet.core-disabled.mixins.json') }
+    inputs.properties(version: project.version, mc: mc, java: targetJava, coreMixin: features ? 'velora.core.mixins.json' : 'velora.core-disabled.mixins.json')
+    filesMatching('fabric.mod.json') { expand(version: project.version, mc: mc, java: targetJava, coreMixin: features ? 'velora.core.mixins.json' : 'velora.core-disabled.mixins.json') }
 }
 jar {
-    archiveBaseName = "scopenet-fabric-${mc}"
+    archiveBaseName = "velora-core-server-${mc}"
     from project(':common').sourceSets.main.output
 }
-base.archivesName = "scopenet-fabric-${mc}"
+base.archivesName = "velora-core-server-${mc}"

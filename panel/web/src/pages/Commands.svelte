@@ -77,7 +77,7 @@
           <label>Health restored<input type="number" min="0" step="1" bind:value={u.heal.amount} /><small>2 = one heart · 0 = full health</small></label>
           <label>Cooldown (seconds)<input type="number" min="0" bind:value={u.heal.cooldown_secs} /><small>{cooldownText(u.heal.cooldown_secs)}</small></label>
         </div>
-        <p class="perm">Permission <code>scopenet.command.heal</code> · skip cooldown with <code>scopenet.cooldown.bypass</code></p>
+        <p class="perm">Permission <code>velora.command.heal</code> · skip cooldown with <code>velora.cooldown.bypass</code></p>
       </section>
 
       <section class="card">
@@ -87,7 +87,7 @@
           <label>Hunger restored<input type="number" min="0" max="20" bind:value={u.feed.amount} /><small>20 fills the whole bar</small></label>
           <label>Cooldown (seconds)<input type="number" min="0" bind:value={u.feed.cooldown_secs} /><small>{cooldownText(u.feed.cooldown_secs)}</small></label>
         </div>
-        <p class="perm">Permission <code>scopenet.command.feed</code></p>
+        <p class="perm">Permission <code>velora.command.feed</code></p>
       </section>
 
       <section class="card">
@@ -104,7 +104,7 @@
           <label>Rows each<input type="number" min="1" max="7" bind:value={u.vault.rows} /><small>{u.vault.rows * 9} slots · Seven rows require Velora Core Client</small></label>
           <label>Free for everyone<input type="number" min="0" max={u.vault.count} bind:value={u.vault.free_count} /></label>
         </div>
-        <p class="perm">Vaults after the free ones need <code>scopenet.vault.2</code>, <code>scopenet.vault.3</code> … (give them by rank with LuckPerms).</p>
+        <p class="perm">Vaults after the free ones need <code>velora.vault.2</code>, <code>velora.vault.3</code> … (give them by rank with LuckPerms).</p>
         <Toggle bind:checked={u.echest.enabled} label="/echest enabled" help="Opens the player's ender chest from anywhere." />
       </section>
     </div>

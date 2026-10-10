@@ -1,7 +1,7 @@
 //! Admin claims: named, described regions that belong to the server rather than a guild (spawn, shops, arenas…).
 //!
 //! They live beside guild claims and reach game servers inside the same claim index, so protection, the map and the
-//! "you are entering…" banner all treat them the same way. Only players with `scopenet.claims.bypass` may build in them,
+//! "you are entering…" banner all treat them the same way. Only players with `velora.claims.bypass` may build in them,
 //! and guilds can't claim over them.
 
 use crate::state::RequestState as State;
@@ -19,7 +19,7 @@ const MAX_CHUNKS_PER_CALL: i64 = 4096;
 /// What an admin claim can allow or forbid. `true` means *allowed*. The defaults keep a fresh claim behaving the way every admin
 /// claim always has: protected from building and griefing, otherwise ordinary. Enforced by the game server plugin.
 pub const FLAGS: &[(&str, &str, &str, &str, bool)] = &[
-    ("build", "Player break & build", "Place and break blocks, and use buckets. Staff with scopenet.claims.bypass always can.", "Protection", false),
+    ("build", "Player break & build", "Place and break blocks, and use buckets. Staff with velora.claims.bypass always can.", "Protection", false),
     ("interact", "Player interaction", "Use doors, buttons, levers, pressure plates, beds and other blocks.", "Protection", false),
     ("containers", "Open containers", "Open chests, barrels, furnaces, hoppers, shulker boxes and similar.", "Protection", false),
     ("entry", "Entry", "Players can walk in. Off keeps everyone but staff out.", "Protection", true),

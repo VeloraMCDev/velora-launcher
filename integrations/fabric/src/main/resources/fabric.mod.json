@@ -1,12 +1,13 @@
 {
   "schemaVersion": 1,
-  "id": "scopenet",
+  "id": "velora_core",
+  "provides": ["scopenet"],
   "version": "${version}",
   "name": "Velora Core (Server)",
   "description": "Velora SMP server integration. Custom authentication and server-authoritative gameplay modules.",
   "environment": "server",
-  "entrypoints": { "server": ["net.scopenet.fabric.ScopenetFabric"] },
-  "mixins": ["scopenet.mixins.json", "scopenet.claimrules.mixins.json", "${coreMixin}"],
+  "entrypoints": { "server": ["net.velora.fabric.VeloraFabric"] },
+  "mixins": ["velora.mixins.json", "velora.claimrules.mixins.json", "${coreMixin}"],
   "depends": { "fabricloader": ">=0.16.10", "minecraft": "${mc}", "java": ">=${java}", "fabric-api": "*" },
   "suggests": { "luckperms": "*", "placeholder-api": "*" }
 }

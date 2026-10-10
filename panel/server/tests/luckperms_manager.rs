@@ -74,8 +74,8 @@ async fn instructions_are_queued_collected_and_acknowledged() {
     // Other edits: update, permission set/unset, parent, delete.
     assert_eq!(e.admin("PUT", "/api/admin/luckperms/groups/vip", Some(json!({"suffix": " &7*"}))).await.0, StatusCode::OK);
     assert_eq!(e.admin("PUT", "/api/admin/luckperms/groups/vip", Some(json!({}))).await.0, StatusCode::BAD_REQUEST);
-    assert_eq!(e.admin("POST", "/api/admin/luckperms/groups/vip/permissions", Some(json!({"permission": "scopenet.kit.vip"}))).await.0, StatusCode::OK);
-    assert_eq!(e.admin("DELETE", "/api/admin/luckperms/groups/vip/permissions", Some(json!({"permission": "scopenet.kit.vip"}))).await.0, StatusCode::OK);
+    assert_eq!(e.admin("POST", "/api/admin/luckperms/groups/vip/permissions", Some(json!({"permission": "velora.kit.vip"}))).await.0, StatusCode::OK);
+    assert_eq!(e.admin("DELETE", "/api/admin/luckperms/groups/vip/permissions", Some(json!({"permission": "velora.kit.vip"}))).await.0, StatusCode::OK);
     assert_eq!(e.admin("POST", "/api/admin/luckperms/groups/vip/permissions", Some(json!({"permission": "no spaces"}))).await.0, StatusCode::BAD_REQUEST);
     assert_eq!(e.admin("POST", "/api/admin/luckperms/groups/vip/parents", Some(json!({"parent": "vip"}))).await.0, StatusCode::BAD_REQUEST);
     assert_eq!(e.admin("DELETE", "/api/admin/luckperms/groups/default", None).await.0, StatusCode::BAD_REQUEST);

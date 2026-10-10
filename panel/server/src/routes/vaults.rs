@@ -84,7 +84,7 @@ async fn personal_unlocked(state: &AppState, uuid: &str, number: i64, free: i64)
         .bind(format!("player:{uuid}")).bind(number).fetch_one(&state.db).await?)
 }
 
-/// Resolve and authorize one vault for a player. `permitted` is the game server's own permission answer (scopenet.vault.N).
+/// Resolve and authorize one vault for a player. `permitted` is the game server's own permission answer (velora.vault.N).
 pub(crate) async fn authorize(state: &AppState, instance: &str, uuid: &str, owner: &str, number: i64, permitted: bool) -> AppResult<String> {
     let v = settings(state).await?;
     if !v.enabled { return Err(AppError::forbidden("vaults are switched off")); }

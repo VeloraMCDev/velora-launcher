@@ -1,10 +1,11 @@
 {
   "schemaVersion": 1,
-  "id": "scopenet_client",
+  "id": "velora_core_client",
+  "provides": ["scopenet_client"],
   "version": "${version}",
   "name": "Velora Core (Client)",
   "description": "Velora SMP map, HUD, vault screen and market client. The server controls items, money, claims and permissions.",
   "environment": "client",
-  "entrypoints": { "client": ["net.scopenet.client.ScopenetClient"] },
+  "entrypoints": { "client": ["net.velora.client.VeloraClient"] },
   "depends": { "fabricloader": ">=0.16.10", "minecraft": "1.20.1", "java": ">=17", "fabric-api": "*" }
 }

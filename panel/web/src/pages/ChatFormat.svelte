@@ -135,7 +135,7 @@
         <label class="f">Level <small>{'{level}'}</small><input class="mono" bind:value={s.level_format} spellcheck="false" /></label>
 
         <h3>Messages</h3>
-        <Toggle bind:checked={s.allow_colors} label="Allow colours in messages" help="Players with the scopenet.chat.color permission can type & colour codes." />
+        <Toggle bind:checked={s.allow_colors} label="Allow colours in messages" help="Players with the velora.chat.color permission can type & colour codes." />
         <Toggle bind:checked={s.markdown} label="Light markdown" help="**bold**, *italic*, __underline__, ~~strike~~ and `code`." />
       </section>
 

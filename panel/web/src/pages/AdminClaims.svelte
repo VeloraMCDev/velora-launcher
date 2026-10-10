@@ -79,7 +79,7 @@
   <header>
     <div>
       <h1>Admin claims</h1>
-      <p>Protected regions that belong to the server — spawn, shops, arenas. Players see the name and description when they walk in, and they appear on the map in the colour you pick. Staff with <code>scopenet.claims.bypass</code> can still build. You can also manage them in game with <code>/adminclaim</code>.</p>
+      <p>Protected regions that belong to the server — spawn, shops, arenas. Players see the name and description when they walk in, and they appear on the map in the colour you pick. Staff with <code>velora.claims.bypass</code> can still build. You can also manage them in game with <code>/adminclaim</code>.</p>
     </div>
     <select bind:value={sid} onchange={load}>{#each servers as s}<option value={s.id}>{s.name}</option>{/each}</select>
   </header>
@@ -126,7 +126,7 @@
       </div>
       <details class="flags" open>
         <summary><Flag size={14} /> Flags <small>what is allowed inside{#if changed(c)} · {changed(c)} changed{/if}</small></summary>
-        <p class="hint">Green means <b>allowed</b>. Staff with <code>scopenet.claims.bypass</code> are never held back by a flag. Flags are enforced by the Paper plugin; save to apply them (they reach the server within seconds).</p>
+        <p class="hint">Green means <b>allowed</b>. Staff with <code>velora.claims.bypass</code> are never held back by a flag. Flags are enforced by the Paper plugin; save to apply them (they reach the server within seconds).</p>
         {#each groups as g}
           <h4>{g}</h4>
           <div class="flagrow">
