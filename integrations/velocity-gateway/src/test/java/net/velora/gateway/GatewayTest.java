@@ -15,6 +15,33 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GatewayTest {
     @TempDir Path dir;
+    @Test void syncFailuresAreReportedOncePreserveRoutesAndLogRecovery() throws Exception {
+        ProxyServer proxy=mock(ProxyServer.class);Logger logger=mock(Logger.class);
+        when(proxy.getAllPlayers()).thenReturn(List.of());
+        Gateway g=new Gateway(proxy,logger,dir);Controller controller=mock(Controller.class);
+        var snapshot=new Routes.Snapshot(1,List.of(new Routes.Route("smp","SMP","smp.example.org","100.64.0.2",25565,false)));
+        apply(g,snapshot);String persisted=java.nio.file.Files.readString(dir.resolve("routes.json"));
+        var field=Gateway.class.getDeclaredField("controller");field.setAccessible(true);field.set(g,controller);
+        var sync=Gateway.class.getDeclaredMethod("sync");sync.setAccessible(true);
+        when(controller.fetch()).thenThrow(new Controller.Failure("HTTP 401"),new Controller.Failure("HTTP 401"))
+            .thenReturn(snapshot);
+        doThrow(new Controller.Failure("HTTP 401")).doThrow(new Controller.Failure("HTTP 401")).doNothing().when(controller).report(any());
+        sync.invoke(g);sync.invoke(g);sync.invoke(g);
+        assertEquals(persisted,java.nio.file.Files.readString(dir.resolve("routes.json")));
+        verify(logger,times(1)).warn("Route sync failed; retaining last-known-good snapshot: HTTP 401");
+        verify(logger,times(1)).warn("Gateway status report failed: HTTP 401");
+        verify(logger).info("Gateway route sync recovered");verify(logger).info("Gateway status report accepted by Panel");
+        verify(proxy,never()).registerServer(any());
+    }
+    @Test void syncDoesNotLogAnUnexpectedExceptionContainingCredentials() throws Exception {
+        ProxyServer proxy=mock(ProxyServer.class);Logger logger=mock(Logger.class);
+        Gateway g=new Gateway(proxy,logger,dir);Controller controller=mock(Controller.class);
+        var field=Gateway.class.getDeclaredField("controller");field.setAccessible(true);field.set(g,controller);
+        when(controller.fetch()).thenThrow(new IllegalArgumentException("synthetic-private-credential"));
+        doThrow(new IllegalArgumentException("synthetic-private-credential")).when(controller).report(any());
+        var sync=Gateway.class.getDeclaredMethod("sync");sync.setAccessible(true);sync.invoke(g);
+        verify(logger,never()).warn(contains("synthetic-private-credential"));
+    }
     @Test void absentStartupConfigurationFailsClosedWithAnActionableSettingName() {
         ProxyServer proxy=mock(ProxyServer.class);Logger logger=mock(Logger.class);
         Gateway g=new Gateway(proxy,logger,dir,()->Settings.load(dir,Map.of()));

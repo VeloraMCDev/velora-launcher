@@ -148,6 +148,24 @@ firewall isolation, rather than applying Velocity modern forwarding to it.
 
 ## Troubleshooting and rollout
 
+The plugin checks both the route response and the status acknowledgement. A
+first accepted status report logs `Gateway status report accepted by Panel`.
+Failures name the HTTP status or a safe network/TLS reason; repeated identical
+failures log once until the error changes or the connection recovers. Polling
+continues every five seconds. Redirects are not followed, and HTTP 200 login
+pages or JSON without the required snapshot/acknowledgement are rejected.
+Remote response bodies, redirect URLs and gateway credentials are not logged.
+
+For HTTP 401/403, ensure the **running Panel process** receives
+`VELORA_GATEWAY_TOKEN`, with exactly the same value as the plugin. The repository's
+VPS Compose file uses `env_file: panel.env`: a value added only to Compose's
+`.env` is not passed into the container. Add the credential to the private
+`panel.env`, then run `docker compose up -d --force-recreate panel` from the
+deployment directory. A restart alone does not apply changed container environment
+settings. Do not print or share the token. Redirects/non-JSON responses usually
+require correcting the Panel base URL or the reverse proxy's machine-access
+configuration. HTTP 404 requires checking the URL and deployed Gateway API build.
+
 An offline report is older than 90 seconds. Unconfirmed edits are desired state,
 not an applied update; check TLS, credential, plugin startup logs and revision
 errors. An unreachable backend means TCP failed, not that Calagopus should be

@@ -30,14 +30,14 @@ public final class Gateway {
     private volatile Active active = new Active(new Routes.Snapshot(0, List.of()), Map.of(), Map.of());
     private final Map<UUID, String> assignments = new ConcurrentHashMap<>();
     private final Deque<Map<String,String>> events = new ArrayDeque<>();
-    private String panel, token; private String error;
+    private Controller controller; private String error, reportError;
     @FunctionalInterface interface SettingsLoader { Settings load() throws Exception; }
     private final SettingsLoader settings;
     @Inject public Gateway(ProxyServer proxy, Logger log, @DataDirectory Path directory) { this(proxy,log,directory,()->Settings.load(directory,System.getenv())); }
     Gateway(ProxyServer proxy, Logger log, Path directory, SettingsLoader settings) { this.proxy=proxy; this.log=log; this.directory=directory; this.settings=settings; }
     @Subscribe public void initialize(ProxyInitializeEvent event) {
         try {
-            Settings configuration=settings.load();panel=configuration.panel();token=configuration.token();
+            Settings configuration=settings.load();controller=new Controller(http,configuration.panel(),configuration.token());
             configuration.verifyAuthentication(proxy.getConfiguration().isOnlineMode(),java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments());
             Files.createDirectories(directory);
             Path snapshot = directory.resolve("routes.json");
@@ -70,7 +70,6 @@ public final class Gateway {
         }
         old.servers.values().stream().filter(s -> !servers.containsValue(s)).forEach(s -> proxy.unregisterServer(s.getServerInfo()));
     }
-    private HttpRequest.Builder request(String path) { return HttpRequest.newBuilder(URI.create(panel.replaceAll("/$", "") + path)).timeout(Duration.ofSeconds(10)).header("Authorization", "Bearer " + token); }
     private synchronized void record(String hostname, String kind) {
         if (events.size() == 50) events.removeFirst();
         events.addLast(Map.of("at", java.time.Instant.now().toString(), "hostname", hostname, "kind", kind));
@@ -78,17 +77,19 @@ public final class Gateway {
     private synchronized List<Map<String,String>> recentEvents() { return List.copyOf(events); }
     private void sync() {
         try {
-            HttpResponse<String> response = http.send(request("/api/gateway/v1/routes").GET().build(), HttpResponse.BodyHandlers.ofString());
-            // Allow the maximum validated 128-route controller snapshot, including JSON escapes.
-            if (response.statusCode() != 200 || response.body().length() > 256 * 1024) throw new IllegalStateException("Route fetch rejected");
-            Routes.Snapshot next = gson.fromJson(response.body(), Routes.Snapshot.class);
+            Routes.Snapshot next = controller.fetch();
             if (next.revision() < active.snapshot.revision()) throw new IllegalArgumentException("Stale snapshot");
             if (!next.equals(active.snapshot)) {
                 if (next.revision() == active.snapshot.revision()) throw new IllegalArgumentException("Revision conflict");
                 apply(next, true);
             }
+            if (error!=null) log.info("Gateway route sync recovered");
             error = null;
-        } catch (Exception e) { error = "Route sync failed; retaining last-known-good snapshot"; log.warn(error); }
+        } catch (Exception e) {
+            String next="Route sync failed; retaining last-known-good snapshot: "+failure(e);
+            if (!next.equals(error)) log.warn(next);
+            error=next;
+        }
         try {
             Active state = active; List<Map<String,Object>> health = new ArrayList<>();
             for (Routes.Route r : state.routes.values()) {
@@ -98,8 +99,21 @@ public final class Gateway {
             }
             Map<String,Object> report = new HashMap<>(); report.put("revision", state.snapshot.revision()); report.put("connections", assignments.size()); report.put("routes", health); report.put("error", error);
             report.put("events", recentEvents());
-            http.send(request("/api/gateway/v1/status").header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(gson.toJson(report))).build(), HttpResponse.BodyHandlers.discarding());
-        } catch (Exception e) { log.warn("Gateway status report failed"); }
+            controller.report(report);
+            if (reportError==null || !reportError.isEmpty()) log.info("Gateway status report accepted by Panel");
+            reportError="";
+        } catch (Exception e) {
+            String next="Gateway status report failed: "+failure(e);
+            if (!next.equals(reportError)) log.warn(next);
+            reportError=next;
+        }
+    }
+    private String failure(Exception e) {
+        if (e instanceof InterruptedException) {Thread.currentThread().interrupt();return "Request interrupted";}
+        if (e instanceof Controller.Failure) return e.getMessage();
+        if (e instanceof IllegalArgumentException) return "Invalid route revision or snapshot";
+        if (e instanceof java.io.IOException) return "Route snapshot persistence failed; check plugin directory permissions and storage";
+        return "Unexpected "+e.getClass().getSimpleName();
     }
     private String host(InboundConnection connection) { try { return Routes.hostname(connection.getVirtualHost().orElseThrow().getHostString()); } catch (Exception e) { return ""; } }
     @Subscribe(order=PostOrder.LAST) public void login(PreLoginEvent event) {
