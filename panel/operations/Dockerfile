@@ -6,6 +6,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY web ./web
 COPY server ./server
+COPY agent ./agent
 RUN npm run check && npm run check:runes && npm run build && npm test
 
 FROM node:24-alpine
@@ -19,6 +20,7 @@ LABEL org.opencontainers.image.title="Velora Operations" \
 ENV NODE_ENV=production OPS_VERSION=$OPS_VERSION PORT=8080 OPS_DATA_DIR=/data
 WORKDIR /app
 COPY --from=web /src/server ./server
+COPY --from=web /src/agent ./agent
 COPY --from=web /src/web/dist ./web/dist
 COPY package.json ./
 RUN rm -f server/*.test.mjs && mkdir -p /data && chown node:node /data

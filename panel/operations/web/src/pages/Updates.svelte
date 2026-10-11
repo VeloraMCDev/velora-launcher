@@ -101,7 +101,7 @@
 <div class="card flush section">
   <div class="card-head pad"><InterfaceIcon name="Boxes" fallback={Boxes} size={18} /><h2>Container images</h2><span class="spacer"></span>
     <label class="row tiny muted"><input type="checkbox" bind:checked={showCurrent} style="width:auto" /> Show up-to-date</label></div>
-  <p class="muted small pad2">Compares each running container with its registry tag. Velora services update from this page; other stacks are listed for awareness.</p>
+  <p class="muted small pad2">Compares managed Velora services with their registry tags. Other stacks remain outside this dashboard.</p>
   <div class="table-scroll">
     <table>
       <thead><tr><th>Container</th><th>Project</th><th>Image</th><th>Status</th><th></th></tr></thead>
