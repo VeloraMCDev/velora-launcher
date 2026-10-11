@@ -31,19 +31,14 @@ public final class Gateway {
     private final Map<UUID, String> assignments = new ConcurrentHashMap<>();
     private final Deque<Map<String,String>> events = new ArrayDeque<>();
     private String panel, token; private String error;
-    @Inject public Gateway(ProxyServer proxy, Logger log, @DataDirectory Path directory) { this.proxy=proxy; this.log=log; this.directory=directory; }
+    @FunctionalInterface interface SettingsLoader { Settings load() throws Exception; }
+    private final SettingsLoader settings;
+    @Inject public Gateway(ProxyServer proxy, Logger log, @DataDirectory Path directory) { this(proxy,log,directory,()->Settings.load(directory,System.getenv())); }
+    Gateway(ProxyServer proxy, Logger log, Path directory, SettingsLoader settings) { this.proxy=proxy; this.log=log; this.directory=directory; this.settings=settings; }
     @Subscribe public void initialize(ProxyInitializeEvent event) {
         try {
-            panel = Objects.requireNonNull(System.getenv("VELORA_GATEWAY_PANEL"));
-            token = Objects.requireNonNull(System.getenv("VELORA_GATEWAY_TOKEN"));
-            URI uri = URI.create(panel);
-            if (!"https".equals(uri.getScheme()) || uri.getHost() == null || uri.getUserInfo() != null || uri.getQuery() != null || uri.getFragment() != null || token.length() < 32) throw new IllegalArgumentException("HTTPS Panel URL and 32+ character credential required");
-            if (!proxy.getConfiguration().isOnlineMode()) throw new IllegalArgumentException("Authenticated online mode required; use verified custom Yggdrasil injection for Velora accounts");
-            if (!"velora-yggdrasil".equals(System.getenv("VELORA_GATEWAY_AUTH_VERIFIED"))) throw new IllegalArgumentException("Custom identity acceptance gate not confirmed");
-            String yggdrasil = Objects.requireNonNull(System.getenv("VELORA_GATEWAY_YGGDRASIL"));
-            URI auth = URI.create(yggdrasil);
-            if (!"https".equals(auth.getScheme()) || auth.getHost() == null || auth.getUserInfo() != null || auth.getFragment() != null || auth.getQuery() != null
-                || java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().stream().noneMatch(a -> a.startsWith("-javaagent:") && a.replace('\\', '/').endsWith("/authlib-injector.jar=" + yggdrasil))) throw new IllegalArgumentException("Verified custom authentication Java agent required");
+            Settings configuration=settings.load();panel=configuration.panel();token=configuration.token();
+            configuration.verifyAuthentication(proxy.getConfiguration().isOnlineMode(),java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments());
             Files.createDirectories(directory);
             Path snapshot = directory.resolve("routes.json");
             if (Files.exists(snapshot)) apply(gson.fromJson(Files.readString(snapshot), Routes.Snapshot.class), false);

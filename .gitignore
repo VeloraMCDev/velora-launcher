@@ -57,3 +57,6 @@ target/
 *.jks
 *.keystore
 *.bundle
+
+# Gateway plugin operator credentials
+gateway.properties

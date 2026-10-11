@@ -42,6 +42,39 @@ route health and sync errors; this bounded buffer is not a durable audit history
 
 ## Deployment and identity acceptance
 
+### Plugin settings and startup errors
+
+On first start, the plugin creates `plugins/velora-gateway/gateway.properties`.
+If required settings are missing, it refuses connections and names the missing
+environment variable and file setting instead of throwing a NullPointerException.
+Game-server panels can edit this file without needing custom environment-variable
+support. Fill in the existing operator values and restart Velocity:
+
+```properties
+panel-url=https://panel.example.org
+gateway-token=<same 32+ character gateway credential configured on Panel>
+yggdrasil-url=https://auth.example.org/api/yggdrasil
+auth-verified=velora-yggdrasil
+```
+
+The URLs above are placeholders. Use the existing Panel base URL and the existing
+Velora Yggdrasil API root. Set `auth-verified` only after the identity acceptance
+tests below. The file contains a credential: keep it private and outside Git.
+Generated files are owner-readable/writable only on POSIX filesystems.
+`VELORA_GATEWAY_PANEL`, `VELORA_GATEWAY_TOKEN`, `VELORA_GATEWAY_YGGDRASIL`, and
+`VELORA_GATEWAY_AUTH_VERIFIED` override their respective file entries. A present
+but empty environment variable fails validation; it does not reuse a file value.
+
+The properties file does not load a Java agent. Keep Velocity online mode enabled
+and put `-javaagent:authlib-injector.jar=<existing Yggdrasil HTTPS API root>` before
+`-jar` in the JVM startup command. Relative and absolute injector paths are
+accepted; the injector URL must exactly match `yggdrasil-url`. Retain the pinned
+injector, forwarding secret and custom-account setup described below. If you use
+the supplied launch script, its existing environment and digest requirements
+still apply.
+
+### Deployment steps
+
 Use existing VPS capacity. Do not provision services or change production DNS
 as part of source builds. Operator configuration and runtime snapshots are secret
 or operational data and must remain outside the checkout.

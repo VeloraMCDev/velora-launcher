@@ -15,6 +15,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GatewayTest {
     @TempDir Path dir;
+    @Test void absentStartupConfigurationFailsClosedWithAnActionableSettingName() {
+        ProxyServer proxy=mock(ProxyServer.class);Logger logger=mock(Logger.class);
+        Gateway g=new Gateway(proxy,logger,dir,()->Settings.load(dir,Map.of()));
+        g.initialize(new com.velocitypowered.api.event.proxy.ProxyInitializeEvent());
+        verify(logger).error(eq("Gateway failed closed: {}"),contains("Missing VELORA_GATEWAY_PANEL"));
+        verify(proxy,never()).registerServer(any());
+        var login=new PreLoginEvent(player("smp.velora.scopedd.lol"),"Synthetic");g.login(login);
+        assertFalse(login.getResult().isAllowed());
+    }
     private Gateway gateway(ProxyServer proxy) {
         when(proxy.getAllPlayers()).thenReturn(List.of());
         when(proxy.registerServer(any())).thenAnswer(i -> { RegisteredServer s = mock(RegisteredServer.class); when(s.getServerInfo()).thenReturn(i.getArgument(0)); return s; });
