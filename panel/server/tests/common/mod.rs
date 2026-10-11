@@ -27,6 +27,14 @@ pub async fn setup() -> TestApp {
 
 /// Like [`setup`], letting the test adjust the config (given the data dir).
 pub async fn setup_with(tweak: impl FnOnce(&mut Config, &std::path::Path)) -> TestApp {
+    setup_with_storage(tweak, false).await
+}
+
+pub async fn setup_persistent() -> TestApp {
+    setup_with_storage(|_, _| {}, true).await
+}
+
+async fn setup_with_storage(tweak: impl FnOnce(&mut Config, &std::path::Path), persistent: bool) -> TestApp {
     let dir = tempfile::tempdir().unwrap();
     let mut cfg = Config {
         bind: "127.0.0.1:0".into(),
@@ -42,7 +50,7 @@ pub async fn setup_with(tweak: impl FnOnce(&mut Config, &std::path::Path)) -> Te
         trusted_proxies: vec!["127.0.0.1".parse().unwrap()],
     };
     tweak(&mut cfg, dir.path());
-    let pool = db::connect_memory().await.unwrap();
+    let pool = if persistent { db::connect(dir.path()).await.unwrap() } else { db::connect_memory().await.unwrap() };
     let state = build_state_with_keys(cfg, pool, test_keys()).await.unwrap();
     bootstrap_admin(&state).await.unwrap();
     TestApp { db: state.db.clone(), router: app(state), _dir: dir }
