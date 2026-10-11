@@ -98,15 +98,46 @@ export function createCollector() {
     return { platform:os.platform(),version:'1.0.0',uptime:os.uptime(),cpu,memory:{total:os.totalmem(),used:os.totalmem()-os.freemem()},services,disks };
   };
 }
+export async function reportOutcome(response) {
+  if (!response.ok) {
+    await response.body?.cancel();
+    const hint = response.status >= 300 && response.status < 400 ? '; redirected by the proxy/login layer: check Ops access headers and URL'
+      : response.status === 429 ? '; reports are rate-limited: wait for the next interval and check for duplicate agents if this repeats'
+      : response.status === 401 || response.status === 403 ? '; check enrollment credentials and proxy/service access'
+      : '';
+    return `Monitoring report rejected (${response.status})${hint}`;
+  }
+  if (!/^application\/json(?:\s*;|$)/i.test(response.headers.get('content-type') ?? '')) {
+    await response.body?.cancel();
+    return `Ops did not acknowledge the monitoring report (HTTP ${response.status}, non-JSON response); check the proxy/login layer and Ops URL`;
+  }
+  const reader = response.body?.getReader();
+  let bytes = 0, chunks = [];
+  try {
+    if (!reader) throw Error('Missing acknowledgement');
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      bytes += value.byteLength;
+      if (bytes > 4096) throw Error('Oversized acknowledgement');
+      chunks.push(Buffer.from(value));
+    }
+    if (JSON.parse(Buffer.concat(chunks).toString('utf8'))?.ok === true) return null;
+  } catch { /* Never log response bodies: login pages can contain credentials. */ }
+  finally { await reader?.cancel().catch(() => {}); }
+  return `Ops did not acknowledge the monitoring report (HTTP ${response.status}, invalid acknowledgement); check that the URL reaches the Ops report API`;
+}
 export async function start(filename) {
   const cfg = config(JSON.parse(await readFile(filename, 'utf8'))), collect = createCollector();
-  let stopped = false; const shutdown = new AbortController();
+  let stopped = false, acknowledged = false; const shutdown = new AbortController();
   for (const signal of ['SIGINT','SIGTERM']) process.on(signal, () => { stopped = true; shutdown.abort(); });
   while (!stopped) {
     try {
       const r = await fetch(`${cfg.ops_url}/api/agents/${cfg.id}/report`, { method:'POST', redirect:'manual', headers:{...cfg.ops_headers,authorization:`Bearer ${cfg.token}`,'content-type':'application/json'},body:JSON.stringify(await collect(cfg)),signal:AbortSignal.any([shutdown.signal,AbortSignal.timeout(10000)]) });
-      await r.body?.cancel(); if (!r.ok) console.error(`Monitoring report rejected (${r.status})`);
-    } catch { console.error('Monitoring report could not reach Ops'); }
+      const error = await reportOutcome(r);
+      if (error) { acknowledged = false; console.error(error); }
+      else { if (!acknowledged) console.log('Monitoring report accepted by Ops'); acknowledged = true; }
+    } catch { acknowledged = false; if (!stopped) console.error('Monitoring report could not reach Ops'); }
     if (!stopped) await sleep(cfg.interval_seconds*1000,undefined,{signal:shutdown.signal}).catch(()=>{});
   }
 }
