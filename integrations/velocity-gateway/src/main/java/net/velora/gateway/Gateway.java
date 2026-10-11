@@ -84,7 +84,8 @@ public final class Gateway {
     private void sync() {
         try {
             HttpResponse<String> response = http.send(request("/api/gateway/v1/routes").GET().build(), HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() != 200 || response.body().length() > 65536) throw new IllegalStateException("Route fetch rejected");
+            // Allow the maximum validated 128-route controller snapshot, including JSON escapes.
+            if (response.statusCode() != 200 || response.body().length() > 256 * 1024) throw new IllegalStateException("Route fetch rejected");
             Routes.Snapshot next = gson.fromJson(response.body(), Routes.Snapshot.class);
             if (next.revision() < active.snapshot.revision()) throw new IllegalArgumentException("Stale snapshot");
             if (!next.equals(active.snapshot)) {
