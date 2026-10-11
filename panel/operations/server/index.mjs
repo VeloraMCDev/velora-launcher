@@ -11,6 +11,7 @@ import { applySettingsUpdate, audit, loadSettings, publicSettings, readAudit, sa
 import { sendEmail } from './notify.mjs';
 import { createCatalogCache, artifactDownload } from './artifacts.mjs';
 import { createAgentRegistry } from './agents.mjs';
+import { installerFiles, zipFiles } from './agent-installer.mjs';
 
 const PORT = Number(process.env.PORT ?? 8080);
 const SECURE = process.env.OPS_INSECURE_COOKIES !== '1';
@@ -105,6 +106,15 @@ route('GET', '/api/artifacts/([0-9]+)/download', async (req, res, session, [id])
 });
 // Agent reports authenticate independently; enrollment/revocation retain admin + CSRF guards.
 route('GET', '/api/agents', (req, res) => send(res, 200, agents.list()));
+route('POST', '/api/agents/installer', async (req, res, session) => {
+  const { configuration, mode } = await readBody(req);
+  agents.authenticate(configuration?.id, configuration?.token);
+  const bundle = zipFiles(installerFiles(configuration, mode));
+  audit({ user: session.username, action: 'download-agent-installer', target: configuration.id, result: 'created' });
+  send(res, 200, bundle, {
+    'content-type': 'application/zip', 'content-disposition': 'attachment; filename="velora-monitor-install.zip"',
+  });
+});
 route('GET', '/api/agents/download', (req, res) => send(res, 200, readFileSync(new URL('../agent/monitor.mjs', import.meta.url)), {
   'content-type': 'application/javascript', 'content-disposition': 'attachment; filename="velora-monitor-agent.mjs"',
 }));
