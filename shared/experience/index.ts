@@ -23,7 +23,7 @@ export const PAGE_FEATURES: Record<string, Feature> = {
   bulk: 'progression', 'reward-queue': 'progression', luckperms: 'progression',
 };
 export const pageEnabled = (experience: Experience | undefined, page: string) => !PAGE_FEATURES[page] || enabled(experience, PAGE_FEATURES[page]);
-export const PLATFORM_PAGES = new Set(['instances', 'users', 'activity', 'branding', 'landing-builder', 'capes', 'emails', 'settings']);
+export const PLATFORM_PAGES = new Set(['gateway', 'instances', 'users', 'activity', 'branding', 'landing-builder', 'capes', 'emails', 'settings']);
 
 export const CORE_MODULES = ['map', 'economy', 'vaults', 'casino', 'analytics', 'factions', 'permissions_chat'] as const;
 export type CoreModule = typeof CORE_MODULES[number];

@@ -19,6 +19,7 @@
   import InstanceEditor from './pages/InstanceEditor.svelte';
   import Users from './pages/Users.svelte';
   import Settings from './pages/Settings.svelte';
+  import Gateway from './pages/Gateway.svelte';
   import Servers from './pages/Servers.svelte';
   import ServerDetail from './pages/ServerDetail.svelte';
   import Capes from './pages/Capes.svelte';
@@ -147,6 +148,8 @@
           <InstanceEditor id={route.params[0]} />
         {:else if route.name === 'instances'}
           <Instances />
+        {:else if route.name === 'gateway'}
+          <Gateway />
         {:else if route.name === 'servers' && route.params[0]}
           <ServerDetail id={route.params[0]} />
         {:else if route.name === 'servers'}

@@ -1,3 +1,4 @@
+pub mod gateway;
 pub mod account;
 pub mod achievements;
 pub mod activity;
@@ -250,6 +251,7 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .layer(DefaultBodyLimit::max(4 * 1024 * 1024));
 
     let admin = Router::new()
+        .route("/gateway", get(gateway::overview).put(gateway::save))
         .route("/instances/{id}/experience", axum::routing::put(crate::experience::configure))
         .route("/instances/{id}/velora-core/activate", post(crate::velora_core::activate))
         .route("/economy/darknet", get(darknet::admin_get).put(darknet::admin_put))
@@ -518,6 +520,8 @@ pub fn api(state: &AppState) -> Router<AppState> {
         .layer(DefaultBodyLimit::max(10 * 1024 * 1024));
 
     Router::new()
+        .route("/api/gateway/v1/routes", get(gateway::pull))
+        .route("/api/gateway/v1/status", post(gateway::report).layer(DefaultBodyLimit::max(64 * 1024)))
         .route("/api/server/v1/experience/modules/{module}", put(crate::experience::publish_module))
         .route("/api/experience-map/{instance}/{id}/{dim}/{z}/{x}/{file}", get(worldmap::experience_tile))
         .route("/api/map/{id}/{dim}/{z}/{x}/{file}", get(worldmap::tile))
