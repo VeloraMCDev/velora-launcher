@@ -1,8 +1,8 @@
 import { api, setCsrf } from './api';
 import type { Job, Overview } from './types';
 
-export type Page = 'overview' | 'services' | 'activity' | 'updates' | 'backups' | 'settings' | 'audit';
-const PAGES: Page[] = ['overview', 'services', 'activity', 'updates', 'backups', 'settings', 'audit'];
+export type Page = 'overview' | 'builds' | 'agents' | 'services' | 'activity' | 'updates' | 'backups' | 'settings' | 'audit';
+const PAGES: Page[] = ['overview', 'builds', 'agents', 'services', 'activity', 'updates', 'backups', 'settings', 'audit'];
 
 export const app = $state({
   ready: false,

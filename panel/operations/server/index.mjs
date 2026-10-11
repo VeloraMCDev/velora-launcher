@@ -9,12 +9,16 @@ import { containerLogs, listContainers } from './docker.mjs';
 import { createMonitor, STACK_PROJECT } from './monitor.mjs';
 import { applySettingsUpdate, audit, loadSettings, publicSettings, readAudit, saveSettings } from './store.mjs';
 import { sendEmail } from './notify.mjs';
+import { createCatalogCache, artifactDownload } from './artifacts.mjs';
+import { createAgentRegistry } from './agents.mjs';
 
 const PORT = Number(process.env.PORT ?? 8080);
 const SECURE = process.env.OPS_INSECURE_COOKIES !== '1';
 const WEB = resolve(fileURLToPath(new URL('../web/dist', import.meta.url)));
 const VERSION = process.env.OPS_VERSION ?? 'development';
-const monitor = createMonitor();
+const agents = createAgentRegistry();
+const catalog = createCatalogCache();
+const monitor = createMonitor({ agentList: () => agents.list() });
 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2', '.json': 'application/json', '.ico': 'image/x-icon' };
 const SECURITY_HEADERS = {
@@ -90,6 +94,32 @@ route('GET', '/api/containers/([A-Za-z0-9_.-]+)/logs', async (req, res, session,
 });
 
 // ----- updates & releases -----
+route('GET', '/api/artifacts', async (req, res) => {
+  const page = Number(new URL(req.url, 'http://ops').searchParams.get('page') ?? 1);
+  send(res, 200, await catalog(loadSettings().github_token, page));
+});
+route('GET', '/api/artifacts/([0-9]+)/download', async (req, res, session, [id]) => {
+  const location = await artifactDownload(id, loadSettings().github_token);
+  audit({ user: session.username, action: 'download-artifact', target: id, result: 'redirected' });
+  send(res, 302, '', { location, 'referrer-policy': 'no-referrer' });
+});
+// Agent reports authenticate independently; enrollment/revocation retain admin + CSRF guards.
+route('GET', '/api/agents', (req, res) => send(res, 200, agents.list()));
+route('GET', '/api/agents/download', (req, res) => send(res, 200, readFileSync(new URL('../agent/monitor.mjs', import.meta.url)), {
+  'content-type': 'application/javascript', 'content-disposition': 'attachment; filename="velora-monitor-agent.mjs"',
+}));
+route('POST', '/api/agents', async (req, res, session) => {
+  const { name } = await readBody(req); const enrolled = agents.enroll(name);
+  audit({ user: session.username, action: 'enroll-monitor-agent', target: enrolled.id, result: 'created' });
+  send(res, 201, enrolled);
+});
+route('DELETE', '/api/agents/([a-f0-9-]{36})', (req, res, session, [id]) => {
+  agents.revoke(id); audit({ user: session.username, action: 'revoke-monitor-agent', target: id, result: 'revoked' }); send(res, 200, { ok: true });
+});
+route('POST', '/api/agents/([a-f0-9-]{36})/report', async (req, res, session, [id]) => {
+  const token = String(req.headers.authorization ?? '').replace(/^Bearer /, '');
+  agents.authenticate(id, token); agents.report(id, token, await readBody(req)); send(res, 200, { ok: true });
+}, { open: true });
 route('GET', '/api/updates', (req, res) => send(res, 200, { ...monitor.state.updates, dashboard_update: actions.dashboardUpdateStatus() }));
 route('POST', '/api/updates/check', async (req, res) => send(res, 200, { ...await monitor.checkUpdates(true), dashboard_update: actions.dashboardUpdateStatus() }));
 

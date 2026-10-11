@@ -13,6 +13,7 @@ export const STACK_DIR = process.env.STACK_DIR ?? '/home/ubuntu/velora-platform'
 export const BACKUP_STATE_DIR = process.env.BACKUP_STATE_DIR ?? '/backup-state';
 export const BACKUP_ARCHIVE_DIR = process.env.BACKUP_ARCHIVE_DIR ?? '/backup-archives';
 export const PUBLIC_URL = process.env.OPS_PUBLIC_URL ?? 'https://ops.velora.scopedd.lol';
+export const managedContainers = all => all.filter(c => c.Labels?.['com.docker.compose.project'] === STACK_PROJECT && c.Labels?.['org.velora.operations.helper'] !== 'true');
 
 /** OPS_ENDPOINTS="Panel=https://velora.example/health,Docs=https://docs.velora.example/" */
 export function parseEndpoints(value = process.env.OPS_ENDPOINTS ?? '') {
@@ -95,6 +96,11 @@ function backups() {
 export function evaluate(snapshot, settings, now = Date.now()) {
   const problems = [];
   const add = (key, event, severity, title, detail) => problems.push({ key, event, severity, title, detail });
+  for (const a of snapshot.agents ?? []) {
+    if (!a.received_at) continue; // Enrollment has not connected yet.
+    if (!a.online) add(`agent:${a.id}`, 'service_down', 'critical', `${a.name} monitoring agent is offline`, 'No recent authenticated report');
+    else for (const s of a.report?.services ?? []) if (!s.ok) add(`agent:${a.id}:${s.name}`, 'endpoint_down', 'critical', `${a.name}: ${s.name} is unreachable`, `${s.kind} health check failed`);
+  }
   for (const c of snapshot.containers.filter(c => c.project === STACK_PROJECT)) {
     if (c.state !== 'running') add(`container:${c.service}`, 'service_down', 'critical', `${c.service} is ${c.state}`, c.status);
     else if (c.health === 'unhealthy') add(`container:${c.service}`, 'service_down', 'critical', `${c.service} is unhealthy`, c.status);
@@ -131,14 +137,14 @@ export function notices(updates, seen) {
 }
 
 // ---------- the monitor loop ----------
-export function createMonitor({ images = { 'velora-panel': 'panel', 'velora-operations': 'ops' } } = {}) {
+export function createMonitor({ images = { 'velora-panel': 'panel', 'velora-operations': 'ops' }, agentList = () => [] } = {}) {
   const endpoints = parseEndpoints();
   const history = loadState('history', []);
   const alertState = loadState('alerts', { active: {}, seen: [] });
   const state = { snapshot: null, updates: { checked: null }, history, alerts: alertState, certificates: [], certChecked: 0, updatesChecked: 0, containerUpdatesChecked: 0 };
 
   async function collect() {
-    const all = await listContainers();
+    const all = managedContainers(await listContainers());
     const containers = all.map(c => ({
       id: c.Id.slice(0, 12), name: c.Names[0]?.replace(/^\//, ''), image: c.Image, state: c.State, status: c.Status,
       health: c.Status.match(/\((healthy|unhealthy|health: starting)\)/)?.[1] ?? null, created: c.Created,
@@ -155,7 +161,7 @@ export function createMonitor({ images = { 'velora-panel': 'panel', 'velora-oper
       state.certificates = await Promise.all(hosts.map(h => certificateExpiry(h)));
       state.certChecked = Date.now();
     }
-    const snapshot = { at: new Date().toISOString(), host: host(), containers, endpoints: probes, backups: backups(), certificates: state.certificates };
+    const snapshot = { at: new Date().toISOString(), host: host(), containers, endpoints: probes, backups: backups(), certificates: state.certificates, agents: agentList() };
     state.snapshot = snapshot;
     const panel = containers.find(c => c.project === STACK_PROJECT && c.service === 'panel');
     const last = history.at(-1);
@@ -213,7 +219,7 @@ export function createMonitor({ images = { 'velora-panel': 'panel', 'velora-oper
       updates.launcher = { releases, error: null };
     } catch (e) { updates.errors.push(`Launcher releases: ${e.message}`); }
     updates.images = {};
-    const all = await listContainers();
+    const all = managedContainers(await listContainers());
     for (const [name, service] of Object.entries(images)) {
       try {
         const container = all.find(c => c.Labels['com.docker.compose.project'] === STACK_PROJECT && c.Labels['com.docker.compose.service'] === service);

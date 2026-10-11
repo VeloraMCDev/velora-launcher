@@ -8,6 +8,8 @@
   import { app, boot, navigate, refreshOverview, signOut, type Page } from './lib/state.svelte';
   import Login from './pages/Login.svelte';
   import Overview from './pages/Overview.svelte';
+  import Builds from './pages/Builds.svelte';
+  import Agents from './pages/Agents.svelte';
   import Services from './pages/Services.svelte';
   import ActivityPage from './pages/Activity.svelte';
   import Updates from './pages/Updates.svelte';
@@ -19,6 +21,8 @@
 
   const nav: { page: Page; label: string; icon: typeof Gauge }[] = [
     { page: 'overview', label: 'Overview', icon: Gauge },
+    { page: 'builds', label: 'Builds & downloads', icon: Archive },
+    { page: 'agents', label: 'Monitoring agents', icon: Server },
     { page: 'services', label: 'Services', icon: Server },
     { page: 'activity', label: 'Activity', icon: Activity },
     { page: 'updates', label: 'Updates', icon: Rocket },
@@ -91,6 +95,8 @@
       <main>
         {#key app.page}
           {#if app.page === 'overview'}<Overview />
+          {:else if app.page === 'builds'}<Builds />
+          {:else if app.page === 'agents'}<Agents />
           {:else if app.page === 'services'}<Services />
           {:else if app.page === 'activity'}<ActivityPage />
           {:else if app.page === 'updates'}<Updates />
