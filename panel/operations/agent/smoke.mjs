@@ -22,7 +22,7 @@ try {
   server = createServer({key:await readFile(join(dir,'key.pem')),cert:await readFile(join(dir,'ca.pem'))},async(req,res)=>{
     if(req.url==='/health'){res.end('healthy');return;}
     assert.equal(req.url,`/api/agents/${id}/report`);assert.equal(req.headers.authorization,`Bearer ${token}`);
-    let body='';for await(const c of req)body+=c;res.end('{}');resolveReport(JSON.parse(body));
+    let body='';for await(const c of req)body+=c;res.setHeader('Content-Type','application/json');res.end('{"ok":true}');resolveReport(JSON.parse(body));
   });
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   const origin=`https://127.0.0.1:${server.address().port}`;
@@ -34,6 +34,14 @@ try {
   await compose('config','--quiet');await compose('up','-d','--build');
   const report=await Promise.race([received,new Promise((_,reject)=>{const timer=setTimeout(()=>reject(Error('No authenticated Docker report')),30000);timer.unref();})]);
   assert.equal(report.platform,'linux');assert.ok(report.memory.total>0);assert.equal(report.services[0].ok,true);
+  let logs = '';
+  const acknowledgementDeadline = Date.now() + 5000;
+  while (Date.now() < acknowledgementDeadline) {
+    logs = (await compose('logs','--no-color','monitor')).stdout;
+    if (logs.includes('Monitoring report accepted by Ops')) break;
+    await new Promise(resolve=>setTimeout(resolve,200));
+  }
+  assert.match(logs,/Monitoring report accepted by Ops/);
   const {stdout}=await compose('ps','-q','monitor');
   const {stdout:json}=await exec('docker',['inspect',stdout.trim()]);const container=JSON.parse(json)[0];
   assert.equal(container.Config.User,'1000:1000');assert.equal(container.HostConfig.ReadonlyRootfs,true);assert.equal(container.HostConfig.Privileged,false);

@@ -77,6 +77,27 @@ reports to `POST /api/agents/<id>/report` every 30 seconds. No token goes in the
 image, Compose environment or command line. Outbound HTTPS access is enough;
 there is no inbound agent port. Wait for **Online** in Ops after startup.
 
+The agent logs `Monitoring report accepted by Ops` for its first confirmed report
+and after recovering from a delivery error. Later successful reports are quiet.
+Confirmation requires the report API's JSON acknowledgement; a proxy login page
+with HTTP 200 is a delivery error. A single 429 after a quick restart can clear
+at the next report interval. Repeated 429s warrant checking whether several agent
+processes share an enrollment credential; each host should have its own enrollment.
+
+For Pangolin-protected Ops, keep resource authentication enabled and create a
+shareable link/access token for that Ops resource. Add its access-token headers
+to `ops_headers` in the existing configuration, retaining the Ops `id` and `token`:
+
+```json
+"ops_headers": {
+  "P-Access-Token-Id": "<Pangolin token ID>",
+  "P-Access-Token": "<Pangolin access token>"
+}
+```
+
+Use the header names and values shown by your deployment's Access Token Usage
+dialog, then restart the agent. See [Pangolin access-token headers](https://docs.pangolin.net/manage/access-control/links#request-headers).
+
 If it remains **Awaiting first report**, check `docker compose logs --tail=50
 monitor`, DNS/TLS access to the Ops URL and the existing SSO policy. A 401 means an
 invalid/revoked credential; an SSO redirect requires service access headers in
