@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Plus, Trash2, Edit, Link2, MoveVertical, Save, X, ArrowRight, Target, CheckCircle2 } from '@lucide/svelte/icons';
   import { get, post, put, del } from '../lib/api';
   import { toast } from '../lib/toast.svelte';
@@ -190,10 +191,10 @@
 <div class="page">
   <header>
     <div>
-      <h1><Link2 size={22} /> Quest Chains</h1>
+      <h1><InterfaceIcon name="Link2" fallback={Link2} size={22} /> Quest Chains</h1>
       <p>Group quests into ordered multi-step sequences.</p>
     </div>
-    <button class="primary" onclick={openCreateChain}><Plus size={16} /> New chain</button>
+    <button class="primary" onclick={openCreateChain}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> New chain</button>
   </header>
 
   {#if loading && !chains.length}
@@ -210,9 +211,9 @@
               <small>{chain.quests.length} step{chain.quests.length !== 1 ? 's' : ''}{chain.description ? ` · ${chain.description}` : ''}</small>
             </div>
             <div class="chain-actions">
-              <button class="ghost icon" onclick={() => openEditChain(chain)} title="Rename chain"><Edit size={16} /></button>
-              <button class="ghost icon" onclick={() => openAddQuestToChain(chain)} title="Add quest"><Plus size={16} /></button>
-              <button class="ghost icon" onclick={() => deleteChain(chain)} title="Delete chain"><Trash2 size={16} /></button>
+              <button class="ghost icon" onclick={() => openEditChain(chain)} title="Rename chain"><InterfaceIcon name="Edit" fallback={Edit} size={16} /></button>
+              <button class="ghost icon" onclick={() => openAddQuestToChain(chain)} title="Add quest"><InterfaceIcon name="Plus" fallback={Plus} size={16} /></button>
+              <button class="ghost icon" onclick={() => deleteChain(chain)} title="Delete chain"><InterfaceIcon name="Trash2" fallback={Trash2} size={16} /></button>
             </div>
           </div>
 
@@ -230,18 +231,18 @@
                 <div class="quest-node-actions">
                   <button class="ghost icon tiny" disabled={idx === 0} onclick={() => moveQuestInChain(chain, quest, 'up')} title="Move up">↑</button>
                   <button class="ghost icon tiny" disabled={idx === chain.quests.length - 1} onclick={() => moveQuestInChain(chain, quest, 'down')} title="Move down">↓</button>
-                  <button class="ghost icon tiny" onclick={() => removeQuestFromChain(chain, quest)} title="Remove"><X size={14} /></button>
+                  <button class="ghost icon tiny" onclick={() => removeQuestFromChain(chain, quest)} title="Remove"><InterfaceIcon name="X" fallback={X} size={14} /></button>
                 </div>
               </div>
               {#if idx < chain.quests.length - 1}
-                <div class="quest-connector"><ArrowRight size={18} /></div>
+                <div class="quest-connector"><InterfaceIcon name="ArrowRight" fallback={ArrowRight} size={18} /></div>
               {/if}
             {/each}
           </div>
 
           {#if chain.quests.length === 0}
             <div class="empty-chain">
-              <Target size={20} />
+              <InterfaceIcon name="Target" fallback={Target} size={20} />
               <span>No quests in this chain yet</span>
               <button class="ghost small" onclick={() => openAddQuestToChain(chain)}>Add a quest</button>
             </div>
@@ -294,7 +295,7 @@
 
   {#snippet footer()}
     <button class="ghost" onclick={() => (modalOpen = false)}>Cancel</button>
-    <button class="primary" onclick={saveChain}><Save size={15} /> Save chain</button>
+    <button class="primary" onclick={saveChain}><InterfaceIcon name="Save" fallback={Save} size={15} /> Save chain</button>
   {/snippet}
 </Modal>
 
@@ -304,7 +305,7 @@
     
     {#if availableQuests.length === 0}
       <div class="empty-state">
-        <Target size={24} />
+        <InterfaceIcon name="Target" fallback={Target} size={24} />
         <span>All quests are already in chains</span>
         <small>Create new quests in the Quest Editor first</small>
       </div>
@@ -317,7 +318,7 @@
               <small>{quest.description}</small>
               <span class="quest-meta">{quest.category} · {quest.stat_type.replace(/_/g, ' ')} ({quest.target_count}) · +{quest.xp_reward} XP</span>
             </div>
-            <Plus size={18} />
+            <InterfaceIcon name="Plus" fallback={Plus} size={18} />
           </button>
         {/each}
       </div>

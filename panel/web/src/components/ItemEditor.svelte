@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { ImageUp, Box } from '@lucide/svelte';
   import { spans } from '../lib/mccolor';
   import AssetPicker from './AssetPicker.svelte';
@@ -82,7 +83,7 @@
         <b>Appearance</b>
         <small>{spec.model ? `Model ${spec.model}` : spec.texture ? `Texture ${spec.texture}` : 'Looks like the plain base item. Drop a PNG here, upload one, or pick a texture / 3D model from your server assets (or import a pack from the Content Studio).'}</small>
         <div class="row tight">
-          <button type="button" class="ghost" disabled={uploading} onclick={() => fileInput?.click()}><ImageUp size={14} /> {uploading ? 'Uploading…' : 'Upload PNG'}</button>
+          <button type="button" class="ghost" disabled={uploading} onclick={() => fileInput?.click()}><InterfaceIcon name="ImageUp" fallback={ImageUp} size={14} /> {uploading ? 'Uploading…' : 'Upload PNG'}</button>
           <input bind:this={fileInput} type="file" accept="image/png" hidden onchange={(e) => upload(e.currentTarget.files?.[0])} />
           <AssetPicker kind="texture" onpick={(r) => pick('texture', r)} />
           <AssetPicker kind="model" onpick={(r) => pick('model', r)} />

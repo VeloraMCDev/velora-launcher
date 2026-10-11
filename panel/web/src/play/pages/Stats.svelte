@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Box, Clock, Crown, Flame, LogIn, MessageSquare, Pickaxe, RefreshCw, Skull, Sparkles, Swords, Trophy, TriangleAlert, Server as ServerIcon, History, Medal } from '@lucide/svelte';
   import type { Component } from 'svelte';
   import { get } from '../../lib/api';
@@ -97,7 +99,7 @@
 
 <div class="pl-page stats">
   <div class="pl-head">
-    <div><h1><Trophy size={26} /> Leaderboards</h1><p>Rankings, your stats and levels</p></div>
+    <div><h1><InterfaceIcon name="Trophy" fallback={Trophy} size={26} /> Leaderboards</h1><p>Rankings, your stats and levels</p></div>
     <div class="pl-tabs" role="tablist">
       <button role="tab" class:on={view === 'boards'} aria-selected={view === 'boards'} onclick={() => (view = 'boards')}>Rankings</button>
       <button role="tab" class:on={view === 'me'} aria-selected={view === 'me'} onclick={() => (view = 'me')}>My stats</button>
@@ -108,15 +110,15 @@
   {#if view === 'boards'}
     <div class="pl-stack">
       <div class="pl-scroll-x scope">
-        <button class="fchip" class:on={scope === 'global'} onclick={() => (scope = 'global')}><Sparkles size={14} /> All servers</button>
-        {#each play.servers as s (s.id)}<button class="fchip" class:on={scope === s.id} onclick={() => (scope = s.id)}><ServerIcon size={14} /> {s.name}</button>{/each}
+        <button class="fchip" class:on={scope === 'global'} onclick={() => (scope = 'global')}><InterfaceIcon name="Sparkles" fallback={Sparkles} size={14} /> All servers</button>
+        {#each play.servers as s (s.id)}<button class="fchip" class:on={scope === s.id} onclick={() => (scope = s.id)}><InterfaceIcon name="Server" fallback={ServerIcon} size={14} /> {s.name}</button>{/each}
       </div>
       <div class="pl-scroll-x scope">
-        {#each SORTS as s (s.id)}{@const I = s.icon}<button class="fchip sm" class:on={sort === s.id} onclick={() => (sort = s.id)}><I size={14} /> {s.label}</button>{/each}
+        {#each SORTS as s (s.id)}{@const I = s.icon}<button class="fchip sm" class:on={sort === s.id} onclick={() => (sort = s.id)}><InterfaceIcon name={iconName(I)} fallback={I} size={14} /> {s.label}</button>{/each}
       </div>
 
       {#if boardError}
-        <div class="pl-alert err row" role="alert"><TriangleAlert size={16} /><span class="grow">{boardError}</span><button class="pl-btn sm" onclick={loadBoard}>Retry</button></div>
+        <div class="pl-alert err row" role="alert"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={16} /><span class="grow">{boardError}</span><button class="pl-btn sm" onclick={loadBoard}>Retry</button></div>
       {/if}
 
       {#if boardLoading && !board.length}
@@ -126,13 +128,13 @@
         <div class="pl-card"><Empty icon={Trophy} title="No rankings yet" text="Play on a server and your stats start counting." /></div>
       {:else}
         <section class="pl-hero podium" aria-label="Top three">
-          <div class="ptitle"><span><MetaIcon size={15} /> Top {meta.label.toLowerCase()}</span>{#if totals}<small>{num(totals.players)} players · {playtime(totals.playtime_secs)} played</small>{/if}</div>
+          <div class="ptitle"><span><InterfaceIcon name={iconName(MetaIcon)} fallback={MetaIcon} size={15} /> Top {meta.label.toLowerCase()}</span>{#if totals}<small>{num(totals.players)} players · {playtime(totals.playtime_secs)} played</small>{/if}</div>
           <div class="pods">
             {#each order as idx (idx)}
               {@const r = podium[idx]}
               {#if r}
                 <div class="pod p{idx + 1}" class:me={r.uuid === me} style="--d: {idx * 90}ms">
-                  {#if idx === 0}<Crown class="crown" size={22} />{/if}
+                  {#if idx === 0}<InterfaceIcon name="Crown" fallback={Crown} class="crown" size={22} />{/if}
                   <div class="av"><Avatar name={r.name} uuid={r.uuid} size={idx === 0 ? 68 : 54} /><span class="medal">{idx + 1}</span></div>
                   <b class="nm">{r.name}</b>
                   <span class="val">{meta.fmt(r[sort])}</span>
@@ -162,7 +164,7 @@
   {:else if view === 'me'}
     <div class="pl-stack">
       {#if mineError}
-        <div class="pl-alert err row" role="alert"><TriangleAlert size={16} /><span class="grow">{mineError}</span><button class="pl-btn sm" onclick={loadMine}>Retry</button></div>
+        <div class="pl-alert err row" role="alert"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={16} /><span class="grow">{mineError}</span><button class="pl-btn sm" onclick={loadMine}>Retry</button></div>
       {/if}
       {#if mineLoading && !mine}
         <div class="pl-skel" style="height: 150px; border-radius: 24px"></div>
@@ -175,21 +177,21 @@
           <div class="who">
             <h1>{mine.username}</h1>
             <p>{myLevel ? `Level ${myLevel.global_level}${myLevel.title ? ' · ' + myLevel.title : ''} · ` : ''}last seen {ago(t.last_seen)}</p>
-            <div class="chips"><span class="pl-chip accent"><Clock size={12} /> <Count value={t.playtime_secs} format={(v) => playtime(Math.round(v))} /></span><span class="pl-chip">K/D {kd}</span>{#if myIdx >= 0}<span class="pl-chip good"><Medal size={12} /> #{myIdx + 1} · {meta.label}</span>{/if}</div>
+            <div class="chips"><span class="pl-chip accent"><InterfaceIcon name="Clock" fallback={Clock} size={12} /> <Count value={t.playtime_secs} format={(v) => playtime(Math.round(v))} /></span><span class="pl-chip">K/D {kd}</span>{#if myIdx >= 0}<span class="pl-chip good"><InterfaceIcon name="Medal" fallback={Medal} size={12} /> #{myIdx + 1} · {meta.label}</span>{/if}</div>
           </div>
         </section>
         <div class="tiles">
           {#each tiles as x, i (x.l)}{@const I = x.i}
-            <div class="tile pl-card tight" style="--i: {i}"><span><I size={14} /> {x.l}</span><b>{x.v}</b></div>
+            <div class="tile pl-card tight" style="--i: {i}"><span><InterfaceIcon name={iconName(I)} fallback={I} size={14} /> {x.l}</span><b>{x.v}</b></div>
           {/each}
         </div>
 
         {#if mine.servers.length > 1}
           <section class="pl-card">
-            <div class="pl-card-head"><h2><ServerIcon size={17} /> By server</h2></div>
+            <div class="pl-card-head"><h2><InterfaceIcon name="Server" fallback={ServerIcon} size={17} /> By server</h2></div>
             <div class="pl-grid" style="--min: 230px">
               {#each mine.servers as s (s.server_id)}
-                <div class="srv"><b>{s.server_name}</b><div class="mini"><span><Clock size={12} /> {playtime(s.playtime_secs)}</span><span><Swords size={12} /> {compact(s.player_kills)}</span><span><Skull size={12} /> {compact(s.deaths)}</span><span><Pickaxe size={12} /> {compact(s.blocks_broken)}</span></div>
+                <div class="srv"><b>{s.server_name}</b><div class="mini"><span><InterfaceIcon name="Clock" fallback={Clock} size={12} /> {playtime(s.playtime_secs)}</span><span><InterfaceIcon name="Swords" fallback={Swords} size={12} /> {compact(s.player_kills)}</span><span><InterfaceIcon name="Skull" fallback={Skull} size={12} /> {compact(s.deaths)}</span><span><InterfaceIcon name="Pickaxe" fallback={Pickaxe} size={12} /> {compact(s.blocks_broken)}</span></div>
                   <small>since {new Date(s.first_seen).toLocaleDateString()}</small></div>
               {/each}
             </div>
@@ -197,7 +199,7 @@
         {/if}
 
         <section class="pl-card">
-          <div class="pl-card-head"><h2><History size={17} /> Recent events</h2></div>
+          <div class="pl-card-head"><h2><InterfaceIcon name="History" fallback={History} size={17} /> Recent events</h2></div>
           {#if mine.events.length}
             <div class="pl-list">{#each mine.events as e (e.id)}
               <div class="pl-item"><span class="dot"></span><div class="grow"><b style="text-transform: capitalize">{evLabel(e.kind)}</b>{#if e.detail}<span class="sub">{e.detail}</span>{/if}</div><div class="end"><span class="sub">{serverName(e.server_id)}</span><span class="sub" style="display:block">{ago(e.created_at)}</span></div></div>
@@ -210,7 +212,7 @@
   {:else}
     <div class="pl-stack">
       {#if lvlError}
-        <div class="pl-alert err row" role="alert"><TriangleAlert size={16} /><span class="grow">{lvlError}</span><button class="pl-btn sm" onclick={loadLevels}>Retry</button></div>
+        <div class="pl-alert err row" role="alert"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={16} /><span class="grow">{lvlError}</span><button class="pl-btn sm" onclick={loadLevels}>Retry</button></div>
       {/if}
       {#if lvlLoading && !lvls.length}
         {#each Array(6) as _, i (i)}<div class="pl-skel" style="height: 64px"></div>{/each}

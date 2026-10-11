@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from './InterfaceIcon.svelte';
   import { TriangleAlert } from '@lucide/svelte';
   import { app } from '../lib/state.svelte';
 
@@ -15,7 +16,7 @@
   <div class="scrim" role="presentation" onclick={() => c.resolve(false)}></div>
   <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
     <div class="row">
-      {#if c.danger}<span class="icon"><TriangleAlert size={20} /></span>{/if}
+      {#if c.danger}<span class="icon"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={20} /></span>{/if}
       <h2 id="confirm-title">{c.title}</h2>
     </div>
     <p class="muted">{c.body}</p>

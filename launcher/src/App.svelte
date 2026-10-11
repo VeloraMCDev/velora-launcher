@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { LoaderCircle, Download, X } from '@lucide/svelte';
   import Background from './components/Background.svelte';
@@ -9,7 +10,6 @@
   import InstanceSettings from './components/InstanceSettings.svelte';
   import CrashDialog from './components/CrashDialog.svelte';
   import Toasts from './components/Toasts.svelte';
-  import TexturesBanner from './components/TexturesBanner.svelte';
   import { initTextures } from './lib/textures.svelte';
   import Setup from './pages/Setup.svelte';
   import Login from './pages/Login.svelte';
@@ -33,7 +33,7 @@
   import { errorText } from './lib/tauri';
 
   $effect(() => {
-    if (!pageEnabled(selectedInstance()?.experience, app.view)) app.view = 'home';
+    if (app.view !== 'commands' && !pageEnabled(selectedInstance()?.experience, app.view)) app.view = 'home';
   });
   let fatal = $state('');
   let dismissedUpdate = $state<string | null>(null);
@@ -55,7 +55,7 @@
   {#if fatal && !app.manifest && app.view !== 'settings'}
     <div class="center"><div class="glass msg"><h2>Can't reach the server</h2><p class="muted selectable">{fatal}</p><button class="primary" onclick={() => location.reload()}>Try again</button></div></div>
   {:else if !app.ready}
-    <div class="center"><LoaderCircle class="spin" size={28} /></div>
+    <div class="center"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={28} /></div>
   {:else if app.view === 'settings'}
     <div class="body">
       <Rail /><main><Settings /></main>
@@ -100,10 +100,10 @@
 
 {#if app.update && dismissedUpdate !== app.update.version && app.view !== 'settings'}
   <div class="update glass">
-    <Download size={16} />
+    <InterfaceIcon name="Download" fallback={Download} size={16} />
     <span>New update: Launcher {app.update.version}</span>
     <button class="sm primary" onclick={() => { app.view = 'settings'; app.settingsTab = 'about'; }}>View</button>
-    <button class="ghost icon sm" aria-label="Dismiss" onclick={() => (dismissedUpdate = app.update?.version ?? null)}><X size={14} /></button>
+    <button class="ghost icon sm" aria-label="Dismiss" onclick={() => (dismissedUpdate = app.update?.version ?? null)}><InterfaceIcon name="X" fallback={X} size={14} /></button>
   </div>
 {/if}
 
@@ -117,7 +117,7 @@
 <CrashDialog />
 <CommandPalette />
 <Toasts />
-<TexturesBanner belowUpdate={!!app.update && dismissedUpdate !== app.update.version && app.view !== 'settings'} />
+
 
 <style>
   .experience-page { padding: 2rem; overflow-y: auto; height: 100%; }

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '../components/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Rocket, Package, Boxes, RefreshCw, LoaderCircle, ExternalLink, CircleCheck, ShieldCheck, GitCommit } from '@lucide/svelte';
   import { api } from '../lib/api';
@@ -37,7 +38,7 @@
 <div class="head row wrap">
   <div><h1>Updates</h1><p class="muted">Approve launcher releases, deploy new Velora builds and track container image updates. Checked {ago(updates?.checked)}.</p></div>
   <span class="spacer"></span>
-  <button onclick={check} disabled={checking}>{#if checking}<LoaderCircle size={16} class="spin" />{:else}<RefreshCw size={16} />{/if} Check now</button>
+  <button onclick={check} disabled={checking}>{#if checking}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={16} class="spin" />{:else}<InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} />{/if} Check now</button>
 </div>
 
 {#each updates?.errors ?? [] as error}<div class="warnline small">{error}</div>{/each}
@@ -52,7 +53,7 @@
 {/if}
 
 <div class="card">
-  <div class="card-head"><Rocket size={18} /><h2>Launcher releases</h2><span class="spacer"></span>
+  <div class="card-head"><InterfaceIcon name="Rocket" fallback={Rocket} size={18} /><h2>Launcher releases</h2><span class="spacer"></span>
     <span class="tiny muted">Players currently receive <b>{updates?.launcher_served ? `v${updates.launcher_served}` : 'no signed release'}</b></span></div>
     <p class="muted small intro">Desktop installers and Android/iOS apps built by the <code>Launcher release</code> workflow wait here. Nothing reaches players until you approve it.</p>
   <div class="col">
@@ -60,15 +61,15 @@
       <div class="release" class:current={r.approved}>
         <div class="grow">
           <div class="row wrap"><b class="ver">v{r.version}</b>
-            {#if r.approved}<span class="badge ok"><CircleCheck size={12} /> Live for players</span>{/if}
+            {#if r.approved}<span class="badge ok"><InterfaceIcon name="CircleCheck" fallback={CircleCheck} size={12} /> Live for players</span>{/if}
             {#if r.prerelease}<span class="badge warn">pre-release</span>{/if}
-            {#if !r.has_manifest}<span class="badge bad">unsigned</span>{:else}<span class="badge info"><ShieldCheck size={12} /> signed</span>{/if}
+            {#if !r.has_manifest}<span class="badge bad">unsigned</span>{:else}<span class="badge info"><InterfaceIcon name="ShieldCheck" fallback={ShieldCheck} size={12} /> signed</span>{/if}
           </div>
           <div class="tiny muted">Published {when(r.published_at)} · {r.assets.filter(a => !a.name.endsWith('.json') && a.name !== 'SHA256SUMS').map(a => `${a.name.split('_').at(-1)} ${bytes(a.size)}`).join(' · ')}</div>
         </div>
-        <a class="btn sm ghost" href={r.html_url} target="_blank" rel="noreferrer"><ExternalLink size={14} /> GitHub</a>
+        <a class="btn sm ghost" href={r.html_url} target="_blank" rel="noreferrer"><InterfaceIcon name="ExternalLink" fallback={ExternalLink} size={14} /> GitHub</a>
         {#if !r.approved && r.has_manifest && !r.prerelease}
-          <button class="sm primary" onclick={() => approve(r.tag, r.version)}><Rocket size={14} /> Approve & publish</button>
+          <button class="sm primary" onclick={() => approve(r.tag, r.version)}><InterfaceIcon name="Rocket" fallback={Rocket} size={14} /> Approve & publish</button>
         {/if}
       </div>
     {:else}<div class="empty">No launcher releases yet. Run the <code>Launcher release</code> workflow on GitHub to build one.</div>{/each}
@@ -78,12 +79,12 @@
 <div class="grid g2 section">
   {#each Object.entries(updates?.images ?? {}) as [name, image]}
     <div class="card">
-      <div class="card-head"><Package size={18} /><h2>{name}</h2><span class="spacer"></span><span class="tiny muted mono">running {shortDigest(image.current)}</span></div>
+      <div class="card-head"><InterfaceIcon name="Package" fallback={Package} size={18} /><h2>{name}</h2><span class="spacer"></span><span class="tiny muted mono">running {shortDigest(image.current)}</span></div>
       <div class="col">
         {#each image.releases as r, i}
           {@const live = r.digest === image.current}
           <div class="build" class:current={live}>
-            <GitCommit size={16} class="faint" />
+            <InterfaceIcon name="GitCommit" fallback={GitCommit} size={16} class="faint" />
             <div class="grow">
               <div class="row"><b class="mono small">{r.commit.slice(0, 7)}</b>{#if live}<span class="badge ok">running</span>{:else if i === 0}<span class="badge accent">newest</span>{/if}<span class="tiny faint">run {r.run}</span></div>
               <div class="small msg">{r.commitInfo?.message ?? 'Release build'}</div>
@@ -98,7 +99,7 @@
 </div>
 
 <div class="card flush section">
-  <div class="card-head pad"><Boxes size={18} /><h2>Container images</h2><span class="spacer"></span>
+  <div class="card-head pad"><InterfaceIcon name="Boxes" fallback={Boxes} size={18} /><h2>Container images</h2><span class="spacer"></span>
     <label class="row tiny muted"><input type="checkbox" bind:checked={showCurrent} style="width:auto" /> Show up-to-date</label></div>
   <p class="muted small pad2">Compares each running container with its registry tag. Velora services update from this page; other stacks are listed for awareness.</p>
   <div class="table-scroll">

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { UserPlus, Link2, LoaderCircle, Coins, Users, Landmark, Store, ScrollText, LayoutDashboard, Search, Plus, Minus, Equal, Trash2, Clock, ChevronLeft, ChevronRight, ArrowUpDown, TrendingUp, Gavel, Tag, Dices } from '@lucide/svelte';
   import Modal from '../components/Modal.svelte';
@@ -274,11 +276,11 @@
   {#if loading}
     <div class="skeleton" style="height: 120px"></div>
   {:else if !servers.length}
-    <div class="card empty"><Coins size={32} /><h3>No servers yet</h3><p>Connect a game server and its economy will show up here.</p></div>
+    <div class="card empty"><InterfaceIcon name="Coins" fallback={Coins} size={32} /><h3>No servers yet</h3><p>Connect a game server and its economy will show up here.</p></div>
   {:else}
     <div class="tabs">
       {#each TABS as t}
-        <button type="button" class:active={tab === t.id} onclick={() => (tab = t.id)}><t.icon size={15} /> {t.label}</button>
+        <button type="button" class:active={tab === t.id} onclick={() => (tab = t.id)}><InterfaceIcon name={iconName(t.icon)} fallback={t.icon} size={15} /> {t.label}</button>
       {/each}
     </div>
 
@@ -287,11 +289,11 @@
         <div class="tiles">{#each Array(6) as _}<div class="skeleton" style="height: 92px"></div>{/each}</div>
       {:else}
         <div class="tiles">
-          <div class="tile"><span><Coins size={14} /> In circulation</span><b>{money(ov.totals.circulation)}</b><small>{ov.totals.accounts.toLocaleString()} accounts</small></div>
-          <div class="tile"><span><Users size={14} /> Average balance</span><b>{money(ov.totals.average)}</b><small>median {money(ov.totals.median)}</small></div>
-          <div class="tile"><span><TrendingUp size={14} /> Volume (7d)</span><b>{money(ov.volume.last_7d)}</b><small>{ov.volume.tx_7d.toLocaleString()} transactions · {money(ov.volume.today)} today</small></div>
-          <div class="tile"><span><Landmark size={14} /> Faction banks</span><b>{money(ov.totals.guild_wallets_total)}</b><small>{ov.totals.guild_wallets_count} wallets</small></div>
-          <div class="tile"><span><Store size={14} /> Active listings</span><b>{ov.market.fixed_listings + ov.market.auctions}</b><small>{ov.market.fixed_listings} fixed · {ov.market.auctions} auctions</small></div>
+          <div class="tile"><span><InterfaceIcon name="Coins" fallback={Coins} size={14} /> In circulation</span><b>{money(ov.totals.circulation)}</b><small>{ov.totals.accounts.toLocaleString()} accounts</small></div>
+          <div class="tile"><span><InterfaceIcon name="Users" fallback={Users} size={14} /> Average balance</span><b>{money(ov.totals.average)}</b><small>median {money(ov.totals.median)}</small></div>
+          <div class="tile"><span><InterfaceIcon name="TrendingUp" fallback={TrendingUp} size={14} /> Volume (7d)</span><b>{money(ov.volume.last_7d)}</b><small>{ov.volume.tx_7d.toLocaleString()} transactions · {money(ov.volume.today)} today</small></div>
+          <div class="tile"><span><InterfaceIcon name="Landmark" fallback={Landmark} size={14} /> Faction banks</span><b>{money(ov.totals.guild_wallets_total)}</b><small>{ov.totals.guild_wallets_count} wallets</small></div>
+          <div class="tile"><span><InterfaceIcon name="Store" fallback={Store} size={14} /> Active listings</span><b>{ov.market.fixed_listings + ov.market.auctions}</b><small>{ov.market.fixed_listings} fixed · {ov.market.auctions} auctions</small></div>
           {#if ov.totals.richest}<div class="tile"><span>Richest player</span><b>{money(ov.totals.richest.balance)}</b><small><PlayerLink uuid={ov.totals.richest.uuid} name={ov.totals.richest.name} /></small></div>{/if}
         </div>
 
@@ -333,7 +335,7 @@
           </section>
           {#if ov.casino}
             <section class="card">
-              <h2><Dices size={16} /> Casino (7d)</h2>
+              <h2><InterfaceIcon name="Dices" fallback={Dices} size={16} /> Casino (7d)</h2>
               <dl>
                 <div><dt>Wagered</dt><dd>{money(ov.casino.wagered_7d)}</dd></div>
                 <div><dt>Paid out</dt><dd>{money(ov.casino.paid_7d)}</dd></div>
@@ -348,8 +350,8 @@
       {#if acc && acc.total > 0}
         <section class="card accounts">
           <div class="section-title">
-            <UserPlus size={18} /><h2>{acc.total} player{acc.total === 1 ? '' : 's'} without a bank account</h2>
-            <button class="primary sm" disabled={accBusy !== ''} onclick={repairAccounts}>{#if accBusy === 'all'}<LoaderCircle class="spin" size={14} /> Working…{:else}<UserPlus size={14} /> Create all missing accounts{/if}</button>
+            <InterfaceIcon name="UserPlus" fallback={UserPlus} size={18} /><h2>{acc.total} player{acc.total === 1 ? '' : 's'} without a bank account</h2>
+            <button class="primary sm" disabled={accBusy !== ''} onclick={repairAccounts}>{#if accBusy === 'all'}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={14} /> Working…{:else}<InterfaceIcon name="UserPlus" fallback={UserPlus} size={14} /> Create all missing accounts{/if}</button>
           </div>
           <p class="hint">New accounts start with the starting balance from Progression rules. An unclaimed account with the same name (for example money left under an old UUID) is handed to the player instead. The same fix runs daily as the scheduled job <b>Create missing bank accounts</b>.</p>
           <div class="table-wrap">
@@ -365,7 +367,7 @@
                         {#each acc.orphans as o (o.uuid)}<option value={o.uuid}>{o.username} · {money(o.balance)}{o.uuid === m.suggested_from ? ' (same name)' : ''}</option>{/each}
                       </select>
                     </td>
-                    <td class="act"><button class="sm" disabled={accBusy !== ''} onclick={() => { if (takeOver[m.uuid] === undefined && m.suggested_from) takeOver[m.uuid] = m.suggested_from; assignAccount(m); }}>{#if accBusy === m.uuid}<LoaderCircle class="spin" size={13} />{:else}<Link2 size={13} />{/if} Assign</button></td>
+                    <td class="act"><button class="sm" disabled={accBusy !== ''} onclick={() => { if (takeOver[m.uuid] === undefined && m.suggested_from) takeOver[m.uuid] = m.suggested_from; assignAccount(m); }}>{#if accBusy === m.uuid}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={13} />{:else}<InterfaceIcon name="Link2" fallback={Link2} size={13} />{/if} Assign</button></td>
                   </tr>
                 {/each}
               </tbody>
@@ -376,20 +378,20 @@
       {/if}
       <section class="card">
         <div class="section-title">
-          <div class="search"><Search size={16} /><input bind:value={pq} oninput={() => (ppage = 0)} placeholder="Search players" aria-label="Search players" /></div>
+          <div class="search"><InterfaceIcon name="Search" fallback={Search} size={16} /><input bind:value={pq} oninput={() => (ppage = 0)} placeholder="Search players" aria-label="Search players" /></div>
           <span class="hint">{players?.total ?? 0} accounts</span>
         </div>
         {#if !players}
           {#each Array(6) as _}<div class="skeleton line"></div>{/each}
         {:else if !players.rows.length}
-          <div class="empty"><Users size={28} /><h3>No players found</h3><p>{pq ? 'Try a different search.' : 'Accounts appear once players join.'}</p></div>
+          <div class="empty"><InterfaceIcon name="Users" fallback={Users} size={28} /><h3>No players found</h3><p>{pq ? 'Try a different search.' : 'Accounts appear once players join.'}</p></div>
         {:else}
           <div class="table-wrap">
             <table class="table">
               <thead><tr>
-                <th><button class="th" onclick={() => sortBy('name')}>Player <ArrowUpDown size={12} /></button></th>
-                <th class="n"><button class="th" onclick={() => sortBy('balance')}>Balance <ArrowUpDown size={12} /></button></th>
-                <th><button class="th" onclick={() => sortBy('updated')}>Updated <ArrowUpDown size={12} /></button></th>
+                <th><button class="th" onclick={() => sortBy('name')}>Player <InterfaceIcon name="ArrowUpDown" fallback={ArrowUpDown} size={12} /></button></th>
+                <th class="n"><button class="th" onclick={() => sortBy('balance')}>Balance <InterfaceIcon name="ArrowUpDown" fallback={ArrowUpDown} size={12} /></button></th>
+                <th><button class="th" onclick={() => sortBy('updated')}>Updated <InterfaceIcon name="ArrowUpDown" fallback={ArrowUpDown} size={12} /></button></th>
                 <th></th>
               </tr></thead>
               <tbody>
@@ -405,9 +407,9 @@
             </table>
           </div>
           <div class="pager">
-            <button class="sm ghost" disabled={ppage === 0} onclick={() => (ppage -= 1)}><ChevronLeft size={14} /> Prev</button>
+            <button class="sm ghost" disabled={ppage === 0} onclick={() => (ppage -= 1)}><InterfaceIcon name="ChevronLeft" fallback={ChevronLeft} size={14} /> Prev</button>
             <span class="muted small">Page {ppage + 1} of {Math.max(1, Math.ceil(players.total / PAGE))}</span>
-            <button class="sm ghost" disabled={(ppage + 1) * PAGE >= players.total} onclick={() => (ppage += 1)}>Next <ChevronRight size={14} /></button>
+            <button class="sm ghost" disabled={(ppage + 1) * PAGE >= players.total} onclick={() => (ppage += 1)}>Next <InterfaceIcon name="ChevronRight" fallback={ChevronRight} size={14} /></button>
           </div>
         {/if}
       </section>
@@ -418,7 +420,7 @@
         {#if !guilds}
           {#each Array(4) as _}<div class="skeleton line"></div>{/each}
         {:else if !guilds.length}
-          <div class="empty"><Landmark size={28} /><h3>No factions on this server</h3></div>
+          <div class="empty"><InterfaceIcon name="Landmark" fallback={Landmark} size={28} /><h3>No factions on this server</h3></div>
         {:else}
           <div class="table-wrap">
             <table class="table">
@@ -441,7 +443,7 @@
     {:else if tab === 'market'}
       <section class="card">
         <div class="section-title filters">
-          <div class="search"><Search size={16} /><input bind:value={mq} placeholder="Search items or sellers" aria-label="Search listings" /></div>
+          <div class="search"><InterfaceIcon name="Search" fallback={Search} size={16} /><input bind:value={mq} placeholder="Search items or sellers" aria-label="Search listings" /></div>
           <div class="segmented">
             {#each [['all', 'All'], ['buy_now', 'Fixed'], ['auction', 'Auctions']] as [v, l]}
               <button class:active={mkind === v} onclick={() => (mkind = v as typeof mkind)}>{l}</button>
@@ -455,7 +457,7 @@
         {#if !market}
           {#each Array(5) as _}<div class="skeleton line"></div>{/each}
         {:else if !market.rows.length}
-          <div class="empty"><Store size={28} /><h3>No listings</h3><p>Nothing matches right now.</p></div>
+          <div class="empty"><InterfaceIcon name="Store" fallback={Store} size={28} /><h3>No listings</h3><p>Nothing matches right now.</p></div>
         {:else}
           <div class="table-wrap">
             <table class="table">
@@ -465,18 +467,18 @@
                   {@const t = left(m.ends_at)}
                   <tr>
                     <td><b>{m.amount}× {m.item_name}</b><br /><small class="muted">#{m.id} · {timeAgo(m.created_at)}</small></td>
-                    <td>{#if m.kind === 'auction'}<span class="badge warn"><Gavel size={12} /> Auction</span>{:else}<span class="badge"><Tag size={12} /> Fixed</span>{/if}</td>
+                    <td>{#if m.kind === 'auction'}<span class="badge warn"><InterfaceIcon name="Gavel" fallback={Gavel} size={12} /> Auction</span>{:else}<span class="badge"><InterfaceIcon name="Tag" fallback={Tag} size={12} /> Fixed</span>{/if}</td>
                     <td><PlayerLink uuid={m.seller_uuid} name={m.seller_name} />{#if m.seller_guild} <span class="badge accent">{m.seller_guild}</span>{/if}</td>
                     <td class="n">
                       {#if m.kind === 'auction'}
                         {money(m.current_bid ?? m.price)}<br /><small class="muted">{m.bid_count ? `${m.bidder_name} · ${m.bid_count} bid${m.bid_count === 1 ? '' : 's'}` : 'no bids'}</small>
                       {:else}{money(m.price)}{/if}
                     </td>
-                    <td>{#if m.ends_at}<span class:bad={t.soon || t.over} class="tl"><Clock size={12} /> {t.text}</span>{:else}<span class="muted">-</span>{/if}</td>
+                    <td>{#if m.ends_at}<span class:bad={t.soon || t.over} class="tl"><InterfaceIcon name="Clock" fallback={Clock} size={12} /> {t.text}</span>{:else}<span class="muted">-</span>{/if}</td>
                     <td class="act">
                       {#if m.kind === 'auction'}<button class="sm ghost" onclick={() => { extListing = m; extHours = 24; extOpen = true; }}>Extend</button>
                       {:else}<button class="sm ghost" onclick={() => { prListing = m; prValue = String(m.price); prOpen = true; }}>Price</button>{/if}
-                      <button class="sm danger" onclick={() => { rmListing = m; rmReason = ''; rmOpen = true; }}><Trash2 size={13} /> Remove</button>
+                      <button class="sm danger" onclick={() => { rmListing = m; rmReason = ''; rmOpen = true; }}><InterfaceIcon name="Trash2" fallback={Trash2} size={13} /> Remove</button>
                     </td>
                   </tr>
                 {/each}
@@ -489,12 +491,12 @@
     {:else}
       <section class="card">
         <div class="section-title">
-          <div class="search"><Search size={16} /><input bind:value={lq} placeholder="Filter by player or description" aria-label="Filter ledger" /></div>
+          <div class="search"><InterfaceIcon name="Search" fallback={Search} size={16} /><input bind:value={lq} placeholder="Filter by player or description" aria-label="Filter ledger" /></div>
         </div>
         {#if !ledger}
           {#each Array(6) as _}<div class="skeleton line"></div>{/each}
         {:else if !ledger.length}
-          <div class="empty"><ScrollText size={28} /><h3>No transactions</h3></div>
+          <div class="empty"><InterfaceIcon name="ScrollText" fallback={ScrollText} size={28} /><h3>No transactions</h3></div>
         {:else}
           <div class="table-wrap">
             <table class="table">
@@ -521,9 +523,9 @@
 <Modal bind:open={adjOpen} title={target ? `Adjust ${target.kind === 'guild' ? 'faction bank' : 'balance'}: ${target.name}` : 'Adjust'} width={440}>
   {#if target}
     <div class="segmented wide">
-      <button class:active={mode === 'add'} onclick={() => (mode = 'add')}><Plus size={13} /> Add</button>
-      <button class:active={mode === 'remove'} onclick={() => (mode = 'remove')}><Minus size={13} /> Remove</button>
-      <button class:active={mode === 'set'} onclick={() => (mode = 'set')}><Equal size={13} /> Set</button>
+      <button class:active={mode === 'add'} onclick={() => (mode = 'add')}><InterfaceIcon name="Plus" fallback={Plus} size={13} /> Add</button>
+      <button class:active={mode === 'remove'} onclick={() => (mode = 'remove')}><InterfaceIcon name="Minus" fallback={Minus} size={13} /> Remove</button>
+      <button class:active={mode === 'set'} onclick={() => (mode = 'set')}><InterfaceIcon name="Equal" fallback={Equal} size={13} /> Set</button>
     </div>
     <label class="field">Amount
       <input type="number" min="0" step="0.01" inputmode="decimal" bind:value={amount} placeholder="0.00" />

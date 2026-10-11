@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import PlayerLink from '../components/PlayerLink.svelte';
   import { onMount } from 'svelte';
   import { Shield, Users, MapPin, Trash2, Search, ExternalLink, Flag, Pencil } from '@lucide/svelte';
@@ -124,7 +125,7 @@
 
   <div class="toolbar">
     <div class="search-box">
-      <Search size={16} />
+      <InterfaceIcon name="Search" fallback={Search} size={16} />
       <input type="text" placeholder="Search factions by name, tag, or id..." bind:value={search} />
     </div>
 
@@ -166,7 +167,7 @@
                     <img src={g.icon_url} alt="" class="guild-avatar" />
                   {:else}
                     <div class="guild-avatar fallback">
-                      <Shield size={18} />
+                      <InterfaceIcon name="Shield" fallback={Shield} size={18} />
                     </div>
                   {/if}
                   <div>
@@ -188,12 +189,12 @@
               </td>
               <td>
                 <span class="count-pill">
-                  <Users size={13} /> {g.member_count} / {g.max_members}
+                  <InterfaceIcon name="Users" fallback={Users} size={13} /> {g.member_count} / {g.max_members}
                 </span>
               </td>
               <td>
                 <span class="claims-pill">
-                  <MapPin size={13} /> {g.claims_count} chunks
+                  <InterfaceIcon name="MapPin" fallback={MapPin} size={13} /> {g.claims_count} chunks
                 </span>
               </td>
               <td>
@@ -201,10 +202,10 @@
               </td>
               <td>
                 <button class="ghost icon" title="Rename faction" aria-label="Rename faction" onclick={() => openRename(g)}>
-                  <Pencil size={15} />
+                  <InterfaceIcon name="Pencil" fallback={Pencil} size={15} />
                 </button>
                 <button class="ghost icon danger" title="Disband faction" onclick={() => { deleteConfirm = g; deleteOpen = true; }}>
-                  <Trash2 size={15} />
+                  <InterfaceIcon name="Trash2" fallback={Trash2} size={15} />
                 </button>
               </td>
             </tr>

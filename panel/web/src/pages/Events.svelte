@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { CalendarDays, Pencil, Plus, RefreshCw, Trash2 } from '@lucide/svelte';
   import { del, get, post, put } from '../lib/api';
   import { toast, toastError } from '../lib/toast.svelte';
@@ -29,9 +30,9 @@
 </script>
 
 <div class="page">
-  <header><div><h1><CalendarDays size={22} /> Community events</h1><p>Create scheduled server activities with shared objectives and rewards.</p></div><button class="ghost icon" onclick={load} title="Refresh"><RefreshCw size={16} /></button></header>
+  <header><div><h1><InterfaceIcon name="CalendarDays" fallback={CalendarDays} size={22} /> Community events</h1><p>Create scheduled server activities with shared objectives and rewards.</p></div><button class="ghost icon" onclick={load} title="Refresh"><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} /></button></header>
   <section class="card form">
-    <h2>{#if editing}<Pencil size={16} /> Edit event{:else}<Plus size={16} /> New event{/if}</h2>
+    <h2>{#if editing}<InterfaceIcon name="Pencil" fallback={Pencil} size={16} /> Edit event{:else}<InterfaceIcon name="Plus" fallback={Plus} size={16} /> New event{/if}</h2>
     <div class="grid fields">
       <label>Title<input bind:value={draft.title} placeholder="Nether expedition" /></label>
       <label>Status<select bind:value={draft.status}><option value="draft">Draft</option><option value="published">Published</option><option value="active">Active</option></select></label>
@@ -45,13 +46,13 @@
     <label>Reward actions JSON<textarea bind:value={draft.rewards} rows="2" placeholder="Reward JSON array"></textarea></label>
     <div class="actions">
       <button class="primary" disabled={!draft.title || !draft.starts_at || !draft.ends_at} onclick={save}>
-        {#if editing}<Pencil size={16} /> Save changes{:else}<Plus size={16} /> Create event{/if}
+        {#if editing}<InterfaceIcon name="Pencil" fallback={Pencil} size={16} /> Save changes{:else}<InterfaceIcon name="Plus" fallback={Plus} size={16} /> Create event{/if}
       </button>
       {#if editing}<button class="ghost" onclick={cancel}>Cancel</button>{/if}
     </div>
   </section>
   <section class="card"><div class="section-title"><h2>Scheduled events</h2><span class="hint">{events.length}</span></div>
-    {#if !events.length}<p class="muted">No events yet.</p>{:else}<div class="list">{#each events as event}<article><div><strong>{event.title}</strong><p>{event.description || 'No description'}</p><small>{event.objectives.length} objectives · {event.instance_id || 'All instances'} · {event.server_id ? `Server ${event.server_id}` : 'All servers'}</small></div><span class="badge">{event.status}</span><span class="muted small">{new Date(event.starts_at).toLocaleString()}</span><div class="row-actions"><button class="ghost icon" onclick={() => edit(event)} title="Edit event"><Pencil size={15} /></button><button class="ghost icon danger" onclick={() => remove(event)} title="Delete event"><Trash2 size={15} /></button></div></article>{/each}</div>{/if}
+    {#if !events.length}<p class="muted">No events yet.</p>{:else}<div class="list">{#each events as event}<article><div><strong>{event.title}</strong><p>{event.description || 'No description'}</p><small>{event.objectives.length} objectives · {event.instance_id || 'All instances'} · {event.server_id ? `Server ${event.server_id}` : 'All servers'}</small></div><span class="badge">{event.status}</span><span class="muted small">{new Date(event.starts_at).toLocaleString()}</span><div class="row-actions"><button class="ghost icon" onclick={() => edit(event)} title="Edit event"><InterfaceIcon name="Pencil" fallback={Pencil} size={15} /></button><button class="ghost icon danger" onclick={() => remove(event)} title="Delete event"><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /></button></div></article>{/each}</div>{/if}
   </section>
 </div>
 

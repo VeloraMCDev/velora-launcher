@@ -1,5 +1,8 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { SlidersHorizontal, SquareTerminal, Package, MessageCircle, Globe, ShoppingBag, CirclePlay, Tv, Code, AtSign, Link, Trophy, Eye, EyeOff, Map as MapIcon } from '@lucide/svelte';
+  import { logoLayout } from '@velora/experience/logo-layout';
   import ExperienceWidgets from '@velora/experience/ExperienceWidgets.svelte';
   import { enabled } from '@velora/experience';
   import PlayButton from '../components/PlayButton.svelte';
@@ -12,6 +15,7 @@
   import { invoke, openUrl } from '../lib/tauri';
 
   const inst = $derived(selectedInstance());
+  const logo = $derived(logoLayout(inst?.experience));
   const b = $derived(experienceBranding()!);
   // Lucide ships no brand logos, so each platform gets a recognisable generic icon.
   const linkIcon: Record<string, any> = { discord: MessageCircle, website: Globe, store: ShoppingBag, youtube: CirclePlay, twitch: Tv, github: Code, twitter: AtSign };
@@ -41,14 +45,14 @@
         <div class="chips">
           <span class="chip">{inst.mc_version}</span>
           <span class="chip">{loaderName[inst.loader]} {shortLoaderVersion(inst.mc_version, inst.loader_version)}</span>
-          {#if inst.file_count}<span class="chip"><Package size={12} /> {inst.file_count} mods & files</span>{/if}
+          {#if inst.file_count}<span class="chip"><InterfaceIcon name="Package" fallback={Package} size={12} /> {inst.file_count} mods & files</span>{/if}
         </div>
         {#if inst.logo_url}
           <div class="logo-wrap">
-            <img class="inst-logo" src={abs(inst.logo_url)} alt={inst.name} />
+            <img class="inst-logo" style:width={logo.width + 'px'} style:max-height={logo.max_height + 'px'} src={abs(inst.logo_url)} alt={inst.name} />
           </div>
         {:else}
-          <h1>{inst.name}</h1>
+          <h1 style:font-size={logo.title_size + 'px'}>{inst.name}</h1>
         {/if}
         <p class="desc">{inst.description || b.tagline}</p>
       </section>
@@ -56,10 +60,10 @@
       <section class="actions">
         <PlayButton {inst} />
         <div class="row tools">
-          <button class="glass tool" onclick={() => (app.instanceSettings = inst.id)} title="Instance settings"><SlidersHorizontal size={17} /></button>
-          <button class="glass tool" class:on={app.consoleOpen} onclick={() => (app.consoleOpen = !app.consoleOpen)} title="Game console"><SquareTerminal size={17} /></button>
-          {#if enabled(inst.experience, 'progression')}<button class="glass tool" onclick={() => (app.view = 'stats')} title="Player stats & leaderboards"><Trophy size={17} /></button>{/if}
-          {#if mapServer && enabled(inst.experience, 'maps')}<button class="glass tool live" onclick={() => (mapOpen = true)} title="Open the live map"><MapIcon size={17} /> <span>Live Map</span></button>{/if}
+          <button class="glass tool" onclick={() => (app.instanceSettings = inst.id)} title="Instance settings"><InterfaceIcon name="SlidersHorizontal" fallback={SlidersHorizontal} size={17} /></button>
+          <button class="glass tool" class:on={app.consoleOpen} onclick={() => (app.consoleOpen = !app.consoleOpen)} title="Game console"><InterfaceIcon name="SquareTerminal" fallback={SquareTerminal} size={17} /></button>
+          {#if enabled(inst.experience, 'progression')}<button class="glass tool" onclick={() => (app.view = 'stats')} title="Player stats & leaderboards"><InterfaceIcon name="Trophy" fallback={Trophy} size={17} /></button>{/if}
+          {#if mapServer && enabled(inst.experience, 'maps')}<button class="glass tool live" onclick={() => (mapOpen = true)} title="Open the live map"><InterfaceIcon name="Map" fallback={MapIcon} size={17} /> <span>Live Map</span></button>{/if}
           {#if inst.server && b.features.server_status}<ServerStatus server={inst.server} />{/if}
         </div>
       </section>
@@ -77,7 +81,7 @@
       <div class="news-bar">
         <h4>News</h4>
         <button class="ghost sm" aria-pressed={app.settings?.show_news !== false} onclick={() => { if (app.settings) { app.settings.show_news = app.settings.show_news === false; saveSettings(); } }}>
-          {#if app.settings?.show_news === false}<Eye size={13} /> Show{:else}<EyeOff size={13} /> Hide{/if}
+          {#if app.settings?.show_news === false}<InterfaceIcon name="Eye" fallback={Eye} size={13} /> Show{:else}<InterfaceIcon name="EyeOff" fallback={EyeOff} size={13} /> Hide{/if}
         </button>
       </div>
       {#if app.settings?.show_news !== false}<NewsFeed news={b.news} />{/if}
@@ -86,7 +90,7 @@
       <div class="links">
         {#each b.links as l}
           {@const Icon = linkIcon[l.icon] ?? Link}
-          <button class="glass link" onclick={() => openUrl(l.url)} title={l.label}><Icon size={16} /> <span>{l.label}</span></button>
+          <button class="glass link" onclick={() => openUrl(l.url)} title={l.label}><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={16} /> <span>{l.label}</span></button>
         {/each}
       </div>
     {/if}
@@ -103,7 +107,7 @@
   .greet strong { color: var(--text); font-weight: 560; }
   .chips { display: flex; gap: 0.45rem; flex-wrap: wrap; }
   .logo-wrap { max-width: 100%; display: flex; align-items: flex-end; min-height: 3rem; margin: 0.25rem 0; }
-  .inst-logo { max-height: clamp(3.8rem, 8vw, 6.2rem); max-width: min(100%, 30rem); object-fit: contain; object-position: left bottom; filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)); }
+  .inst-logo { max-height: clamp(3.8rem, 8vw, 6.2rem); max-width: 100%; object-fit: contain; object-position: left bottom; filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.5)); }
   h1 { font-size: clamp(2.2rem, 4.4vw, 3.2rem); line-height: 1.05; font-weight: 700; letter-spacing: -0.025em; background: linear-gradient(180deg, var(--text) 40%, color-mix(in srgb, var(--text) 62%, var(--accent))); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 14px rgba(0, 0, 0, 0.45)); }
   .hero > *, .actions > :global(*) { animation: rise 0.55s var(--ease) both; }
   .hero > :nth-child(2) { animation-delay: 0.06s; } .hero > :nth-child(3) { animation-delay: 0.12s; } .hero > :nth-child(4) { animation-delay: 0.18s; }

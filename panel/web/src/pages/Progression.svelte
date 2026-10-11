@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Target, Sparkles, Users, Save, RotateCcw, Search, Shuffle, Shield, Pin, TrendingUp, Plus, Minus, Equal, ArrowUpToLine, Eraser, Info, Coins, Table2, Wand2 } from '@lucide/svelte';
   import Avatar from '../components/Avatar.svelte';
@@ -260,10 +262,10 @@
   </div>
 
   <div class="tabs" role="tablist">
-    <button role="tab" aria-selected={tab === 'quests'} class:on={tab === 'quests'} onclick={() => (tab = 'quests')}><Target size={15} /> Quest limits</button>
-    <button role="tab" aria-selected={tab === 'xp'} class:on={tab === 'xp'} onclick={() => (tab = 'xp')}><Sparkles size={15} /> XP &amp; levels</button>
-    <button role="tab" aria-selected={tab === 'money'} class:on={tab === 'money'} onclick={() => (tab = 'money')}><Coins size={15} /> Money rewards</button>
-    <button role="tab" aria-selected={tab === 'players'} class:on={tab === 'players'} onclick={() => (tab = 'players')}><Users size={15} /> Players</button>
+    <button role="tab" aria-selected={tab === 'quests'} class:on={tab === 'quests'} onclick={() => (tab = 'quests')}><InterfaceIcon name="Target" fallback={Target} size={15} /> Quest limits</button>
+    <button role="tab" aria-selected={tab === 'xp'} class:on={tab === 'xp'} onclick={() => (tab = 'xp')}><InterfaceIcon name="Sparkles" fallback={Sparkles} size={15} /> XP &amp; levels</button>
+    <button role="tab" aria-selected={tab === 'money'} class:on={tab === 'money'} onclick={() => (tab = 'money')}><InterfaceIcon name="Coins" fallback={Coins} size={15} /> Money rewards</button>
+    <button role="tab" aria-selected={tab === 'players'} class:on={tab === 'players'} onclick={() => (tab = 'players')}><InterfaceIcon name="Users" fallback={Users} size={15} /> Players</button>
   </div>
 
   {#if tab === 'quests'}
@@ -271,37 +273,37 @@
       {#each quests as c (c.key)}
         <section class="card quota">
           <div class="q-head">
-            <span class="ic"><c.icon size={18} /></span>
+            <span class="ic"><InterfaceIcon name={iconName(c.icon)} fallback={c.icon} size={18} /></span>
             <div><h2>{c.label}</h2><p class="muted small">{c.hint}</p></div>
           </div>
           <div class="big">
-            <button class="step" aria-label="Fewer" onclick={() => (s[c.key] = Math.max(0, s[c.key] - 1))}><Minus size={16} /></button>
+            <button class="step" aria-label="Fewer" onclick={() => (s[c.key] = Math.max(0, s[c.key] - 1))}><InterfaceIcon name="Minus" fallback={Minus} size={16} /></button>
             <div class="num">
               <input type="number" min="0" max="100" bind:value={s[c.key]} aria-label={c.label + ' per player'} />
               <span class="muted small">{s[c.key] === 0 ? 'every quest' : s[c.key] === 1 ? 'quest per player' : 'quests per player'}</span>
             </div>
-            <button class="step" aria-label="More" onclick={() => (s[c.key] = Math.min(100, s[c.key] + 1))}><Plus size={16} /></button>
+            <button class="step" aria-label="More" onclick={() => (s[c.key] = Math.min(100, s[c.key] + 1))}><InterfaceIcon name="Plus" fallback={Plus} size={16} /></button>
           </div>
           <input class="range" type="range" min="0" max={Math.max(20, Math.min(100, c.pool.enabled))} bind:value={s[c.key]} aria-label="Limit slider" />
           <div class="pool">
             <span><strong>{c.pool.enabled}</strong> enabled in the pool</span>
-            <span class="pin"><Pin size={12} /> {c.pool.pinned} pinned (always included)</span>
+            <span class="pin"><InterfaceIcon name="Pin" fallback={Pin} size={12} /> {c.pool.pinned} pinned (always included)</span>
           </div>
           {#if s[c.key] > 0 && s[c.key] < c.pool.pinned}
-            <p class="warn small"><Info size={13} /> Only {s[c.key]} of the {c.pool.pinned} pinned quests fit — unpin some or raise the limit.</p>
+            <p class="warn small"><InterfaceIcon name="Info" fallback={Info} size={13} /> Only {s[c.key]} of the {c.pool.pinned} pinned quests fit — unpin some or raise the limit.</p>
           {/if}
         </section>
       {/each}
     </div>
 
     <section class="card">
-      <div class="section-title"><h2><Shuffle size={16} /> Rotation</h2></div>
+      <div class="section-title"><h2><InterfaceIcon name="Shuffle" fallback={Shuffle} size={16} /> Rotation</h2></div>
       <div class="choice">
         <button class="opt" class:on={s.quest_rotation === 'per_player'} onclick={() => (s.quest_rotation = 'per_player')}>
-          <Users size={17} /><span><strong>Per player</strong><small>Everyone draws their own random set each day/week.</small></span>
+          <InterfaceIcon name="Users" fallback={Users} size={17} /><span><strong>Per player</strong><small>Everyone draws their own random set each day/week.</small></span>
         </button>
         <button class="opt" class:on={s.quest_rotation === 'shared'} onclick={() => (s.quest_rotation = 'shared')}>
-          <Shield size={17} /><span><strong>Shared</strong><small>Everyone gets the same set — good for community goals.</small></span>
+          <InterfaceIcon name="Shield" fallback={Shield} size={17} /><span><strong>Shared</strong><small>Everyone gets the same set — good for community goals.</small></span>
         </button>
       </div>
       <p class="muted small note">
@@ -312,7 +314,7 @@
   {:else if tab === 'xp'}
     <div class="cols">
       <section class="card">
-        <div class="section-title"><h2><TrendingUp size={16} /> Level curve</h2></div>
+        <div class="section-title"><h2><InterfaceIcon name="TrendingUp" fallback={TrendingUp} size={16} /> Level curve</h2></div>
         <p class="muted small">XP needed for level <em>L</em> is <code>round(base × L<sup>exponent</sup>)</code>.</p>
         <div class="fields3">
           <label class="field">Base<input type="number" min="10" max="100000" step="10" bind:value={s.level_base} /></label>
@@ -327,11 +329,11 @@
         <ul class="samples">
           {#each sampleLevels as l}<li><span class="muted">Level {l}</span><strong>{n(xpFor(l))} XP</strong></li>{/each}
         </ul>
-        {#if curveChanged}<p class="warn small"><Info size={13} /> Saving recalculates every player's stored level from their XP. Nobody loses XP.</p>{/if}
+        {#if curveChanged}<p class="warn small"><InterfaceIcon name="Info" fallback={Info} size={13} /> Saving recalculates every player's stored level from their XP. Nobody loses XP.</p>{/if}
       </section>
 
       <section class="card">
-        <div class="section-title"><h2><Sparkles size={16} /> XP earned from play</h2></div>
+        <div class="section-title"><h2><InterfaceIcon name="Sparkles" fallback={Sparkles} size={16} /> XP earned from play</h2></div>
         <div class="rates">
           <label class="field"><span class="lab">Online time <span class="unit">XP / hour</span></span><input type="number" min="0" step="10" bind:value={s.xp_rates.playtime_per_hour} /></label>
           <label class="field"><span class="lab">Player kill <span class="unit">XP</span></span><input type="number" min="0" step="1" bind:value={s.xp_rates.player_kill} /></label>
@@ -349,7 +351,7 @@
       </section>
 
       <section class="card">
-        <div class="section-title"><h2><Info size={16} /> Economy &amp; faction rules</h2></div>
+        <div class="section-title"><h2><InterfaceIcon name="Info" fallback={Info} size={16} /> Economy &amp; faction rules</h2></div>
         <p class="muted small">Apply on every server. Home limits, cooldowns and RTP are set per server in the plugin/mod config, and ranks can raise home limits with permission nodes (velora.homes.10).</p>
         <div class="rates">
           <label class="field"><span class="lab">Starting balance <span class="unit">$</span></span><input type="number" min="0" step="50" bind:value={s.rules.starting_balance} /></label>
@@ -364,7 +366,7 @@
   {:else if tab === 'money'}
     <div class="cols">
       <section class="card">
-        <div class="section-title"><h2><Coins size={16} /> Default money rewards</h2></div>
+        <div class="section-title"><h2><InterfaceIcon name="Coins" fallback={Coins} size={16} /> Default money rewards</h2></div>
         <p class="muted small">Every quest, achievement and rank pays money scaled by how hard it is: a quest or achievement by its XP, a level by how high it is. Amounts are always flat numbers ending in 5 or 0. Anything you set yourself on a quest, achievement or reward is never overwritten.</p>
         <label class="onoff"><input type="checkbox" bind:checked={s.rules.auto_money.enabled} /> <span><strong>Pay default money</strong><small class="muted">Off removes the automatic amounts again.</small></span></label>
         <div class="rates">
@@ -378,14 +380,14 @@
           <label class="field"><span class="lab">Level pay steepness <span class="unit">exponent</span></span><input type="number" min="0.5" max="3" step="0.05" bind:value={s.rules.auto_money.level_exponent} /></label>
         </div>
         <div class="money-actions">
-          <button class="ghost" disabled={applying_money || dirty} onclick={applyMoney} title={dirty ? 'Save first' : ''}><Wand2 size={15} /> {applying_money ? 'Applying…' : 'Apply to everything now'}</button>
-          <a class="btn ghost" href="#/bulk"><Table2 size={15} /> Open the bulk editor</a>
+          <button class="ghost" disabled={applying_money || dirty} onclick={applyMoney} title={dirty ? 'Save first' : ''}><InterfaceIcon name="Wand2" fallback={Wand2} size={15} /> {applying_money ? 'Applying…' : 'Apply to everything now'}</button>
+          <a class="btn ghost" href="#/bulk"><InterfaceIcon name="Table2" fallback={Table2} size={15} /> Open the bulk editor</a>
         </div>
         <p class="muted small note">Saving applies the new rates straight away, and a background job keeps newly added quests and achievements covered.</p>
       </section>
 
       <section class="card">
-        <div class="section-title"><h2><Sparkles size={16} /> What that pays</h2></div>
+        <div class="section-title"><h2><InterfaceIcon name="Sparkles" fallback={Sparkles} size={16} /> What that pays</h2></div>
         {#each [{ label: 'Daily quests', rows: moneySamples.daily }, { label: 'Weekly quests', rows: moneySamples.weekly }, { label: 'Achievements', rows: moneySamples.achievements }] as g}
           <h3 class="mh">{g.label}</h3>
           <ul class="samples">
@@ -400,7 +402,7 @@
     </div>
   {:else}
     <section class="card">
-      <div class="search"><Search size={16} /><input type="search" placeholder="Search players by name…" bind:value={q} /><span class="muted small">{total.toLocaleString()} players</span></div>
+      <div class="search"><InterfaceIcon name="Search" fallback={Search} size={16} /><input type="search" placeholder="Search players by name…" bind:value={q} /><span class="muted small">{total.toLocaleString()} players</span></div>
       {#if loadingPlayers && !players.length}
         <div class="skeleton"></div>
       {:else if !players.length}
@@ -425,8 +427,8 @@
 {#if dirty}
   <div class="savebar" role="status">
     <span>You have unsaved progression changes.</span>
-    <button class="ghost" onclick={revert}><RotateCcw size={15} /> Discard</button>
-    <button class="primary" disabled={saving} onclick={save}><Save size={15} /> {saving ? 'Saving…' : 'Save changes'}</button>
+    <button class="ghost" onclick={revert}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={15} /> Discard</button>
+    <button class="primary" disabled={saving} onclick={save}><InterfaceIcon name="Save" fallback={Save} size={15} /> {saving ? 'Saving…' : 'Save changes'}</button>
   </div>
 {/if}
 
@@ -450,7 +452,7 @@
 
     <div class="modes" role="tablist">
       {#each modes as m}
-        <button role="tab" aria-selected={mode === m.id} class="mode" class:on={mode === m.id} onclick={() => (mode = m.id)}><m.icon size={14} /> {m.label}</button>
+        <button role="tab" aria-selected={mode === m.id} class="mode" class:on={mode === m.id} onclick={() => (mode = m.id)}><InterfaceIcon name={iconName(m.icon)} fallback={m.icon} size={14} /> {m.label}</button>
       {/each}
     </div>
 

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { Award, Check, RefreshCw, Sparkles, Crown, Star, Wand2, Bird, Flame, MessageSquare, LogOut, LogIn, Trophy } from '@lucide/svelte/icons';
   import { onMount } from 'svelte';
   import { get, post } from '../../lib/api';
@@ -82,10 +84,10 @@
 <main class="pl-page">
   <header class="pl-header">
     <div>
-      <h1><Award size={26} /> Collection</h1>
+      <h1><InterfaceIcon name="Award" fallback={Award} size={26} /> Collection</h1>
       <p>Titles, badges, cosmetics, particles, pets and more unlocked on your account.</p>
     </div>
-    <button class="pl-icon-button" onclick={load} aria-label="Refresh" title="Refresh"><RefreshCw size={18} /></button>
+    <button class="pl-icon-button" onclick={load} aria-label="Refresh" title="Refresh"><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={18} /></button>
   </header>
 
   <div class="pl-tabs" style="margin-bottom: 16px;">
@@ -102,7 +104,7 @@
       {#each Object.entries(byType) as [type, items] (type)}
         <section class="type-section">
           <div class="type-header">
-            <svelte:component this={typeIcons[type] ?? Award} size={20} style="color: {typeColors[type] ?? 'var(--accent)'}" />
+            <InterfaceIcon name={iconName(typeIcons[type] ?? Award)} fallback={typeIcons[type] ?? Award} size={20} style="color: {typeColors[type] ?? 'var(--accent)'}" />
             <h2>{type.replaceAll('_', ' ')}</h2>
             <span class="count">{items.length}</span>
           </div>
@@ -110,7 +112,7 @@
             {#each items as item (item.key)}
               <article class="unlock-card" class:equipped={item.equipped}>
                 <div class="unlock-icon" style="background: color-mix(in srgb, {typeColors[type] ?? 'var(--accent)'} 14%, transparent); color: {typeColors[type] ?? 'var(--accent)'}">
-                  <svelte:component this={typeIcons[type] ?? Award} size={24} />
+                  <InterfaceIcon name={iconName(typeIcons[type] ?? Award)} fallback={typeIcons[type] ?? Award} size={24} />
                 </div>
                 <div class="unlock-body">
                   <strong>{title(item)}</strong>
@@ -120,7 +122,7 @@
                   <small class="source">{item.source_type.replaceAll('_', ' ')}</small>
                 </div>
                 <button class="equip-btn" class:on={item.equipped} onclick={() => equip(item)}>
-                  {#if item.equipped}<Check size={16} /> Equipped{:else}Equip{/if}
+                  {#if item.equipped}<InterfaceIcon name="Check" fallback={Check} size={16} /> Equipped{:else}Equip{/if}
                 </button>
               </article>
             {/each}

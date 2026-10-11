@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { route } from '../lib/router.svelte';
   import { enabled } from '@velora/experience';
   import { experienceContext } from '../lib/experience.svelte';
@@ -32,7 +34,7 @@
   <div class="opts">
     {#each accessOptions as o}
       <button type="button" class="opt" class:on={draft.access === o.id} onclick={() => (draft.access = o.id)}>
-        <o.icon size={16} /><span><strong>{o.label}</strong><span class="tiny muted">{o.help}</span></span>
+        <InterfaceIcon name={iconName(o.icon)} fallback={o.icon} size={16} /><span><strong>{o.label}</strong><span class="tiny muted">{o.help}</span></span>
       </button>
     {/each}
   </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { go } from '../lib/router.svelte';
   import PlayerLink from '../components/PlayerLink.svelte';
   import { onMount } from 'svelte';
@@ -154,10 +155,10 @@
     </div>
     <div class="head-actions">
       <button class="ghost" onclick={syncTitles} disabled={syncing} title="Re-apply the current reward names to every player's title and rank. Use after renaming levels.">
-        <RefreshCw size={15} class={syncing ? 'spin' : ''} /> Update all players' titles
+        <InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={15} class={syncing ? 'spin' : ''} /> Update all players' titles
       </button>
       <button class="primary" onclick={openNew}>
-        <Plus size={16} /> New Level Reward
+        <InterfaceIcon name="Plus" fallback={Plus} size={16} /> New Level Reward
       </button>
     </div>
   </header>
@@ -194,8 +195,8 @@
               </div>
 
               <div class="reward-actions">
-                <button class="ghost icon" onclick={() => openEdit(r)} title="Edit"><Pencil size={15} /></button>
-                <button class="ghost icon danger" onclick={() => { deleteConfirm = r; deleteOpen = true; }} title="Delete"><Trash2 size={15} /></button>
+                <button class="ghost icon" onclick={() => openEdit(r)} title="Edit"><InterfaceIcon name="Pencil" fallback={Pencil} size={15} /></button>
+                <button class="ghost icon danger" onclick={() => { deleteConfirm = r; deleteOpen = true; }} title="Delete"><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /></button>
               </div>
             </div>
           {/each}
@@ -206,7 +207,7 @@
     <!-- Sidebar Info / Leaderboard Preview -->
     <div class="side-col">
       <div class="side-card">
-        <h3><Sparkles size={16} class="text-accent" /> Leveling Formula</h3>
+        <h3><InterfaceIcon name="Sparkles" fallback={Sparkles} size={16} class="text-accent" /> Leveling Formula</h3>
         <p class="formula-desc">
           Total XP required for level <em>L</em> is given by:
         </p>
@@ -222,7 +223,7 @@
       </div>
 
       <div class="side-card">
-        <h3><Crown size={16} class="text-gold" /> Top Global Players</h3>
+        <h3><InterfaceIcon name="Crown" fallback={Crown} size={16} class="text-gold" /> Top Global Players</h3>
         {#if leaderboard.length === 0}
           <p class="muted-note">No player progression recorded yet.</p>
         {:else}

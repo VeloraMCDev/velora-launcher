@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import McItem from '../components/McItem.svelte';
   import { onMount } from 'svelte';
   import { Plus, Pencil, Trash2, Trophy, Sparkles, Shield, Swords, Pickaxe, Compass, Users } from '@lucide/svelte';
@@ -144,13 +145,13 @@
       <p>Create and customize in-game achievements with the Minecraft-themed icon and advancement creator.</p>
     </div>
     <button class="primary" onclick={openNew}>
-      <Plus size={16} /> New Achievement
+      <InterfaceIcon name="Plus" fallback={Plus} size={16} /> New Achievement
     </button>
   </header>
 
   <div class="creator-spotlight">
     <div class="spotlight-header">
-      <Trophy size={18} class="text-gold" />
+      <InterfaceIcon name="Trophy" fallback={Trophy} size={18} class="text-gold" />
       <span>Minecraft Advancement Toast Preview</span>
     </div>
     <div class="toast-preview-row">
@@ -238,7 +239,7 @@
           <div class="ach-info">
             <div class="ach-header">
               <span class="ach-type {a.frame_type}">{a.frame_type.toUpperCase()}</span>
-              <span class="ach-xp"><Sparkles size={12} /> +{a.xp_reward} XP</span>
+              <span class="ach-xp"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={12} /> +{a.xp_reward} XP</span>
             </div>
             <h3>{a.title}</h3>
             <p>{a.description}</p>
@@ -254,10 +255,10 @@
 
           <div class="card-actions">
             <button class="ghost icon" title="Edit" onclick={() => openEdit(a)}>
-              <Pencil size={15} />
+              <InterfaceIcon name="Pencil" fallback={Pencil} size={15} />
             </button>
             <button class="ghost icon danger" title="Delete" onclick={() => { deleteConfirm = a; deleteOpen = true; }}>
-              <Trash2 size={15} />
+              <InterfaceIcon name="Trash2" fallback={Trash2} size={15} />
             </button>
           </div>
         </div>

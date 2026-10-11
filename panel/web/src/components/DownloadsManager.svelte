@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Upload, Trash2, LoaderCircle, Check, X } from '@lucide/svelte';
   import PlatformIcon from './PlatformIcon.svelte';
@@ -89,7 +90,7 @@
           <div class="file">
             <span class="name" title={d.filename}>{d.display_name || d.filename}</span>
             <span class="meta">{d.version ? `v${d.version} · ` : ''}{formatBytes(d.size)}{d.uploaded_at ? ` · ${new Date(d.uploaded_at).toLocaleDateString()}` : ''}</span>
-            <button class="ghost sm danger-text" disabled={busy === p.id} onclick={() => remove(p.id, d)} aria-label={`Remove ${d.display_name}`}><Trash2 size={14} /></button>
+            <button class="ghost sm danger-text" disabled={busy === p.id} onclick={() => remove(p.id, d)} aria-label={`Remove ${d.display_name}`}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /></button>
           </div>
         {:else}
           <span class="meta none">Nothing uploaded yet</span>
@@ -101,9 +102,9 @@
             {#if p.notes}<label>Release notes <span class="help">(optional)</span><textarea rows="2" bind:value={draft.notes} maxlength="8000"></textarea></label>{/if}
             <div class="row">
               <button class="primary sm" disabled={busy === p.id || (p.version && !draft.version.trim())} onclick={publish}>
-                {#if busy === p.id}<LoaderCircle class="spin" size={14} /> Uploading…{:else}<Check size={14} /> Publish{/if}
+                {#if busy === p.id}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={14} /> Uploading…{:else}<InterfaceIcon name="Check" fallback={Check} size={14} /> Publish{/if}
               </button>
-              <button class="ghost sm" disabled={busy === p.id} onclick={() => (draft = null)}><X size={14} /> Cancel</button>
+              <button class="ghost sm" disabled={busy === p.id} onclick={() => (draft = null)}><InterfaceIcon name="X" fallback={X} size={14} /> Cancel</button>
             </div>
           </div>
         {:else if !compact}
@@ -111,7 +112,7 @@
         {/if}
       </div>
       <label class="btn sm upload" class:disabled={busy === p.id}>
-        <Upload size={14} /> {files.length && p.id !== 'linux' && p.id !== 'mac' ? 'Replace' : files.length ? 'Add file' : 'Upload'}
+        <InterfaceIcon name="Upload" fallback={Upload} size={14} /> {files.length && p.id !== 'linux' && p.id !== 'mac' ? 'Replace' : files.length ? 'Add file' : 'Upload'}
         <input bind:this={inputs[p.id]} type="file" accept={p.accept} hidden disabled={busy === p.id} onchange={(e) => pick(p.id, e)} />
       </label>
     </div>

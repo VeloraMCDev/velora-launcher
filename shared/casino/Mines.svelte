@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { untrack } from 'svelte';
   import { Bomb, Gem, Info, Hand } from '@lucide/svelte';
   import BetInput from './BetInput.svelte';
@@ -68,7 +69,7 @@
 
 <div class="game">
   <section class="panel controls">
-    <h2><Bomb size={18} /> Mines</h2>
+    <h2><InterfaceIcon name="Bomb" fallback={Bomb} size={18} /> Mines</h2>
     {#if !active}
       <BetInput bind:value={bet} min={cfg.min_bet} max={cfg.max_bet} {balance} disabled={busy} />
       <label class="opt">
@@ -86,14 +87,14 @@
       </div>
       <div class="big"><span>Cash out now</span><b>{money(game.cashout)}</b><small>{mult(game.multiplier)}</small></div>
       <p class="note">Next safe tile: {mult(game.next_multiplier)} → {money(Math.min(st.config.max_payout, game.bet * game.next_multiplier))}</p>
-      <button class="cash primary" onclick={cashout} disabled={busy || game.revealed.length === 0}><Hand size={16} /> {game.revealed.length ? `Cash out ${money(game.cashout)}` : 'Turn over a tile first'}</button>
+      <button class="cash primary" onclick={cashout} disabled={busy || game.revealed.length === 0}><InterfaceIcon name="Hand" fallback={Hand} size={16} /> {game.revealed.length ? `Cash out ${money(game.cashout)}` : 'Turn over a tile first'}</button>
     {/if}
     {#if over && game}
       <div class="end" class:win={game.status === 'cashed'}>
         {#if game.status === 'cashed'}<b>Cashed out {money(won ?? game.cashout)}</b><small>{mult(game.multiplier)} with {game.revealed.length} gems</small>{:else}<b>Boom! You lost {money(game.bet)}</b><small>You found {game.revealed.length} gem{game.revealed.length === 1 ? '' : 's'} first</small>{/if}
       </div>
     {/if}
-    <p class="note"><Info size={13} /> Pays back {(st.rtp.mines * 100).toFixed(1)}% over time. Leave any time; your game waits for you.</p>
+    <p class="note"><InterfaceIcon name="Info" fallback={Info} size={13} /> Pays back {(st.rtp.mines * 100).toFixed(1)}% over time. Leave any time; your game waits for you.</p>
   </section>
 
   <section class="stage">
@@ -102,7 +103,7 @@
         {@const s = tileState(i)}
         <button class="tile {s}" class:flip={flipping === i} disabled={!active || busy || s === 'gem'} onclick={() => reveal(i)} aria-label="Tile {i + 1}">
           <span class="face back"></span>
-          <span class="face front">{#if s === 'gem'}<Gem size={30} />{:else if s === 'mine' || s === 'boom'}<Bomb size={30} />{/if}</span>
+          <span class="face front">{#if s === 'gem'}<InterfaceIcon name="Gem" fallback={Gem} size={30} />{:else if s === 'mine' || s === 'boom'}<InterfaceIcon name="Bomb" fallback={Bomb} size={30} />{/if}</span>
         </button>
       {/each}
       {#if won != null && over}{#key won}<Burst />{/key}{/if}

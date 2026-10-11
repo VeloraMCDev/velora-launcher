@@ -1,5 +1,8 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Save, LoaderCircle, Plus, Trash2, GripVertical, Pin, Sparkles, RotateCcw } from '@lucide/svelte';
+  import GuideEditor from '../components/GuideEditor.svelte';
+  import InterfaceIconsEditor from '../components/InterfaceIconsEditor.svelte';
   import ColorInput from '../components/ColorInput.svelte';
   import ImageInput from '../components/ImageInput.svelte';
   import LauncherPreview from '../components/LauncherPreview.svelte';
@@ -71,6 +74,8 @@
 
   const sections = [
     { id: 'identity', label: 'Identity' },
+    { id: 'guide', label: 'Player Guide' },
+    { id: 'icons', label: 'Interface icons' },
     { id: 'colors', label: 'Colours' },
     { id: 'background', label: 'Background' },
     { id: 'style', label: 'Style' },
@@ -89,9 +94,9 @@
       <p>Everything here updates every player's launcher live — no rebuild or reinstall.</p>
     </div>
     <div class="row">
-      {#if dirty}<button class="ghost" onclick={() => (b = JSON.parse(saved))}><RotateCcw size={16} /> Discard</button>{/if}
+      {#if dirty}<button class="ghost" onclick={() => (b = JSON.parse(saved))}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={16} /> Discard</button>{/if}
       <button class="primary" disabled={!dirty || saving} onclick={save}>
-        {#if saving}<LoaderCircle class="spin" size={16} />{:else}<Save size={16} />{/if} Publish
+        {#if saving}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={16} />{:else}<InterfaceIcon name="Save" fallback={Save} size={16} />{/if} Publish
       </button>
     </div>
   </div>
@@ -113,6 +118,10 @@
               <input bind:value={b.version_label} maxlength="32" />
             </label>
           </div>
+        {:else if section === 'guide'}
+          <div class="card col"><GuideEditor bind:value={b.player_guide} /></div>
+        {:else if section === 'icons'}
+          <div class="card col"><InterfaceIconsEditor bind:value={b.interface_icons} /></div>
         {:else if section === 'colors'}
           <div class="card col">
             <div class="presets">
@@ -167,15 +176,15 @@
           </div>
         {:else if section === 'news'}
           <div class="col">
-            <button class="add" onclick={addNews}><Plus size={16} /> Add a post</button>
+            <button class="add" onclick={addNews}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> Add a post</button>
             {#each b.news as n, i (n.id)}
               <div class="card col news" draggable="true" role="listitem"
                 ondragstart={() => (dragIndex = i)} ondragover={(e) => e.preventDefault()} ondrop={() => dropNews(i)}>
                 <div class="row">
-                  <span class="grip" title="Drag to reorder"><GripVertical size={16} /></span>
+                  <span class="grip" title="Drag to reorder"><InterfaceIcon name="GripVertical" fallback={GripVertical} size={16} /></span>
                   <input class="title" bind:value={n.title} placeholder="Headline" />
-                  <button class="ghost icon" class:pinned={n.pinned} title="Pin to top" aria-label="Pin" onclick={() => (n.pinned = !n.pinned)}><Pin size={15} /></button>
-                  <button class="ghost icon" aria-label="Delete post" onclick={() => b?.news.splice(i, 1)}><Trash2 size={15} /></button>
+                  <button class="ghost icon" class:pinned={n.pinned} title="Pin to top" aria-label="Pin" onclick={() => (n.pinned = !n.pinned)}><InterfaceIcon name="Pin" fallback={Pin} size={15} /></button>
+                  <button class="ghost icon" aria-label="Delete post" onclick={() => b?.news.splice(i, 1)}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /></button>
                 </div>
                 <textarea bind:value={n.body} rows="3" placeholder="What's new?"></textarea>
                 <div class="grid three">
@@ -186,7 +195,7 @@
                 <ImageInput bind:value={n.image_url} label="Image" />
               </div>
             {:else}
-              <div class="card empty"><Sparkles size={28} /><h3>No news yet</h3><p>Posts show up on the launcher home screen.</p></div>
+              <div class="card empty"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={28} /><h3>No news yet</h3><p>Posts show up on the launcher home screen.</p></div>
             {/each}
           </div>
         {:else if section === 'links'}
@@ -196,10 +205,10 @@
                 <select bind:value={l.icon} style="width: 130px">{#each linkIcons as ic}<option value={ic}>{ic}</option>{/each}</select>
                 <input bind:value={l.label} placeholder="Label" style="width: 150px" />
                 <input bind:value={l.url} placeholder="https://discord.gg/…" />
-                <button class="ghost icon" aria-label="Remove link" onclick={() => b?.links.splice(i, 1)}><Trash2 size={15} /></button>
+                <button class="ghost icon" aria-label="Remove link" onclick={() => b?.links.splice(i, 1)}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /></button>
               </div>
             {/each}
-            <button class="add" onclick={() => b?.links.push({ icon: 'discord', label: 'Discord', url: '' })}><Plus size={16} /> Add link</button>
+            <button class="add" onclick={() => b?.links.push({ icon: 'discord', label: 'Discord', url: '' })}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> Add link</button>
           </div>
         {:else if section === 'about'}
           <div class="card col">
@@ -212,10 +221,10 @@
               <div class="row">
                 <input bind:value={link.label} placeholder="Label" aria-label="Link label" />
                 <input bind:value={link.url} placeholder="https://..." aria-label="Link URL" />
-                <button class="ghost icon" aria-label="Remove link" onclick={() => b?.about.links.splice(i, 1)}><Trash2 size={15} /></button>
+                <button class="ghost icon" aria-label="Remove link" onclick={() => b?.about.links.splice(i, 1)}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /></button>
               </div>
             {/each}
-            <button class="add" onclick={() => b?.about.links.push({ label: 'Website', url: '', icon: 'website' })}><Plus size={16} /> Add link</button>
+            <button class="add" onclick={() => b?.about.links.push({ label: 'Website', url: '', icon: 'website' })}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> Add link</button>
           </div>
         {:else if section === 'features'}
           <div class="card col">

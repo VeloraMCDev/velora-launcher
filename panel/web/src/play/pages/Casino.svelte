@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Dices } from '@lucide/svelte';
   import CasinoPage from '@velora/casino/CasinoPage.svelte';
   import { setCasinoHost } from '@velora/casino';
@@ -20,7 +21,7 @@
 
 <div class="pl-page wide">
   <div class="pl-head">
-    <div><h1><Dices size={26} /> Casino</h1><p class="lead">Spin, drop and gamble your in-game cash from anywhere. Winnings are in your balance instantly.</p></div>
+    <div><h1><InterfaceIcon name="Dices" fallback={Dices} size={26} /> Casino</h1><p class="lead">Spin, drop and gamble your in-game cash from anywhere. Winnings are in your balance instantly.</p></div>
   </div>
   {#if !play.loaded}
     <div class="pl-skel" style="height: 280px"></div>

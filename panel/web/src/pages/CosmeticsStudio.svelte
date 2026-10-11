@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { Plus, Save, Trash2, Wand2, Bird, Sparkles, MessageSquare, LogIn, LogOut, Crown, Star, Copy, Check } from '@lucide/svelte/icons';
   import { get, post, put, del } from '../lib/api';
   import { toast } from '../lib/toast.svelte';
@@ -157,10 +159,10 @@
 <div class="page">
   <header>
     <div>
-      <h1><Wand2 size={22} /> Cosmetics Studio</h1>
+      <h1><InterfaceIcon name="Wand2" fallback={Wand2} size={22} /> Cosmetics Studio</h1>
       <p>Create cosmetics, pets, particles, titles, badges and custom messages. Grantable via rewards.</p>
     </div>
-    <button class="primary" onclick={() => openNew()}><Plus size={16} /> New template</button>
+    <button class="primary" onclick={() => openNew()}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> New template</button>
   </header>
 
   <div class="filters">
@@ -178,7 +180,7 @@
       {#each shown as item (item.id)}
         <article class="card">
           <div class="card-icon" style="background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent)">
-            <svelte:component this={typeIcons[item.type] ?? Wand2} size={24} />
+            <InterfaceIcon name={iconName(typeIcons[item.type] ?? Wand2)} fallback={typeIcons[item.type] ?? Wand2} size={24} />
           </div>
           <div class="card-body">
             <div class="row-head">
@@ -191,7 +193,7 @@
             <div class="key-row">
               <code class="key">{item.key}</code>
               <button class="icon ghost" onclick={() => copyKey(item.key)} title="Copy key" aria-label="Copy key">
-                {#if copiedKey === item.key}<Check size={13} />{:else}<Copy size={13} />{/if}
+                {#if copiedKey === item.key}<InterfaceIcon name="Check" fallback={Check} size={13} />{:else}<InterfaceIcon name="Copy" fallback={Copy} size={13} />{/if}
               </button>
             </div>
             {#if item.auto_grant}
@@ -200,7 +202,7 @@
           </div>
           <div class="card-actions">
             <button class="ghost" onclick={() => openEdit(item)}>Edit</button>
-            <button class="ghost icon" onclick={() => remove(item.id!)} title="Delete" aria-label="Delete"><Trash2 size={15} /></button>
+            <button class="ghost icon" onclick={() => remove(item.id!)} title="Delete" aria-label="Delete"><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /></button>
           </div>
         </article>
       {/each}
@@ -212,7 +214,7 @@
     <div class="quick-grid">
       {#each ['cosmetic', 'particle', 'pet', 'title', 'badge', 'join_message', 'leave_message'] as type}
         <button class="quick-btn" onclick={() => openNew(type as CosmeticTemplate['type'])}>
-          <svelte:component this={typeIcons[type] ?? Wand2} size={20} />
+          <InterfaceIcon name={iconName(typeIcons[type] ?? Wand2)} fallback={typeIcons[type] ?? Wand2} size={20} />
           <span>New {typeLabels[type] ?? type}</span>
         </button>
       {/each}
@@ -363,7 +365,7 @@
 
   {#snippet footer()}
     <button class="ghost" onclick={() => (modalOpen = false)}>Cancel</button>
-    <button class="primary" onclick={save}><Save size={15} /> Save template</button>
+    <button class="primary" onclick={save}><InterfaceIcon name="Save" fallback={Save} size={15} /> Save template</button>
   {/snippet}
 </Modal>
 

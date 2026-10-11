@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { onMount } from 'svelte';
   import { Plus, Search, Copy, Pencil, Trash2, Wand2, Boxes, Hammer, Package, Cuboid } from '@lucide/svelte';
   import ContentWizard from '../components/ContentWizard.svelte';
@@ -60,26 +62,26 @@
       <h1>Content Studio</h1>
       <p>Bring in custom items, blocks, furniture, NPCs, vehicles, crops and mobs from ItemsAdder, Nexo, Oraxen, CraftEngine, ModelEngine and MythicMobs — or make them by hand.</p>
     </div>
-    <button class="cta" onclick={() => (wizard = true)}><Plus size={17} /> Add content</button>
+    <button class="cta" onclick={() => (wizard = true)}><InterfaceIcon name="Plus" fallback={Plus} size={17} /> Add content</button>
   </header>
 
   <div class="seg tabs" role="tablist">
-    <button role="tab" aria-selected={tab === 'library'} class:on={tab === 'library'} onclick={() => (tab = 'library')}><Boxes size={14} /> Library <span class="n">{library.length}</span></button>
-    <button role="tab" aria-selected={tab === 'advanced'} class:on={tab === 'advanced'} onclick={() => (tab = 'advanced')}><Hammer size={14} /> Advanced editor</button>
-    <button role="tab" aria-selected={tab === 'pack'} class:on={tab === 'pack'} onclick={() => (tab = 'pack')}><Package size={14} /> Resource pack</button>
+    <button role="tab" aria-selected={tab === 'library'} class:on={tab === 'library'} onclick={() => (tab = 'library')}><InterfaceIcon name="Boxes" fallback={Boxes} size={14} /> Library <span class="n">{library.length}</span></button>
+    <button role="tab" aria-selected={tab === 'advanced'} class:on={tab === 'advanced'} onclick={() => (tab = 'advanced')}><InterfaceIcon name="Hammer" fallback={Hammer} size={14} /> Advanced editor</button>
+    <button role="tab" aria-selected={tab === 'pack'} class:on={tab === 'pack'} onclick={() => (tab = 'pack')}><InterfaceIcon name="Package" fallback={Package} size={14} /> Resource pack</button>
   </div>
 
   {#if tab === 'library'}
     {#if loaded && library.length === 0}
       <section class="empty">
-        <div class="orb"><Wand2 size={34} /></div>
+        <div class="orb"><InterfaceIcon name="Wand2" fallback={Wand2} size={34} /></div>
         <h2>Nothing here yet</h2>
         <p>Drop in the files from your old setup and we'll sort them out — or build your first item by hand.</p>
-        <div class="row"><button class="cta" onclick={() => (wizard = true)}><Plus size={16} /> Import from a plugin</button><button class="ghost" onclick={() => startNew('weapon')}>Create by hand</button></div>
+        <div class="row"><button class="cta" onclick={() => (wizard = true)}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> Import from a plugin</button><button class="ghost" onclick={() => startNew('weapon')}>Create by hand</button></div>
       </section>
     {:else}
       <div class="filters">
-        <label class="search"><Search size={15} /><input bind:value={q} placeholder="Search {library.length} things…" /></label>
+        <label class="search"><InterfaceIcon name="Search" fallback={Search} size={15} /><input bind:value={q} placeholder="Search {library.length} things…" /></label>
         <div class="seg">
           <button class:on={kind === 'all'} onclick={() => (kind = 'all')}>All {library.length}</button>
           {#each KINDS.filter((k) => counts[k.id] > 0) as k}<button class:on={kind === k.id} onclick={() => (kind = k.id)}>{k.plural} {counts[k.id]}</button>{/each}
@@ -91,17 +93,17 @@
           {@const Icon = m.icon}
           <article class="card" style:--c={m.color}>
             <button class="body" onclick={() => openEntry(it)} aria-label="Edit {it.title}">
-              <span class="slot">{#if it.preview}<img src={it.preview} alt="" />{:else}<Cuboid size={24} />{/if}</span>
+              <span class="slot">{#if it.preview}<img src={it.preview} alt="" />{:else}<InterfaceIcon name="Cuboid" fallback={Cuboid} size={24} />{/if}</span>
               <span class="meta">
                 <b>{it.title}</b>
-                <span class="tags"><span class="kind"><Icon size={12} /> {m.label}</span><span class="src" style:--s={frameworkMeta(it.source)?.color ?? '#8b8f9a'}>{SOURCE_LABEL[it.source] ?? it.source}</span></span>
+                <span class="tags"><span class="kind"><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={12} /> {m.label}</span><span class="src" style:--s={frameworkMeta(it.source)?.color ?? '#8b8f9a'}>{SOURCE_LABEL[it.source] ?? it.source}</span></span>
                 <code>{it.id}</code>
               </span>
             </button>
             <div class="acts">
-              <button title="Copy give command" aria-label="Copy give command" onclick={() => copy(it.id)}><Copy size={14} /></button>
-              <button title="Edit" aria-label="Edit" onclick={() => openEntry(it)}><Pencil size={14} /></button>
-              <button class="del" title="Delete" aria-label="Delete" onclick={() => remove(it)}><Trash2 size={14} /></button>
+              <button title="Copy give command" aria-label="Copy give command" onclick={() => copy(it.id)}><InterfaceIcon name="Copy" fallback={Copy} size={14} /></button>
+              <button title="Edit" aria-label="Edit" onclick={() => openEntry(it)}><InterfaceIcon name="Pencil" fallback={Pencil} size={14} /></button>
+              <button class="del" title="Delete" aria-label="Delete" onclick={() => remove(it)}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /></button>
             </div>
           </article>
         {/each}
@@ -122,7 +124,7 @@
           <div class="mk">
             <small>Create a new…</small>
             <div class="mkgrid">
-              {#each worldKinds as k}{@const I = k.icon}<button style:--c={k.color} onclick={() => startNew(k.id)}><I size={15} /> {k.label}</button>{/each}
+              {#each worldKinds as k}{@const I = k.icon}<button style:--c={k.color} onclick={() => startNew(k.id)}><InterfaceIcon name={iconName(I)} fallback={I} size={15} /> {k.label}</button>{/each}
             </div>
           </div>
           {#each library.filter((i) => i.store === 'content') as it (it.id)}
@@ -135,7 +137,7 @@
               <ContentEditor bind:doc {isNew} onsaved={async (id) => { await load(); const full = await get<typeof doc>(`/api/admin/content/${id}`); doc = full; isNew = false; }} ondeleted={async () => { doc = null; await load(); }} />
             {/key}
           {:else}
-            <div class="blank"><Wand2 size={28} /><p>Pick something on the left, or create a new block, chest, decoration, NPC, vehicle, crop or mob.</p></div>
+            <div class="blank"><InterfaceIcon name="Wand2" fallback={Wand2} size={28} /><p>Pick something on the left, or create a new block, chest, decoration, NPC, vehicle, crop or mob.</p></div>
           {/if}
         </div>
       </div>

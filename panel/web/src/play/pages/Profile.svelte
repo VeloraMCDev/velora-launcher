@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Check, Copy, ImagePlus, LoaderCircle, LogOut, Palette, Pencil, ShieldCheck, Smartphone, Trash2, UserRound, Link2, Unlink } from '@lucide/svelte';
   import SkinView from '../../components/SkinView.svelte';
@@ -99,7 +100,7 @@
 </script>
 
 <div class="pl-page">
-  <div class="pl-head"><div><h1><UserRound size={26} /> Account</h1><p>Your look, your name and how you sign in.</p></div></div>
+  <div class="pl-head"><div><h1><InterfaceIcon name="UserRound" fallback={UserRound} size={26} /> Account</h1><p>Your look, your name and how you sign in.</p></div></div>
 
   <div class="pl-grid" style="--min: 330px">
     <section class="pl-card ident">
@@ -115,25 +116,25 @@
       <div class="who">
         <h2>{session.user?.username}</h2>
         <span class="pl-chip" class:accent={session.user?.role === 'admin'}>{session.user?.role === 'admin' ? 'Administrator' : 'Player'}</span>
-        <button class="uuid" onclick={copyUuid} title="Copy your UUID">{#if copied}<Check size={13} /> Copied{:else}<Copy size={13} /> {profile?.uuid ?? '…'}{/if}</button>
+        <button class="uuid" onclick={copyUuid} title="Copy your UUID">{#if copied}<InterfaceIcon name="Check" fallback={Check} size={13} /> Copied{:else}<InterfaceIcon name="Copy" fallback={Copy} size={13} /> {profile?.uuid ?? '…'}{/if}</button>
         {#if skinSrc}<div class="pl-tabs" style="margin-top: 6px"><button class:on={side === 'front'} onclick={() => (side = 'front')}>Front</button><button class:on={side === 'back'} onclick={() => (side = 'back')}>Back</button></div>{/if}
       </div>
     </section>
 
     <div class="pl-stack">
       <section class="pl-card">
-        <div class="pl-card-head"><h2><ImagePlus size={17} /> Skin</h2></div>
+        <div class="pl-card-head"><h2><InterfaceIcon name="ImagePlus" fallback={ImagePlus} size={17} /> Skin</h2></div>
         <p class="note">Upload a 64×64 PNG. It shows up in game, the launcher and on the map.</p>
         <div class="pl-row-flex pl-wrap">
           <input bind:this={fileInput} type="file" accept="image/png" hidden onchange={(e) => uploadSkin(e.currentTarget.files?.[0])} />
-          <button class="pl-btn primary" onclick={() => fileInput?.click()} disabled={busy === 'skin'} aria-busy={busy === 'skin'}>{#if busy === 'skin'}<LoaderCircle size={16} class="spin" />{:else}<ImagePlus size={16} />{/if} Upload skin</button>
-          {#if profile?.skin_url}<button class="pl-btn" onclick={removeSkin} disabled={busy === 'skin'}><Trash2 size={15} /> Remove</button>{/if}
+          <button class="pl-btn primary" onclick={() => fileInput?.click()} disabled={busy === 'skin'} aria-busy={busy === 'skin'}>{#if busy === 'skin'}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={16} class="spin" />{:else}<InterfaceIcon name="ImagePlus" fallback={ImagePlus} size={16} />{/if} Upload skin</button>
+          {#if profile?.skin_url}<button class="pl-btn" onclick={removeSkin} disabled={busy === 'skin'}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /> Remove</button>{/if}
         </div>
         <div class="field"><span>Arm style</span><div class="pl-tabs"><button class:on={profile?.skin_model !== 'slim'} onclick={() => setModel('classic')}>Classic (Steve)</button><button class:on={profile?.skin_model === 'slim'} onclick={() => setModel('slim')}>Slim (Alex)</button></div></div>
       </section>
 
       <section class="pl-card">
-        <div class="pl-card-head"><h2><Palette size={17} /> Cape</h2></div>
+        <div class="pl-card-head"><h2><InterfaceIcon name="Palette" fallback={Palette} size={17} /> Cape</h2></div>
         {#if profile?.available_capes.length}
           <div class="capes">
             <button class="cape" class:on={!profile.cape} onclick={() => pickCape(null)}><span class="none">None</span></button>
@@ -147,16 +148,16 @@
 
     <div class="pl-stack">
       <section class="pl-card">
-        <div class="pl-card-head"><h2><Pencil size={17} /> Username</h2></div>
+        <div class="pl-card-head"><h2><InterfaceIcon name="Pencil" fallback={Pencil} size={17} /> Username</h2></div>
         <p class="note">Change it while you're offline. You'll need your password.</p>
         <button class="pl-btn" onclick={() => { newName = ''; password = ''; nameOpen = true; }}>Change username</button>
       </section>
 
       <section class="pl-card">
-        <div class="pl-card-head"><h2><Link2 size={17} /> Discord</h2>{#if discord?.linked}<span class="pl-chip good">Linked</span>{/if}</div>
+        <div class="pl-card-head"><h2><InterfaceIcon name="Link2" fallback={Link2} size={17} /> Discord</h2>{#if discord?.linked}<span class="pl-chip good">Linked</span>{/if}</div>
         {#if discord?.linked}
           <p class="note">Connected as <b>{discord.display_name}</b>. Your roles sync automatically.</p>
-          <button class="pl-btn" onclick={unlinkDiscord} disabled={busy === 'discord'}><Unlink size={15} /> Unlink</button>
+          <button class="pl-btn" onclick={unlinkDiscord} disabled={busy === 'discord'}><InterfaceIcon name="Unlink" fallback={Unlink} size={15} /> Unlink</button>
         {:else}
           <p class="note">Link Discord to sign in with it and get your roles.</p>
           <div class="pl-row-flex pl-wrap">
@@ -167,9 +168,9 @@
       </section>
 
       <section class="pl-card">
-        <div class="pl-card-head"><h2><Smartphone size={17} /> Use it like an app</h2></div>
+        <div class="pl-card-head"><h2><InterfaceIcon name="Smartphone" fallback={Smartphone} size={17} /> Use it like an app</h2></div>
         {#if standalone}
-          <p class="note"><Check size={14} /> You're running the installed app.</p>
+          <p class="note"><InterfaceIcon name="Check" fallback={Check} size={14} /> You're running the installed app.</p>
         {:else if installEvent}
           <p class="note">Add this panel to your home screen for one-tap access.</p>
           <button class="pl-btn primary" onclick={install}>Install app</button>
@@ -181,9 +182,9 @@
       </section>
 
       <section class="pl-card">
-        <div class="pl-card-head"><h2><ShieldCheck size={17} /> Session</h2></div>
+        <div class="pl-card-head"><h2><InterfaceIcon name="ShieldCheck" fallback={ShieldCheck} size={17} /> Session</h2></div>
         <div class="pl-row-flex pl-wrap">
-          <button class="pl-btn" onclick={() => { logout(); go('login'); }}><LogOut size={15} /> Sign out</button>
+          <button class="pl-btn" onclick={() => { logout(); go('login'); }}><InterfaceIcon name="LogOut" fallback={LogOut} size={15} /> Sign out</button>
           {#if session.user?.role === 'admin'}<a class="btn pl-btn" href="#/dashboard">Admin panel</a>{/if}
         </div>
       </section>

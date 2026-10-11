@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '../components/InterfaceIcon.svelte';
   import { RotateCw, Download, FileText, X, LoaderCircle, BookOpen } from '@lucide/svelte';
   import { api } from '../lib/api';
   import { app, ask, runAction, toast } from '../lib/state.svelte';
@@ -35,7 +36,7 @@
 
 <div class="card flush">
   <div class="card-head pad"><h2>Velora stack</h2><span class="spacer"></span>
-    <button class="sm" onclick={async () => { if (await ask('Rebuild the documentation?', 'Fetches main, runs the docs tests, builds the site and publishes it to docs.velora.scopedd.lol.', 'Rebuild')) runAction('/api/actions/rebuild-docs', { ref: 'main' }); }}><BookOpen size={15} /> Rebuild docs</button>
+    <button class="sm" onclick={async () => { if (await ask('Rebuild the documentation?', 'Fetches main, runs the docs tests, builds the site and publishes it to docs.velora.scopedd.lol.', 'Rebuild')) runAction('/api/actions/rebuild-docs', { ref: 'main' }); }}><InterfaceIcon name="BookOpen" fallback={BookOpen} size={15} /> Rebuild docs</button>
   </div>
   <div class="table-scroll">
     <table>
@@ -49,9 +50,9 @@
             <td>{bytes(c.stats?.memory)}{#if c.stats?.memoryLimit}<span class="tiny faint"> / {bytes(c.stats.memoryLimit)}</span>{/if}</td>
             <td class="mono tiny img" title={c.image}>{c.image}</td>
             <td class="actions"><div class="row">
-              <button class="sm ghost" title="Logs" onclick={() => showLogs(c)}><FileText size={15} /></button>
-              <button class="sm ghost" title="Pull & recreate" onclick={() => pull(c)}><Download size={15} /></button>
-              <button class="sm" onclick={() => restart(c)}><RotateCw size={14} /> Restart</button>
+              <button class="sm ghost" title="Logs" onclick={() => showLogs(c)}><InterfaceIcon name="FileText" fallback={FileText} size={15} /></button>
+              <button class="sm ghost" title="Pull & recreate" onclick={() => pull(c)}><InterfaceIcon name="Download" fallback={Download} size={15} /></button>
+              <button class="sm" onclick={() => restart(c)}><InterfaceIcon name="RotateCw" fallback={RotateCw} size={14} /> Restart</button>
             </div></td>
           </tr>
         {:else}<tr><td colspan="6" class="empty">No Velora containers found.</td></tr>{/each}
@@ -83,10 +84,10 @@
 {#if logs}
   <div class="scrim" role="presentation" onclick={() => (logs = null)}></div>
   <div class="logs card">
-    <div class="card-head"><FileText size={17} /><h2>{logs.name}</h2><span class="tiny muted">last 400 lines</span><span class="spacer"></span>
-      <button class="sm ghost" onclick={() => logs && showLogs({ name: logs.name } as Container)}><RotateCw size={14} /></button>
-      <button class="ghost icon" onclick={() => (logs = null)}><X size={18} /></button></div>
-    {#if logs.loading}<div class="empty"><LoaderCircle class="spin" /></div>{:else}<pre class="log">{logs.text || 'No output.'}</pre>{/if}
+    <div class="card-head"><InterfaceIcon name="FileText" fallback={FileText} size={17} /><h2>{logs.name}</h2><span class="tiny muted">last 400 lines</span><span class="spacer"></span>
+      <button class="sm ghost" onclick={() => logs && showLogs({ name: logs.name } as Container)}><InterfaceIcon name="RotateCw" fallback={RotateCw} size={14} /></button>
+      <button class="ghost icon" onclick={() => (logs = null)}><InterfaceIcon name="X" fallback={X} size={18} /></button></div>
+    {#if logs.loading}<div class="empty"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" /></div>{:else}<pre class="log">{logs.text || 'No output.'}</pre>{/if}
   </div>
 {/if}
 

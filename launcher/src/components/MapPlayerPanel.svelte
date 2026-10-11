@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { X, Send, UserPlus, Sparkles, MapPin, LoaderCircle, Shield, Clock, Swords, Star } from '@lucide/svelte';
   import Avatar from './Avatar.svelte';
@@ -75,10 +76,10 @@
 </script>
 
 <aside class="panel glass" style:--pa={profile?.accent_color || 'var(--accent)'} aria-label="Player">
-  <button class="ghost icon close" onclick={onclose} aria-label="Close"><X size={16} /></button>
+  <button class="ghost icon close" onclick={onclose} aria-label="Close"><InterfaceIcon name="X" fallback={X} size={16} /></button>
 
   {#if loading && !profile}
-    <div class="center"><LoaderCircle class="spin" size={24} /></div>
+    <div class="center"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={24} /></div>
   {:else if failed && !profile}
     <p class="muted pad">{failed}</p>
   {:else if profile}
@@ -86,22 +87,22 @@
       <div class="ring"><Avatar {uuid} name={name} size={4} /></div>
       <div class="who">
         <h3><PlayerLink {uuid} {name} /></h3>
-        {#if profile.level_info?.title}<span class="title"><Sparkles size={12} /> {profile.level_info.title}</span>{/if}
+        {#if profile.level_info?.title}<span class="title"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={12} /> {profile.level_info.title}</span>{/if}
         <span class="presence"><i class:on={online}></i>{online ? 'Online now' : 'Offline'}</span>
       </div>
     </div>
 
     <div class="chips">
-      <span class="chip lv"><Star size={12} /> Level {profile.level_info?.level ?? 1}</span>
-      {#if profile.guild}<span class="chip guild"><Shield size={12} /> [{profile.guild.tag}] {profile.guild.name}</span>{/if}
+      <span class="chip lv"><InterfaceIcon name="Star" fallback={Star} size={12} /> Level {profile.level_info?.level ?? 1}</span>
+      {#if profile.guild}<span class="chip guild"><InterfaceIcon name="Shield" fallback={Shield} size={12} /> [{profile.guild.tag}] {profile.guild.name}</span>{/if}
       {#if profile.rank}<span class="chip rank">{profile.rank.display}</span>{/if}
     </div>
 
     <div class="facts">
-      <div><Clock size={13} /><span>Playtime</span><strong>{hours(profile.stats?.playtime_secs ?? 0)}</strong></div>
-      <div><Swords size={13} /><span>K/D</span><strong>{kd}</strong></div>
-      <div><MapPin size={13} /><span>Favourite</span><strong>{profile.favorite_server ?? '–'}</strong></div>
-      <div><Star size={13} /><span>Awards</span><strong>{profile.achievements_count ?? 0}</strong></div>
+      <div><InterfaceIcon name="Clock" fallback={Clock} size={13} /><span>Playtime</span><strong>{hours(profile.stats?.playtime_secs ?? 0)}</strong></div>
+      <div><InterfaceIcon name="Swords" fallback={Swords} size={13} /><span>K/D</span><strong>{kd}</strong></div>
+      <div><InterfaceIcon name="MapPin" fallback={MapPin} size={13} /><span>Favourite</span><strong>{profile.favorite_server ?? '–'}</strong></div>
+      <div><InterfaceIcon name="Star" fallback={Star} size={13} /><span>Awards</span><strong>{profile.achievements_count ?? 0}</strong></div>
     </div>
     {#if profile.bio}<p class="bio">{profile.bio}</p>{/if}
 
@@ -115,19 +116,19 @@
       {/if}
 
       <button class="primary" disabled={!canAct || !!busy} onclick={tpa}>
-        {#if busy === 'tpa'}<LoaderCircle class="spin" size={14} />{:else}<MapPin size={14} />{/if} Send teleport request
+        {#if busy === 'tpa'}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={14} />{:else}<InterfaceIcon name="MapPin" fallback={MapPin} size={14} />{/if} Send teleport request
       </button>
 
       <div class="msg">
         <input bind:value={message} placeholder="Message in game…" maxlength="200" disabled={!canAct} onkeydown={(e) => e.key === 'Enter' && send()} />
         <button disabled={!canAct || !message.trim() || !!busy} onclick={send} aria-label="Send message">
-          {#if busy === 'message'}<LoaderCircle class="spin" size={14} />{:else}<Send size={14} />{/if}
+          {#if busy === 'message'}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={14} />{:else}<InterfaceIcon name="Send" fallback={Send} size={14} />{/if}
         </button>
       </div>
 
       <button disabled={!signedIn || isMe || !iCanInvite || !!busy} onclick={invite}
         title={!myGuild ? 'You are not in a faction here' : !iCanInvite ? 'Only faction leaders and officers can invite' : ''}>
-        {#if busy === 'invite'}<LoaderCircle class="spin" size={14} />{:else}<UserPlus size={14} />{/if}
+        {#if busy === 'invite'}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={14} />{:else}<InterfaceIcon name="UserPlus" fallback={UserPlus} size={14} />{/if}
         Invite to {myGuild ? `[${myGuild.tag}]` : 'my faction'}
       </button>
     </div>

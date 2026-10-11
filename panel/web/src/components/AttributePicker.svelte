@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { Swords, Zap, Heart, Wind, Shield, ShieldCheck, Anchor, Move, Clover, X, Plus } from '@lucide/svelte';
   import { ATTRIBUTES, OPERATIONS, SLOTS, attrInfo, type AttrInfo } from '../lib/mcData';
 
@@ -40,10 +42,10 @@
         {@const Icon = ICONS[info?.icon ?? 'zap'] ?? Zap}
         <div class="row" style:--c={info?.color ?? '#8b88f8'}>
           <div class="top">
-            <span class="ico"><Icon size={16} /></span>
+            <span class="ico"><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={16} /></span>
             <span class="nm"><b>{info?.name ?? a.attribute}</b><small>{info?.blurb ?? ''}</small></span>
             <span class="val">{shown(info, a.amount, a.operation)}</span>
-            <button class="x" aria-label="Remove bonus" onclick={() => remove(i)}><X size={14} /></button>
+            <button class="x" aria-label="Remove bonus" onclick={() => remove(i)}><InterfaceIcon name="X" fallback={X} size={14} /></button>
           </div>
           <input class="fancy" type="range" min={r.min} max={r.max} step={r.step} value={a.amount} style:--p="{((a.amount - r.min) / (r.max - r.min)) * 100}%"
             aria-label="Amount" oninput={(e) => patch(i, { amount: +e.currentTarget.value })} />
@@ -64,9 +66,9 @@
     {#each ATTRIBUTES as at (at.id)}
       {@const Icon = ICONS[at.icon] ?? Zap}
       <button class="card" style:--c={at.color} onclick={() => add(at)} disabled={value.length >= 12}>
-        <span class="ico"><Icon size={16} /></span>
+        <span class="ico"><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={16} /></span>
         <span class="txt"><b>{at.name}</b><small>{at.blurb}</small></span>
-        <span class="plus"><Plus size={14} /></span>
+        <span class="plus"><InterfaceIcon name="Plus" fallback={Plus} size={14} /></span>
       </button>
     {/each}
   </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   // Velora Core (the Minecraft mod) releases: approve a signed GitHub release and the Panel serves its jars to servers.
   import { Boxes, Check, Download, RefreshCw, TriangleAlert } from '@lucide/svelte';
   import { get, post, timeAgo } from '../lib/api';
@@ -46,11 +47,11 @@
 
 <section class="card core">
   <div class="head">
-    <div class="title"><Boxes size={18} /><strong>Velora Core</strong>
+    <div class="title"><InterfaceIcon name="Boxes" fallback={Boxes} size={18} /><strong>Velora Core</strong>
       {#if latest}<span class="badge good">Serving {latest.version} · Minecraft {latest.minecraft}</span>
       {:else if latest === null && !loadError}<span class="badge">No release approved yet</span>{/if}
     </div>
-    <button class="ghost sm" onclick={check} disabled={checking}><RefreshCw size={14} class={checking ? 'spin' : ''} /> Check for releases</button>
+    <button class="ghost sm" onclick={check} disabled={checking}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={14} class={checking ? 'spin' : ''} /> Check for releases</button>
   </div>
   <p class="muted small">
     Approve a signed release, then download the Server and Client jars below. Upload each jar to the correct mods folder yourself. Approval publishes downloads; it does not deploy mods or replace files.
@@ -62,14 +63,14 @@
         <article class="file">
           <strong>Velora Core - {file.label}</strong>
           <p class="muted small">{file.note}</p>
-          <a class="primary sm" href={file.asset.path} download={file.asset.name}><Download size={16} /> Download {file.label} jar <span>{size(file.asset.size)}</span></a>
+          <a class="primary sm" href={file.asset.path} download={file.asset.name}><InterfaceIcon name="Download" fallback={Download} size={16} /> Download {file.label} jar <span>{size(file.asset.size)}</span></a>
           <span class="muted tiny">{file.asset.name}</span>
           <details><summary class="tiny">SHA-256 checksum</summary><code>{file.asset.sha256}</code></details>
         </article>
       {/each}
     </div>
     <p class="muted small">Both jars require Fabric and Fabric API for Minecraft {latest.minecraft}. Use the Server jar on dedicated servers and the Client jar on player installations.</p>
-    {#if behind}<p class="warn small"><TriangleAlert size={14} /> {behind} connected {behind === 1 ? 'server reports' : 'servers report'} a different version. Download and replace their Server jars manually.</p>{/if}
+    {#if behind}<p class="warn small"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={14} /> {behind} connected {behind === 1 ? 'server reports' : 'servers report'} a different version. Download and replace their Server jars manually.</p>{/if}
   {/if}
   {#if view}
     {#if !view.releases.length}
@@ -84,7 +85,7 @@
             </div>
             <div class="act">
               <a class="tiny" href={r.html_url} target="_blank" rel="noreferrer">Notes</a>
-              {#if r.approved}<span class="badge good"><Check size={12} /> Serving</span>
+              {#if r.approved}<span class="badge good"><InterfaceIcon name="Check" fallback={Check} size={12} /> Serving</span>
               {:else if r.prerelease || !r.has_manifest}<span class="muted tiny">Can't be approved</span>
               {:else if confirming === r.tag}
                 <button class="primary sm" disabled={approving === r.tag} onclick={() => approve(r.tag)}>{approving === r.tag ? 'Verifying…' : 'Confirm approve'}</button>

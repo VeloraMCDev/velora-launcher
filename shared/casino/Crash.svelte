@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount, untrack } from 'svelte';
   import { Rocket, Info } from '@lucide/svelte';
   import BetInput from './BetInput.svelte';
@@ -121,7 +122,7 @@
       <label class="chk"><input type="checkbox" bind:checked={useAuto} disabled={running || busy} /> Auto cash out</label>
       <label class="at" class:off={!useAuto}>at <input type="number" min="1.01" max={cfg.max_multiplier} step="0.1" bind:value={auto} disabled={!useAuto || running || busy} aria-label="Auto cash out multiplier" />×</label>
     </div>
-    <p class="note"><Info size={13} /> The multiplier climbs until it crashes, and nobody knows where. Cash out before it does to win your bet times the number. Pays back {(st.rtp.crash * 100).toFixed(0)}% over time, whatever you aim for.</p>
+    <p class="note"><InterfaceIcon name="Info" fallback={Info} size={13} /> The multiplier climbs until it crashes, and nobody knows where. Cash out before it does to win your bet times the number. Pays back {(st.rtp.crash * 100).toFixed(0)}% over time, whatever you aim for.</p>
     {#if recent.length}<div class="chips" aria-label="Recent rounds">{#each recent as r}<span class={r.win ? 'w' : 'l'}>{mult(r.point)}</span>{/each}</div>{/if}
   {/snippet}
   {#snippet action()}

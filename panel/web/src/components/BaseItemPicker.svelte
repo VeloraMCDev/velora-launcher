@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Search, ChevronRight } from '@lucide/svelte';
   import Modal from './Modal.svelte';
   import { BASE_GROUPS, itemLabel } from '../lib/mcData';
@@ -29,12 +30,12 @@
   <button type="button" class="cur" onclick={() => (open = true)}>
     <McItem id={value} size={42} slot />
     <span class="txt"><b>{itemLabel(value)}</b><small>{value}</small></span>
-    <span class="chg">Change <ChevronRight size={14} /></span>
+    <span class="chg">Change <InterfaceIcon name="ChevronRight" fallback={ChevronRight} size={14} /></span>
   </button>
 </div>
 
 <Modal bind:open title="Choose the base item" width={760}>
-  <label class="search"><Search size={15} /><input bind:value={q} placeholder="Search items…" /></label>
+  <label class="search"><InterfaceIcon name="Search" fallback={Search} size={15} /><input bind:value={q} placeholder="Search items…" /></label>
   {#if !q}
     <div class="seg">
       {#each BASE_GROUPS as g}<button class:on={group === g.id} onclick={() => (group = g.id)}>{g.label}</button>{/each}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Check, Copy, Download, Gamepad2, HardDrive, Package, Server, ExternalLink, Smartphone } from '@lucide/svelte';
   import Empty from '../ui/Empty.svelte';
@@ -49,7 +50,7 @@
 
 <div class="pl-page">
   <div class="pl-head">
-    <div><h1><Gamepad2 size={26} /> Launcher</h1><p>Get the game on your PC. Everything else in this panel works from your phone.</p></div>
+    <div><h1><InterfaceIcon name="Gamepad2" fallback={Gamepad2} size={26} /> Launcher</h1><p>Get the game on your PC. Everything else in this panel works from your phone.</p></div>
   </div>
 
   <div class="pl-hero hero">
@@ -58,12 +59,12 @@
       <p>{phone ? 'The launcher runs on a computer. Send yourself the link and grab it there:' : 'One installer, and every instance, mod and update is handled for you.'}</p>
       <div class="cta">
         {#each downloads as d}
-          <a class="btn pl-btn lg" class:primary={d.primary} href={d.href} target="_blank" rel="noopener noreferrer"><Download size={18} /> {d.label}<small>{d.note}</small></a>
+          <a class="btn pl-btn lg" class:primary={d.primary} href={d.href} target="_blank" rel="noopener noreferrer"><InterfaceIcon name="Download" fallback={Download} size={18} /> {d.label}<small>{d.note}</small></a>
         {:else}
           <span class="pl-chip warn">The launcher download hasn't been published yet.</span>
         {/each}
       </div>
-      {#if phone}<button class="pl-btn" onclick={() => copy(location.origin + '/#/play/launcher')}>{#if copied}<Check size={16} /> Link copied{:else}<Copy size={16} /> Copy this page's link{/if}</button>{/if}
+      {#if phone}<button class="pl-btn" onclick={() => copy(location.origin + '/#/play/launcher')}>{#if copied}<InterfaceIcon name="Check" fallback={Check} size={16} /> Link copied{:else}<InterfaceIcon name="Copy" fallback={Copy} size={16} /> Copy this page's link{/if}</button>{/if}
     </div>
     <ol class="steps">
       {#each steps as [t, d], i}<li><b>{i + 1}</b><div><strong>{t}</strong><span>{d}</span></div></li>{/each}
@@ -72,20 +73,20 @@
 
   {#if mobile?.android || mobile?.ios}
     <section class="pl-card apps">
-      <div class="pl-card-head"><h2><Smartphone size={17} /> Get the phone app</h2></div>
+      <div class="pl-card-head"><h2><InterfaceIcon name="Smartphone" fallback={Smartphone} size={17} /> Get the phone app</h2></div>
       <div class="appgrid">
         {#if mobile.android}
           <div class="app">
             <b>Android</b><span class="sub">v{mobile.android.version} · {formatBytes(mobile.android.size)}</span>
-            <a class="btn pl-btn primary" href={mobile.android.url} download><Download size={16} /> Download .apk</a>
+            <a class="btn pl-btn primary" href={mobile.android.url} download><InterfaceIcon name="Download" fallback={Download} size={16} /> Download .apk</a>
             <small>Open the file after it downloads and allow installs from your browser when asked.</small>
           </div>
         {/if}
         {#if mobile.ios}
           <div class="app">
             <b>iPhone / iPad</b><span class="sub">v{mobile.ios.version} · {formatBytes(mobile.ios.size)}</span>
-            <a class="btn pl-btn primary" href={mobile.ios.altstore_link}><Download size={16} /> Add to AltStore</a>
-            <button class="pl-btn" onclick={() => copy(mobile?.ios?.altstore_url ?? '')}><Copy size={15} /> Copy source URL</button>
+            <a class="btn pl-btn primary" href={mobile.ios.altstore_link}><InterfaceIcon name="Download" fallback={Download} size={16} /> Add to AltStore</a>
+            <button class="pl-btn" onclick={() => copy(mobile?.ios?.altstore_url ?? '')}><InterfaceIcon name="Copy" fallback={Copy} size={15} /> Copy source URL</button>
             <a class="btn pl-btn" href={mobile.ios.url} download>Download .ipa (Sideloadly)</a>
             <small>Apple only runs apps signed by a developer account, so use AltStore, SideStore or Sideloadly. Or open this site in Safari and use <b>Share → Add to Home Screen</b>.</small>
           </div>
@@ -96,9 +97,9 @@
 
   {#if address}
     <button class="pl-card ip" onclick={() => copy(address)}>
-      <Server size={20} />
+      <InterfaceIcon name="Server" fallback={Server} size={20} />
       <div><span>Server address</span><b>{address}</b></div>
-      <span class="pl-chip accent">{#if copied === address}<Check size={13} /> Copied{:else}<Copy size={13} /> Copy{/if}</span>
+      <span class="pl-chip accent">{#if copied === address}<InterfaceIcon name="Check" fallback={Check} size={13} /> Copied{:else}<InterfaceIcon name="Copy" fallback={Copy} size={13} /> Copy{/if}</span>
     </button>
   {/if}
 
@@ -112,7 +113,7 @@
       {#each instances as i, n (i.id)}
         <article class="pl-card inst" style="animation-delay:{n * 50}ms">
           <div class="art" style:background-image={i.banner_url ? `url(${i.banner_url})` : undefined}>
-            {#if i.icon_url}<img src={i.icon_url} alt="" />{:else}<Package size={30} />{/if}
+            {#if i.icon_url}<img src={i.icon_url} alt="" />{:else}<InterfaceIcon name="Package" fallback={Package} size={30} />{/if}
             {#if i.featured}<span class="pl-chip accent star">Featured</span>{/if}
           </div>
           <h3>{i.name}</h3>
@@ -120,8 +121,8 @@
           <div class="tags">
             <span class="pl-chip">{i.mc_version}</span>
             <span class="pl-chip accent">{i.loader}</span>
-            {#if i.file_count}<span class="pl-chip"><HardDrive size={12} /> {formatBytes(i.total_size)}</span>{/if}
-            {#if i.server}<button class="pl-chip good" onclick={() => copy(i.server?.address ?? '')}><Server size={12} /> {i.server.address}</button>{/if}
+            {#if i.file_count}<span class="pl-chip"><InterfaceIcon name="HardDrive" fallback={HardDrive} size={12} /> {formatBytes(i.total_size)}</span>{/if}
+            {#if i.server}<button class="pl-chip good" onclick={() => copy(i.server?.address ?? '')}><InterfaceIcon name="Server" fallback={Server} size={12} /> {i.server.address}</button>{/if}
           </div>
         </article>
       {/each}
@@ -129,7 +130,7 @@
   {/if}
 
   {#if play.manifest?.branding.links.length}
-    <div class="links">{#each play.manifest.branding.links as l}<a class="pl-chip" href={l.url} target="_blank" rel="noopener noreferrer">{l.label} <ExternalLink size={11} /></a>{/each}</div>
+    <div class="links">{#each play.manifest.branding.links as l}<a class="pl-chip" href={l.url} target="_blank" rel="noopener noreferrer">{l.label} <InterfaceIcon name="ExternalLink" fallback={ExternalLink} size={11} /></a>{/each}</div>
   {/if}
 </div>
 

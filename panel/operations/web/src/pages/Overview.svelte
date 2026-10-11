@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '../components/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Cpu, MemoryStick, HardDrive, Archive, Globe, ShieldCheck, TriangleAlert, Users, Rocket, RefreshCw } from '@lucide/svelte';
   import { api } from '../lib/api';
@@ -29,14 +30,14 @@
 <div class="head row wrap">
   <div><h1>Overview</h1><p class="muted">Production stack <code>{app.overview?.project ?? '…'}</code> on the OVH VPS{snap ? ` · updated ${ago(snap.at)}` : ''}</p></div>
   <span class="spacer"></span>
-  <button onclick={async () => { if (await ask('Redeploy the production stack?', 'Applies compose.yaml to every Velora service. Running services with unchanged configuration are left alone.', 'Redeploy')) runAction('/api/actions/redeploy'); }}><RefreshCw size={16} /> Redeploy stack</button>
+  <button onclick={async () => { if (await ask('Redeploy the production stack?', 'Applies compose.yaml to every Velora service. Running services with unchanged configuration are left alone.', 'Redeploy')) runAction('/api/actions/redeploy'); }}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} /> Redeploy stack</button>
 </div>
 
 {#if (app.overview?.alerts.length ?? 0) > 0}
   <div class="alerts col">
     {#each app.overview!.alerts as a}
       <div class="alert {a.severity}">
-        <TriangleAlert size={18} />
+        <InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={18} />
         <div><b>{a.title}</b>{#if a.detail}<span class="muted small"> — {a.detail}</span>{/if}<div class="tiny faint">since {when(a.since)}{a.notified ? ' · email sent' : ''}</div></div>
       </div>
     {/each}
@@ -48,23 +49,23 @@
 {:else}
   <div class="grid g4">
     <div class="card stat">
-      <span class="label"><Globe size={14} /> Services</span>
+      <span class="label"><InterfaceIcon name="Globe" fallback={Globe} size={14} /> Services</span>
       <span class="value">{healthy}<span class="faint">/{stack.length}</span></span>
       <span class="sub">{healthy === stack.length ? 'All Velora services healthy' : `${stack.length - healthy} need attention`}</span>
     </div>
     <div class="card stat">
-      <span class="label"><Cpu size={14} /> CPU</span>
+      <span class="label"><InterfaceIcon name="Cpu" fallback={Cpu} size={14} /> CPU</span>
       <span class="value">{pct(snap.host.cpu)}</span>
       <span class="sub">Load {snap.host.load.map(l => l.toFixed(2)).join(' · ')} on {snap.host.cores} cores</span>
     </div>
     <div class="card stat">
-      <span class="label"><MemoryStick size={14} /> Memory</span>
+      <span class="label"><InterfaceIcon name="MemoryStick" fallback={MemoryStick} size={14} /> Memory</span>
       <span class="value">{pct(snap.host.memory.percent)}</span>
       <div class="bar {tone(snap.host.memory.percent, 85, 95)}"><span style:width="{snap.host.memory.percent}%"></span></div>
       <span class="sub">{bytes(snap.host.memory.used)} of {bytes(snap.host.memory.total)}</span>
     </div>
     <div class="card stat">
-      <span class="label"><HardDrive size={14} /> Disk</span>
+      <span class="label"><InterfaceIcon name="HardDrive" fallback={HardDrive} size={14} /> Disk</span>
       <span class="value">{pct(snap.host.disk?.percent)}</span>
       <div class="bar {tone(snap.host.disk?.percent)}"><span style:width="{snap.host.disk?.percent ?? 0}%"></span></div>
       <span class="sub">{bytes(snap.host.disk?.used)} of {bytes(snap.host.disk?.total)} · up {duration(snap.host.uptime)}</span>
@@ -84,7 +85,7 @@
 
   <div class="grid g3 section">
     <div class="card">
-      <div class="card-head"><Globe size={17} /><h2>Endpoints</h2></div>
+      <div class="card-head"><InterfaceIcon name="Globe" fallback={Globe} size={17} /><h2>Endpoints</h2></div>
       <div class="col">
         {#each snap.endpoints as e}
           <div class="row line"><span class="dot {e.ok ? 'ok' : 'bad'}"></span><span class="grow">{e.name}<span class="tiny faint block">{e.url.replace(/^https?:\/\//, '')}</span></span>
@@ -93,7 +94,7 @@
       </div>
     </div>
     <div class="card">
-      <div class="card-head"><Archive size={17} /><h2>Backups</h2><span class="spacer"></span><a class="tiny" href="#/backups">Details</a></div>
+      <div class="card-head"><InterfaceIcon name="Archive" fallback={Archive} size={17} /><h2>Backups</h2><span class="spacer"></span><a class="tiny" href="#/backups">Details</a></div>
       {#if backup}
         <div class="col">
           <div class="row line"><span class="dot {backup.status === 'ok' ? (backup.offsite ? 'ok' : 'warn') : 'bad'}"></span><span class="grow">Last backup<span class="tiny faint block">{when(backup.finished_at)} · {ago(backup.finished_at)}</span></span><span class="badge {backup.status === 'ok' ? 'ok' : 'bad'}">{backup.status}</span></div>
@@ -104,7 +105,7 @@
       {:else}<div class="empty">No backup has run yet.</div>{/if}
     </div>
     <div class="card">
-      <div class="card-head"><ShieldCheck size={17} /><h2>Certificates</h2></div>
+      <div class="card-head"><InterfaceIcon name="ShieldCheck" fallback={ShieldCheck} size={17} /><h2>Certificates</h2></div>
       <div class="col">
         {#each snap.certificates as c}
           {@const days = c.expires ? (Date.parse(c.expires) - Date.now()) / 86400000 : -1}
@@ -116,7 +117,7 @@
 
   <div class="grid g2 section">
     <div class="card">
-      <div class="card-head"><Users size={17} /><h2>Community</h2><span class="spacer"></span><a class="tiny" href="#/activity">Activity</a></div>
+      <div class="card-head"><InterfaceIcon name="Users" fallback={Users} size={17} /><h2>Community</h2><span class="spacer"></span><a class="tiny" href="#/activity">Activity</a></div>
       {#if summary}
         <div class="grid g3 minis">
           <div class="stat"><span class="label">Logins 24h</span><span class="value">{summary.logins_24h}</span></div>
@@ -129,7 +130,7 @@
       {:else}<div class="skeleton" style="height:120px"></div>{/if}
     </div>
     <div class="card">
-      <div class="card-head"><Rocket size={17} /><h2>Updates</h2><span class="spacer"></span><a class="tiny" href="#/updates">Review</a></div>
+      <div class="card-head"><InterfaceIcon name="Rocket" fallback={Rocket} size={17} /><h2>Updates</h2><span class="spacer"></span><a class="tiny" href="#/updates">Review</a></div>
       <div class="col">
         <div class="row line"><span class="grow">Launcher releases awaiting approval</span><span class="badge {app.overview?.updates.launcher_pending ? 'accent' : ''}">{app.overview?.updates.launcher_pending ?? 0}</span></div>
         {#each Object.entries(app.overview?.updates.images ?? {}) as [name, available]}

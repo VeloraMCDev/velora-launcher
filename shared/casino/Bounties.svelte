@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Crosshair, Skull, EyeOff, Search, Trash2, Shield, Info, Trophy } from '@lucide/svelte';
   import Avatar from './Avatar.svelte';
@@ -52,19 +53,19 @@
 
 <div class="wrap">
   {#if st.bounty_on_me > 0}
-    <div class="onme"><Skull size={20} /><div><b>There's a {money(st.bounty_on_me)} bounty on your head.</b><span>Anyone who defeats you in PvP collects it. Stay sharp.</span></div></div>
+    <div class="onme"><InterfaceIcon name="Skull" fallback={Skull} size={20} /><div><b>There's a {money(st.bounty_on_me)} bounty on your head.</b><span>Anyone who defeats you in PvP collects it. Stay sharp.</span></div></div>
   {/if}
 
   <div class="cols">
     <section class="panel place">
-      <h2><Crosshair size={18} /> Put a price on someone</h2>
+      <h2><InterfaceIcon name="Crosshair" fallback={Crosshair} size={18} /> Put a price on someone</h2>
       {#if data && !data.enabled}
         <p class="note">Bounties are switched off right now.</p>
       {:else}
         {#if target}
           <div class="chosen"><Avatar name={target.name} uuid={target.uuid} size={2.4} /><b>{target.name}</b><button class="ghost sm" onclick={() => (target = null)}>Change</button></div>
         {:else}
-          <label class="search"><Search size={15} /><input placeholder="Find a player…" bind:value={query} aria-label="Find a player" /></label>
+          <label class="search"><InterfaceIcon name="Search" fallback={Search} size={15} /><input placeholder="Find a player…" bind:value={query} aria-label="Find a player" /></label>
           <div class="results">
             {#each found as p (p.uuid)}
               <button class="player" onclick={() => (target = p)}><Avatar name={p.name} uuid={p.uuid} size={1.9} /><span>{p.name}</span>{#if p.online}<i class="on" title="Online"></i>{/if}</button>
@@ -76,13 +77,13 @@
           <span>The reward will be</span><b>{money(reward)}</b>
           <small>{rules?.tax_percent ?? 0}% goes to the house when it's placed.{rules?.expire_days ? ` Uncollected bounties expire after ${rules.expire_days} days and come back to you.` : ''}</small>
         </div>
-        {#if rules?.allow_anonymous}<label class="check"><input type="checkbox" bind:checked={anonymous} /> <EyeOff size={14} /> Keep my name hidden</label>{/if}
+        {#if rules?.allow_anonymous}<label class="check"><input type="checkbox" bind:checked={anonymous} /> <InterfaceIcon name="EyeOff" fallback={EyeOff} size={14} /> Keep my name hidden</label>{/if}
         <button class="primary go" onclick={place} disabled={busy || !target || (balance != null && balance < amount)}>Place bounty · {money(amount)}</button>
       {/if}
     </section>
 
     <section class="panel board">
-      <h2><Trophy size={18} /> Most wanted</h2>
+      <h2><InterfaceIcon name="Trophy" fallback={Trophy} size={18} /> Most wanted</h2>
       {#if data?.board.length}
         <ol>
           {#each data.board as b, i (b.uuid)}
@@ -94,7 +95,7 @@
             </li>
           {/each}
         </ol>
-      {:else}<p class="note"><Shield size={14} /> No bounties out. The server is at peace… for now.</p>{/if}
+      {:else}<p class="note"><InterfaceIcon name="Shield" fallback={Shield} size={14} /> No bounties out. The server is at peace… for now.</p>{/if}
     </section>
   </div>
 
@@ -105,10 +106,10 @@
         <ul class="list">
           {#each data.mine as m (m.id)}
             <li><div><b>{m.target}</b><small>{money(m.reward)} reward · {ago(m.at, now)}{m.expires_at ? ' · expires in ' + untilText(m.expires_at, now) : ''}</small></div>
-              {#if data.rules.allow_cancel}<button class="ghost sm" onclick={() => withdraw(m.id)}><Trash2 size={13} /> Withdraw</button>{/if}</li>
+              {#if data.rules.allow_cancel}<button class="ghost sm" onclick={() => withdraw(m.id)}><InterfaceIcon name="Trash2" fallback={Trash2} size={13} /> Withdraw</button>{/if}</li>
           {/each}
         </ul>
-      {:else}<p class="note"><Info size={13} /> You haven't put a bounty on anyone.</p>{/if}
+      {:else}<p class="note"><InterfaceIcon name="Info" fallback={Info} size={13} /> You haven't put a bounty on anyone.</p>{/if}
     </section>
     <section class="panel">
       <h2>Recently collected</h2>

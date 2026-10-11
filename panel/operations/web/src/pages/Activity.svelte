@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '../components/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { LogIn, Users, Rocket, ShieldAlert, Search } from '@lucide/svelte';
   import { api } from '../lib/api';
@@ -31,22 +32,22 @@
 <div class="head"><h1>Activity</h1><p class="muted">Sign-ins, launches and admin changes recorded by the Velora Panel.</p></div>
 
 <div class="grid g4">
-  <div class="card stat"><span class="label"><LogIn size={14} /> Logins (24h)</span><span class="value">{summary?.logins_24h ?? '—'}</span><span class="sub">{summary?.logins_7d ?? '—'} in the last 7 days</span></div>
-  <div class="card stat"><span class="label"><Users size={14} /> Active players (7d)</span><span class="value">{summary?.unique_logins_7d ?? '—'}</span><span class="sub">of {summary?.users ?? '—'} accounts</span></div>
-  <div class="card stat"><span class="label"><Rocket size={14} /> Game launches (24h)</span><span class="value">{summary?.launches_24h ?? '—'}</span><span class="sub">{summary?.launcher_sign_ins_24h ?? '—'} launcher sign-ins</span></div>
-  <div class="card stat"><span class="label"><ShieldAlert size={14} /> Admin changes (7d)</span><span class="value">{summary?.admin_changes_7d ?? '—'}</span><span class="sub">{summary?.admins ?? '—'} active administrators</span></div>
+  <div class="card stat"><span class="label"><InterfaceIcon name="LogIn" fallback={LogIn} size={14} /> Logins (24h)</span><span class="value">{summary?.logins_24h ?? '—'}</span><span class="sub">{summary?.logins_7d ?? '—'} in the last 7 days</span></div>
+  <div class="card stat"><span class="label"><InterfaceIcon name="Users" fallback={Users} size={14} /> Active players (7d)</span><span class="value">{summary?.unique_logins_7d ?? '—'}</span><span class="sub">of {summary?.users ?? '—'} accounts</span></div>
+  <div class="card stat"><span class="label"><InterfaceIcon name="Rocket" fallback={Rocket} size={14} /> Game launches (24h)</span><span class="value">{summary?.launches_24h ?? '—'}</span><span class="sub">{summary?.launcher_sign_ins_24h ?? '—'} launcher sign-ins</span></div>
+  <div class="card stat"><span class="label"><InterfaceIcon name="ShieldAlert" fallback={ShieldAlert} size={14} /> Admin changes (7d)</span><span class="value">{summary?.admin_changes_7d ?? '—'}</span><span class="sub">{summary?.admins ?? '—'} active administrators</span></div>
 </div>
 
 <div class="grid g2 section">
   <div class="card">
-    <div class="card-head"><LogIn size={17} /><h2>Recent sign-ins</h2></div>
+    <div class="card-head"><InterfaceIcon name="LogIn" fallback={LogIn} size={17} /><h2>Recent sign-ins</h2></div>
     <div class="col list">
       {#each summary?.recent_logins ?? [] as l}<div class="row"><span class="avatar">{(l.name ?? '?').slice(0, 1).toUpperCase()}</span><span class="grow">{l.name ?? 'unknown'}</span><span class="tiny muted" title={when(l.created_at)}>{ago(l.created_at)}</span></div>
       {:else}<div class="empty">No sign-ins recorded yet.</div>{/each}
     </div>
   </div>
   <div class="card">
-    <div class="card-head"><ShieldAlert size={17} /><h2>Recent admin changes</h2></div>
+    <div class="card-head"><InterfaceIcon name="ShieldAlert" fallback={ShieldAlert} size={17} /><h2>Recent admin changes</h2></div>
     <div class="col list">
       {#each summary?.recent_admin_changes ?? [] as c}<div class="row"><span class="avatar admin">{(c.name ?? '?').slice(0, 1).toUpperCase()}</span><span class="grow"><b>{c.name ?? 'unknown'}</b> <code class="tiny muted">{c.detail}</code></span><span class="tiny muted" title={when(c.created_at)}>{ago(c.created_at)}</span></div>
       {:else}<div class="empty">No admin changes this week.</div>{/each}
@@ -58,7 +59,7 @@
   <div class="card-head pad wrap">
     <h2>Activity log</h2><span class="spacer"></span>
     <select bind:value={source} onchange={() => { offset = 0; load(); }} class="narrow">{#each sources as s}<option value={s}>{s || 'All sources'}</option>{/each}</select>
-    <form class="row" onsubmit={e => { e.preventDefault(); offset = 0; load(); }}><input class="narrow" placeholder="Player or UUID" bind:value={player} /><button class="sm icon" type="submit" aria-label="Search"><Search size={15} /></button></form>
+    <form class="row" onsubmit={e => { e.preventDefault(); offset = 0; load(); }}><input class="narrow" placeholder="Player or UUID" bind:value={player} /><button class="sm icon" type="submit" aria-label="Search"><InterfaceIcon name="Search" fallback={Search} size={15} /></button></form>
   </div>
   <div class="table-scroll">
     <table>

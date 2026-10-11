@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Upload, RotateCcw, Clock, Skull, Pickaxe, Sword, LogIn, Circle } from '@lucide/svelte';
   import SkinView from './SkinView.svelte';
   import CapePreview from './CapePreview.svelte';
@@ -70,8 +71,8 @@
       <button class:active={user.skin_model === 'slim'} disabled={busy} onclick={() => setModel('slim')}>Slim</button>
     </div>
     <div class="row">
-      <label class="btn sm up"><Upload size={14} /> Upload skin<input type="file" accept="image/png" onchange={upload} disabled={busy} /></label>
-      {#if user.skin_url}<button class="sm ghost" disabled={busy} onclick={resetSkin}><RotateCcw size={14} /> Reset</button>{/if}
+      <label class="btn sm up"><InterfaceIcon name="Upload" fallback={Upload} size={14} /> Upload skin<input type="file" accept="image/png" onchange={upload} disabled={busy} /></label>
+      {#if user.skin_url}<button class="sm ghost" disabled={busy} onclick={resetSkin}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Reset</button>{/if}
     </div>
   </div>
 
@@ -88,13 +89,13 @@
     </div>
 
     <div class="field">
-      <span class="lbl row between">In game {#if activity?.online_on.length}<span class="badge good"><Circle size={8} fill="currentColor" /> Online on {activity.online_on.map((s) => s.name).join(', ')}</span>{/if}</span>
+      <span class="lbl row between">In game {#if activity?.online_on.length}<span class="badge good"><InterfaceIcon name="Circle" fallback={Circle} size={8} fill="currentColor" /> Online on {activity.online_on.map((s) => s.name).join(', ')}</span>{/if}</span>
       <div class="stats">
-        <span><Clock size={14} /><strong>{duration(totals.playtime)}</strong><small>played</small></span>
-        <span><LogIn size={14} /><strong>{totals.joins.toLocaleString()}</strong><small>joins</small></span>
-        <span><Pickaxe size={14} /><strong>{totals.mined.toLocaleString()}</strong><small>mined</small></span>
-        <span><Sword size={14} /><strong>{totals.kills.toLocaleString()}</strong><small>kills</small></span>
-        <span><Skull size={14} /><strong>{totals.deaths.toLocaleString()}</strong><small>deaths</small></span>
+        <span><InterfaceIcon name="Clock" fallback={Clock} size={14} /><strong>{duration(totals.playtime)}</strong><small>played</small></span>
+        <span><InterfaceIcon name="LogIn" fallback={LogIn} size={14} /><strong>{totals.joins.toLocaleString()}</strong><small>joins</small></span>
+        <span><InterfaceIcon name="Pickaxe" fallback={Pickaxe} size={14} /><strong>{totals.mined.toLocaleString()}</strong><small>mined</small></span>
+        <span><InterfaceIcon name="Sword" fallback={Sword} size={14} /><strong>{totals.kills.toLocaleString()}</strong><small>kills</small></span>
+        <span><InterfaceIcon name="Skull" fallback={Skull} size={14} /><strong>{totals.deaths.toLocaleString()}</strong><small>deaths</small></span>
       </div>
     </div>
 

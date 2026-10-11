@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import type { Component } from 'svelte';
 
   let { icon: Icon, title, text = '', message = '' }: { icon?: Component<any>; title?: string; text?: string; message?: string } = $props();
@@ -6,7 +8,7 @@
 </script>
 
 <div class="empty">
-  {#if Icon}<Icon size={30} />{/if}
+  {#if Icon}<InterfaceIcon name={iconName(Icon)} fallback={Icon} size={30} />{/if}
   {#if title}<h3>{title}</h3>{/if}
   {#if body}<p>{body}</p>{/if}
 </div>

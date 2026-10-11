@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import {
     Shield, Plus, Trash2, RefreshCw, Link2, Users, Search, Check, X, TriangleAlert, ArrowRightLeft, Layers, History, Settings2, Lock, ChevronRight,
@@ -259,24 +261,24 @@
           {#each data.servers as s (s.id)}<option value={s.id}>{s.name}{s.luckperms ? '' : ' (no LuckPerms)'}</option>{/each}
         </select>
       {/if}
-      <button class="ghost icon" onclick={() => load()} aria-label="Refresh" title="Refresh"><RefreshCw size={16} /></button>
-      <button class="primary" onclick={openCreate} disabled={!canManage}><Plus size={16} /> New group</button>
+      <button class="ghost icon" onclick={() => load()} aria-label="Refresh" title="Refresh"><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} /></button>
+      <button class="primary" onclick={openCreate} disabled={!canManage}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> New group</button>
     </div>
   </div>
 
   {#if loadError}
-    <div class="notice bad"><TriangleAlert size={18} /><div><b>Could not load LuckPerms.</b> {loadError}</div></div>
+    <div class="notice bad"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={18} /><div><b>Could not load LuckPerms.</b> {loadError}</div></div>
   {:else if data && !data.servers.length}
-    <div class="notice"><TriangleAlert size={18} /><div><b>No game server yet.</b> Add one on the Servers page and install the Velora plugin next to LuckPerms.</div></div>
+    <div class="notice"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={18} /><div><b>No game server yet.</b> Add one on the Servers page and install the Velora plugin next to LuckPerms.</div></div>
   {:else if data && !data.connected}
-    <div class="notice"><TriangleAlert size={18} /><div><b>This server has not reported LuckPerms.</b> Install the Velora plugin next to LuckPerms and start the server. Groups appear here within a minute.</div></div>
+    <div class="notice"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={18} /><div><b>This server has not reported LuckPerms.</b> Install the Velora plugin next to LuckPerms and start the server. Groups appear here within a minute.</div></div>
   {:else if data && !data.manager_supported}
-    <div class="notice"><Lock size={18} /><div><b>Read-only: the Velora plugin on this server is out of date.</b> Replace the plugin jar with the latest build and restart (or reload) the server. This page lights up on the plugin's next report, within a minute. If you just updated it, check that the old jar is gone from <code>plugins/</code>.</div></div>
+    <div class="notice"><InterfaceIcon name="Lock" fallback={Lock} size={18} /><div><b>Read-only: the Velora plugin on this server is out of date.</b> Replace the plugin jar with the latest build and restart (or reload) the server. This page lights up on the plugin's next report, within a minute. If you just updated it, check that the old jar is gone from <code>plugins/</code>.</div></div>
   {:else if data && !data.can_manage}
-    <div class="notice"><Lock size={18} /><div><b>Read-only.</b> The plugin has <code>integrations.luckperms.allow-panel-commands</code> set to <code>false</code> in its <code>config.yml</code>. Set it to <code>true</code> and run <code>/scopenet reload</code> (or restart), and this page unlocks within a minute.</div></div>
+    <div class="notice"><InterfaceIcon name="Lock" fallback={Lock} size={18} /><div><b>Read-only.</b> The plugin has <code>integrations.luckperms.allow-panel-commands</code> set to <code>false</code> in its <code>config.yml</code>. Set it to <code>true</code> and run <code>/scopenet reload</code> (or restart), and this page unlocks within a minute.</div></div>
   {:else if data}
     <div class="status row wrap">
-      <span class="badge good"><Check size={12} /> Connected</span>
+      <span class="badge good"><InterfaceIcon name="Check" fallback={Check} size={12} /> Connected</span>
       <span class="muted small">Plugin reported {timeAgo(data.reported_at)} · LuckPerms {data.plugin_version}</span>
       {#if pending}<span class="badge warn">{pending} waiting for the game server</span>{/if}
       {#if failed}<button class="badge bad linkish" onclick={() => (tab = 'activity')}>{failed} failed — see Activity</button>{/if}
@@ -285,14 +287,14 @@
 
   <div class="tabs" role="tablist">
     {#each TABS as t (t.id)}
-      <button role="tab" aria-selected={tab === t.id} class:active={tab === t.id} onclick={() => (tab = t.id)}><t.icon size={15} /> {t.label}{#if t.id === 'activity' && failed}<span class="dot"></span>{/if}</button>
+      <button role="tab" aria-selected={tab === t.id} class:active={tab === t.id} onclick={() => (tab = t.id)}><InterfaceIcon name={iconName(t.icon)} fallback={t.icon} size={15} /> {t.label}{#if t.id === 'activity' && failed}<span class="dot"></span>{/if}</button>
     {/each}
   </div>
 
   {#if tab === 'groups'}
     <div class="split">
       <aside class="card list">
-        <label class="search"><Search size={15} /><input bind:value={filter} placeholder="Find a group…" aria-label="Find a group" /></label>
+        <label class="search"><InterfaceIcon name="Search" fallback={Search} size={15} /><input bind:value={filter} placeholder="Find a group…" aria-label="Find a group" /></label>
         {#if !data}
           <p class="muted small pad">Loading…</p>
         {:else if !groups.length}
@@ -305,20 +307,20 @@
               <small>{g.name} · weight {g.weight}{#if g.members !== undefined} · {g.members} member{g.members === 1 ? '' : 's'}{/if}</small>
               {#if g.prefix}{@render mc(g.prefix + (g.display || g.name))}{/if}
             </span>
-            <ChevronRight size={14} />
+            <InterfaceIcon name="ChevronRight" fallback={ChevronRight} size={14} />
           </button>
         {/each}
       </aside>
 
       <section class="editor">
         {#if !current}
-          <div class="card empty"><Shield size={32} /><h3>{groups.length ? 'Pick a group' : 'No groups yet'}</h3><p>{groups.length ? 'Choose a group on the left to edit it.' : 'Create the first group with “New group”.'}</p></div>
+          <div class="card empty"><InterfaceIcon name="Shield" fallback={Shield} size={32} /><h3>{groups.length ? 'Pick a group' : 'No groups yet'}</h3><p>{groups.length ? 'Choose a group on the left to edit it.' : 'Create the first group with “New group”.'}</p></div>
         {:else}
           <div class="card col">
             <div class="section-title"><h3>{current.display || current.name}</h3><span class="badge">{current.name}</span>
               <span class="hint">
-                {#each linkedPanel(current.name) as p (p.id)}<span class="badge accent"><Link2 size={11} /> {p.name}</span> {/each}
-                {#each linkedLevels(current.name) as l}<span class="badge accent"><Layers size={11} /> Level {l.level}</span> {/each}
+                {#each linkedPanel(current.name) as p (p.id)}<span class="badge accent"><InterfaceIcon name="Link2" fallback={Link2} size={11} /> {p.name}</span> {/each}
+                {#each linkedLevels(current.name) as l}<span class="badge accent"><InterfaceIcon name="Layers" fallback={Layers} size={11} /> Level {l.level}</span> {/each}
               </span>
             </div>
             <div class="grid two">
@@ -334,14 +336,14 @@
             </div>
             <div class="row"><button class="primary" onclick={saveGroup} disabled={!editDirty || !canManage}>Save changes</button>
               <span class="spacer"></span>
-              <button class="danger" onclick={() => (deleteOpen = true)} disabled={!canManage || current.name === 'default'}><Trash2 size={15} /> Delete group</button></div>
+              <button class="danger" onclick={() => (deleteOpen = true)} disabled={!canManage || current.name === 'default'}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /> Delete group</button></div>
           </div>
 
           <div class="card col">
             <div class="section-title"><h3>Inherits from</h3><span class="hint">Everything these groups can do, this group can do too.</span></div>
             <div class="chips">
               {#each current.parents as parent}
-                <span class="chip"><b>{parent}</b>{#if canManage}<button class="x" aria-label="Remove {parent}" onclick={() => removeParent(current, parent)}><X size={12} /></button>{/if}</span>
+                <span class="chip"><b>{parent}</b>{#if canManage}<button class="x" aria-label="Remove {parent}" onclick={() => removeParent(current, parent)}><InterfaceIcon name="X" fallback={X} size={12} /></button>{/if}</span>
               {:else}<span class="muted small">Nothing yet.</span>{/each}
             </div>
             {#if canManage}
@@ -367,8 +369,8 @@
                   <button type="button" class:active={perm.value} onclick={() => (perm.value = true)}>Allow</button>
                   <button type="button" class:active={!perm.value} onclick={() => (perm.value = false)}>Deny</button>
                 </div>
-                <button class="primary" type="submit" disabled={!perm.permission.trim()}><Plus size={15} /> Add</button>
-                <button type="button" class="ghost sm" onclick={() => (permAdvanced = !permAdvanced)}><Settings2 size={14} /> Context</button>
+                <button class="primary" type="submit" disabled={!perm.permission.trim()}><InterfaceIcon name="Plus" fallback={Plus} size={15} /> Add</button>
+                <button type="button" class="ghost sm" onclick={() => (permAdvanced = !permAdvanced)}><InterfaceIcon name="Settings2" fallback={Settings2} size={14} /> Context</button>
               </form>
               {#if permAdvanced}
                 <div class="grid two">
@@ -388,7 +390,7 @@
                         <button class="badge perm-state {p.value ? 'good' : 'bad'}" disabled={!canManage} onclick={() => flipPermission(current, p)} title="Click to switch">{p.value ? 'Allowed' : 'Denied'}</button>
                         {#if p.server}<span class="badge">server: {p.server}</span>{/if}{#if p.world}<span class="badge">world: {p.world}</span>{/if}
                       </td>
-                      <td class="end">{#if canManage}<button class="ghost icon" aria-label="Remove {p.key}" onclick={() => removePermission(current, p)}><Trash2 size={15} /></button>{/if}</td>
+                      <td class="end">{#if canManage}<button class="ghost icon" aria-label="Remove {p.key}" onclick={() => removePermission(current, p)}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /></button>{/if}</td>
                     </tr>
                   {/each}
                 </tbody>
@@ -415,13 +417,13 @@
               {#if row.group && !groupNames.includes(row.group)}<option value={row.group}>{row.group}</option>{/if}
             </select>
           </label>
-          <button class="ghost icon" aria-label="Remove milestone" onclick={() => dropLevelRow(i)}><Trash2 size={16} /></button>
+          <button class="ghost icon" aria-label="Remove milestone" onclick={() => dropLevelRow(i)}><InterfaceIcon name="Trash2" fallback={Trash2} size={16} /></button>
         </div>
       {:else}
         <p class="muted small">No milestones yet.</p>
       {/each}
       <div class="row">
-        <button onclick={addLevelRow}><Plus size={15} /> Add milestone</button>
+        <button onclick={addLevelRow}><InterfaceIcon name="Plus" fallback={Plus} size={15} /> Add milestone</button>
         <span class="spacer"></span>
         <button class="primary" onclick={saveLevels} disabled={!levelDirty}>Save milestones</button>
       </div>
@@ -469,12 +471,12 @@
   {:else if tab === 'players'}
     <div class="card col">
       <div class="row wrap">
-        <label class="search grow"><Search size={15} /><input bind:value={playerQuery} placeholder="Find a player…" aria-label="Find a player" /></label>
+        <label class="search grow"><InterfaceIcon name="Search" fallback={Search} size={15} /><input bind:value={playerQuery} placeholder="Find a player…" aria-label="Find a player" /></label>
         {#if chosen.length}
           <div class="bulk row wrap">
             <b>{chosen.length} selected</b>
             <select bind:value={bulkFrom} aria-label="Move from"><option value="">from…</option>{#each groupNames as n}<option value={n}>{n}</option>{/each}</select>
-            <ArrowRightLeft size={15} />
+            <InterfaceIcon name="ArrowRightLeft" fallback={ArrowRightLeft} size={15} />
             <select bind:value={bulkTo} aria-label="Move to"><option value="">to…</option>{#each groupNames as n}<option value={n}>{n}</option>{/each}</select>
             <button class="primary sm" onclick={doBulk} disabled={!bulkFrom || !bulkTo || !canManage}>Move</button>
             <button class="ghost sm" onclick={() => (chosen = [])}>Clear</button>
@@ -497,7 +499,7 @@
                   </div>
                   {#if p.last_reported}<small class="muted">as of {timeAgo(p.last_reported)}</small>{/if}
                 </td>
-                <td class="end"><button class="sm" onclick={() => openMove(p)} disabled={!canManage}><ArrowRightLeft size={14} /> Change groups</button></td>
+                <td class="end"><button class="sm" onclick={() => openMove(p)} disabled={!canManage}><InterfaceIcon name="ArrowRightLeft" fallback={ArrowRightLeft} size={14} /> Change groups</button></td>
               </tr>
             {/each}
           </tbody>
@@ -559,7 +561,7 @@
   <p>Players in <b>{current?.name}</b> lose it, and its permissions are gone. Level milestones and panel links to it are removed too. This cannot be undone.</p>
   {#snippet footer()}
     <button onclick={() => (deleteOpen = false)}>Keep it</button>
-    <button class="danger" onclick={removeGroup}><Trash2 size={15} /> Delete group</button>
+    <button class="danger" onclick={removeGroup}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /> Delete group</button>
   {/snippet}
 </Modal>
 

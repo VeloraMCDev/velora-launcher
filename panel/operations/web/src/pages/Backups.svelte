@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '../components/InterfaceIcon.svelte';
   import { Archive, CloudUpload, Play, CircleCheck, CircleX, Clock } from '@lucide/svelte';
   import { app, ask, runAction } from '../lib/state.svelte';
   import { ago, bytes, when } from '../lib/format';
@@ -12,29 +13,29 @@
 <div class="head row wrap">
   <div><h1>Backups</h1><p class="muted">Nightly at 09:30 UTC: a cold, verified copy of all Panel data, kept 7 days on the VPS and 30 days on Hermes.</p></div>
   <span class="spacer"></span>
-  <button class="primary" disabled={b?.pending} onclick={backupNow}><Play size={16} /> {b?.pending ? 'Backup queued…' : 'Back up now'}</button>
+  <button class="primary" disabled={b?.pending} onclick={backupNow}><InterfaceIcon name="Play" fallback={Play} size={16} /> {b?.pending ? 'Backup queued…' : 'Back up now'}</button>
 </div>
 
 <div class="grid g3">
   <div class="card stat">
-    <span class="label">{#if b?.last?.status === 'ok'}<CircleCheck size={14} color="var(--ok)" />{:else}<CircleX size={14} color="var(--bad)" />{/if} Last backup</span>
+    <span class="label">{#if b?.last?.status === 'ok'}<InterfaceIcon name="CircleCheck" fallback={CircleCheck} size={14} color="var(--ok)" />{:else}<InterfaceIcon name="CircleX" fallback={CircleX} size={14} color="var(--bad)" />{/if} Last backup</span>
     <span class="value">{b?.last ? ago(b.last.finished_at) : 'never'}</span>
     <span class="sub">{b?.last?.message ?? 'No backup has run yet.'}</span>
   </div>
   <div class="card stat">
-    <span class="label"><CloudUpload size={14} /> Offsite copy</span>
+    <span class="label"><InterfaceIcon name="CloudUpload" fallback={CloudUpload} size={14} /> Offsite copy</span>
     <span class="value">{b?.last ? (b.last.offsite ? 'Hermes' : 'missing') : '—'}</span>
     <span class="sub">Write-only rsync over Tailscale</span>
   </div>
   <div class="card stat">
-    <span class="label"><Clock size={14} /> Duration</span>
+    <span class="label"><InterfaceIcon name="Clock" fallback={Clock} size={14} /> Duration</span>
     <span class="value">{b?.last ? `${Math.round((Date.parse(b.last.finished_at) - Date.parse(b.last.started_at)) / 1000)}s` : '—'}</span>
     <span class="sub">{bytes(b?.last?.bytes)} compressed</span>
   </div>
 </div>
 
 <div class="card flush section">
-  <div class="card-head pad"><Archive size={18} /><h2>Archives on the VPS</h2><span class="spacer"></span><span class="tiny muted mono">/var/backups/velora</span></div>
+  <div class="card-head pad"><InterfaceIcon name="Archive" fallback={Archive} size={18} /><h2>Archives on the VPS</h2><span class="spacer"></span><span class="tiny muted mono">/var/backups/velora</span></div>
   <table>
     <thead><tr><th>Archive</th><th>Created</th><th>Size</th><th>Checksum</th></tr></thead>
     <tbody>

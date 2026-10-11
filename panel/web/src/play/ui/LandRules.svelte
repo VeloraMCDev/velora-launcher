@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Lock, ShieldCheck, LoaderCircle } from '@lucide/svelte';
   import { get, put } from '../../lib/api';
   import { toast, toastError } from '../../lib/toast.svelte';
@@ -63,7 +64,7 @@
 
 <section class="pl-card rules">
   <div class="pl-card-head">
-    <h2><ShieldCheck size={16} /> Land rules</h2>
+    <h2><InterfaceIcon name="ShieldCheck" fallback={ShieldCheck} size={16} /> Land rules</h2>
     {#if rules?.can_edit && changed}<button class="more" onclick={reset}>Reset to defaults</button>{/if}
   </div>
   {#if error}
@@ -80,8 +81,8 @@
         <h3>{g.name}</h3>
         {#each g.rules as r (r.id)}
           <button type="button" class="rule" role="switch" aria-checked={rules.flags[r.id]} disabled={!rules.can_edit || !r.editable} class:on={rules.flags[r.id]} onclick={() => toggle(r)}>
-            <span class="txt"><b>{r.label}{#if !r.editable} <Lock size={12} aria-label="Managed by the server" />{/if}</b><small>{r.editable ? r.help : 'The server admins manage this rule.'}</small></span>
-            <span class="sw" aria-hidden="true">{#if saving === r.id}<LoaderCircle size={12} class="spin" />{:else}<i></i>{/if}</span>
+            <span class="txt"><b>{r.label}{#if !r.editable} <InterfaceIcon name="Lock" fallback={Lock} size={12} aria-label="Managed by the server" />{/if}</b><small>{r.editable ? r.help : 'The server admins manage this rule.'}</small></span>
+            <span class="sw" aria-hidden="true">{#if saving === r.id}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={12} class="spin" />{:else}<i></i>{/if}</span>
           </button>
         {/each}
       </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Save, RotateCcw, Sparkles } from '@lucide/svelte';
   import Toggle from '../components/Toggle.svelte';
@@ -94,7 +95,7 @@
       <h1>Chat</h1>
       <p>Design how messages look in-game. LuckPerms prefixes and suffixes (including <code>&amp;</code> and <code>&amp;#RRGGBB</code> colours) are inserted automatically.</p>
     </div>
-    <button onclick={save} disabled={!dirty || busy}><Save size={15} /> Save</button>
+    <button onclick={save} disabled={!dirty || busy}><InterfaceIcon name="Save" fallback={Save} size={15} /> Save</button>
   </header>
 
   {#if s}
@@ -140,11 +141,11 @@
       </section>
 
       <aside class="card presets">
-        <h3><Sparkles size={15} /> Presets</h3>
+        <h3><InterfaceIcon name="Sparkles" fallback={Sparkles} size={15} /> Presets</h3>
         {#each PRESETS as p}
           <button class="preset" onclick={() => apply(p.v)}><b>{p.name}</b><small>{p.desc}</small></button>
         {/each}
-        <button class="ghost" onclick={() => defaults && apply(defaults)}><RotateCcw size={14} /> Reset to default</button>
+        <button class="ghost" onclick={() => defaults && apply(defaults)}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Reset to default</button>
         <p class="hint">LuckPerms: set prefixes with <code>/lp group admin meta setprefix 100 "&amp;c[Admin]"</code>. The highest priority wins, and changes show on the player's next message.</p>
       </aside>
     </div>

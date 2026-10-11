@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Image, Box, Search } from '@lucide/svelte';
   import Modal from './Modal.svelte';
   import { get } from '../lib/api';
@@ -31,18 +32,18 @@
 </script>
 
 <button type="button" class="ghost" onclick={show}>
-  {#if kind === 'texture'}<Image size={14} />{:else}<Box size={14} />{/if} {label ?? (kind === 'texture' ? 'Choose texture' : 'Choose model')}
+  {#if kind === 'texture'}<InterfaceIcon name="Image" fallback={Image} size={14} />{:else}<InterfaceIcon name="Box" fallback={Box} size={14} />{/if} {label ?? (kind === 'texture' ? 'Choose texture' : 'Choose model')}
 </button>
 
 <Modal bind:open title={kind === 'texture' ? 'Choose a texture' : 'Choose a model'} width={760}>
-  <label class="search"><Search size={15} /><input bind:value={q} oninput={later} placeholder="Search {total.toLocaleString()} {kind}s…" /></label>
+  <label class="search"><InterfaceIcon name="Search" fallback={Search} size={15} /><input bind:value={q} oninput={later} placeholder="Search {total.toLocaleString()} {kind}s…" /></label>
   {#if hits.length === 0 && !busy}
     <p class="empty">Nothing here yet. Import an Oraxen / ItemsAdder pack or upload {kind}s under <b>Server assets</b> first.</p>
   {/if}
   <div class="grid">
     {#each hits as h (h.ref)}
       <button type="button" class="cell" title={h.ref} onclick={() => { onpick(h.ref); open = false; }}>
-        <span class="slot">{#if h.preview}<img src={h.preview} alt="" />{:else}<Box size={22} />{/if}</span>
+        <span class="slot">{#if h.preview}<img src={h.preview} alt="" />{:else}<InterfaceIcon name="Box" fallback={Box} size={22} />{/if}</span>
         <span class="name">{h.ref.split(':')[1].split('/').pop()}</span>
         <em>{h.ref.split(':')[0]}</em>
       </button>

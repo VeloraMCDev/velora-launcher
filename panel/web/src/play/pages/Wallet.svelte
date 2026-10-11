@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { playPath } from '../../lib/router.svelte';
   import { onMount } from 'svelte';
   import { ArrowDownLeft, ArrowUpRight, Banknote, Crown, Dices, Landmark, RefreshCw, Shield, Store, TriangleAlert, Wallet as WalletIcon, Repeat, Trophy } from '@lucide/svelte';
@@ -97,12 +99,12 @@
 
 <div class="pl-page wallet">
   <div class="pl-head">
-    <div><h1><Banknote size={26} /> Wallet</h1><p>Your money across every server</p></div>
-    <button class="pl-iconbtn" aria-label="Refresh" aria-busy={refreshing} onclick={() => { void loadAll(true); void loadTop(); void loadGuild(); }}><RefreshCw size={16} class={refreshing ? 'spin' : ''} /></button>
+    <div><h1><InterfaceIcon name="Banknote" fallback={Banknote} size={26} /> Wallet</h1><p>Your money across every server</p></div>
+    <button class="pl-iconbtn" aria-label="Refresh" aria-busy={refreshing} onclick={() => { void loadAll(true); void loadTop(); void loadGuild(); }}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} class={refreshing ? 'spin' : ''} /></button>
   </div>
 
   {#if error}
-    <div class="pl-alert err row" role="alert" style="margin-bottom: 14px"><TriangleAlert size={16} /><span class="grow">{error}</span><button class="pl-btn sm" onclick={() => loadAll()}>Retry</button></div>
+    <div class="pl-alert err row" role="alert" style="margin-bottom: 14px"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={16} /><span class="grow">{error}</span><button class="pl-btn sm" onclick={() => loadAll()}>Retry</button></div>
   {/if}
 
   <div class="pl-stack">
@@ -110,13 +112,13 @@
       {#if loading}
         <div class="pl-skel" style="height: 18px; width: 120px"></div><div class="pl-skel" style="height: 56px; width: 220px; margin: 12px 0"></div><div class="pl-skel" style="height: 40px"></div>
       {:else}
-        <span class="kick"><WalletIcon size={14} /> Net worth{balances.length > 1 ? ` across ${balances.length} servers` : ''}</span>
+        <span class="kick"><InterfaceIcon name="Wallet" fallback={WalletIcon} size={14} /> Net worth{balances.length > 1 ? ` across ${balances.length} servers` : ''}</span>
         <div class="big"><Count value={net} format={(v) => money(v)} /></div>
         {#if selected && balances.length > 1}<p class="onsel">{currentServer()?.name}: <b>{money(selected.balance)}</b></p>{/if}
         <div class="flow">
-          <div><small>In · last 7 days</small><b class="pos"><ArrowDownLeft size={14} /> {money(flow.inn, 0)}</b></div>
-          <div><small>Out · last 7 days</small><b class="neg"><ArrowUpRight size={14} /> {money(flow.out, 0)}</b></div>
-          {#if myRank}<div><small>Rank here</small><b><Trophy size={14} /> #{myRank.rank}</b></div>{/if}
+          <div><small>In · last 7 days</small><b class="pos"><InterfaceIcon name="ArrowDownLeft" fallback={ArrowDownLeft} size={14} /> {money(flow.inn, 0)}</b></div>
+          <div><small>Out · last 7 days</small><b class="neg"><InterfaceIcon name="ArrowUpRight" fallback={ArrowUpRight} size={14} /> {money(flow.out, 0)}</b></div>
+          {#if myRank}<div><small>Rank here</small><b><InterfaceIcon name="Trophy" fallback={Trophy} size={14} /> #{myRank.rank}</b></div>{/if}
         </div>
       {/if}
     </section>
@@ -124,7 +126,7 @@
     <div class="cols">
       <div class="pl-stack left">
         <section class="pl-card o1">
-          <div class="pl-card-head"><h2><Landmark size={17} /> Balances</h2></div>
+          <div class="pl-card-head"><h2><InterfaceIcon name="Landmark" fallback={Landmark} size={17} /> Balances</h2></div>
           {#if loading}
             {#each Array(2) as _, i (i)}<div class="pl-skel" style="height: 54px; margin-bottom: 8px"></div>{/each}
           {:else if balances.length}
@@ -144,7 +146,7 @@
 
         {#if guild && gwallet}
           <section class="pl-card guild o3">
-            <div class="pl-card-head"><h2><Shield size={17} /> {guild.name} <span class="pl-chip accent">[{guild.tag}]</span></h2><a class="more" href={playPath('guilds')}>Open faction</a></div>
+            <div class="pl-card-head"><h2><InterfaceIcon name="Shield" fallback={Shield} size={17} /> {guild.name} <span class="pl-chip accent">[{guild.tag}]</span></h2><a class="more" href={playPath('guilds')}>Open faction</a></div>
             <div class="pl-stats">
               <div class="pl-stat"><span>Faction bank</span><b><Count value={gwallet.balance} format={(v) => money(v)} /></b><small>your role: {gwallet.role}</small></div>
               <div class="pl-stat"><span>Your balance</span><b>{money(gwallet.my_balance)}</b><small>available to deposit</small></div>
@@ -152,7 +154,7 @@
             {#if gwallet.transactions.length}
               <div class="pl-list" style="margin-top: 10px">
                 {#each gwallet.transactions.slice(0, 4) as g (g.id)}
-                  <div class="pl-item"><span class="ic" class:in={g.kind === 'deposit'} class:out={g.kind !== 'deposit'}>{#if g.kind === 'deposit'}<ArrowDownLeft size={15} />{:else}<ArrowUpRight size={15} />{/if}</span>
+                  <div class="pl-item"><span class="ic" class:in={g.kind === 'deposit'} class:out={g.kind !== 'deposit'}>{#if g.kind === 'deposit'}<InterfaceIcon name="ArrowDownLeft" fallback={ArrowDownLeft} size={15} />{:else}<InterfaceIcon name="ArrowUpRight" fallback={ArrowUpRight} size={15} />{/if}</span>
                     <div class="grow"><b style="text-transform: capitalize">{g.kind}</b><span class="sub">{g.note || dayLabel(g.created_at)}</span></div>
                     <div class="end"><b class={g.kind === 'deposit' ? 'pos' : 'neg'}>{g.kind === 'deposit' ? '+' : '−'}{money(g.amount)}</b></div></div>
                 {/each}
@@ -162,7 +164,7 @@
         {/if}
 
         <section class="pl-card o4">
-          <div class="pl-card-head"><h2><Crown size={17} /> Richest on {currentServer()?.name ?? 'this server'}</h2></div>
+          <div class="pl-card-head"><h2><InterfaceIcon name="Crown" fallback={Crown} size={17} /> Richest on {currentServer()?.name ?? 'this server'}</h2></div>
           {#if topLoading}
             {#each Array(5) as _, i (i)}<div class="pl-skel" style="height: 46px; margin-bottom: 8px"></div>{/each}
           {:else if baltop.length}
@@ -186,7 +188,7 @@
       </div>
 
       <section class="pl-card feed o2">
-        <div class="pl-card-head"><h2><Repeat size={17} /> Transactions</h2><span class="pl-chip">{shown.length}</span></div>
+        <div class="pl-card-head"><h2><InterfaceIcon name="Repeat" fallback={Repeat} size={17} /> Transactions</h2><span class="pl-chip">{shown.length}</span></div>
         <div class="pl-scroll-x chips">{#each chips as [id, label] (id)}<button class="fchip" class:on={filter === id} onclick={() => (filter = id)}>{label}</button>{/each}</div>
         {#if loading}
           {#each Array(6) as _, i (i)}<div class="pl-skel" style="height: 52px; margin-top: 8px"></div>{/each}
@@ -197,7 +199,7 @@
               {#each g.items as t (t.id)}
                 {@const Ic = kindIcon(t)}
                 <div class="pl-item">
-                  <span class="ic" class:in={mine(t)} class:out={!mine(t)}><Ic size={16} /></span>
+                  <span class="ic" class:in={mine(t)} class:out={!mine(t)}><InterfaceIcon name={iconName(Ic)} fallback={Ic} size={16} /></span>
                   <div class="grow">
                     <b>{t.description || (mine(t) ? 'Received' : 'Sent')}</b>
                     <span class="sub">{mine(t) ? 'from' : 'to'} {counter(t)} · {clock(t.created_at)}{#if t.server_name && balances.length > 1} · <span class="srv">{t.server_name}</span>{/if}</span>

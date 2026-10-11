@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { CircleCheck, CircleAlert, Info } from '@lucide/svelte';
   import { app } from '../lib/store.svelte';
 </script>
@@ -6,7 +7,7 @@
 <div class="toasts" aria-live="polite">
   {#each app.toasts as t (t.id)}
     <div class="toast glass {t.kind}">
-      {#if t.kind === 'ok'}<CircleCheck size={17} />{:else if t.kind === 'error'}<CircleAlert size={17} />{:else}<Info size={17} />{/if}
+      {#if t.kind === 'ok'}<InterfaceIcon name="CircleCheck" fallback={CircleCheck} size={17} />{:else if t.kind === 'error'}<InterfaceIcon name="CircleAlert" fallback={CircleAlert} size={17} />{:else}<InterfaceIcon name="Info" fallback={Info} size={17} />{/if}
       <span class="selectable">{t.text}</span>
     </div>
   {/each}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import PlayerLink from '../components/PlayerLink.svelte';
   import { onMount } from 'svelte';
   import {
@@ -330,7 +331,7 @@
     <div class="browse-header">
       <h3>Factions on {currentInstance?.name || 'this instance'} ({allGuilds.length})</h3>
       {#if allGuilds.length > 4}
-        <label class="guild-search"><Search size={14} /><input type="search" placeholder="Search factions…" bind:value={guildSearch} aria-label="Search factions" /></label>
+        <label class="guild-search"><InterfaceIcon name="Search" fallback={Search} size={14} /><input type="search" placeholder="Search factions…" bind:value={guildSearch} aria-label="Search factions" /></label>
       {/if}
     </div>
     {#if allGuilds.length === 0}
@@ -354,8 +355,8 @@
               </div>
               {#if g.description}<p class="dir-desc">{g.description}</p>{/if}
               <div class="dir-stats">
-                <span title="Members"><Users size={13} /> {g.member_count}<small>/{g.max_members}</small></span>
-                <span title="Claimed chunks"><Map size={13} /> {g.claims_count}</span>
+                <span title="Members"><InterfaceIcon name="Users" fallback={Users} size={13} /> {g.member_count}<small>/{g.max_members}</small></span>
+                <span title="Claimed chunks"><InterfaceIcon name="Map" fallback={Map} size={13} /> {g.claims_count}</span>
               </div>
               {#if g.id === myGuild?.id}
                 <button class="sm ghost" onclick={() => (view = 'mine')}>Open your faction</button>
@@ -374,7 +375,7 @@
   <!-- Page Header & Instance Picker -->
   <div class="page-header">
     <div class="title-wrap">
-      <h1><Shield class="guild-icon" size={26} /> Factions & Territories</h1>
+      <h1><InterfaceIcon name="Shield" fallback={Shield} class="guild-icon" size={26} /> Factions & Territories</h1>
       <p class="lead">Form factions, claim land chunks protected from griefing, and collaborate with your party.</p>
     </div>
     <div class="header-actions">
@@ -391,15 +392,15 @@
         </select>
       </div>
       <button class="ghost icon" onclick={loadInstanceGuildData} title="Refresh" aria-label="Refresh">
-        <RefreshCw size={17} class={loading ? 'spin' : ''} />
+        <InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={17} class={loading ? 'spin' : ''} />
       </button>
     </div>
   </div>
 
   {#if myGuild}
     <div class="view-toggle" role="tablist" aria-label="Faction view">
-      <button role="tab" aria-selected={view === 'mine'} class:active={view === 'mine'} onclick={() => (view = 'mine')}><Shield size={14} /> My faction</button>
-      <button role="tab" aria-selected={view === 'browse'} class:active={view === 'browse'} onclick={() => (view = 'browse')}><Users size={14} /> All factions ({allGuilds.length})</button>
+      <button role="tab" aria-selected={view === 'mine'} class:active={view === 'mine'} onclick={() => (view = 'mine')}><InterfaceIcon name="Shield" fallback={Shield} size={14} /> My faction</button>
+      <button role="tab" aria-selected={view === 'browse'} class:active={view === 'browse'} onclick={() => (view = 'browse')}><InterfaceIcon name="Users" fallback={Users} size={14} /> All factions ({allGuilds.length})</button>
     </div>
   {/if}
 
@@ -418,7 +419,7 @@
   {/if}
 
   {#if loading && !myGuild && !allGuilds.length}
-    <div class="center-state"><LoaderCircle class="spin" size={32} /></div>
+    <div class="center-state"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={32} /></div>
   {:else if myGuild && view === 'browse'}
     {@render guildDirectory()}
   {:else if myGuild}
@@ -436,31 +437,31 @@
             </div>
             {#if myGuild.description}<p class="guild-desc">{myGuild.description}</p>{/if}
             <div class="hero-chips">
-              <span class="badge member-badge"><Users size={12} /> {myGuild.member_count}/{myGuild.max_members} members</span>
-              <span class="badge claim-badge"><Map size={12} /> {myGuild.claims_count} chunks</span>
+              <span class="badge member-badge"><InterfaceIcon name="Users" fallback={Users} size={12} /> {myGuild.member_count}/{myGuild.max_members} members</span>
+              <span class="badge claim-badge"><InterfaceIcon name="Map" fallback={Map} size={12} /> {myGuild.claims_count} chunks</span>
               {#if myRole}<span class="badge role-chip">{myRole === 'leader' ? '👑 Leader' : myRole === 'officer' ? '⭐ Officer' : myRole}</span>{/if}
             </div>
           </div>
         </div>
-        {#if myGuild.motd}<div class="motd"><MessageSquare size={14} /> <span>{myGuild.motd}</span></div>{/if}
+        {#if myGuild.motd}<div class="motd"><InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={14} /> <span>{myGuild.motd}</span></div>{/if}
       </section>
 
       <!-- Segmented Navigation Tabs -->
       <div class="guild-tabs-row">
         <div class="tabs-segmented">
           <button class:active={activeTab === 'territory'} onclick={() => (activeTab = 'territory')}>
-            <Map size={15} /> Territory & Land Claims
+            <InterfaceIcon name="Map" fallback={Map} size={15} /> Territory & Land Claims
           </button>
           <button class:active={activeTab === 'members'} onclick={() => (activeTab = 'members')}>
-            <Users size={15} /> Roster ({members.length})
+            <InterfaceIcon name="Users" fallback={Users} size={15} /> Roster ({members.length})
           </button>
           <button class:active={activeTab === 'feed'} onclick={() => (activeTab = 'feed')}>
-            <MessageSquare size={15} /> Faction Feed ({posts.length})
+            <InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={15} /> Faction Feed ({posts.length})
           </button>
           <button class:active={activeTab === 'wallet'} onclick={() => (activeTab = 'wallet')}>
-            <Landmark size={15} /> Treasury
+            <InterfaceIcon name="Landmark" fallback={Landmark} size={15} /> Treasury
           </button>
-          <button class:active={activeTab === 'relations'} onclick={() => (activeTab = 'relations')}><Handshake size={15} /> Memberships & relations</button>
+          <button class:active={activeTab === 'relations'} onclick={() => (activeTab = 'relations')}><InterfaceIcon name="Handshake" fallback={Handshake} size={15} /> Memberships & relations</button>
           {#if canManageDetails}<button class:active={activeTab === 'settings'} onclick={() => (activeTab = 'settings')}>Faction settings</button>{/if}
         </div>
       </div>
@@ -469,7 +470,7 @@
       {#if activeTab === 'territory'}
         <div class="territory-tab">
           <div class="protection-callout glass">
-            <Shield size={18} class="callout-icon" />
+            <InterfaceIcon name="Shield" fallback={Shield} size={18} class="callout-icon" />
             <div class="callout-text">
               <strong>Grief Protection Relay Active</strong>
               <p class="tiny muted">
@@ -521,9 +522,9 @@
                   <div class="member-name-row">
                     <span class="member-name">{m.name}</span>
                     {#if m.role === 'leader'}
-                      <span class="badge leader-badge"><Crown size={11} /> Leader</span>
+                      <span class="badge leader-badge"><InterfaceIcon name="Crown" fallback={Crown} size={11} /> Leader</span>
                     {:else if m.role === 'officer'}
-                      <span class="badge officer-badge"><UserCheck size={11} /> Officer</span>
+                      <span class="badge officer-badge"><InterfaceIcon name="UserCheck" fallback={UserCheck} size={11} /> Officer</span>
                     {:else if m.role === 'member'}
                       <span class="badge member-role-badge">Member</span>
                     {:else}
@@ -540,10 +541,10 @@
                   {#if canKick(m) || (myRole === 'leader' && m.uuid !== activeAccount()?.uuid)}
                     <div class="member-actions">
                       {#if myRole === 'leader' && m.uuid !== activeAccount()?.uuid}
-                        <button class="ghost tiny-btn" onclick={(e) => { e.stopPropagation(); confirmLeader = m; }} title="Make {m.name} the faction leader"><Crown size={12} /> Make leader</button>
+                        <button class="ghost tiny-btn" onclick={(e) => { e.stopPropagation(); confirmLeader = m; }} title="Make {m.name} the faction leader"><InterfaceIcon name="Crown" fallback={Crown} size={12} /> Make leader</button>
                       {/if}
                       {#if canKick(m)}
-                        <button class="ghost tiny-btn danger-text" onclick={(e) => { e.stopPropagation(); confirmKick = m; }} title="Remove {m.name}"><UserMinus size={12} /> Remove</button>
+                        <button class="ghost tiny-btn danger-text" onclick={(e) => { e.stopPropagation(); confirmKick = m; }} title="Remove {m.name}"><InterfaceIcon name="UserMinus" fallback={UserMinus} size={12} /> Remove</button>
                       {/if}
                     </div>
                   {/if}
@@ -592,20 +593,20 @@
         </div>
         {#if myRole === 'leader'}
           <div class="card col">
-            <h3><Pencil size={15} /> Rename faction</h3>
+            <h3><InterfaceIcon name="Pencil" fallback={Pencil} size={15} /> Rename faction</h3>
             <p class="tiny muted">The new name and tag show up everywhere straight away: the launcher, the map and in game.</p>
             <div class="row">
               <label class="grow">Name<input bind:value={renameName} maxlength="32" /></label>
               <label class="tag-field">Tag<input bind:value={renameTag} maxlength="6" class="tag-input" /></label>
             </div>
             <button class="primary" onclick={renameGuild} disabled={renaming || !renameName.trim() || (renameName.trim() === myGuild.name && renameTag.trim().toUpperCase() === myGuild.tag.toUpperCase())}>
-              {#if renaming}<LoaderCircle size={14} class="spin" />{/if} Save name
+              {#if renaming}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={14} class="spin" />{/if} Save name
             </button>
           </div>
           <div class="card col danger-zone">
-            <h3><TriangleAlert size={15} /> Disband faction</h3>
+            <h3><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={15} /> Disband faction</h3>
             <p class="tiny muted">Removes the faction for good: every member is released, all {myGuild.claims_count} claimed chunks are freed and the roles, posts and invites are deleted. Whatever is in the treasury is paid to you.</p>
-            <button class="danger" onclick={() => { disbandConfirm = ''; disbandOpen = true; }}><Trash2 size={14} /> Disband faction…</button>
+            <button class="danger" onclick={() => { disbandConfirm = ''; disbandOpen = true; }}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /> Disband faction…</button>
           </div>
         {/if}
         {#if myRole === 'leader'}<div class="card col">
@@ -644,7 +645,7 @@
                 onclick={handleCreatePost}
                 disabled={posting}
               >
-                {#if posting}<LoaderCircle size={13} class="spin" />{:else}<Send size={13} />{/if}
+                {#if posting}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={13} class="spin" />{:else}<InterfaceIcon name="Send" fallback={Send} size={13} />{/if}
                 Publish
               </button>
             </div>
@@ -654,7 +655,7 @@
           <div class="posts-list">
             {#if posts.length === 0}
               <div class="empty-state glass">
-                <MessageSquare size={32} class="muted" />
+                <InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={32} class="muted" />
                 <p>No faction announcements posted yet.</p>
               </div>
             {:else}
@@ -669,7 +670,7 @@
                       </div>
                     </div>
                     {#if p.pinned}
-                      <span class="badge pinned-badge"><Pin size={11} /> Pinned</span>
+                      <span class="badge pinned-badge"><InterfaceIcon name="Pin" fallback={Pin} size={11} /> Pinned</span>
                     {/if}
                   </div>
                   <h4 class="post-headline">{p.title}</h4>
@@ -686,7 +687,7 @@
     <div class="no-guild-container">
       <div class="hero-prompt glass">
         <div class="prompt-icon-box">
-          <Shield size={38} class="guild-icon" />
+          <InterfaceIcon name="Shield" fallback={Shield} size={38} class="guild-icon" />
         </div>
         <div class="prompt-text">
           <h2>No Faction on {currentInstance?.name || 'this Instance'}</h2>
@@ -694,7 +695,7 @@
             Factions are tied to instances. Start your own faction to claim land chunks, invite members, and build a faction base, or browse existing factions below.
           </p>
           <button class="primary create-guild-btn" onclick={() => (createModalOpen = true)}>
-            <Plus size={16} /> Create a Faction
+            <InterfaceIcon name="Plus" fallback={Plus} size={16} /> Create a Faction
           </button>
         </div>
       </div>
@@ -716,7 +717,7 @@
     <div class="row end">
       <button class="ghost" onclick={() => (disbandOpen = false)}>Cancel</button>
       <button class="danger" onclick={disbandGuild} disabled={disbanding || disbandConfirm.trim().toLowerCase() !== myGuild.name.toLowerCase()}>
-        {#if disbanding}<LoaderCircle size={14} class="spin" />{:else}<Trash2 size={14} />{/if} Disband forever
+        {#if disbanding}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={14} class="spin" />{:else}<InterfaceIcon name="Trash2" fallback={Trash2} size={14} />{/if} Disband forever
       </button>
     </div>
   </div>
@@ -729,7 +730,7 @@
     <p>They will leave the faction straight away and get a notification. They can ask to join again later.</p>
     <div class="row end">
       <button class="ghost" onclick={() => (confirmKick = null)}>Cancel</button>
-      <button class="danger" onclick={() => confirmKick && kick(confirmKick)}><UserMinus size={14} /> Remove</button>
+      <button class="danger" onclick={() => confirmKick && kick(confirmKick)}><InterfaceIcon name="UserMinus" fallback={UserMinus} size={14} /> Remove</button>
     </div>
   </div>
 </Modal>
@@ -738,7 +739,7 @@
     <p>{confirmLeader?.name} becomes the faction leader and you become an officer. Only they can undo it.</p>
     <div class="row end">
       <button class="ghost" onclick={() => (confirmLeader = null)}>Cancel</button>
-      <button class="danger" onclick={() => confirmLeader && makeLeader(confirmLeader)}><Crown size={14} /> Hand over</button>
+      <button class="danger" onclick={() => confirmLeader && makeLeader(confirmLeader)}><InterfaceIcon name="Crown" fallback={Crown} size={14} /> Hand over</button>
     </div>
   </div>
 </Modal>
@@ -771,7 +772,7 @@
   {#snippet footer()}
     <button class="ghost" onclick={() => (createModalOpen = false)}>Cancel</button>
     <button class="primary" onclick={handleCreateGuild} disabled={creating}>
-      {#if creating}<LoaderCircle size={14} class="spin" />{:else}<Sparkles size={14} />{/if}
+      {#if creating}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={14} class="spin" />{:else}<InterfaceIcon name="Sparkles" fallback={Sparkles} size={14} />{/if}
       Found Faction
     </button>
   {/snippet}

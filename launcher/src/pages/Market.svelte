@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { ClipboardList, ScrollText, Store, Gavel, Tag, RefreshCw, Search, Clock, Crown, Flame, History, Package, Wallet, Shield, X, TrendingUp, ShoppingCart, ArrowDownLeft, ArrowUpRight, Archive } from '@lucide/svelte';
   import ItemTile from '../components/ItemTile.svelte';
@@ -120,31 +121,31 @@
 <div class="market">
   <header class="top">
     <div>
-      <h1><Store size={26} /> Market &amp; Auctions</h1>
+      <h1><InterfaceIcon name="Store" fallback={Store} size={26} /> Market &amp; Auctions</h1>
       <p class="lead">Browse what players are selling, bid on auctions and buy — all from the launcher. Anything you get is delivered to your <b>/vault</b> in game, even when you are offline.</p>
     </div>
     <div class="right">
       {#if servers.length > 1}
         <select aria-label="Server" bind:value={serverId}>{#each servers as s}<option value={s.id}>{s.name}</option>{/each}</select>
       {/if}
-      <span class="wallet" title="Your balance on this server"><Wallet size={15} /> {money(balance)}</span>
-      <button class="ghost icon" aria-label="Refresh" title="Refresh" onclick={() => load()} disabled={loading}><RefreshCw size={16} class={loading ? 'spin' : ''} /></button>
+      <span class="wallet" title="Your balance on this server"><InterfaceIcon name="Wallet" fallback={Wallet} size={15} /> {money(balance)}</span>
+      <button class="ghost icon" aria-label="Refresh" title="Refresh" onclick={() => load()} disabled={loading}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} class={loading ? 'spin' : ''} /></button>
     </div>
   </header>
 
   {#if waiting}
-    <div class="banner"><Archive size={16} /> <span><b>{waiting} item{waiting === 1 ? '' : 's'}</b> on the way to your vault{#if waitingItems[0]} &mdash; {waitingItems.slice(0, 3).map((i) => `${i.amount}× ${i.item_name}`).join(', ')}{/if}. They arrive within a minute, as soon as the server is online.</span></div>
+    <div class="banner"><InterfaceIcon name="Archive" fallback={Archive} size={16} /> <span><b>{waiting} item{waiting === 1 ? '' : 's'}</b> on the way to your vault{#if waitingItems[0]} &mdash; {waitingItems.slice(0, 3).map((i) => `${i.amount}× ${i.item_name}`).join(', ')}{/if}. They arrive within a minute, as soon as the server is online.</span></div>
   {/if}
   {#if error}<div class="banner err" role="alert">{error}</div>{/if}
 
   <div class="tabs" role="tablist">
-    <button role="tab" aria-selected={tab === 'browse'} class:active={tab === 'browse'} onclick={() => (tab = 'browse')}><Tag size={15} /> Browse <span class="n">{listings.length}</span></button>
-    <button role="tab" aria-selected={tab === 'mine'} class:active={tab === 'mine'} onclick={() => (tab = 'mine')}><History size={15} /> My activity {#if mineListings.length + leadingBids.length}<span class="n">{mineListings.length + leadingBids.length}</span>{/if}</button>
-    <button role="tab" aria-selected={tab === 'orders'} class:active={tab === 'orders'} onclick={() => (tab = 'orders')}><ClipboardList size={15} /> {coreExperience ? 'Buy contracts' : 'Buy orders'}</button>
-    <button role="tab" aria-selected={tab === 'darknet'} class:active={tab === 'darknet'} onclick={() => (tab = 'darknet')}><Store size={15} /> Darknet</button>
-    {#if coreExperience}<button role="tab" aria-selected={tab === 'vaults'} class:active={tab === 'vaults'} onclick={() => (tab = 'vaults')}><Archive size={15} /> Vaults</button>{/if}
-    {#if !coreExperience}<button role="tab" aria-selected={tab === 'contracts'} class:active={tab === 'contracts'} onclick={() => (tab = 'contracts')}><ScrollText size={15} /> Contracts</button>{/if}
-    {#if auctionsEnding}<span class="ending"><Flame size={14} /> {auctionsEnding} auction{auctionsEnding === 1 ? '' : 's'} ending soon</span>{/if}
+    <button role="tab" aria-selected={tab === 'browse'} class:active={tab === 'browse'} onclick={() => (tab = 'browse')}><InterfaceIcon name="Tag" fallback={Tag} size={15} /> Browse <span class="n">{listings.length}</span></button>
+    <button role="tab" aria-selected={tab === 'mine'} class:active={tab === 'mine'} onclick={() => (tab = 'mine')}><InterfaceIcon name="History" fallback={History} size={15} /> My activity {#if mineListings.length + leadingBids.length}<span class="n">{mineListings.length + leadingBids.length}</span>{/if}</button>
+    <button role="tab" aria-selected={tab === 'orders'} class:active={tab === 'orders'} onclick={() => (tab = 'orders')}><InterfaceIcon name="ClipboardList" fallback={ClipboardList} size={15} /> {coreExperience ? 'Buy contracts' : 'Buy orders'}</button>
+    <button role="tab" aria-selected={tab === 'darknet'} class:active={tab === 'darknet'} onclick={() => (tab = 'darknet')}><InterfaceIcon name="Store" fallback={Store} size={15} /> Darknet</button>
+    {#if coreExperience}<button role="tab" aria-selected={tab === 'vaults'} class:active={tab === 'vaults'} onclick={() => (tab = 'vaults')}><InterfaceIcon name="Archive" fallback={Archive} size={15} /> Vaults</button>{/if}
+    {#if !coreExperience}<button role="tab" aria-selected={tab === 'contracts'} class:active={tab === 'contracts'} onclick={() => (tab = 'contracts')}><InterfaceIcon name="ScrollText" fallback={ScrollText} size={15} /> Contracts</button>{/if}
+    {#if auctionsEnding}<span class="ending"><InterfaceIcon name="Flame" fallback={Flame} size={14} /> {auctionsEnding} auction{auctionsEnding === 1 ? '' : 's'} ending soon</span>{/if}
   </div>
 
   {#snippet card(l: Listing)}
@@ -153,14 +154,14 @@
         <ItemTile id={l.item_id} amount={l.amount} />
         <div class="title">
           <strong title={l.item_name}>{l.item_name.replace(/§./g, '')}</strong>
-          <small>{#if l.seller_guild}<Shield size={11} /> [{l.seller_guild}] faction{:else}by {l.seller_name}{/if}</small>
+          <small>{#if l.seller_guild}<InterfaceIcon name="Shield" fallback={Shield} size={11} /> [{l.seller_guild}] faction{:else}by {l.seller_name}{/if}</small>
         </div>
-        <span class="kind" class:a={l.kind === 'auction'}>{#if l.kind === 'auction'}<Gavel size={11} /> Auction{:else}<Tag size={11} /> Buy now{/if}</span>
+        <span class="kind" class:a={l.kind === 'auction'}>{#if l.kind === 'auction'}<InterfaceIcon name="Gavel" fallback={Gavel} size={11} /> Auction{:else}<InterfaceIcon name="Tag" fallback={Tag} size={11} /> Buy now{/if}</span>
       </div>
       <div class="price">
         {#if l.kind === 'auction'}
           <div><small>{l.current_bid != null ? 'Top bid' : 'Starting bid'}</small><b>{money(l.current_bid ?? l.price)}</b></div>
-          <div class="r"><small><Clock size={11} /> ends in</small><b class="t" class:warn={soon(l)}>{left(l.ends_at)}</b></div>
+          <div class="r"><small><InterfaceIcon name="Clock" fallback={Clock} size={11} /> ends in</small><b class="t" class:warn={soon(l)}>{left(l.ends_at)}</b></div>
         {:else}
           <div><small>Price</small><b>{money(l.price)}</b></div>
           {#if l.amount > 1}<div class="r"><small>per item</small><b class="t">{money(l.price / l.amount)}</b></div>{/if}
@@ -174,9 +175,9 @@
           <span class="chip you">Your listing</span>
           <button class="ghost sm" onclick={() => open(l)}>Manage</button>
         {:else if l.kind === 'auction'}
-          <button class="primary" onclick={() => open(l)}><Gavel size={14} /> {l.leading ? 'Raise bid' : 'Bid ' + money(l.min_next_bid)}</button>
+          <button class="primary" onclick={() => open(l)}><InterfaceIcon name="Gavel" fallback={Gavel} size={14} /> {l.leading ? 'Raise bid' : 'Bid ' + money(l.min_next_bid)}</button>
         {:else}
-          <button class="primary" disabled={!afford(l.price)} onclick={() => open(l)}><ShoppingCart size={14} /> Buy</button>
+          <button class="primary" disabled={!afford(l.price)} onclick={() => open(l)}><InterfaceIcon name="ShoppingCart" fallback={ShoppingCart} size={14} /> Buy</button>
         {/if}
       </div>
     </article>
@@ -194,7 +195,7 @@
     {#key serverId}<Contracts {serverId} onbalance={(v) => (balance = v)} />{/key}
   {:else if tab === 'browse'}
     <div class="bar">
-      <label class="search"><Search size={15} /><input placeholder="Search items or sellers…" bind:value={query} aria-label="Search the market" /></label>
+      <label class="search"><InterfaceIcon name="Search" fallback={Search} size={15} /><input placeholder="Search items or sellers…" bind:value={query} aria-label="Search the market" /></label>
       <div class="seg" role="group" aria-label="Type">
         {#each [['all', 'All'], ['buy_now', 'Buy now'], ['auction', 'Auctions']] as [v, label]}
           <button class:on={filter === v} onclick={() => (filter = v as typeof filter)}>{label}</button>
@@ -206,28 +207,28 @@
     {#if shown.length}
       <div class="grid">{#each shown as l (l.id)}{@render card(l)}{/each}</div>
     {:else}
-      <div class="empty"><Store size={34} /><h3>{loading ? 'Loading the market…' : listings.length ? 'Nothing matches' : 'Nobody is selling yet'}</h3>
+      <div class="empty"><InterfaceIcon name="Store" fallback={Store} size={34} /><h3>{loading ? 'Loading the market…' : listings.length ? 'Nothing matches' : 'Nobody is selling yet'}</h3>
         <p>{listings.length ? 'Try another search or filter.' : 'In game, hold an item and type /market sell to list it — or /market auction to start an auction.'}</p></div>
     {/if}
   {:else}
     <div class="mine">
       <section>
-        <h2><Package size={16} /> Your listings <span class="n">{mineListings.length}</span></h2>
+        <h2><InterfaceIcon name="Package" fallback={Package} size={16} /> Your listings <span class="n">{mineListings.length}</span></h2>
         {#if mineListings.length}<div class="grid">{#each mineListings as l (l.id)}{@render card(l)}{/each}</div>{:else}<p class="muted">You aren't selling anything. List items in game with <code>/market sell</code>.</p>{/if}
       </section>
       {#if leadingBids.length}
         <section>
-          <h2><Crown size={16} /> Auctions you're winning <span class="n">{leadingBids.length}</span></h2>
+          <h2><InterfaceIcon name="Crown" fallback={Crown} size={16} /> Auctions you're winning <span class="n">{leadingBids.length}</span></h2>
           <div class="grid">{#each leadingBids as l (l.id)}{@render card(l)}{/each}</div>
         </section>
       {/if}
       <section>
-        <h2><TrendingUp size={16} /> Recent activity</h2>
+        <h2><InterfaceIcon name="TrendingUp" fallback={TrendingUp} size={16} /> Recent activity</h2>
         {#if history.length}
           <ul class="feed">
             {#each history as h, i (i)}
               <li class={h.kind}>
-                <span class="ic">{#if h.kind === 'sold'}<ArrowDownLeft size={15} />{:else if h.kind === 'bought'}<ShoppingCart size={15} />{:else}<Gavel size={15} />{/if}</span>
+                <span class="ic">{#if h.kind === 'sold'}<InterfaceIcon name="ArrowDownLeft" fallback={ArrowDownLeft} size={15} />{:else if h.kind === 'bought'}<InterfaceIcon name="ShoppingCart" fallback={ShoppingCart} size={15} />{:else}<InterfaceIcon name="Gavel" fallback={Gavel} size={15} />{/if}</span>
                 <span class="what"><b>{h.kind === 'sold' ? 'Sold' : h.kind === 'bought' ? 'Bought' : 'Bid'}</b> {h.description.replace(/^(Market purchase|Auction sale|Auction bid):\s*/, '')}</span>
                 <span class="amt">{h.kind === 'sold' ? '+' : '−'}{money(h.amount)}</span>
                 <span class="when">{ago(h.at)}</span>
@@ -250,7 +251,7 @@
           <p class="muted">Bidding has started ({t.bid_count} bid{t.bid_count === 1 ? '' : 's'}, top {money(t.current_bid)}), so this auction can't be cancelled. It ends in {left(t.ends_at)}.</p>
         {:else}
           <p class="muted">Cancelling returns the item to your vault.</p>
-          <button class="danger" disabled={busy} onclick={() => act('cancel', t)}><X size={14} /> Cancel listing</button>
+          <button class="danger" disabled={busy} onclick={() => act('cancel', t)}><InterfaceIcon name="X" fallback={X} size={14} /> Cancel listing</button>
         {/if}
       {:else if t.kind === 'auction'}
         <div class="rows"><span>Top bid</span><b>{money(t.current_bid ?? t.price)}</b><span>Minimum bid</span><b>{money(t.min_next_bid)}</b><span>Ends in</span><b>{left(t.ends_at)}</b><span>Your balance</span><b>{money(balance)}</b></div>
@@ -259,12 +260,12 @@
           {#each [1, 1.1, 1.25, 1.5] as m}<button class="ghost sm" onclick={() => (bidAmount = Math.round(t.min_next_bid * m * 100) / 100)}>{m === 1 ? 'Minimum' : '+' + Math.round((m - 1) * 100) + '%'}</button>{/each}
         </div>
         <p class="muted">Your bid is held while you lead and refunded if someone outbids you. Win it and the item goes to your vault.</p>
-        <button class="primary" disabled={busy || bidAmount < t.min_next_bid || !afford(bidAmount)} onclick={() => act('bid', t)}><Gavel size={14} /> Bid {money(bidAmount)}</button>
+        <button class="primary" disabled={busy || bidAmount < t.min_next_bid || !afford(bidAmount)} onclick={() => act('bid', t)}><InterfaceIcon name="Gavel" fallback={Gavel} size={14} /> Bid {money(bidAmount)}</button>
         {#if !afford(bidAmount)}<p class="err">You can't afford that.</p>{/if}
       {:else}
         <div class="rows"><span>Price</span><b>{money(t.price)}</b><span>Your balance</span><b>{money(balance)}</b><span>After buying</span><b class:warn={!afford(t.price)}>{money((balance ?? 0) - t.price)}</b></div>
         <p class="muted">The item is delivered to your <b>/vault</b> in game — you don't need to be online.</p>
-        <button class="primary" disabled={busy || !afford(t.price)} onclick={() => act('buy', t)}><ShoppingCart size={14} /> Buy for {money(t.price)}</button>
+        <button class="primary" disabled={busy || !afford(t.price)} onclick={() => act('buy', t)}><InterfaceIcon name="ShoppingCart" fallback={ShoppingCart} size={14} /> Buy for {money(t.price)}</button>
       {/if}
     </div>
   {/if}

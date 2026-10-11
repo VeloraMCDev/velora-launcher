@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import McItem from '../../components/McItem.svelte';
   import { onMount } from 'svelte';
   import {
@@ -148,8 +150,8 @@
 
 <div class="pl-page qst">
   <div class="pl-head">
-    <div><h1><Target size={26} /> Quests</h1><p>Complete quests, unlock achievements and climb the levels.</p></div>
-    <div class="pl-actions"><button class="pl-iconbtn" aria-label="Refresh" aria-busy={refreshing} onclick={() => load()}><RefreshCw size={16} class={refreshing ? 'spin' : ''} /></button></div>
+    <div><h1><InterfaceIcon name="Target" fallback={Target} size={26} /> Quests</h1><p>Complete quests, unlock achievements and climb the levels.</p></div>
+    <div class="pl-actions"><button class="pl-iconbtn" aria-label="Refresh" aria-busy={refreshing} onclick={() => load()}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} class={refreshing ? 'spin' : ''} /></button></div>
   </div>
 
   {#if error && !level}
@@ -165,7 +167,7 @@
     <section class="pl-hero lvl" class:up={levelUp}>
       <div class="ring" style="--p:{xpPct}">
         <div class="ring-in"><small>LVL</small><b><Count value={level.level} format={(v) => String(Math.round(v))} /></b></div>
-        {#if level.rank}<span class="rk"><Trophy size={11} /> #{level.rank}</span>{/if}
+        {#if level.rank}<span class="rk"><InterfaceIcon name="Trophy" fallback={Trophy} size={11} /> #{level.rank}</span>{/if}
       </div>
       <div class="lv-main">
         <div class="lv-top">
@@ -180,22 +182,22 @@
         <div class="pl-progress big"><i style="width:{xpPct}%"></i></div>
         <div class="lv-foot">
           <span class="sub">{Math.max(0, level.next_level_xp - curXp).toLocaleString()} XP to level {level.level + 1}</span>
-          {#if level.badges?.length}<div class="chips">{#each level.badges as b}<span class="pl-chip warn"><Star size={11} /> {b}</span>{/each}</div>{/if}
+          {#if level.badges?.length}<div class="chips">{#each level.badges as b}<span class="pl-chip warn"><InterfaceIcon name="Star" fallback={Star} size={11} /> {b}</span>{/each}</div>{/if}
         </div>
       </div>
-      {#if levelUp}<div class="levelup" aria-hidden="true"><ChevronsUp size={20} /> LEVEL UP</div>{/if}
+      {#if levelUp}<div class="levelup" aria-hidden="true"><InterfaceIcon name="ChevronsUp" fallback={ChevronsUp} size={20} /> LEVEL UP</div>{/if}
     </section>
 
     {#if readyList.length}
       <button class="readybar" onclick={() => { tab = 'quests'; }} aria-label="Rewards ready">
-        <Gift size={18} /> <span><b>{readyList.length}</b> reward{readyList.length === 1 ? '' : 's'} ready to claim <span class="sub">· +{pendingXp.toLocaleString()} XP</span></span>
+        <InterfaceIcon name="Gift" fallback={Gift} size={18} /> <span><b>{readyList.length}</b> reward{readyList.length === 1 ? '' : 's'} ready to claim <span class="sub">· +{pendingXp.toLocaleString()} XP</span></span>
       </button>
     {/if}
 
     <div class="pl-tabs tabs" role="tablist">
-      <button role="tab" class:on={tab === 'quests'} onclick={() => (tab = 'quests')}><Target size={15} /> Quests {#if readyList.length}<span class="count">{readyList.length}</span>{/if}</button>
-      <button role="tab" class:on={tab === 'achievements'} onclick={() => (tab = 'achievements')}><Trophy size={15} /> Achievements <span class="count">{unlocked}/{achs.length}</span></button>
-      <button role="tab" class:on={tab === 'levels'} onclick={() => (tab = 'levels')}><Layers size={15} /> Levels</button>
+      <button role="tab" class:on={tab === 'quests'} onclick={() => (tab = 'quests')}><InterfaceIcon name="Target" fallback={Target} size={15} /> Quests {#if readyList.length}<span class="count">{readyList.length}</span>{/if}</button>
+      <button role="tab" class:on={tab === 'achievements'} onclick={() => (tab = 'achievements')}><InterfaceIcon name="Trophy" fallback={Trophy} size={15} /> Achievements <span class="count">{unlocked}/{achs.length}</span></button>
+      <button role="tab" class:on={tab === 'levels'} onclick={() => (tab = 'levels')}><InterfaceIcon name="Layers" fallback={Layers} size={15} /> Levels</button>
     </div>
 
     {#key tab}
@@ -203,12 +205,12 @@
       {#if tab === 'quests'}
         <div class="bar">
           <div class="pl-tabs mini">
-            <button class:on={period === 'daily'} onclick={() => (period = 'daily')}><Clock size={14} /> Daily {#if readyIn('daily')}<span class="count">{readyIn('daily')}</span>{/if}</button>
-            <button class:on={period === 'weekly'} onclick={() => (period = 'weekly')}><Flame size={14} /> Weekly {#if readyIn('weekly')}<span class="count">{readyIn('weekly')}</span>{/if}</button>
+            <button class:on={period === 'daily'} onclick={() => (period = 'daily')}><InterfaceIcon name="Clock" fallback={Clock} size={14} /> Daily {#if readyIn('daily')}<span class="count">{readyIn('daily')}</span>{/if}</button>
+            <button class:on={period === 'weekly'} onclick={() => (period = 'weekly')}><InterfaceIcon name="Flame" fallback={Flame} size={14} /> Weekly {#if readyIn('weekly')}<span class="count">{readyIn('weekly')}</span>{/if}</button>
           </div>
-          <div class="reset"><Clock size={13} /> Resets in <b>{resetIn(period)}</b><span class="dot">·</span><b>{doneCount}/{inPeriod.length}</b> done</div>
+          <div class="reset"><InterfaceIcon name="Clock" fallback={Clock} size={13} /> Resets in <b>{resetIn(period)}</b><span class="dot">·</span><b>{doneCount}/{inPeriod.length}</b> done</div>
           {#if readyList.length > 1}
-            <button class="pl-btn primary sm" disabled={claimingAll} aria-busy={claimingAll} onclick={claimAll}>{#if claimingAll}<LoaderCircle size={14} class="spin" />{:else}<Gift size={14} />{/if} Claim all ({readyList.length})</button>
+            <button class="pl-btn primary sm" disabled={claimingAll} aria-busy={claimingAll} onclick={claimAll}>{#if claimingAll}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={14} class="spin" />{:else}<InterfaceIcon name="Gift" fallback={Gift} size={14} />{/if} Claim all ({readyList.length})</button>
           {/if}
         </div>
         {#if inPeriod.length > 0}
@@ -218,7 +220,7 @@
           <div class="pl-scroll-x cats">
             {#each categories as c}
               {@const CI = catIcons[c]}
-              <button class="cat" class:on={cat === c} onclick={() => (cat = c)}>{#if CI}<CI size={14} />{/if} <span>{c}</span></button>
+              <button class="cat" class:on={cat === c} onclick={() => (cat = c)}>{#if CI}<InterfaceIcon name={iconName(CI)} fallback={CI} size={14} />{/if} <span>{c}</span></button>
             {/each}
           </div>
         {/if}
@@ -237,7 +239,7 @@
                 {/if}
                 <div class="qtop">
                   <div class="qic" class:done={u.completed}>
-                    {#if imageIcon(q.icon)}<img src={imageIcon(q.icon)} alt="" />{:else if q.icon && !questIcons[q.icon] && !catIcons[q.icon]}<McItem id={q.icon} size={28} emoji={resolveIcon({ icon_item: q.icon }).emoji} />{:else}<QI size={22} />{/if}
+                    {#if imageIcon(q.icon)}<img src={imageIcon(q.icon)} alt="" />{:else if q.icon && !questIcons[q.icon] && !catIcons[q.icon]}<McItem id={q.icon} size={28} emoji={resolveIcon({ icon_item: q.icon }).emoji} />{:else}<InterfaceIcon name={iconName(QI)} fallback={QI} size={22} />{/if}
                   </div>
                   <div class="grow">
                     <div class="qtitle"><b>{q.title}</b><span class="pl-chip">{q.category}</span></div>
@@ -249,11 +251,11 @@
                   <div class="plabels"><span><b>{Math.min(cnt(u), q.target_count).toLocaleString()}</b> / {q.target_count.toLocaleString()}</span><span class="pc">{pct}%</span></div>
                 </div>
                 <div class="qfoot">
-                  <div class="rw"><span class="pl-chip accent"><Sparkles size={11} /> +{q.xp_reward} XP</span>{#each extras[`quest:${q.id}`] ?? [] as ex}<span class="pl-chip warn"><Gift size={11} /> {ex}</span>{/each}</div>
+                  <div class="rw"><span class="pl-chip accent"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={11} /> +{q.xp_reward} XP</span>{#each extras[`quest:${q.id}`] ?? [] as ex}<span class="pl-chip warn"><InterfaceIcon name="Gift" fallback={Gift} size={11} /> {ex}</span>{/each}</div>
                   {#if u.claimed}
-                    <span class="pl-chip good done-chip"><Check size={13} /> Claimed</span>
+                    <span class="pl-chip good done-chip"><InterfaceIcon name="Check" fallback={Check} size={13} /> Claimed</span>
                   {:else if u.completed}
-                    <button class="pl-btn primary claim" disabled={claiming === qid(u) || claimingAll} aria-busy={claiming === qid(u)} onclick={() => claim(u)}>{#if claiming === qid(u)}<LoaderCircle size={15} class="spin" />{:else}<Gift size={15} />{/if} Claim</button>
+                    <button class="pl-btn primary claim" disabled={claiming === qid(u) || claimingAll} aria-busy={claiming === qid(u)} onclick={() => claim(u)}>{#if claiming === qid(u)}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={15} class="spin" />{:else}<InterfaceIcon name="Gift" fallback={Gift} size={15} />{/if} Claim</button>
                   {:else}
                     <span class="sub">In progress</span>
                   {/if}
@@ -265,13 +267,13 @@
 
       {:else if tab === 'achievements'}
         <div class="pl-card tight asum">
-          <div class="pl-row-flex"><Trophy size={22} class="gold" /><div class="grow"><b>{unlocked} of {achs.length} unlocked</b><div class="pl-progress" style="margin-top:6px"><i style="width:{achs.length ? (unlocked / achs.length) * 100 : 0}%"></i></div></div></div>
+          <div class="pl-row-flex"><InterfaceIcon name="Trophy" fallback={Trophy} size={22} class="gold" /><div class="grow"><b>{unlocked} of {achs.length} unlocked</b><div class="pl-progress" style="margin-top:6px"><i style="width:{achs.length ? (unlocked / achs.length) * 100 : 0}%"></i></div></div></div>
         </div>
         <div class="bar">
           <div class="pl-tabs mini">
             {#each ['all', 'unlocked', 'locked'] as f}<button class:on={aFilter === f} onclick={() => (aFilter = f as typeof aFilter)} style="text-transform:capitalize">{f}</button>{/each}
           </div>
-          <div class="pl-search grow"><Search size={16} /><input class="pl-input" type="search" placeholder="Search achievements" bind:value={aq} aria-label="Search achievements" /></div>
+          <div class="pl-search grow"><InterfaceIcon name="Search" fallback={Search} size={16} /><input class="pl-input" type="search" placeholder="Search achievements" bind:value={aq} aria-label="Search achievements" /></div>
         </div>
         {#if achShown.length === 0}
           <div class="pl-card"><Empty icon={Trophy} title="Nothing here" text="No achievements match this filter." /></div>
@@ -286,8 +288,8 @@
                   <div class="rw">
                     <span class="pl-chip" class:accent={a.frame_type === 'goal'} class:warn={a.frame_type === 'challenge'}>{frameName(a.frame_type)}</span>
                     {#if !hidden(a)}<span class="pl-chip accent">+{a.xp_reward} XP</span>{/if}
-                    {#each exOf(a) as ex}<span class="pl-chip warn"><Gift size={11} /> {ex}</span>{/each}
-                    {#if a.unlocked}<span class="pl-chip good"><Check size={11} /> {a.unlocked_at ? timeAgo(a.unlocked_at) : 'Unlocked'}</span>{:else}<span class="pl-chip"><Lock size={11} /> Locked</span>{/if}
+                    {#each exOf(a) as ex}<span class="pl-chip warn"><InterfaceIcon name="Gift" fallback={Gift} size={11} /> {ex}</span>{/each}
+                    {#if a.unlocked}<span class="pl-chip good"><InterfaceIcon name="Check" fallback={Check} size={11} /> {a.unlocked_at ? timeAgo(a.unlocked_at) : 'Unlocked'}</span>{:else}<span class="pl-chip"><InterfaceIcon name="Lock" fallback={Lock} size={11} /> Locked</span>{/if}
                   </div>
                 </div>
               </article>
@@ -311,7 +313,7 @@
             </div>
           {/if}
         {:else if nextMilestone}
-          <div class="pl-card tight next"><ChevronsUp size={18} /> Next reward at <b>level {nextMilestone}</b> <span class="sub">· {nextMilestone - scopeLevel} level{nextMilestone - scopeLevel === 1 ? '' : 's'} to go</span></div>
+          <div class="pl-card tight next"><InterfaceIcon name="ChevronsUp" fallback={ChevronsUp} size={18} /> Next reward at <b>level {nextMilestone}</b> <span class="sub">· {nextMilestone - scopeLevel} level{nextMilestone - scopeLevel === 1 ? '' : 's'} to go</span></div>
         {/if}
 
         {#if byLevel.length === 0}
@@ -323,7 +325,7 @@
               <div class="tl-row rise" class:got class:next={g.lvl === nextMilestone} style:--i={Math.min(i, 12)}>
                 <div class="node"><span>{g.lvl}</span></div>
                 <div class="pl-card tight tl-card">
-                  <div class="tl-h"><b>Level {g.lvl}</b>{#if got}<span class="pl-chip good"><Check size={11} /> Unlocked</span>{:else if g.lvl === nextMilestone}<span class="pl-chip accent">Next up</span>{:else}<span class="pl-chip"><Lock size={11} /> Locked</span>{/if}</div>
+                  <div class="tl-h"><b>Level {g.lvl}</b>{#if got}<span class="pl-chip good"><InterfaceIcon name="Check" fallback={Check} size={11} /> Unlocked</span>{:else if g.lvl === nextMilestone}<span class="pl-chip accent">Next up</span>{:else}<span class="pl-chip"><InterfaceIcon name="Lock" fallback={Lock} size={11} /> Locked</span>{/if}</div>
                   <div class="pl-list">
                     {#each g.list as r (r.id)}
                       {@const RI = rewardIcon[r.reward_type] ?? Gift}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount, untrack } from 'svelte';
   import { Gift, Clock } from '@lucide/svelte';
   import WheelSvg from './WheelSvg.svelte';
@@ -55,7 +56,7 @@
     {#if prize != null}{#key prize}<Burst />{/key}{/if}
   </div>
   <div class="copy">
-    <span class="tag"><Gift size={13} /> Free daily spin</span>
+    <span class="tag"><InterfaceIcon name="Gift" fallback={Gift} size={13} /> Free daily spin</span>
     {#if prize != null}
       <h3>You won {money(prize)}!</h3>
       <p>It's in your balance already.</p>
@@ -66,7 +67,7 @@
     {#if left > 0}
       <button class="primary go" onclick={spin} disabled={busy || !cfg.enabled}>{busy ? 'Spinning…' : left > 1 ? `Spin free (${left} left)` : 'Spin for free'}</button>
     {:else}
-      <p class="reset"><Clock size={14} /> Next free spin in <b>{untilText(st.free.resets_at, now)}</b></p>
+      <p class="reset"><InterfaceIcon name="Clock" fallback={Clock} size={14} /> Next free spin in <b>{untilText(st.free.resets_at, now)}</b></p>
     {/if}
   </div>
 </section>

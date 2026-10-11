@@ -1,4 +1,6 @@
 <script module lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   export type CasinoServer = { id: number; name: string };
 </script>
 
@@ -144,12 +146,12 @@
   {#if !compact}
     <header class="top">
       <div>
-        <h1><Dice5 size={26} /> Casino</h1>
+        <h1><InterfaceIcon name="Dice5" fallback={Dice5} size={26} /> Casino</h1>
         <p class="lead">Play with your Velora balance. Winnings land in your account straight away, in the launcher and in game.</p>
       </div>
       <div class="right">
         {#if servers.length > 1}<select aria-label="Server" bind:value={serverId}>{#each servers as s}<option value={s.id}>{s.name}</option>{/each}</select>{/if}
-        <button class="ghost icon" aria-label="Refresh" title="Refresh" onclick={() => refresh(false)} disabled={loading}><RefreshCw size={16} class={loading ? 'spin' : ''} /></button>
+        <button class="ghost icon" aria-label="Refresh" title="Refresh" onclick={() => refresh(false)} disabled={loading}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} class={loading ? 'spin' : ''} /></button>
       </div>
     </header>
   {:else if servers.length > 1}
@@ -160,13 +162,13 @@
 
   {#if st}
     {#if !st.enabled}
-      <div class="closed"><Lock size={34} /><h2>The casino is closed</h2><p>The server's admins have switched it off for now. Check back later.</p></div>
+      <div class="closed"><InterfaceIcon name="Lock" fallback={Lock} size={34} /><h2>The casino is closed</h2><p>The server's admins have switched it off for now. Check back later.</p></div>
     {:else}
       <!-- The bar that stays with you: balance, how the session is going, the last rounds, and the switches. -->
       <div class="bar">
-        <div class="wallet" title="Your balance on this server"><Wallet size={18} /><div><small>Balance</small><b><Money value={balance} /></b></div></div>
+        <div class="wallet" title="Your balance on this server"><InterfaceIcon name="Wallet" fallback={Wallet} size={18} /><div><small>Balance</small><b><Money value={balance} /></b></div></div>
         <div class="session" class:up={sessionNet > 0} class:down={sessionNet < 0} title="Won or lost since you opened the casino">
-          {#if sessionNet >= 0}<TrendingUp size={16} />{:else}<TrendingDown size={16} />{/if}
+          {#if sessionNet >= 0}<InterfaceIcon name="TrendingUp" fallback={TrendingUp} size={16} />{:else}<InterfaceIcon name="TrendingDown" fallback={TrendingDown} size={16} />{/if}
           <div><small>This session</small><b>{sessionNet > 0 ? '+' : sessionNet < 0 ? '−' : ''}{money(Math.abs(sessionNet))}</b></div>
           <em>{sessionRounds} round{sessionRounds === 1 ? '' : 's'}</em>
         </div>
@@ -179,20 +181,20 @@
         <div class="switches">
           {#if st.config.chaos.enabled}
             <button class="chaos" class:on={cprefs.chaos} role="switch" aria-checked={cprefs.chaos} onclick={() => setChaos(!cprefs.chaos)} title="Chaos mode: wins can surge ×{(1.5).toFixed(1)}+ or be cursed to half. Press X.">
-              <Zap size={15} /><span>Chaos</span><i class="track"><i class="knob"></i></i>
+              <InterfaceIcon name="Zap" fallback={Zap} size={15} /><span>Chaos</span><i class="track"><i class="knob"></i></i>
             </button>
           {/if}
-          <button class="ghost icon" onclick={toggleSound} aria-pressed={sound} aria-label={sound ? 'Mute sound effects' : 'Turn on sound effects'} title="Sound effects (V)">{#if sound}<Volume2 size={17} />{:else}<VolumeX size={17} />{/if}</button>
-          <button class="ghost icon" onclick={() => (help = true)} aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)"><Keyboard size={17} /></button>
-          {#if compact}<button class="ghost icon" aria-label="Refresh" title="Refresh" onclick={() => refresh(false)} disabled={loading}><RefreshCw size={16} class={loading ? 'spin' : ''} /></button>{/if}
+          <button class="ghost icon" onclick={toggleSound} aria-pressed={sound} aria-label={sound ? 'Mute sound effects' : 'Turn on sound effects'} title="Sound effects (V)">{#if sound}<InterfaceIcon name="Volume2" fallback={Volume2} size={17} />{:else}<InterfaceIcon name="VolumeX" fallback={VolumeX} size={17} />{/if}</button>
+          <button class="ghost icon" onclick={() => (help = true)} aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)"><InterfaceIcon name="Keyboard" fallback={Keyboard} size={17} /></button>
+          {#if compact}<button class="ghost icon" aria-label="Refresh" title="Refresh" onclick={() => refresh(false)} disabled={loading}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} class={loading ? 'spin' : ''} /></button>{/if}
         </div>
       </div>
-      {#if chaosOn}<p class="chaos-note"><Zap size={14} /> Chaos is on: every win at Slots, Wheel, Plinko, Dice and Coin Flip can be surged or cursed.</p>{/if}
+      {#if chaosOn}<p class="chaos-note"><InterfaceIcon name="Zap" fallback={Zap} size={14} /> Chaos is on: every win at Slots, Wheel, Plinko, Dice and Coin Flip can be surged or cursed.</p>{/if}
 
       <div class="tabs" role="tablist" bind:this={tabsEl}>
         {#each NAV as n}
           <button role="tab" aria-selected={tab === n.id} class:active={tab === n.id} onclick={() => (tab = n.id)}>
-            <n.icon size={15} /> {n.label}{#if n.id === 'bounties' && st.bounty_on_me > 0}<i class="dot" title="There's a bounty on you"></i>{/if}{#if n.id === 'lobby' && st.free.left > 0}<i class="dot gift" title="Free spin ready"></i>{/if}
+            <InterfaceIcon name={iconName(n.icon)} fallback={n.icon} size={15} /> {n.label}{#if n.id === 'bounties' && st.bounty_on_me > 0}<i class="dot" title="There's a bounty on you"></i>{/if}{#if n.id === 'lobby' && st.free.left > 0}<i class="dot gift" title="Free spin ready"></i>{/if}
           </button>
         {/each}
       </div>
@@ -205,9 +207,9 @@
         <div class="lobby">
           {#if lastGame}
             <button class="resume" style="--a:{lastGame.hue[0]};--b:{lastGame.hue[1]}" onclick={() => (tab = lastGame.id)}>
-              <span class="ico"><lastGame.icon size={26} /></span>
+              <span class="ico"><InterfaceIcon name={iconName(lastGame.icon)} fallback={lastGame.icon} size={26} /></span>
               <span class="txt"><small>Jump back in</small><b>{lastGame.label}</b></span>
-              <span class="go"><Play size={16} /> Play</span>
+              <span class="go"><InterfaceIcon name="Play" fallback={Play} size={16} /> Play</span>
             </button>
           {/if}
           {#if st.config.daily.enabled && st.config.daily.spins_per_day > 0}<DailySpin {st} onbalance={setBalance} onplayed={() => refresh()} />{/if}
@@ -216,7 +218,7 @@
           <div class="tiles">
             {#each GAMES as g, i}
               <button class="tile" style="--a:{g.hue[0]};--b:{g.hue[1]}" disabled={!open(g.id)} onclick={() => (tab = g.id)}>
-                <span class="art"><g.icon size={46} strokeWidth={1.6} /></span>
+                <span class="art"><InterfaceIcon name={iconName(g.icon)} fallback={g.icon} size={46} strokeWidth={1.6} /></span>
                 <kbd class="hk" aria-hidden="true">{i + 1}</kbd>
                 <b>{g.label}</b>
                 <span class="blurb">{g.blurb}{#if top(g.id)}{' '}<em>{top(g.id)}</em>{/if}</span>
@@ -224,25 +226,25 @@
               </button>
             {/each}
             <button class="tile wide" style="--a:#ef4444;--b:#7f1d1d" disabled={!st.config.bounties.enabled} onclick={() => (tab = 'bounties')}>
-              <span class="art"><Crosshair size={40} strokeWidth={1.6} /></span><b>Bounties</b>
+              <span class="art"><InterfaceIcon name="Crosshair" fallback={Crosshair} size={40} strokeWidth={1.6} /></span><b>Bounties</b>
               <span class="blurb">Put a price on a rival's head, or hunt the most wanted for the reward.</span>
               {#if st.bounty_on_me > 0}<span class="rtp hot">{money(st.bounty_on_me)} on you</span>{/if}
             </button>
             <button class="tile wide" style="--a:#3b82f6;--b:#1e3a8a" disabled={!st.config.betting.enabled} onclick={() => (tab = 'betting')}>
-              <span class="art"><Swords size={40} strokeWidth={1.6} /></span><b>Player betting</b>
+              <span class="art"><InterfaceIcon name="Swords" fallback={Swords} size={40} strokeWidth={1.6} /></span><b>Player betting</b>
               <span class="blurb">Will they get the kills? Back Yes or No and share the pool.</span>
             </button>
           </div>
 
           <div class="cols">
             <section class="panel">
-              <h2><Trophy size={16} /> Big wins</h2>
+              <h2><InterfaceIcon name="Trophy" fallback={Trophy} size={16} /> Big wins</h2>
               {#if st.feed.length}
                 <ul class="feed">{#each st.feed as f}<li><b>{f.name}</b> won <span class="win">+{money(f.payout - f.bet)}</span> on {f.game}<small>{ago(f.at, now)}</small></li>{/each}</ul>
-              {:else}<p class="muted"><Sparkles size={14} /> Nobody's hit it big yet. Be the first.</p>{/if}
+              {:else}<p class="muted"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={14} /> Nobody's hit it big yet. Be the first.</p>{/if}
             </section>
             <section class="panel">
-              <h2><History size={16} /> Your play</h2>
+              <h2><InterfaceIcon name="History" fallback={History} size={16} /> Your play</h2>
               {#if hist && hist.rounds_played}
                 <div class="stats"><div><span>Rounds</span><b>{hist.rounds_played}</b></div><div><span>Wagered</span><b>{money(hist.wagered)}</b></div><div><span>Net</span><b class:pos={net >= 0} class:neg={net < 0}>{net >= 0 ? '+' : ''}{money(net)}</b></div></div>
                 <ul class="feed">{#each hist.rounds.slice(0, 6) as r}<li class="r"><span class="g">{r.game}</span>{money(r.bet)} <span class:win={r.payout > r.bet} class:lose={r.payout < r.bet}>{r.payout > r.bet ? '+' : ''}{money(r.payout - r.bet)}</span><small>{ago(r.at, now)}</small></li>{/each}</ul>
@@ -273,7 +275,7 @@
   {#if help}
     <div class="scrim" role="presentation" onclick={() => (help = false)}></div>
     <div class="sheet" data-casino-modal role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
-      <header><h2><Keyboard size={18} /> Keyboard shortcuts</h2><button class="ghost icon" onclick={() => (help = false)} aria-label="Close"><X size={16} /></button></header>
+      <header><h2><InterfaceIcon name="Keyboard" fallback={Keyboard} size={18} /> Keyboard shortcuts</h2><button class="ghost icon" onclick={() => (help = false)} aria-label="Close"><InterfaceIcon name="X" fallback={X} size={16} /></button></header>
       <div class="keys">
         {#each KEYS as g}
           <section><h3>{g.group}</h3>{#each g.rows as [k, what]}<div class="krow"><kbd>{k}</kbd><span>{what}</span></div>{/each}</section>

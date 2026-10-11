@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { Bell, BellRing, Check, Trash2, Shield, Gavel, Swords, Info, Crosshair } from '@lucide/svelte';
   import { invoke } from '../lib/tauri';
   import { onMount } from 'svelte';
@@ -51,7 +53,7 @@
 
 <div class="bell-wrap">
   <button class="ctl bell" class:has={unread > 0} onclick={toggle} aria-label="Notifications" title="Notifications">
-    {#if unread > 0}<BellRing size={15} />{:else}<Bell size={15} />{/if}
+    {#if unread > 0}<InterfaceIcon name="BellRing" fallback={BellRing} size={15} />{:else}<InterfaceIcon name="Bell" fallback={Bell} size={15} />{/if}
     {#if unread > 0}<span class="badge">{unread > 9 ? '9+' : unread}</span>{/if}
   </button>
   {#if open}
@@ -59,15 +61,15 @@
       <header>
         <strong>Notifications</strong>
         <span class="actions">
-          <button class="mini" onclick={readAll} disabled={!unread} title="Mark all as read"><Check size={13} /> Read all</button>
-          <button class="mini" onclick={clearAll} disabled={!items.length} title="Clear all"><Trash2 size={13} /></button>
+          <button class="mini" onclick={readAll} disabled={!unread} title="Mark all as read"><InterfaceIcon name="Check" fallback={Check} size={13} /> Read all</button>
+          <button class="mini" onclick={clearAll} disabled={!items.length} title="Clear all"><InterfaceIcon name="Trash2" fallback={Trash2} size={13} /></button>
         </span>
       </header>
       <div class="list">
         {#each items as n (n.id)}
           {@const Icon = icon(n.kind)}
           <button class="row" class:unread={!n.read} onclick={() => readOne(n)}>
-            <span class="ico"><Icon size={15} /></span>
+            <span class="ico"><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={15} /></span>
             <span class="txt">
               <b>{n.title}</b>
               <span>{n.body}</span>
@@ -76,7 +78,7 @@
             {#if !n.read}<i class="dot"></i>{/if}
           </button>
         {:else}
-          <p class="empty"><Bell size={22} />You're all caught up.</p>
+          <p class="empty"><InterfaceIcon name="Bell" fallback={Bell} size={22} />You're all caught up.</p>
         {/each}
       </div>
     </div>

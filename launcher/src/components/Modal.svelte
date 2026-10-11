@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { X } from '@lucide/svelte';
   import type { Snippet } from 'svelte';
   let { open = $bindable(false), title, width = 30, children, footer, onclose }: { open: boolean; title: string; width?: number; children: Snippet; footer?: Snippet; onclose?: () => void } = $props();
@@ -13,7 +14,7 @@
 {#if open}
   <div class="backdrop" role="presentation" onclick={(e) => e.target === e.currentTarget && close()}>
     <div class="modal glass" role="dialog" aria-modal="true" aria-label={title} style:max-width="{width}rem">
-      <header><h3>{title}</h3><button class="ghost icon" onclick={close} aria-label="Close"><X size={17} /></button></header>
+      <header><h3>{title}</h3><button class="ghost icon" onclick={close} aria-label="Close"><InterfaceIcon name="X" fallback={X} size={17} /></button></header>
       <div class="body">{@render children()}</div>
       {#if footer}<footer>{@render footer()}</footer>{/if}
     </div>

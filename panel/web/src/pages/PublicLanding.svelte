@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import {
     Download, Server, Users, Trophy, Sparkles, HelpCircle, Newspaper,
     Copy, Check, ExternalLink, ChevronDown, ChevronUp, Swords, Flame,
@@ -221,7 +222,7 @@
             <span class="pulse-dot"></span>
             <span class="ip-text">{config.server_ip}</span>
             <span class="copy-badge">
-              {#if copied}<Check size={13} /> Copied!{:else}<Copy size={13} /> Copy{/if}
+              {#if copied}<InterfaceIcon name="Check" fallback={Check} size={13} /> Copied!{:else}<InterfaceIcon name="Copy" fallback={Copy} size={13} /> Copy{/if}
             </span>
           </button>
         {/if}
@@ -233,7 +234,7 @@
           {#if session.user.role === 'admin'}<a href="#/dashboard" class="nav-login-btn">Admin</a>{/if}
         {:else}
           <a href="#/login" class="nav-login-btn">
-            <LogIn size={14} /> Sign in
+            <InterfaceIcon name="LogIn" fallback={LogIn} size={14} /> Sign in
           </a>
         {/if}
       </div>
@@ -264,14 +265,14 @@
               <div class="hero-cta-group">
                 {#if block.options?.cta_url}
                   <a href={safeLink(block.options.cta_url)} target="_blank" rel="noopener noreferrer" class="btn-hero-primary">
-                    <Download size={20} />
+                    <InterfaceIcon name="Download" fallback={Download} size={20} />
                     <div class="cta-text-group">
                       <span class="cta-main">{block.options?.cta_text || config.hero_cta_text}</span>
                     </div>
                   </a>
                 {:else if primaryDownload}
                   <a href={primaryDownload.file_url} class="btn-hero-primary" download>
-                    <Download size={20} />
+                    <InterfaceIcon name="Download" fallback={Download} size={20} />
                     <div class="cta-text-group">
                       <span class="cta-main">{block.options?.cta_text || config.hero_cta_text}</span>
                       <span class="cta-sub">for {primaryDownload.label} ({formatBytes(primaryDownload.size)})</span>
@@ -279,7 +280,7 @@
                   </a>
                 {:else if config.external_download_url}
                   <a href={safeLink(config.external_download_url)} target="_blank" rel="noopener noreferrer" class="btn-hero-primary">
-                    <Download size={20} />
+                    <InterfaceIcon name="Download" fallback={Download} size={20} />
                     <div class="cta-text-group">
                       <span class="cta-main">{block.options?.cta_text || config.hero_cta_text}</span>
                       <span class="cta-sub">Download Latest Release</span>
@@ -287,14 +288,14 @@
                   </a>
                 {:else}
                   <button type="button" class="btn-hero-primary" onclick={() => firstSection('download') && scrollToSection(firstSection('download')!)}>
-                    <Download size={20} />
+                    <InterfaceIcon name="Download" fallback={Download} size={20} />
                     <span class="cta-main">{block.options?.cta_text || config.hero_cta_text}</span>
                   </button>
                 {/if}
 
                 {#if block.options?.show_ip_copy !== false && config.server_ip}
                   <button class="btn-hero-secondary" onclick={() => copyIp(config?.server_ip ?? '')}>
-                    {#if copied}<Check size={18} /> Copied Server IP{:else}<Copy size={18} /> Copy Server IP{/if}
+                    {#if copied}<InterfaceIcon name="Check" fallback={Check} size={18} /> Copied Server IP{:else}<InterfaceIcon name="Copy" fallback={Copy} size={18} /> Copy Server IP{/if}
                   </button>
                 {/if}
               </div>
@@ -329,7 +330,7 @@
                     <h3>{PLATFORM_NAMES[d.platform] ?? d.label}{#if config.hosted_downloads.filter((x) => x.platform === d.platform).length > 1}<small> · {d.filename.toLowerCase().endsWith('.deb') ? '.deb' : d.filename.toLowerCase().endsWith('.appimage') ? 'AppImage' : d.filename.split('.').pop()}</small>{/if}</h3>
                     <p class="dl-note">{d.filename.toLowerCase().endsWith('.deb') ? 'Debian and Ubuntu' : d.filename.toLowerCase().endsWith('.appimage') ? 'Any distro, no install needed' : (PLATFORM_NOTES[d.platform] ?? '')}</p>
                     <div class="dl-meta">{#if d.version}<span class="ver">v{d.version}</span>{/if}<span class="fname" title={d.filename}>{d.display_name || d.filename}</span><span>{formatBytes(d.size)}</span></div>
-                    <a href={d.file_url} class="btn-download" download>Download <ArrowRight size={15} /></a>
+                    <a href={d.file_url} class="btn-download" download>Download <InterfaceIcon name="ArrowRight" fallback={ArrowRight} size={15} /></a>
                   </div>
                 {:else}
                   {#if config.external_download_url}
@@ -337,7 +338,7 @@
                       <h3>Download {config.brand_name} Launcher</h3>
                       <p class="muted">Get the latest launcher package directly from our release repository.</p>
                       <a href={safeLink(config.external_download_url)} target="_blank" rel="noopener noreferrer" class="btn-download">
-                        Download from Repository <ExternalLink size={15} />
+                        Download from Repository <InterfaceIcon name="ExternalLink" fallback={ExternalLink} size={15} />
                       </a>
                     </div>
                   {:else}
@@ -364,7 +365,7 @@
                       <h3>{PLATFORM_NAMES[d.platform] ?? d.label}</h3>
                       <p class="dl-note">{PLATFORM_NOTES[d.platform] ?? ''}</p>
                       <div class="dl-meta">{#if d.version}<span class="ver">v{d.version}</span>{/if}<span class="fname" title={d.filename}>{d.display_name || d.filename}</span><span>{formatBytes(d.size)}</span></div>
-                      <a href={d.file_url} class="btn-download" download>Download <ArrowRight size={15} /></a>
+                      <a href={d.file_url} class="btn-download" download>Download <InterfaceIcon name="ArrowRight" fallback={ArrowRight} size={15} /></a>
                     </div>
                   {/each}
                 </div>
@@ -400,7 +401,7 @@
                       <div class="server-card-bottom">
                         <button class="server-copy-btn" onclick={() => copyIp(config?.server_ip ?? '')}>
                           <span>{block.options?.cta_label || config?.server_ip || 'play.server.com'}</span>
-                          <Copy size={13} />
+                          <InterfaceIcon name="Copy" fallback={Copy} size={13} />
                         </button>
                       </div>
                     </div>
@@ -408,7 +409,7 @@
                 </div>
               {:else}
                 <div class="empty-state-box">
-                  <Server size={32} class="muted" />
+                  <InterfaceIcon name="Server" fallback={Server} size={32} class="muted" />
                   <p class="muted">No public servers listed yet.</p>
                 </div>
               {/if}
@@ -514,7 +515,7 @@
                 </div>
               {:else}
                 <div class="empty-state-box">
-                  <Trophy size={32} class="muted" />
+                  <InterfaceIcon name="Trophy" fallback={Trophy} size={32} class="muted" />
                   <p class="muted">No leaderboard data recorded yet.</p>
                 </div>
               {/if}
@@ -541,8 +542,8 @@
                             <span style="font-size: 0.72rem; font-family: monospace; font-weight: 700; color: #a5b4fc; background: rgba(99,102,241,0.1); padding: 1px 5px; border-radius: 4px;">[{g.tag}]</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 12px; font-size: 0.78rem; color: var(--muted); margin-top: 4px;">
-                            <span><Users size={12} style="display: inline; vertical-align: -1px;" /> {g.member_count} members</span>
-                            <span style="color: #4ade80;"><Box size={12} style="display: inline; vertical-align: -1px;" /> {g.claims_count} chunks</span>
+                            <span><InterfaceIcon name="Users" fallback={Users} size={12} style="display: inline; vertical-align: -1px;" /> {g.member_count} members</span>
+                            <span style="color: #4ade80;"><InterfaceIcon name="Box" fallback={Box} size={12} style="display: inline; vertical-align: -1px;" /> {g.claims_count} chunks</span>
                           </div>
                         </div>
                       </div>
@@ -663,7 +664,7 @@
                   <div class="faq-item" class:open={isOpen}>
                     <button class="faq-q-btn" onclick={() => (openFaq[faq.id] = !isOpen)}>
                       <span>{faq.question}</span>
-                      {#if isOpen}<ChevronUp size={18} />{:else}<ChevronDown size={18} />{/if}
+                      {#if isOpen}<InterfaceIcon name="ChevronUp" fallback={ChevronUp} size={18} />{:else}<InterfaceIcon name="ChevronDown" fallback={ChevronDown} size={18} />{/if}
                     </button>
                     {#if isOpen}
                       <div class="faq-ans">
@@ -688,22 +689,22 @@
               <div class="socials-buttons-grid">
                 {#if block.options?.discord_url}
                   <a href={safeLink(block.options.discord_url)} target="_blank" rel="noopener noreferrer" class="social-btn discord">
-                    <MessageSquare size={18} /> Join our Discord
+                    <InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={18} /> Join our Discord
                   </a>
                 {/if}
                 {#if block.options?.store_url}
                   <a href={safeLink(block.options.store_url)} target="_blank" rel="noopener noreferrer" class="social-btn store">
-                    <Sparkles size={18} /> Visit Webstore
+                    <InterfaceIcon name="Sparkles" fallback={Sparkles} size={18} /> Visit Webstore
                   </a>
                 {/if}
                 {#if block.options?.video_url || block.options?.media_url}
                   <a href={safeLink(block.options.video_url || block.options.media_url)} target="_blank" rel="noreferrer" class="social-btn media">
-                    <Flame size={18} /> YouTube / Twitch
+                    <InterfaceIcon name="Flame" fallback={Flame} size={18} /> YouTube / Twitch
                   </a>
                 {/if}
                 {#if block.options?.social_url}
                   <a href={safeLink(block.options.social_url)} target="_blank" rel="noopener noreferrer" class="social-btn twitter">
-                    <ExternalLink size={18} /> Follow on Twitter / X
+                    <InterfaceIcon name="ExternalLink" fallback={ExternalLink} size={18} /> Follow on Twitter / X
                   </a>
                 {/if}
               </div>

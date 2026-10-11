@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Users, Signal, Copy, Check } from '@lucide/svelte';
   import { parseMotd } from '../lib/motd';
   import { invoke } from '../lib/tauri';
@@ -46,12 +47,12 @@
     {#if status}
       <div class="motd">{#each parseMotd(status.motd.split('\n')[0]) as s}<span style:color={s.color} class:b={s.bold} class:i={s.italic}>{s.text}</span>{/each}</div>
     {:else}
-      <button class="addr" onclick={copy}>{addr} {#if copied}<Check size={12} />{:else}<Copy size={12} />{/if}</button>
+      <button class="addr" onclick={copy}>{addr} {#if copied}<InterfaceIcon name="Check" fallback={Check} size={12} />{:else}<InterfaceIcon name="Copy" fallback={Copy} size={12} />{/if}</button>
     {/if}
   </div>
   {#if status}
     <div class="stats">
-      <span class="players" title={status.sample.join(', ')}><Users size={14} /> <b>{status.players_online}</b><span class="muted">/{status.players_max}</span></span>
+      <span class="players" title={status.sample.join(', ')}><InterfaceIcon name="Users" fallback={Users} size={14} /> <b>{status.players_online}</b><span class="muted">/{status.players_max}</span></span>
       <span class="ping" title="{status.latency_ms} ms">
         <span class="sig">{#each [1, 2, 3, 4] as i}<i class:lit={i <= bars} style:height="{i * 25}%"></i>{/each}</span>
         {status.latency_ms}ms

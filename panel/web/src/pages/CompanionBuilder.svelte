@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { Monitor, Plus, Trash2, Eye, Save, Copy, Palette, Type, Image, BarChart3, Clock, Heart, Sparkles, Move, X } from '@lucide/svelte/icons';
   import { get, post, put, del } from '../lib/api';
   import { toast } from '../lib/toast.svelte';
@@ -216,10 +218,10 @@
 <div class="page">
   <header>
     <div>
-      <h1><Monitor size={22} /> Companion Overlay Builder</h1>
+      <h1><InterfaceIcon name="Monitor" fallback={Monitor} size={22} /> Companion Overlay Builder</h1>
       <p>Design custom HUD overlays for the companion app.</p>
     </div>
-    <button class="primary" onclick={createLayout}><Plus size={16} /> New layout</button>
+    <button class="primary" onclick={createLayout}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> New layout</button>
   </header>
 
   <div class="builder-container">
@@ -229,7 +231,7 @@
         <div class="loading-small"><span class="spin">◌</span></div>
       {:else if !layouts.length}
         <div class="empty-sidebar">
-          <Monitor size={20} />
+          <InterfaceIcon name="Monitor" fallback={Monitor} size={20} />
           <small>No layouts yet</small>
         </div>
       {:else}
@@ -251,8 +253,8 @@
                 <small>{layout.widgets.length} widget{layout.widgets.length !== 1 ? 's' : ''}</small>
               </div>
               <div class="layout-item-actions">
-                <button class="ghost icon tiny" onclick={(e) => { e.stopPropagation(); duplicateLayout(layout); }} title="Duplicate"><Copy size={12} /></button>
-                <button class="ghost icon tiny" onclick={(e) => { e.stopPropagation(); deleteLayout(layout); }} title="Delete"><Trash2 size={12} /></button>
+                <button class="ghost icon tiny" onclick={(e) => { e.stopPropagation(); duplicateLayout(layout); }} title="Duplicate"><InterfaceIcon name="Copy" fallback={Copy} size={12} /></button>
+                <button class="ghost icon tiny" onclick={(e) => { e.stopPropagation(); deleteLayout(layout); }} title="Delete"><InterfaceIcon name="Trash2" fallback={Trash2} size={12} /></button>
               </div>
             </div>
           {/each}
@@ -271,7 +273,7 @@
               <button class="ghost small" onclick={() => selectedLayout && setDefaultLayout(selectedLayout)}>Set as default</button>
             {/if}
           </div>
-          <button class="ghost icon" onclick={() => (previewOpen = true)} title="Preview"><Eye size={16} /></button>
+          <button class="ghost icon" onclick={() => (previewOpen = true)} title="Preview"><InterfaceIcon name="Eye" fallback={Eye} size={16} /></button>
         </div>
 
         <div class="widget-types">
@@ -279,7 +281,7 @@
           <div class="widget-type-grid">
             {#each widgetTypes as wt (wt.type)}
               <button class="widget-type-card" onclick={() => openWidgetCreator(wt.type)}>
-                <svelte:component this={wt.icon} size={20} />
+                <InterfaceIcon name={iconName(wt.icon)} fallback={wt.icon} size={20} />
                 <span>{wt.label}</span>
               </button>
             {/each}
@@ -318,7 +320,7 @@
                   onclick={(e) => { e.stopPropagation(); removeWidget(widget); }}
                   title="Remove"
                 >
-                  <X size={12} />
+                  <InterfaceIcon name="X" fallback={X} size={12} />
                 </button>
               </div>
             {/each}
@@ -386,7 +388,7 @@
 
   {#snippet footer()}
     <button class="ghost" onclick={() => (modalOpen = false)}>Cancel</button>
-    <button class="primary" onclick={saveWidget}><Save size={15} /> Save widget</button>
+    <button class="primary" onclick={saveWidget}><InterfaceIcon name="Save" fallback={Save} size={15} /> Save widget</button>
   {/snippet}
 </Modal>
 

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { experienceContext } from '../lib/experience.svelte';
   import { adminGroups } from '../lib/adminNav';
   import { route, go } from '../lib/router.svelte';
@@ -17,7 +19,7 @@
   {#each groups as group (group.id)}
     <section><h2>{group.label}</h2><div class="systems">
       {#each group.items as item (item.id)}
-        <button class="system" onclick={() => go(item.id)}><item.icon size={20} /><strong>{item.label}</strong><span>{item.hint}</span></button>
+        <button class="system" onclick={() => go(item.id)}><InterfaceIcon name={iconName(item.icon)} fallback={item.icon} size={20} /><strong>{item.label}</strong><span>{item.hint}</span></button>
       {/each}
     </div></section>
   {/each}

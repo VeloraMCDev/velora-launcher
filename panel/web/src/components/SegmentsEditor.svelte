@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Plus, Trash2 } from '@lucide/svelte';
   // Rows of {label, value, weight, color}. `valueLabel` says what the value means (a multiplier or an amount).
   let { segments = $bindable(), valueLabel, step = 0.5, odds = [] }: { segments: { label: string; value: number; weight: number; color: string }[]; valueLabel: string; step?: number; odds?: number[] } = $props();
@@ -15,10 +16,10 @@
       <input type="number" min="0" {step} bind:value={s.value} aria-label={valueLabel} />
       <input type="number" min="0.01" step="0.1" bind:value={s.weight} aria-label="Weight" />
       <span class="odds">{odds[i] != null ? (odds[i] * 100).toFixed(odds[i] < 0.01 ? 2 : 1) + '%' : '—'}</span>
-      <button type="button" class="ghost icon" onclick={() => segments.splice(i, 1)} disabled={segments.length <= 2} aria-label="Remove"><Trash2 size={14} /></button>
+      <button type="button" class="ghost icon" onclick={() => segments.splice(i, 1)} disabled={segments.length <= 2} aria-label="Remove"><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /></button>
     </div>
   {/each}
-  <button type="button" class="ghost add" onclick={add} disabled={segments.length >= 16}><Plus size={14} /> Add segment</button>
+  <button type="button" class="ghost add" onclick={add} disabled={segments.length >= 16}><InterfaceIcon name="Plus" fallback={Plus} size={14} /> Add segment</button>
 </div>
 
 <style>

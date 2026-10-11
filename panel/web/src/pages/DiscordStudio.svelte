@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Send, RefreshCw, MessageSquare, Radio, Save, RotateCw } from '@lucide/svelte';
   import EmbedEditor from '../components/EmbedEditor.svelte';
@@ -96,8 +97,8 @@
   </header>
 
   <div class="tabs" role="tablist">
-    <button role="tab" aria-selected={tab === 'events'} class:active={tab === 'events'} onclick={() => switchTab('events')}><MessageSquare size={15} /> Announcements</button>
-    <button role="tab" aria-selected={tab === 'live'} class:active={tab === 'live'} onclick={() => switchTab('live')}><Radio size={15} /> Live embeds</button>
+    <button role="tab" aria-selected={tab === 'events'} class:active={tab === 'events'} onclick={() => switchTab('events')}><InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={15} /> Announcements</button>
+    <button role="tab" aria-selected={tab === 'live'} class:active={tab === 'live'} onclick={() => switchTab('live')}><InterfaceIcon name="Radio" fallback={Radio} size={15} /> Live embeds</button>
   </div>
 
   {#if data && style}
@@ -143,9 +144,9 @@
         {/if}
 
         <div class="actions">
-          <button class="primary" onclick={save} disabled={!!busy}><Save size={15} /> Save</button>
-          <button onclick={sendNow} disabled={!!busy || !data.webhook_set && !(isLive && (data.live[current].channel_id || data.live[current].webhook_set))}>{#if isLive}<RefreshCw size={15} /> Save &amp; update now{:else}<Send size={15} /> Save &amp; send a sample{/if}</button>
-          {#if isLive && data.live[current].posted}<button class="ghost" onclick={repost} disabled={!!busy} title="Post a new message instead of editing the old one"><RotateCw size={15} /> Post as new message</button>{/if}
+          <button class="primary" onclick={save} disabled={!!busy}><InterfaceIcon name="Save" fallback={Save} size={15} /> Save</button>
+          <button onclick={sendNow} disabled={!!busy || !data.webhook_set && !(isLive && (data.live[current].channel_id || data.live[current].webhook_set))}>{#if isLive}<InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={15} /> Save &amp; update now{:else}<InterfaceIcon name="Send" fallback={Send} size={15} /> Save &amp; send a sample{/if}</button>
+          {#if isLive && data.live[current].posted}<button class="ghost" onclick={repost} disabled={!!busy} title="Post a new message instead of editing the old one"><InterfaceIcon name="RotateCw" fallback={RotateCw} size={15} /> Post as new message</button>{/if}
         </div>
       </section>
 

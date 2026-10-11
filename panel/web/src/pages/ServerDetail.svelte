@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import PlayerLink from '../components/PlayerLink.svelte';
   import {
     ArrowLeft, Settings2, KeyRound, Trash2, Users, Gauge, Clock, UserRound, LogIn, LogOut, Skull, Award, Sword, MessageSquare,
@@ -116,7 +118,7 @@
 </script>
 
 <div class="page">
-  <a class="back" href={hashFor("servers")}><ArrowLeft size={15} /> Servers</a>
+  <a class="back" href={hashFor("servers")}><InterfaceIcon name="ArrowLeft" fallback={ArrowLeft} size={15} /> Servers</a>
   {#if s && d}
     <div class="page-head">
       <div>
@@ -130,9 +132,9 @@
         </p>
       </div>
       <div class="row">
-        <button onclick={openEdit}><Settings2 size={16} /> Settings</button>
-        <button onclick={() => (regenOpen = true)}><KeyRound size={16} /> New token</button>
-        <button class="ghost icon" aria-label="Remove server" onclick={() => (deleteOpen = true)}><Trash2 size={16} /></button>
+        <button onclick={openEdit}><InterfaceIcon name="Settings2" fallback={Settings2} size={16} /> Settings</button>
+        <button onclick={() => (regenOpen = true)}><InterfaceIcon name="KeyRound" fallback={KeyRound} size={16} /> New token</button>
+        <button class="ghost icon" aria-label="Remove server" onclick={() => (deleteOpen = true)}><InterfaceIcon name="Trash2" fallback={Trash2} size={16} /></button>
       </div>
     </div>
 
@@ -144,10 +146,10 @@
     {/if}
 
     <div class="grid tiles">
-      <div class="card tile"><span class="lbl"><Users size={14} /> Online now</span><span class="val">{s.players}<small> / {s.max_players || '–'}</small></span></div>
-      <div class="card tile {tpsTone(s.online ? s.tps : null)}"><span class="lbl"><Gauge size={14} /> TPS</span><span class="val">{s.online && s.tps != null ? s.tps.toFixed(1) : '–'}</span></div>
-      <div class="card tile"><span class="lbl"><UserRound size={14} /> Players seen</span><span class="val">{n(d.totals.players)}</span></div>
-      <div class="card tile"><span class="lbl"><Clock size={14} /> Total playtime</span><span class="val">{duration(d.totals.playtime_secs)}</span></div>
+      <div class="card tile"><span class="lbl"><InterfaceIcon name="Users" fallback={Users} size={14} /> Online now</span><span class="val">{s.players}<small> / {s.max_players || '–'}</small></span></div>
+      <div class="card tile {tpsTone(s.online ? s.tps : null)}"><span class="lbl"><InterfaceIcon name="Gauge" fallback={Gauge} size={14} /> TPS</span><span class="val">{s.online && s.tps != null ? s.tps.toFixed(1) : '–'}</span></div>
+      <div class="card tile"><span class="lbl"><InterfaceIcon name="UserRound" fallback={UserRound} size={14} /> Players seen</span><span class="val">{n(d.totals.players)}</span></div>
+      <div class="card tile"><span class="lbl"><InterfaceIcon name="Clock" fallback={Clock} size={14} /> Total playtime</span><span class="val">{duration(d.totals.playtime_secs)}</span></div>
     </div>
 
     <MapPanel id={s.id} enabled={s.map_enabled} />
@@ -207,7 +209,7 @@
               {#each d.events as e (e.id)}
                 {@const Icon = eventIcon[e.kind] ?? CircleDot}
                 <div class="ev {e.kind}">
-                  <span class="ic"><Icon size={13} /></span>
+                  <span class="ic"><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={13} /></span>
                   <span class="txt">{#if showName(e)}<strong>{e.name}</strong>{' '}{/if}{eventText(e)}</span>
                   <span class="muted tiny nowrap">{timeAgo(e.created_at)}</span>
                 </div>
@@ -236,7 +238,7 @@
   <p class="muted">The current token stops working immediately — the server disconnects from the panel until you update its config.</p>
   {#snippet footer()}
     <button class="ghost" onclick={() => (regenOpen = false)}>Cancel</button>
-    <button class="primary" onclick={regenerate}><KeyRound size={16} /> Generate</button>
+    <button class="primary" onclick={regenerate}><InterfaceIcon name="KeyRound" fallback={KeyRound} size={16} /> Generate</button>
   {/snippet}
 </Modal>
 
@@ -251,7 +253,7 @@
   <p class="muted">Its token stops working and all stats and events collected for it are deleted.</p>
   {#snippet footer()}
     <button class="ghost" onclick={() => (deleteOpen = false)}>Cancel</button>
-    <button class="danger" onclick={remove}><Trash2 size={16} /> Remove</button>
+    <button class="danger" onclick={remove}><InterfaceIcon name="Trash2" fallback={Trash2} size={16} /> Remove</button>
   {/snippet}
 </Modal>
 

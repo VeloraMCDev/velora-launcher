@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import {
     UserRound, Gamepad2, Cpu, Keyboard, Palette, Rocket, HardDrive, Info, Plus, LogOut, Check, FolderOpen, Trash2,
     FileCode, RotateCcw, Download, LoaderCircle, RefreshCw, MousePointerClick, Zap, Gauge, Feather, Link2, Shirt, Upload, Ban,
@@ -328,7 +330,7 @@
     <h2>Settings</h2>
     {#each tabs as t}
       <button class="tab" class:active={app.settingsTab === t.id} onclick={() => (app.settingsTab = t.id)}>
-        <t.icon size={17} /> {t.label}
+        <InterfaceIcon name={iconName(t.icon)} fallback={t.icon} size={17} /> {t.label}
         {#if t.id === 'about' && app.update}<span class="dot"></span>{/if}
       </button>
     {/each}
@@ -346,16 +348,16 @@
                 <Avatar account={a} size={2.6} />
                 <div class="who"><strong>{a.username}</strong><span class="tiny muted">{kindLabel[a.kind]}{a.role === 'admin' ? ' · Admin' : ''}</span></div>
                 {#if a.id === app.active}
-                  <span class="active-badge"><Check size={13} /> Active</span>
+                  <span class="active-badge"><InterfaceIcon name="Check" fallback={Check} size={13} /> Active</span>
                 {:else}
                   <button class="sm" onclick={() => switchAccount(a.id)}>Use</button>
                 {/if}
-                <button class="ghost icon" title="Sign out" aria-label="Sign out {a.username}" onclick={() => removeAccount(a.id)}><LogOut size={16} /></button>
+                <button class="ghost icon" title="Sign out" aria-label="Sign out {a.username}" onclick={() => removeAccount(a.id)}><InterfaceIcon name="LogOut" fallback={LogOut} size={16} /></button>
               </div>
             {:else}
               <p class="muted small">No accounts yet.</p>
             {/each}
-            <button class="add" onclick={() => (app.addAccount = true)}><Plus size={16} /> Add account</button>
+            <button class="add" onclick={() => (app.addAccount = true)}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> Add account</button>
           </div>
           {#if serverAccount}
             <div class="card glass col">
@@ -385,7 +387,7 @@
           {#if profileError}
             <div class="card glass"><p class="warn small">{profileError}</p></div>
           {:else if !profile}
-            <div class="card glass center"><LoaderCircle size={20} class="spin" /></div>
+            <div class="card glass center"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={20} class="spin" /></div>
           {:else}
             <div class="card glass skin-card" class:busy={skinBusy}>
               <div class="preview">
@@ -394,7 +396,7 @@
               </div>
               <div class="col grow skin-controls">
                 <label class="drop" class:over={dragging} ondragover={(e) => { e.preventDefault(); dragging = true; }} ondragleave={() => (dragging = false)} ondrop={onDrop}>
-                  <Upload size={18} />
+                  <InterfaceIcon name="Upload" fallback={Upload} size={18} />
                   <span><strong>Upload a skin</strong><span class="tiny muted">PNG, 64×64 or 64×32 — drop it here or click to browse</span></span>
                   <input type="file" accept="image/png" onchange={(e) => { uploadSkin(e.currentTarget.files?.[0]); e.currentTarget.value = ''; }} />
                 </label>
@@ -406,7 +408,7 @@
                   </div>
                 </label>
                 {#if profile.skin_url}
-                  <button class="sm link-btn" disabled={skinBusy} onclick={() => skinAction('delete_skin', {}, 'Skin reset')}><RotateCcw size={14} /> Reset to default</button>
+                  <button class="sm link-btn" disabled={skinBusy} onclick={() => skinAction('delete_skin', {}, 'Skin reset')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Reset to default</button>
                 {/if}
               </div>
             </div>
@@ -415,7 +417,7 @@
               {#if profile.available_capes.length}
                 <div class="capes">
                   <button class="cape" class:active={!profile.cape} disabled={skinBusy} onclick={() => profile!.cape && skinAction('set_cape', { capeId: null })}>
-                    <span class="cape-img none"><Ban size={18} /></span>No cape
+                    <span class="cape-img none"><InterfaceIcon name="Ban" fallback={Ban} size={18} /></span>No cape
                   </button>
                   {#each profile.available_capes as c (c.id)}
                     <button class="cape" class:active={profile.cape?.id === c.id} disabled={skinBusy} onclick={() => profile!.cape?.id !== c.id && skinAction('set_cape', { capeId: c.id })}>
@@ -431,16 +433,16 @@
             <div class="card glass col">
               <div class="row align-center justify-between">
                 <div>
-                  <h3 class="row gap-sm"><Sparkles size={18} class="accent-icon" /> Saved Profiles & Wardrobe</h3>
+                  <h3 class="row gap-sm"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={18} class="accent-icon" /> Saved Profiles & Wardrobe</h3>
                   <p class="muted small">Save and swap between multiple skin + cape combinations in one click.</p>
                 </div>
                 <div class="row gap-sm">
                   {#if !savingCurrentLook}
                     <button class="sm" onclick={() => (savingCurrentLook = true)}>
-                      <BookmarkPlus size={15} /> Save current look
+                      <InterfaceIcon name="BookmarkPlus" fallback={BookmarkPlus} size={15} /> Save current look
                     </button>
                     <button class="sm ghost" onclick={() => (newProfileModal = true)}>
-                      <Plus size={15} /> New preset
+                      <InterfaceIcon name="Plus" fallback={Plus} size={15} /> New preset
                     </button>
                   {/if}
                 </div>
@@ -466,7 +468,7 @@
                         <div class="row align-center justify-between">
                           <strong class="profile-name" title={sp.name}>{sp.name}</strong>
                           {#if isCurrent}
-                            <span class="active-badge tiny-badge"><Check size={11} /> Active</span>
+                            <span class="active-badge tiny-badge"><InterfaceIcon name="Check" fallback={Check} size={11} /> Active</span>
                           {/if}
                         </div>
                         <div class="profile-meta tiny muted">
@@ -481,7 +483,7 @@
                             onclick={() => equipProfile(sp)}
                           >
                             {#if applyingProfileId === sp.id}
-                              <LoaderCircle size={13} class="spin" /> Equipping…
+                              <InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={13} class="spin" /> Equipping…
                             {:else if isCurrent}
                               Equipped
                             {:else}
@@ -489,7 +491,7 @@
                             {/if}
                           </button>
                           <button class="sm ghost icon" title="Delete preset" onclick={() => deleteProfile(sp.id, sp.name)}>
-                            <Trash2 size={13} />
+                            <InterfaceIcon name="Trash2" fallback={Trash2} size={13} />
                           </button>
                         </div>
                       </div>
@@ -578,7 +580,7 @@
             <div class="presets">
               {#each gcPresets as g}
                 <button class="preset" class:active={s.gc === g.id} onclick={() => { s.gc = g.id; saveSettings(); }}>
-                  <g.icon size={20} /><strong>{g.title}</strong><span class="tiny muted">{g.text}</span>
+                  <InterfaceIcon name={iconName(g.icon)} fallback={g.icon} size={20} /><strong>{g.title}</strong><span class="tiny muted">{g.text}</span>
                 </button>
               {/each}
             </div>
@@ -588,8 +590,8 @@
               <label class="field">Java executable
                 <div class="row">
                   <input value={s.java_path ?? ''} placeholder="Automatic (recommended)" readonly />
-                  <button class="sm" onclick={browseJava}><FileCode size={14} /> Browse</button>
-                  {#if s.java_path}<button class="sm ghost" onclick={() => { s.java_path = null; javaMajor = null; saveSettings(); }}><RotateCcw size={14} /> Automatic</button>{/if}
+                  <button class="sm" onclick={browseJava}><InterfaceIcon name="FileCode" fallback={FileCode} size={14} /> Browse</button>
+                  {#if s.java_path}<button class="sm ghost" onclick={() => { s.java_path = null; javaMajor = null; saveSettings(); }}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Automatic</button>{/if}
                 </div>
                 {#if javaMajor}<span class="help">Detected Java {javaMajor}.</span>{/if}
               </label>
@@ -630,7 +632,7 @@
                     <span>{bind.label}</span>
                     <button class="key" class:capturing={capturing === bind.id} class:conflict={conflicts.has(key)} class:changed={key !== bind.default}
                       onclick={(e) => { e.stopPropagation(); capturing = bind.id; }}>
-                      {#if capturing === bind.id}<MousePointerClick size={13} /> Press a key…{:else}{keyLabel(key)}{/if}
+                      {#if capturing === bind.id}<InterfaceIcon name="MousePointerClick" fallback={MousePointerClick} size={13} /> Press a key…{:else}{keyLabel(key)}{/if}
                     </button>
                   </div>
                 {/each}
@@ -638,7 +640,7 @@
             {/each}
           </div>
           <div class="row">
-            <button class="sm" onclick={() => { s.keybinds = {}; saveSettings(); }}><RotateCcw size={14} /> Reset to defaults</button>
+            <button class="sm" onclick={() => { s.keybinds = {}; saveSettings(); }}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Reset to defaults</button>
             <span class="tiny muted">Press Esc while choosing to unbind. Shortcut in the launcher: <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to play.</span>
           </div>
         {:else if app.settingsTab === 'companion'}
@@ -655,7 +657,7 @@
               {#if s.theme_mode === 'custom'}
                 <div class="swatches">
                   {#each accents as c}
-                    <button class="swatch" class:on={s.accent === c} style:background={c} aria-label="Accent {c}" onclick={() => { s.accent = c; saveSettings(); }}>{#if s.accent === c}<Check size={15} />{/if}</button>
+                    <button class="swatch" class:on={s.accent === c} style:background={c} aria-label="Accent {c}" onclick={() => { s.accent = c; saveSettings(); }}>{#if s.accent === c}<InterfaceIcon name="Check" fallback={Check} size={15} />{/if}</button>
                   {/each}
                   <label class="swatch picker" title="Custom colour"><input type="color" value={s.accent ?? '#7c5cff'} oninput={(e) => { s.accent = (e.target as HTMLInputElement).value; saveSettings(); }} /></label>
                 </div>
@@ -683,17 +685,17 @@
               {:else}
                 <div class="row">
                   <input bind:value={panelInput} placeholder="panel.yourserver.com" />
-                  <button class="sm" disabled={panelBusy || !panelInput || panelInput === app.panelUrl} onclick={changePanel}>{#if panelBusy}<LoaderCircle class="spin" size={14} />{:else}<Link2 size={14} />{/if} Connect</button>
+                  <button class="sm" disabled={panelBusy || !panelInput || panelInput === app.panelUrl} onclick={changePanel}>{#if panelBusy}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={14} />{:else}<InterfaceIcon name="Link2" fallback={Link2} size={14} />{/if} Connect</button>
                 </div>
                 {#if app.boot?.app.default_panel_url && app.panelUrl !== app.boot.app.default_panel_url}
                   {@const home = app.boot.app.default_panel_url}
                   <button class="sm link-btn" disabled={panelBusy} onclick={() => { panelInput = home; changePanel(); }}>
-                    <RefreshCw size={14} /> Use the default panel ({home.replace(/^https?:\/\//, '')})
+                    <InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={14} /> Use the default panel ({home.replace(/^https?:\/\//, '')})
                   </button>
                 {/if}
               {/if}
             </label>
-            <button class="sm link-btn" onclick={() => refresh().then(() => toast('Refreshed')).catch((e) => toast(errorText(e), 'error'))}><RefreshCw size={14} /> Refresh from server</button>
+            <button class="sm link-btn" onclick={() => refresh().then(() => toast('Refreshed')).catch((e) => toast(errorText(e), 'error'))}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={14} /> Refresh from server</button>
           </div>
           <div class="card glass col">
             <Toggle bind:checked={s.check_updates} onchange={saveSettings} label="Check for launcher updates" />
@@ -707,7 +709,7 @@
           {#if storage}
             <div class="card glass col">
               <div class="row"><strong class="big">{bytes(storageTotal)}</strong><span class="muted small">used in total</span><span class="spacer"></span>
-                <button class="sm" onclick={() => invoke('open_folder', { kind: 'data' })}><FolderOpen size={14} /> Open folder</button>
+                <button class="sm" onclick={() => invoke('open_folder', { kind: 'data' })}><InterfaceIcon name="FolderOpen" fallback={FolderOpen} size={14} /> Open folder</button>
               </div>
               <div class="usage">
                 <span style:flex={storage.shared} class="u1" title="Game files"></span>
@@ -724,16 +726,16 @@
               {#each storage.instances as [id, n]}
                 <div class="acc">
                   <div class="who"><strong>{instName(id)}</strong><span class="tiny muted">{bytes(n)} · worlds, mods & settings</span></div>
-                  <button class="sm" onclick={() => invoke('open_folder', { kind: 'instance', instanceId: id })}><FolderOpen size={14} /></button>
-                  <button class="sm danger" onclick={async () => { try { await invoke('delete_instance_data', { instanceId: id }); loadStorage(); toast('Deleted'); } catch (e) { toast(errorText(e), 'error'); } }}><Trash2 size={14} /> Delete</button>
+                  <button class="sm" onclick={() => invoke('open_folder', { kind: 'instance', instanceId: id })}><InterfaceIcon name="FolderOpen" fallback={FolderOpen} size={14} /></button>
+                  <button class="sm danger" onclick={async () => { try { await invoke('delete_instance_data', { instanceId: id }); loadStorage(); toast('Deleted'); } catch (e) { toast(errorText(e), 'error'); } }}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /> Delete</button>
                 </div>
               {:else}
                 <p class="muted small">No instances downloaded yet.</p>
               {/each}
             </div>
-            <button class="sm link-btn" onclick={async () => { await invoke('clear_cache'); toast('Cache cleared'); loadStorage(); }}><Trash2 size={14} /> Clear download cache</button>
+            <button class="sm link-btn" onclick={async () => { await invoke('clear_cache'); toast('Cache cleared'); loadStorage(); }}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /> Clear download cache</button>
           {:else}
-            <p class="muted row"><LoaderCircle class="spin" size={16} /> Measuring…</p>
+            <p class="muted row"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={16} /> Measuring…</p>
           {/if}
         {:else if app.settingsTab === 'about'}
           <h1>About</h1>
@@ -752,13 +754,13 @@
             {/if}
             {#if app.update}
               <div class="update">
-                <Download size={20} />
+                <InterfaceIcon name="Download" fallback={Download} size={20} />
                 <div class="grow"><strong>Version {app.update.version} is available</strong><p class="tiny muted">{bytes(app.update.size)}</p></div>
-                <button class="primary" disabled={installing} onclick={installUpdate}>{#if installing}<LoaderCircle class="spin" size={16} /> Downloading…{:else}Update now{/if}</button>
+                <button class="primary" disabled={installing} onclick={installUpdate}>{#if installing}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={16} /> Downloading…{:else}Update now{/if}</button>
               </div>
               {#if app.update.notes}<pre class="notes selectable">{app.update.notes}</pre>{/if}
             {/if}
-            <button class="sm link-btn" disabled={checking || installing} onclick={checkUpdate}>{#if checking}<LoaderCircle class="spin" size={14} />{:else}<RefreshCw size={14} />{/if} Check for updates</button>
+            <button class="sm link-btn" disabled={checking || installing} onclick={checkUpdate}>{#if checking}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={14} />{:else}<InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={14} />{/if} Check for updates</button>
             <p class="tiny muted">Built with Tauri, Rust and Svelte. Minecraft is a trademark of Mojang Studios; this launcher is not affiliated with Mojang or Microsoft.</p>
           </div>
         {/if}

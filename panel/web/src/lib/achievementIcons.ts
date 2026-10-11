@@ -1,3 +1,4 @@
+import { imageValue, interfaceIcons } from '@velora/experience/icons.svelte';
 // Achievement icon catalogue shared by the admin panel and the launcher.
 //
 // Achievements store *ids* (`icon_item: "diamond_sword"`, `icon_bg: "obsidian"`,
@@ -101,9 +102,8 @@ export const iconifyValue = (pack: string, name: string, color?: string | null) 
 
 export const imageIcon = (value?: string | null): string | null => {
   const v = value?.trim() ?? '';
-  const lib = ICONIFY.exec(v);
-  if (lib) return `/api/v1/icons/${lib[1]}/${lib[2]}.svg${lib[3] ? '?color=' + lib[3] : ''}`;
-  return /^(https:\/\/|\/uploads\/)/i.test(v) && /\.png(?:[?#].*)?$/i.test(v) ? v : null;
+  const id = v.replace(/^minecraft:/i, '').toLowerCase();
+  return imageValue(interfaceIcons.overrides['item:' + id] ?? v);
 };
 
 export interface ResolvedIcon { image: string | null; emoji: string; background: string; borderColor: string; glow: string }

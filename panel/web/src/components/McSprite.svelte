@@ -1,12 +1,14 @@
 <script lang="ts">
   import { guiUrl } from '../lib/mc.svelte';
 
-  // A Minecraft GUI sprite (hearts, hunger, hotbar…). Renders nothing until textures are installed, so it is safe for decoration only.
+  // Shared ccVaults source with administrator overrides and a graceful image fallback.
   let { path, width, height, scale = 2, dim = false }: { path: string; width: number; height: number; scale?: number; dim?: boolean } = $props();
   const src = $derived(guiUrl(path));
+  let failed = $state(false);
+  $effect(() => { void src; failed = false; });
 </script>
 
-{#if src}<img {src} alt="" draggable="false" class:dim style:width="{width * scale}px" style:height="{height * scale}px" />{/if}
+{#if src && !failed}<img {src} alt="" draggable="false" onerror={() => (failed = true)} class:dim style:width="{width * scale}px" style:height="{height * scale}px" />{/if}
 
 <style>
   img { image-rendering: pixelated; flex-shrink: 0; }

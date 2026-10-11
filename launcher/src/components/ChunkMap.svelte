@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { onMount } from 'svelte';
   import { Compass, Globe, Landmark, LocateFixed, RefreshCw, Server as ServerIcon, Shield } from '@lucide/svelte';
   import { invoke } from '../lib/tauri';
@@ -155,23 +157,23 @@
   <div class="toolbar">
     <div class="group">
       {#if instanceServers.length > 1}
-        <label class="server"><ServerIcon size={14} /><select bind:value={serverId} aria-label="Game server">
+        <label class="server"><InterfaceIcon name="Server" fallback={ServerIcon} size={14} /><select bind:value={serverId} aria-label="Game server">
           {#each instanceServers as s}<option value={s.id}>{s.name}</option>{/each}
         </select></label>
-      {:else if selectedServer}<span class="chip"><ServerIcon size={14} /> {selectedServer.name}</span>{/if}
+      {:else if selectedServer}<span class="chip"><InterfaceIcon name="Server" fallback={ServerIcon} size={14} /> {selectedServer.name}</span>{/if}
       <div class="dimensions" role="tablist" aria-label="Dimension">
         {#each dimensions as dim}
           {@const Icon = dim.icon}
           <button role="tab" aria-selected={dimension === dim.id} class:active={dimension === dim.id}
-            onclick={() => (dimension = dim.id)}><Icon size={14} /> {dim.label}</button>
+            onclick={() => (dimension = dim.id)}><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={14} /> {dim.label}</button>
         {/each}
       </div>
     </div>
     <div class="group">
       {#if player}<span class="position">You: {Math.floor(player.x)}, {Math.floor(player.z)}</span>{:else}<span class="position">Player position unavailable</span>{/if}
-      <button class="ghost sm" onclick={showMyLand} disabled={!myGuildId} title="Zoom the map to all of your faction's claimed land"><Landmark size={15} /> My land</button>
-      <button class="ghost sm" onclick={centerOnPlayer} disabled={!player} title="Center on your current position"><LocateFixed size={15} /> Find me</button>
-      <button class="ghost icon sm" onclick={loadClaims} title="Refresh claims" aria-label="Refresh claims"><RefreshCw size={15} class={loading ? 'spin' : ''} /></button>
+      <button class="ghost sm" onclick={showMyLand} disabled={!myGuildId} title="Zoom the map to all of your faction's claimed land"><InterfaceIcon name="Landmark" fallback={Landmark} size={15} /> My land</button>
+      <button class="ghost sm" onclick={centerOnPlayer} disabled={!player} title="Center on your current position"><InterfaceIcon name="LocateFixed" fallback={LocateFixed} size={15} /> Find me</button>
+      <button class="ghost icon sm" onclick={loadClaims} title="Refresh claims" aria-label="Refresh claims"><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={15} class={loading ? 'spin' : ''} /></button>
     </div>
   </div>
   {#if selectedServer?.map}
@@ -184,7 +186,7 @@
     <div class="notice">The map is switched off for this server. An admin can turn it on under Servers in the panel.</div>
   {/if}
   <div class="footer">
-    <span><Shield size={14} /> Your faction: {myLand.length || myClaimsCount} {(myLand.length || myClaimsCount) === 1 ? 'chunk' : 'chunks'} in this dimension</span>
+    <span><InterfaceIcon name="Shield" fallback={Shield} size={14} /> Your faction: {myLand.length || myClaimsCount} {(myLand.length || myClaimsCount) === 1 ? 'chunk' : 'chunks'} in this dimension</span>
     <span class="legend"><i class="mine"></i> Your faction <i class="other"></i> Other factions</span>
     {#if painting}<span>Updating claims…</span>{/if}
     {#if !player}<span class="hint">Your position appears once you are in game and the server's map is running.</span>{/if}

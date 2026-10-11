@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { ArrowLeft, ArrowRight, X, FileArchive, Hammer, Sparkles, Check, TriangleAlert, Cuboid, Copy, Wand2, PackageCheck, Eye } from '@lucide/svelte';
   import { FRAMEWORKS, KINDS, frameworkMeta, kindMeta, type Analysis, type Analyzed, type KindId } from '../lib/content';
   import { post, put } from '../lib/api';
@@ -123,13 +125,13 @@
   <div class="wz" role="dialog" aria-modal="true" aria-label="Add content">
     <div class="shell">
       <header>
-        <div class="title"><Wand2 size={18} /> <b>Add content</b></div>
+        <div class="title"><InterfaceIcon name="Wand2" fallback={Wand2} size={18} /> <b>Add content</b></div>
         <ol class="steps" aria-label="Progress">
           {#each STEPS as s, i}
-            <li class:on={step === i + 1} class:done={step > i + 1}><span class="dot">{#if step > i + 1}<Check size={11} />{:else}{i + 1}{/if}</span><span class="nm">{s}</span></li>
+            <li class:on={step === i + 1} class:done={step > i + 1}><span class="dot">{#if step > i + 1}<InterfaceIcon name="Check" fallback={Check} size={11} />{:else}{i + 1}{/if}</span><span class="nm">{s}</span></li>
           {/each}
         </ol>
-        <button class="x" aria-label="Close" onclick={close} disabled={busy}><X size={18} /></button>
+        <button class="x" aria-label="Close" onclick={close} disabled={busy}><InterfaceIcon name="X" fallback={X} size={18} /></button>
       </header>
 
       <main>
@@ -141,7 +143,7 @@
             {#each itemKinds as k (k.id)}
               {@const Icon = k.icon}
               <button class="tile" class:on={hint === k.id} style:--c={k.color} onclick={() => (hint = k.id)} aria-pressed={hint === k.id}>
-                <span class="ic"><Icon size={22} /></span><b>{k.label}</b><small>{k.blurb}</small>
+                <span class="ic"><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={22} /></span><b>{k.label}</b><small>{k.blurb}</small>
               </button>
             {/each}
           </div>
@@ -150,11 +152,11 @@
             {#each worldKinds as k (k.id)}
               {@const Icon = k.icon}
               <button class="tile" class:on={hint === k.id} style:--c={k.color} onclick={() => (hint = k.id)} aria-pressed={hint === k.id}>
-                <span class="ic"><Icon size={22} /></span><b>{k.label}</b><small>{k.blurb}</small>
+                <span class="ic"><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={22} /></span><b>{k.label}</b><small>{k.blurb}</small>
               </button>
             {/each}
             <button class="tile auto" class:on={hint === 'auto'} style:--c="#c792ea" onclick={() => (hint = 'auto')} aria-pressed={hint === 'auto'}>
-              <span class="ic"><Sparkles size={22} /></span><b>Not sure — detect it</b><small>We'll sort everything in your files for you</small>
+              <span class="ic"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={22} /></span><b>Not sure — detect it</b><small>We'll sort everything in your files for you</small>
             </button>
           </div>
 
@@ -170,10 +172,10 @@
               </button>
             {/each}
             <button class="tile" class:on={fw === 'auto'} style:--c="#c792ea" onclick={() => (fw = 'auto')} aria-pressed={fw === 'auto'}>
-              <span class="badge"><Sparkles size={16} /></span><b>A mix, or not sure</b><small>Zip everything — we detect each framework</small>
+              <span class="badge"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={16} /></span><b>A mix, or not sure</b><small>Zip everything — we detect each framework</small>
             </button>
             <button class="tile" class:on={fw === 'manual'} style:--c="#9aa0b4" onclick={() => (fw = 'manual')} aria-pressed={fw === 'manual'}>
-              <span class="badge"><Hammer size={16} /></span><b>I'll build it by hand</b><small>Open the advanced editor instead</small>
+              <span class="badge"><InterfaceIcon name="Hammer" fallback={Hammer} size={16} /></span><b>I'll build it by hand</b><small>Open the advanced editor instead</small>
             </button>
           </div>
 
@@ -183,10 +185,10 @@
           <button class="drop" class:drag disabled={busy} ondragover={(e) => { e.preventDefault(); drag = true; }} ondragleave={() => (drag = false)}
             ondrop={(e) => { e.preventDefault(); drag = false; read(e.dataTransfer?.files?.[0]); }} onclick={() => input?.click()}>
             {#if busy}<span class="spin"></span><b>Reading {zipName}…</b><span>Working out what's inside</span>
-            {:else}<FileArchive size={38} /><b>Drop a .zip here, or click to choose</b><span>Up to 36 MB · nothing is saved until you press Import</span>{/if}
+            {:else}<InterfaceIcon name="FileArchive" fallback={FileArchive} size={38} /><b>Drop a .zip here, or click to choose</b><span>Up to 36 MB · nothing is saved until you press Import</span>{/if}
           </button>
           <input bind:this={input} type="file" accept=".zip" hidden onchange={(e) => read(e.currentTarget.files?.[0])} />
-          {#if error}<div class="err"><TriangleAlert size={16} /> {error}</div>{/if}
+          {#if error}<div class="err"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={16} /> {error}</div>{/if}
           <div class="reads">
             <b>What we read</b>
             <ul>
@@ -204,7 +206,7 @@
                 <span class="grow"></span>
                 <span class="muted">{chosen.length} of {entries.length} selected{warnCount ? ` · ${warnCount} heads-up` : ''}</span>
               </div>
-              {#each analysis.notes as n}<div class="note"><Check size={13} /> {n}</div>{/each}
+              {#each analysis.notes as n}<div class="note"><InterfaceIcon name="Check" fallback={Check} size={13} /> {n}</div>{/each}
               <div class="tabs seg" role="tablist">
                 <button role="tab" aria-selected={tab === 'all'} class:on={tab === 'all'} onclick={() => (tab = 'all')}>All {entries.length}</button>
                 {#each KINDS.filter((k) => counts[k.id] > 0) as k}<button role="tab" aria-selected={tab === k.id} class:on={tab === k.id} onclick={() => (tab = k.id)}>{k.plural} {counts[k.id]}</button>{/each}
@@ -217,13 +219,13 @@
                   <div class="card" class:sel={current === e.key} class:off={!picked[e.key] || e.exists} style:--c={m.color} role="button" tabindex="0"
                     onclick={() => (current = e.key)} onkeydown={(ev) => (ev.key === 'Enter' || ev.key === ' ') && (current = e.key)}>
                     <span class="chk"><input type="checkbox" bind:checked={picked[e.key]} disabled={e.exists} aria-label="Import {e.title}" onclick={(ev) => ev.stopPropagation()} /></span>
-                    <span class="slot">{#if e.preview}<img src={e.preview} alt="" />{:else}<Cuboid size={20} />{/if}</span>
+                    <span class="slot">{#if e.preview}<img src={e.preview} alt="" />{:else}<InterfaceIcon name="Cuboid" fallback={Cuboid} size={20} />{/if}</span>
                     <div class="meta">
                       <b class="nm">{edits[e.key]?.title || e.title}</b>
-                      <span class="kind"><Icon size={12} /> {m.label}</span>
-                      {#if e.exists}<em>Already in your library</em>{:else if e.warnings.length || e.missing.length}<em class="w"><TriangleAlert size={11} /> {e.missing.length ? 'missing textures' : `${e.warnings.length} heads-up`}</em>{/if}
+                      <span class="kind"><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={12} /> {m.label}</span>
+                      {#if e.exists}<em>Already in your library</em>{:else if e.warnings.length || e.missing.length}<em class="w"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={11} /> {e.missing.length ? 'missing textures' : `${e.warnings.length} heads-up`}</em>{/if}
                     </div>
-                    {#if e.view || e.model}<button class="eye" title="View in 3D" aria-label="View {e.title} in 3D" onclick={(ev) => { ev.stopPropagation(); current = e.key; loadView(e); }}><Eye size={14} /></button>{/if}
+                    {#if e.view || e.model}<button class="eye" title="View in 3D" aria-label="View {e.title} in 3D" onclick={(ev) => { ev.stopPropagation(); current = e.key; loadView(e); }}><InterfaceIcon name="Eye" fallback={Eye} size={14} /></button>{/if}
                   </div>
                 {/each}
               </div>
@@ -236,13 +238,13 @@
                 {#if v}
                   <ModelViewer view={v} height={250} scale={1} />
                 {:else}
-                  <div class="flat">{#if cur.preview}<img src={cur.preview} alt="" />{:else}<Cuboid size={40} />{/if}
-                    {#if cur.model}<button class="lnk" onclick={() => loadView(cur)}><Eye size={13} /> Load 3D view</button>{/if}</div>
+                  <div class="flat">{#if cur.preview}<img src={cur.preview} alt="" />{:else}<InterfaceIcon name="Cuboid" fallback={Cuboid} size={40} />{/if}
+                    {#if cur.model}<button class="lnk" onclick={() => loadView(cur)}><InterfaceIcon name="Eye" fallback={Eye} size={13} /> Load 3D view</button>{/if}</div>
                 {/if}
                 <label class="f">Title<input bind:value={ed.title} maxlength="60" /></label>
                 <div class="f"><span class="l">What is it?</span>
                   <div class="kinds" role="radiogroup" aria-label="Kind">
-                    {#each KINDS as k}{@const I = k.icon}<button role="radio" aria-checked={ed.kind === k.id} class="kb" class:on={ed.kind === k.id} style:--c={k.color} title={k.label} onclick={() => (ed.kind = k.id)}><I size={15} /><span>{k.label}</span></button>{/each}
+                    {#each KINDS as k}{@const I = k.icon}<button role="radio" aria-checked={ed.kind === k.id} class="kb" class:on={ed.kind === k.id} style:--c={k.color} title={k.label} onclick={() => (ed.kind = k.id)}><InterfaceIcon name={iconName(I)} fallback={I} size={15} /><span>{k.label}</span></button>{/each}
                   </div>
                 </div>
                 <McTextInput label="In-game name" placeholder={cur.title} bind:value={() => ed.name, (x) => (ed.name = x)} />
@@ -254,8 +256,8 @@
                 {/if}
                 {#if cur.warnings.length || cur.missing.length}
                   <div class="warn">
-                    {#each cur.missing as m}<div><TriangleAlert size={12} /> Needs texture/model <code>{m}</code> which isn't in the zip</div>{/each}
-                    {#each cur.warnings as w}<div><TriangleAlert size={12} /> {w}</div>{/each}
+                    {#each cur.missing as m}<div><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={12} /> Needs texture/model <code>{m}</code> which isn't in the zip</div>{/each}
+                    {#each cur.warnings as w}<div><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={12} /> {w}</div>{/each}
                   </div>
                 {/if}
               {:else}
@@ -266,20 +268,20 @@
 
         {:else if step === 5 && result}
           <div class="done">
-            <div class="big"><PackageCheck size={34} /></div>
+            <div class="big"><InterfaceIcon name="PackageCheck" fallback={PackageCheck} size={34} /></div>
             <h2>{result.created ? `Imported ${result.created} thing${result.created > 1 ? 's' : ''}` : 'Nothing new to import'}</h2>
             <p class="sub">{result.files_added + result.files_replaced} files went into your server assets.</p>
             {#if !result.pack_enabled}
               <div class="next"><b>Turn on the resource pack</b><span>Players need it to see these models.</span><button class="primary" onclick={enablePack}>Turn on &amp; require</button></div>
             {:else}
-              <div class="next ok"><Check size={16} /> The resource pack is on — players get the new models next time they join.</div>
+              <div class="next ok"><InterfaceIcon name="Check" fallback={Check} size={16} /> The resource pack is on — players get the new models next time they join.</div>
             {/if}
             <div class="cards slim">
               {#each createdKinds as r}
                 {@const m = kindMeta(r.kind ?? 'item')}
                 <div class="card ro" style:--c={m.color}>
                   <div class="meta"><b class="nm">{r.title}</b><span class="kind">{m.label}</span><code>/customitem give &lt;player&gt; {r.id}</code></div>
-                  <button class="lnk" onclick={() => copy(`/customitem give @p ${r.id}`)}><Copy size={13} /> Copy</button>
+                  <button class="lnk" onclick={() => copy(`/customitem give @p ${r.id}`)}><InterfaceIcon name="Copy" fallback={Copy} size={13} /> Copy</button>
                   <button class="lnk" onclick={() => { close(); onopen?.(r.id, r.store ?? 'item'); }}>Open</button>
                 </div>
               {/each}
@@ -290,10 +292,10 @@
       </main>
 
       <footer>
-        {#if step > 1 && step < 5}<button class="ghost" onclick={() => (step = step === 4 ? 3 : step - 1)} disabled={busy}><ArrowLeft size={15} /> Back</button>{:else}<span></span>{/if}
+        {#if step > 1 && step < 5}<button class="ghost" onclick={() => (step = step === 4 ? 3 : step - 1)} disabled={busy}><InterfaceIcon name="ArrowLeft" fallback={ArrowLeft} size={15} /> Back</button>{:else}<span></span>{/if}
         <span class="grow"></span>
         {#if step <= 2}
-          <button class="primary" onclick={next}>{step === 2 && fw === 'manual' ? 'Open the editor' : 'Continue'} <ArrowRight size={15} /></button>
+          <button class="primary" onclick={next}>{step === 2 && fw === 'manual' ? 'Open the editor' : 'Continue'} <InterfaceIcon name="ArrowRight" fallback={ArrowRight} size={15} /></button>
         {:else if step === 4}
           <button class="primary" onclick={run} disabled={busy || !chosen.length}>{busy ? 'Importing…' : `Import ${chosen.length} thing${chosen.length === 1 ? '' : 's'}`}</button>
         {:else if step === 5}

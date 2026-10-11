@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { X, Copy, ArrowDown, Search, Trash2 } from '@lucide/svelte';
   import { app, toast } from '../lib/store.svelte';
 
@@ -24,16 +25,16 @@
     <strong>Game output</strong>
     <span class="tiny muted">{app.logs.length.toLocaleString()} lines</span>
     <span class="spacer"></span>
-    <div class="search"><Search size={13} /><input bind:value={filter} placeholder="Filter" /></div>
-    <button class="ghost icon sm" title="Copy" aria-label="Copy log" onclick={() => { navigator.clipboard.writeText(app.logs.join('\n')); toast('Log copied'); }}><Copy size={14} /></button>
-    <button class="ghost icon sm" title="Clear" aria-label="Clear log" onclick={() => (app.logs = [])}><Trash2 size={14} /></button>
-    <button class="ghost icon sm" aria-label="Close console" onclick={() => (app.consoleOpen = false)}><X size={15} /></button>
+    <div class="search"><InterfaceIcon name="Search" fallback={Search} size={13} /><input bind:value={filter} placeholder="Filter" /></div>
+    <button class="ghost icon sm" title="Copy" aria-label="Copy log" onclick={() => { navigator.clipboard.writeText(app.logs.join('\n')); toast('Log copied'); }}><InterfaceIcon name="Copy" fallback={Copy} size={14} /></button>
+    <button class="ghost icon sm" title="Clear" aria-label="Clear log" onclick={() => (app.logs = [])}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /></button>
+    <button class="ghost icon sm" aria-label="Close console" onclick={() => (app.consoleOpen = false)}><InterfaceIcon name="X" fallback={X} size={15} /></button>
   </header>
   <div class="lines selectable" bind:this={box} onscroll={() => box && (follow = box.scrollHeight - box.scrollTop - box.clientHeight < 40)}>
     {#each shown as line, i (i)}<div class="line {level(line)}">{line}</div>{:else}<div class="muted empty">Logs appear here while the game is running.</div>{/each}
   </div>
   {#if !follow}
-    <button class="jump sm" onclick={() => { follow = true; if (box) box.scrollTop = box.scrollHeight; }}><ArrowDown size={13} /> Latest</button>
+    <button class="jump sm" onclick={() => { follow = true; if (box) box.scrollTop = box.scrollHeight; }}><InterfaceIcon name="ArrowDown" fallback={ArrowDown} size={13} /> Latest</button>
   {/if}
 </div>
 

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Target, Trophy, Gift, Search, Save, RotateCcw, Wand2, Percent, Equal, Plus, Eraser, Power, Table2, Coins, Sparkles } from '@lucide/svelte';
   import { get, post } from '../lib/api';
@@ -159,20 +161,20 @@
 <div class="page">
   <div class="page-head">
     <div>
-      <h1><Table2 size={22} /> Bulk editor</h1>
+      <h1><InterfaceIcon name="Table2" fallback={Table2} size={22} /> Bulk editor</h1>
       <p class="muted">Pick rows, change their XP or money in one go, and save once. Tick several (shift-click for a range) or type straight into a cell.</p>
     </div>
   </div>
 
   <div class="tabs" role="tablist">
     {#each KINDS as k}
-      <button role="tab" aria-selected={kind === k.id} class:on={kind === k.id} onclick={() => pick(k.id)}><k.icon size={15} /> {k.label}</button>
+      <button role="tab" aria-selected={kind === k.id} class:on={kind === k.id} onclick={() => pick(k.id)}><InterfaceIcon name={iconName(k.icon)} fallback={k.icon} size={15} /> {k.label}</button>
     {/each}
   </div>
   <p class="muted small blurb">{KINDS.find((k) => k.id === kind)?.blurb}</p>
 
   <section class="card tools">
-    <div class="search"><Search size={16} /><input type="search" placeholder="Search by name…" bind:value={search} /></div>
+    <div class="search"><InterfaceIcon name="Search" fallback={Search} size={16} /><input type="search" placeholder="Search by name…" bind:value={search} /></div>
     <select bind:value={group} aria-label="Filter">
       <option value="all">All groups</option>
       {#each groups as g}<option value={g}>{g}</option>{/each}
@@ -186,19 +188,19 @@
       {#each fields as f}<button class:on={field === f} onclick={() => (field = f)}>{f === 'money' ? 'Money' : f === 'xp' ? 'XP' : 'Level'}</button>{/each}
     </div>
     <div class="seg" role="group" aria-label="Operation">
-      <button class:on={mode === 'set'} onclick={() => (mode = 'set')} title="Set to"><Equal size={14} /> Set</button>
-      <button class:on={mode === 'multiply'} onclick={() => (mode = 'multiply')} title="Multiply by"><Percent size={14} /> ×</button>
-      <button class:on={mode === 'add'} onclick={() => (mode = 'add')} title="Add"><Plus size={14} /> Add</button>
+      <button class:on={mode === 'set'} onclick={() => (mode = 'set')} title="Set to"><InterfaceIcon name="Equal" fallback={Equal} size={14} /> Set</button>
+      <button class:on={mode === 'multiply'} onclick={() => (mode = 'multiply')} title="Multiply by"><InterfaceIcon name="Percent" fallback={Percent} size={14} /> ×</button>
+      <button class:on={mode === 'add'} onclick={() => (mode = 'add')} title="Add"><InterfaceIcon name="Plus" fallback={Plus} size={14} /> Add</button>
     </div>
     <input class="val" type="number" step="any" bind:value aria-label="Value" />
     {#if field === 'money'}<label class="chk"><input type="checkbox" bind:checked={roundTo5} /> round to 5s</label>{/if}
-    <button class="primary" disabled={!targets.length} onclick={runAction}><Wand2 size={15} /> Apply</button>
+    <button class="primary" disabled={!targets.length} onclick={runAction}><InterfaceIcon name="Wand2" fallback={Wand2} size={15} /> Apply</button>
     <span class="sep"></span>
-    <button class="ghost" disabled={!targets.length} onclick={roundSelected} title="Round every selected money amount to the nearest 5"><Coins size={15} /> Round to 5s</button>
-    <button class="ghost" disabled={!targets.length} onclick={autoSelected} title="Go back to the automatic, difficulty-scaled amount"><Sparkles size={15} /> Auto money</button>
+    <button class="ghost" disabled={!targets.length} onclick={roundSelected} title="Round every selected money amount to the nearest 5"><InterfaceIcon name="Coins" fallback={Coins} size={15} /> Round to 5s</button>
+    <button class="ghost" disabled={!targets.length} onclick={autoSelected} title="Go back to the automatic, difficulty-scaled amount"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={15} /> Auto money</button>
     {#if kind === 'quest'}
-      <button class="ghost" disabled={!targets.length} onclick={() => enableSelected(true)}><Power size={15} /> Enable</button>
-      <button class="ghost" disabled={!targets.length} onclick={() => enableSelected(false)}><Eraser size={15} /> Disable</button>
+      <button class="ghost" disabled={!targets.length} onclick={() => enableSelected(true)}><InterfaceIcon name="Power" fallback={Power} size={15} /> Enable</button>
+      <button class="ghost" disabled={!targets.length} onclick={() => enableSelected(false)}><InterfaceIcon name="Eraser" fallback={Eraser} size={15} /> Disable</button>
     {/if}
     {#if sample.length}
       <div class="sample muted small">
@@ -254,8 +256,8 @@
 {#if dirtyRows.length}
   <div class="savebar" role="status">
     <span>{dirtyRows.length} unsaved {dirtyRows.length === 1 ? 'change' : 'changes'}</span>
-    <button class="ghost" onclick={revert}><RotateCcw size={15} /> Discard</button>
-    <button class="primary" disabled={saving} onclick={save}><Save size={15} /> {saving ? 'Saving…' : 'Save changes'}</button>
+    <button class="ghost" onclick={revert}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={15} /> Discard</button>
+    <button class="primary" disabled={saving} onclick={save}><InterfaceIcon name="Save" fallback={Save} size={15} /> {saving ? 'Saving…' : 'Save changes'}</button>
   </div>
 {/if}
 

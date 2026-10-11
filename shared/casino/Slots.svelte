@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount, untrack } from 'svelte';
   import { Dices, Info } from '@lucide/svelte';
   import BetInput from './BetInput.svelte';
@@ -119,11 +120,11 @@
 
 <div class="game">
   <section class="panel controls">
-    <h2><Dices size={18} /> Slots</h2>
+    <h2><InterfaceIcon name="Dices" fallback={Dices} size={18} /> Slots</h2>
     <BetInput bind:value={bet} min={cfg.min_bet} max={cfg.max_bet} {balance} disabled={busy} />
     <button class="spinbtn primary" onclick={spin} disabled={busy || !cfg.enabled || (balance != null && balance < bet)}>{busy ? 'Spinning…' : `Spin · ${money(bet)}`}<kbd class="k">Space</kbd></button>
     {#if !cfg.enabled}<p class="note">Slots is closed right now.</p>{/if}
-    <p class="note"><Info size={13} /> Pays back {(st.rtp.slots * 100).toFixed(1)}% over time. {(st.rtp.slots_hit * 100).toFixed(0)}% of spins pay something.</p>
+    <p class="note"><InterfaceIcon name="Info" fallback={Info} size={13} /> Pays back {(st.rtp.slots * 100).toFixed(1)}% over time. {(st.rtp.slots_hit * 100).toFixed(0)}% of spins pay something.</p>
   </section>
 
   <section class="stage">

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { configureIcons } from '@velora/experience/icons.svelte';
+  import type { Branding as BrandingData } from './lib/types';
   import Sidebar from './components/Sidebar.svelte';
   import AdminTopbar from './components/AdminTopbar.svelte';
   import Palette, { type PaletteItem } from './components/Palette.svelte';
@@ -56,7 +58,8 @@
     return () => { alive = false; };
   });
 
-  let brand = $state<{ name: string; logo_url: string | null }>({ name: 'Velora', logo_url: null });
+  let brand = $state<Pick<BrandingData, 'name' | 'logo_url' | 'interface_icons'>>({ name: 'Velora', logo_url: null });
+  $effect(() => { if (route.name !== 'play') configureIcons(experienceContext.instance?.experience?.branding?.interface_icons ?? brand.interface_icons); });
   let registration = $state<'closed' | 'approval' | 'open'>('closed');
   let landingEnabled = $state<boolean | null>(null);
   const preview = new URLSearchParams(location.search).has('landingPreview');

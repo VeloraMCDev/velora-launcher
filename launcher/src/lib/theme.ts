@@ -1,9 +1,12 @@
 import type { Branding, Settings } from './types';
 
+import { configureIcons } from '@velora/experience/icons.svelte';
+
 let styleEl: HTMLStyleElement | null = null;
 
 /** Push the admin's branding (and the player's overrides) into CSS variables. */
-export function applyTheme(b: Branding, s: Settings | null) {
+export function applyTheme(b: Branding, s: Settings | null, panelUrl = '') {
+  configureIcons(b.interface_icons, panelUrl);
   const root = document.documentElement;
   const custom = s?.theme_mode === 'custom' && b.features.allow_user_theme;
   const accent = (custom && s?.accent) || b.colors.accent;

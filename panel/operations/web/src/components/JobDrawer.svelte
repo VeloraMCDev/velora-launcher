@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from './InterfaceIcon.svelte';
   import { X, LoaderCircle, CircleCheck, CircleX } from '@lucide/svelte';
   import { app } from '../lib/state.svelte';
   import { ago } from '../lib/format';
@@ -13,14 +14,14 @@
 {#if app.jobOpen && app.job}
   <aside class="drawer" aria-label="Operation log">
     <header>
-      {#if app.job.status === 'running'}<LoaderCircle size={18} class="spin" color="var(--accent)" />
-      {:else if app.job.status === 'succeeded'}<CircleCheck size={18} color="var(--ok)" />
-      {:else}<CircleX size={18} color="var(--bad)" />{/if}
+      {#if app.job.status === 'running'}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={18} class="spin" color="var(--accent)" />
+      {:else if app.job.status === 'succeeded'}<InterfaceIcon name="CircleCheck" fallback={CircleCheck} size={18} color="var(--ok)" />
+      {:else}<InterfaceIcon name="CircleX" fallback={CircleX} size={18} color="var(--bad)" />{/if}
       <div class="title">
         <strong>{app.job.kind}</strong>
         <span class="tiny muted">{app.job.target ?? ''} · {app.job.user} · started {ago(app.job.started)}</span>
       </div>
-      <button class="ghost icon" onclick={() => (app.jobOpen = false)} aria-label="Close"><X size={18} /></button>
+      <button class="ghost icon" onclick={() => (app.jobOpen = false)} aria-label="Close"><InterfaceIcon name="X" fallback={X} size={18} /></button>
     </header>
     <pre class="log" bind:this={pre}>{(app.job.log ?? []).join('\n') || 'Starting…'}</pre>
   </aside>

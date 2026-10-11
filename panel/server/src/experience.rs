@@ -491,6 +491,10 @@ pub async fn configure(
     Json(mut experience): Json<Experience>,
 ) -> AppResult<Json<Experience>> {
     let instance = store::get_instance(&state, &id).await?;
+    if let Some(layout) = experience.modules.get("launcher_presentation") {
+        let layout: velora_shared::LogoLayout = serde_json::from_value(layout.clone()).map_err(|_| AppError::bad_request("Invalid logo dimensions"))?;
+        layout.validate().map_err(AppError::bad_request)?;
+    }
     if let Some(policy) = crate::velora_core::policy(&experience)? {
         if instance.mc_version != "1.20.1" || instance.loader != "fabric" {
             return Err(AppError::bad_request("Velora SMP requires Fabric 1.20.1"));
@@ -517,6 +521,9 @@ pub async fn configure(
     }
     if experience.branding.as_ref().is_some_and(|b| b.name.trim().is_empty()) {
         return Err(AppError::bad_request("instance branding needs a name"));
+    }
+    if let Some(brand) = &experience.branding {
+        brand.validate_presentation().map_err(AppError::bad_request)?;
     }
     state.experiences.state(&state, &id).await?;
     sqlx::query("UPDATE instances SET experience = ?, revision=revision+1, updated_at=? WHERE id=?")

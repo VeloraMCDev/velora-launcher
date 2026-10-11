@@ -1,3 +1,4 @@
+import type { Branding } from '@velora/experience/branding';
 import { route } from '../lib/router.svelte';
 import type { Experience } from '@velora/experience';
 import { get } from '../lib/api';
@@ -13,15 +14,8 @@ const read = (): number | null => { try { const v = localStorage.getItem(SERVER_
 /** State every player-panel page can read. Pages import `play` and call the helpers; nothing here is per-page. */
 export type Manifest = {
   panel_version: string;
-  branding: {
-    name: string; tagline: string; logo_url: string | null; icon_url: string | null; version_label: string;
-    colors: { accent: string; accent_2: string; background: string; surface: string; text: string; muted: string; success: string; danger: string };
-    news: { id: string; title: string; body: string; date?: string | null; image_url?: string | null; link?: string | null; pinned?: boolean; tag?: string | null }[];
-    links: { label: string; url: string; icon?: string }[];
-    about?: { title?: string; body?: string };
-  };
-  auth: { panel_accounts: boolean; registration: 'closed' | 'approval' | 'open' };
-  instances: { experience?: Experience; id: string; name: string; description: string; mc_version: string; loader: string; icon_url?: string | null; banner_url?: string | null; logo_url?: string | null; featured: boolean; source_label: string; file_count: number; total_size: number; server?: { name?: string; address: string } | null }[];
+  branding: Branding;
+  instances: { experience?: Experience; id: string; name: string; description: string; mc_version: string; loader: string; loader_version?: string | null; icon_url?: string | null; banner_url?: string | null; logo_url?: string | null; featured: boolean; source_label: string; file_count: number; total_size: number; server?: { name?: string; address: string; port?: number } | null }[];
 };
 
 export const play = $state({

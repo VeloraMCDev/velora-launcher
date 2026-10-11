@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { onMount } from 'svelte';
   import { Search, Plus, Pencil, Trash2, CheckCircle2, XCircle, Sparkles, Pin, SlidersHorizontal, Pickaxe, Swords, Blocks, Wheat, Users, Compass, Target } from '@lucide/svelte';
   import ImageInput from '../components/ImageInput.svelte';
@@ -177,13 +179,13 @@
       <p>Configure daily and weekly player objectives, XP rewards, and stat progression tracking.</p>
     </div>
     <button class="primary" onclick={openNew}>
-      <Plus size={16} /> New Quest
+      <InterfaceIcon name="Plus" fallback={Plus} size={16} /> New Quest
     </button>
   </header>
 
   {#if limits}
     <a class="limit-banner" href="#/progression">
-      <SlidersHorizontal size={16} />
+      <InterfaceIcon name="SlidersHorizontal" fallback={SlidersHorizontal} size={16} />
       <span>
         Each player gets <strong>{limits.daily_quest_limit || 'every'}</strong> of {dailyCount} daily and
         <strong>{limits.weekly_quest_limit || 'every'}</strong> of {weeklyCount} weekly quests
@@ -214,7 +216,7 @@
 
   <div class="toolbar">
     <div class="search-box">
-      <Search size={16} />
+      <InterfaceIcon name="Search" fallback={Search} size={16} />
       <input type="text" placeholder="Search quests by title, description, or id..." bind:value={search} />
     </div>
 
@@ -258,10 +260,10 @@
             {@const Icon = iconFor(q)}
             <tr>
               <td class="icon-cell">
-                <span class="quest-icon" title={q.icon}>{#if imageIcon(q.icon)}<img src={imageIcon(q.icon) ?? ''} alt="" style="width: 32px; height: 32px; object-fit: contain" />{:else if !/^[a-z_]+$/i.test(q.icon)}{q.icon}{:else}<Icon size={21} />{/if}</span>
+                <span class="quest-icon" title={q.icon}>{#if imageIcon(q.icon)}<img src={imageIcon(q.icon) ?? ''} alt="" style="width: 32px; height: 32px; object-fit: contain" />{:else if !/^[a-z_]+$/i.test(q.icon)}{q.icon}{:else}<InterfaceIcon name={iconName(Icon)} fallback={Icon} size={21} />{/if}</span>
               </td>
               <td class="info-cell">
-                <strong>{q.title}{#if q.pinned}<span class="pin-tag" title="Always handed out first"><Pin size={11} /> Pinned</span>{/if}</strong>
+                <strong>{q.title}{#if q.pinned}<span class="pin-tag" title="Always handed out first"><InterfaceIcon name="Pin" fallback={Pin} size={11} /> Pinned</span>{/if}</strong>
                 <p>{q.description}</p>
                 <code class="id-tag">{q.id}</code>
               </td>
@@ -281,24 +283,24 @@
               </td>
               <td>
                 <span class="xp-badge">
-                  <Sparkles size={13} />
+                  <InterfaceIcon name="Sparkles" fallback={Sparkles} size={13} />
                   +{q.xp_reward} XP
                 </span>
               </td>
               <td>
                 {#if q.active}
-                  <span class="status-active"><CheckCircle2 size={14} /> Active</span>
+                  <span class="status-active"><InterfaceIcon name="CheckCircle2" fallback={CheckCircle2} size={14} /> Active</span>
                 {:else}
-                  <span class="status-inactive"><XCircle size={14} /> Disabled</span>
+                  <span class="status-inactive"><InterfaceIcon name="XCircle" fallback={XCircle} size={14} /> Disabled</span>
                 {/if}
               </td>
               <td>
                 <div class="actions">
                   <button class="ghost icon" title="Edit quest" onclick={() => openEdit(q)}>
-                    <Pencil size={15} />
+                    <InterfaceIcon name="Pencil" fallback={Pencil} size={15} />
                   </button>
                   <button class="ghost icon danger" title="Delete quest" onclick={() => { deleteConfirm = q; deleteOpen = true; }}>
-                    <Trash2 size={15} />
+                    <InterfaceIcon name="Trash2" fallback={Trash2} size={15} />
                   </button>
                 </div>
               </td>

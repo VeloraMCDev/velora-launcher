@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { ChevronRight, Menu, Search, Smartphone } from '@lucide/svelte';
   import NotificationBell from './NotificationBell.svelte';
   import { experienceContext } from '../lib/experience.svelte';
@@ -10,20 +11,20 @@
 </script>
 
 <header class="top">
-  <button class="ghost icon burger" onclick={onmenu} aria-label="Open menu"><Menu size={20} /></button>
+  <button class="ghost icon burger" onclick={onmenu} aria-label="Open menu"><InterfaceIcon name="Menu" fallback={Menu} size={20} /></button>
   <img class="logo" src={logo ?? '/favicon.svg'} alt="" />
   <nav class="crumbs" aria-label="Breadcrumb">
-    {#if route.instanceId}<a href="#/instances">Instances</a><ChevronRight size={13} /><strong>{experienceContext.instance?.name ?? route.instanceId}</strong><ChevronRight size={13} />{/if}
+    {#if route.instanceId}<a href="#/instances">Instances</a><InterfaceIcon name="ChevronRight" fallback={ChevronRight} size={13} /><strong>{experienceContext.instance?.name ?? route.instanceId}</strong><InterfaceIcon name="ChevronRight" fallback={ChevronRight} size={13} />{/if}
     {#if here}
-      {#if here.group.label !== here.label}<span class="group">{here.group.label}</span><ChevronRight size={13} />{/if}
+      {#if here.group.label !== here.label}<span class="group">{here.group.label}</span><InterfaceIcon name="ChevronRight" fallback={ChevronRight} size={13} />{/if}
       <strong>{here.label}</strong>
     {:else}
       <strong>{route.name === 'control' ? 'Overview' : route.instanceId && ['experience', 'installation', 'servers'].includes(route.name) ? 'Instance setup' : brandName}</strong>
     {/if}
   </nav>
   <div class="grow"></div>
-  <button class="search" onclick={onsearch} aria-label="Search pages and commands"><Search size={15} /><span>Search</span><kbd>Ctrl K</kbd></button>
-  <a class="btn ghost pp" href="#/play" title="Open the player panel"><Smartphone size={16} /><span>Player panel</span></a>
+  <button class="search" onclick={onsearch} aria-label="Search pages and commands"><InterfaceIcon name="Search" fallback={Search} size={15} /><span>Search</span><kbd>Ctrl K</kbd></button>
+  <a class="btn ghost pp" href="#/play" title="Open the player panel"><InterfaceIcon name="Smartphone" fallback={Smartphone} size={16} /><span>Player panel</span></a>
   <NotificationBell inline />
 </header>
 

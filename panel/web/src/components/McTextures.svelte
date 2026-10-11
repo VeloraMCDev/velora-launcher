@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Download, Upload, Trash2, LoaderCircle } from '@lucide/svelte';
   import McItem from './McItem.svelte';
   import McSprite from './McSprite.svelte';
@@ -48,11 +49,10 @@
 </script>
 
 <section class="card col mct">
-  <div class="section-title"><Download size={18} /><h2>Minecraft textures</h2></div>
+  <div class="section-title"><InterfaceIcon name="Download" fallback={Download} size={18} /><h2>Minecraft textures</h2></div>
   <p class="help">
-    Item icons, hearts, effect icons and the title-screen panorama used across the panel, the player site and your landing page.
-    They are never stored in Velora's source or images: this server downloads the official client from Mojang, or you can upload a vanilla <code>client.jar</code>
-    (from <code>.minecraft/versions/&lt;version&gt;/&lt;version&gt;.jar</code>) when the host has no internet access. They remain Mojang's property; use them for your own server only.
+    Interface item, block and HUD icons now load from ccVaults and can be customized under Design &amp; website ? Interface icons.
+    These controls maintain the optional legacy local texture store for runtime compatibility; installing it is no longer required for interface icons.
   </p>
 
   {#if st}
@@ -75,13 +75,13 @@
     <div class="row wrap">
       <label class="ver">Version <input bind:value={version} placeholder="latest release" maxlength="40" spellcheck="false" /></label>
       <button class="primary" disabled={!!busy} onclick={fetchNow}>
-        {#if busy === 'fetch'}<LoaderCircle size={15} class="spin" /> Downloading…{:else}<Download size={15} /> {st.ready ? 'Re-download from Mojang' : 'Download from Mojang'}{/if}
+        {#if busy === 'fetch'}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={15} class="spin" /> Downloading…{:else}<InterfaceIcon name="Download" fallback={Download} size={15} /> {st.ready ? 'Re-download from Mojang' : 'Download from Mojang'}{/if}
       </button>
       <button disabled={!!busy} onclick={() => input?.click()}>
-        {#if busy === 'upload'}<LoaderCircle size={15} class="spin" /> Reading jar…{:else}<Upload size={15} /> Upload client.jar{/if}
+        {#if busy === 'upload'}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={15} class="spin" /> Reading jar…{:else}<InterfaceIcon name="Upload" fallback={Upload} size={15} /> Upload client.jar{/if}
       </button>
       <input bind:this={input} type="file" accept=".jar,.zip,application/java-archive" hidden onchange={upload} />
-      {#if st.ready}<button class="danger" disabled={!!busy} onclick={clear}><Trash2 size={15} /> Remove</button>{/if}
+      {#if st.ready}<button class="danger" disabled={!!busy} onclick={clear}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /> Remove</button>{/if}
     </div>
   {:else}
     <p class="help">Loading…</p>

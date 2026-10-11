@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '../components/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Mail, Send, Save, LoaderCircle, KeyRound, BellRing, SlidersHorizontal } from '@lucide/svelte';
   import { api } from '../lib/api';
@@ -56,7 +57,7 @@
 {:else}
   <div class="grid g2">
     <div class="card col">
-      <div class="card-head"><Mail size={18} /><h2>Resend email</h2><span class="spacer"></span>
+      <div class="card-head"><InterfaceIcon name="Mail" fallback={Mail} size={18} /><h2>Resend email</h2><span class="spacer"></span>
         <label class="switch"><input type="checkbox" bind:checked={settings.notifications.enabled} /><span></span> {settings.notifications.enabled ? 'On' : 'Off'}</label></div>
       <label class="field">API key
         <input type="password" bind:value={apiKey} autocomplete="off" placeholder={settings.notifications.resend_api_key_set ? '•••••••• saved — enter a new key to replace it' : 're_…'} />
@@ -71,13 +72,13 @@
         <span class="help">Comma-separated, up to 20 addresses.</span>
       </label>
       <div class="row">
-        <button class="primary" onclick={save} disabled={saving}>{#if saving}<LoaderCircle size={16} class="spin" />{:else}<Save size={16} />{/if} Save</button>
-        <button onclick={test} disabled={testing || saving}>{#if testing}<LoaderCircle size={16} class="spin" />{:else}<Send size={16} />{/if} Send test email</button>
+        <button class="primary" onclick={save} disabled={saving}>{#if saving}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={16} class="spin" />{:else}<InterfaceIcon name="Save" fallback={Save} size={16} />{/if} Save</button>
+        <button onclick={test} disabled={testing || saving}>{#if testing}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={16} class="spin" />{:else}<InterfaceIcon name="Send" fallback={Send} size={16} />{/if} Send test email</button>
       </div>
     </div>
 
     <div class="card col">
-      <div class="card-head"><BellRing size={18} /><h2>Notify me when…</h2></div>
+      <div class="card-head"><InterfaceIcon name="BellRing" fallback={BellRing} size={18} /><h2>Notify me when…</h2></div>
       {#each Object.entries(EVENTS) as [key, label]}
         <label class="check"><input type="checkbox" bind:checked={settings.notifications.events[key]} /> <span>{label}</span></label>
       {/each}
@@ -85,20 +86,20 @@
     </div>
 
     <div class="card col">
-      <div class="card-head"><SlidersHorizontal size={18} /><h2>Thresholds</h2></div>
+      <div class="card-head"><InterfaceIcon name="SlidersHorizontal" fallback={SlidersHorizontal} size={18} /><h2>Thresholds</h2></div>
       <label class="field">Disk usage alert (%)<input type="number" min="50" max="99" bind:value={settings.alerts.disk_percent} /></label>
       <label class="field">Backup considered overdue after (hours)<input type="number" min="2" max="168" bind:value={settings.alerts.backup_max_age_hours} /></label>
       <label class="field">Certificate warning (days before expiry)<input type="number" min="1" max="60" bind:value={settings.alerts.certificate_days} /></label>
-      <div><button onclick={save} disabled={saving}><Save size={16} /> Save thresholds</button></div>
+      <div><button onclick={save} disabled={saving}><InterfaceIcon name="Save" fallback={Save} size={16} /> Save thresholds</button></div>
     </div>
 
     <div class="card col">
-      <div class="card-head"><KeyRound size={18} /><h2>GitHub</h2></div>
+      <div class="card-head"><InterfaceIcon name="KeyRound" fallback={KeyRound} size={18} /><h2>GitHub</h2></div>
       <label class="field">Personal access token (optional)
         <input type="password" bind:value={githubToken} autocomplete="off" placeholder={settings.github_token_set ? '•••••••• saved' : 'github_pat_…'} />
         <span class="help">Release checks work without a token. A read-only token raises GitHub's rate limit from 60 to 5,000 requests an hour.</span>
       </label>
-      <div><button onclick={save} disabled={saving}><Save size={16} /> Save</button></div>
+      <div><button onclick={save} disabled={saving}><InterfaceIcon name="Save" fallback={Save} size={16} /> Save</button></div>
     </div>
   </div>
 {/if}

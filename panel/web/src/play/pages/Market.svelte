@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Archive, Clock, Crown, Flame, Gavel, History, Package, RefreshCw, Search, ShoppingCart, Store, Tag, ClipboardList, ScrollText, TrendingUp, ArrowDownLeft, X, Shield, TriangleAlert } from '@lucide/svelte';
   import { get, post } from '../../lib/api';
@@ -138,12 +139,12 @@
 <div class="pl-page market">
   <div class="pl-head">
     <div>
-      <h1><Store size={26} /> Market</h1>
+      <h1><InterfaceIcon name="Store" fallback={Store} size={26} /> Market</h1>
       <p>{currentServer()?.name ?? 'Pick a server'} · buy, bid and track your listings</p>
     </div>
     <div class="pl-actions">
       <span class="pl-pill gold pl-hide-sm" title="Your balance on this server">{#if balance == null}<span>No balance yet</span>{:else}<Count value={balance} format={(v) => money(v)} />{/if}</span>
-      <button class="pl-iconbtn" aria-label="Refresh" aria-busy={refreshing} onclick={() => load(true)}><RefreshCw size={16} class={refreshing ? 'spin' : ''} /></button>
+      <button class="pl-iconbtn" aria-label="Refresh" aria-busy={refreshing} onclick={() => load(true)}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} class={refreshing ? 'spin' : ''} /></button>
     </div>
   </div>
 
@@ -151,24 +152,24 @@
     <div class="pl-card"><Empty icon={Store} title="No servers yet" text="Once a game server is linked to the panel, its market shows up here." /></div>
   {:else}
     <div class="pl-stack">
-      <div class="note"><Archive size={16} /><span>Everything you buy or win is delivered to your <b>/vault</b> in game — you don't need to be online.</span></div>
+      <div class="note"><InterfaceIcon name="Archive" fallback={Archive} size={16} /><span>Everything you buy or win is delivered to your <b>/vault</b> in game — you don't need to be online.</span></div>
       {#if waiting}
-        <div class="pl-alert info wait"><Package size={16} /> <span><b>{waiting} item{waiting === 1 ? '' : 's'}</b> waiting for you{waitingItems[0] ? ': ' + waitingItems.slice(0, 3).map((i) => `${i.amount}× ${stripColors(i.item_name)}`).join(', ') : ''}. Type <code>/market claim</code> in game to collect {waiting === 1 ? 'it' : 'them'}.</span></div>
+        <div class="pl-alert info wait"><InterfaceIcon name="Package" fallback={Package} size={16} /> <span><b>{waiting} item{waiting === 1 ? '' : 's'}</b> waiting for you{waitingItems[0] ? ': ' + waitingItems.slice(0, 3).map((i) => `${i.amount}× ${stripColors(i.item_name)}`).join(', ') : ''}. Type <code>/market claim</code> in game to collect {waiting === 1 ? 'it' : 'them'}.</span></div>
       {/if}
       {#if endingCount && tab === 'browse' && !loading && filter !== 'ending'}
-        <button class="note hot" onclick={() => { filter = 'ending'; sort = 'ending'; }}><Flame size={16} /><span><b>{endingCount} auction{endingCount === 1 ? '' : 's'}</b> ending in the next 10 minutes — tap to see</span></button>
+        <button class="note hot" onclick={() => { filter = 'ending'; sort = 'ending'; }}><InterfaceIcon name="Flame" fallback={Flame} size={16} /><span><b>{endingCount} auction{endingCount === 1 ? '' : 's'}</b> ending in the next 10 minutes — tap to see</span></button>
       {/if}
       {#if error}
-        <div class="pl-alert err row" role="alert"><TriangleAlert size={16} /><span class="grow">{error}</span><button class="pl-btn sm" onclick={() => load()}>Retry</button></div>
+        <div class="pl-alert err row" role="alert"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={16} /><span class="grow">{error}</span><button class="pl-btn sm" onclick={() => load()}>Retry</button></div>
       {/if}
 
       <div class="pl-tabs" role="tablist" style="align-self: flex-start">
-        <button role="tab" aria-selected={tab === 'browse'} class:on={tab === 'browse'} onclick={() => (tab = 'browse')}><Tag size={15} /> Browse <span class="count">{listings.length}</span></button>
-        <button role="tab" aria-selected={tab === 'mine'} class:on={tab === 'mine'} onclick={() => (tab = 'mine')}><History size={15} /> My activity {#if mineListings.length + leadingBids.length}<span class="count">{mineListings.length + leadingBids.length}</span>{/if}</button>
-        <button role="tab" aria-selected={tab === 'orders'} class:on={tab === 'orders'} onclick={() => (tab = 'orders')}><ClipboardList size={15} /> {coreExperience ? 'Buy contracts' : 'Buy orders'}</button>
-        <button role="tab" aria-selected={tab === 'darknet'} class:on={tab === 'darknet'} onclick={() => (tab = 'darknet')}><Store size={15} /> Darknet</button>
-        {#if coreExperience}<button role="tab" aria-selected={tab === 'vaults'} class:on={tab === 'vaults'} onclick={() => (tab = 'vaults')}><Archive size={15} /> Vaults</button>{/if}
-        {#if !coreExperience}<button role="tab" aria-selected={tab === 'contracts'} class:on={tab === 'contracts'} onclick={() => (tab = 'contracts')}><ScrollText size={15} /> Contracts</button>{/if}
+        <button role="tab" aria-selected={tab === 'browse'} class:on={tab === 'browse'} onclick={() => (tab = 'browse')}><InterfaceIcon name="Tag" fallback={Tag} size={15} /> Browse <span class="count">{listings.length}</span></button>
+        <button role="tab" aria-selected={tab === 'mine'} class:on={tab === 'mine'} onclick={() => (tab = 'mine')}><InterfaceIcon name="History" fallback={History} size={15} /> My activity {#if mineListings.length + leadingBids.length}<span class="count">{mineListings.length + leadingBids.length}</span>{/if}</button>
+        <button role="tab" aria-selected={tab === 'orders'} class:on={tab === 'orders'} onclick={() => (tab = 'orders')}><InterfaceIcon name="ClipboardList" fallback={ClipboardList} size={15} /> {coreExperience ? 'Buy contracts' : 'Buy orders'}</button>
+        <button role="tab" aria-selected={tab === 'darknet'} class:on={tab === 'darknet'} onclick={() => (tab = 'darknet')}><InterfaceIcon name="Store" fallback={Store} size={15} /> Darknet</button>
+        {#if coreExperience}<button role="tab" aria-selected={tab === 'vaults'} class:on={tab === 'vaults'} onclick={() => (tab = 'vaults')}><InterfaceIcon name="Archive" fallback={Archive} size={15} /> Vaults</button>{/if}
+        {#if !coreExperience}<button role="tab" aria-selected={tab === 'contracts'} class:on={tab === 'contracts'} onclick={() => (tab = 'contracts')}><InterfaceIcon name="ScrollText" fallback={ScrollText} size={15} /> Contracts</button>{/if}
       </div>
 
       {#snippet card(l: Listing, i: number)}
@@ -177,17 +178,17 @@
             <MoneyItem id={l.item_id} amount={l.amount} size={52} />
             <div class="title">
               <strong title={clean(l)}>{clean(l)}</strong>
-              <small>{#if l.seller_guild}<Shield size={11} /> [{l.seller_guild}]{:else}by {l.seller_name}{/if}</small>
+              <small>{#if l.seller_guild}<InterfaceIcon name="Shield" fallback={Shield} size={11} /> [{l.seller_guild}]{:else}by {l.seller_name}{/if}</small>
             </div>
             <div class="badges">
-              <span class="pl-chip" class:accent={l.kind === 'auction'}>{#if l.kind === 'auction'}<Gavel size={11} /> Auction{:else}<Tag size={11} /> Buy now{/if}</span>
-              {#if l.leading}<span class="pl-chip good"><Crown size={11} /> You lead</span>{/if}
+              <span class="pl-chip" class:accent={l.kind === 'auction'}>{#if l.kind === 'auction'}<InterfaceIcon name="Gavel" fallback={Gavel} size={11} /> Auction{:else}<InterfaceIcon name="Tag" fallback={Tag} size={11} /> Buy now{/if}</span>
+              {#if l.leading}<span class="pl-chip good"><InterfaceIcon name="Crown" fallback={Crown} size={11} /> You lead</span>{/if}
             </div>
           </div>
           <div class="price">
             {#if l.kind === 'auction'}
               <div><small>{l.current_bid != null ? 'Top bid' : 'Starting bid'}</small><b>{money(l.current_bid ?? l.price)}</b></div>
-              <div class="r"><small><Clock size={11} /> ends in</small><b class="t" class:warn={soon(l)}>{timeLeft(l.ends_at, now)}</b></div>
+              <div class="r"><small><InterfaceIcon name="Clock" fallback={Clock} size={11} /> ends in</small><b class="t" class:warn={soon(l)}>{timeLeft(l.ends_at, now)}</b></div>
             {:else}
               <div><small>Price</small><b>{money(l.price)}</b></div>
               {#if l.amount > 1}<div class="r"><small>per item</small><b class="t">{money(l.price / l.amount)}</b></div>{/if}
@@ -201,9 +202,9 @@
               <span class="pl-chip accent">Your listing</span>
               <button class="pl-btn sm" onclick={() => open(l)}>Manage</button>
             {:else if l.kind === 'auction'}
-              <button class="pl-btn primary block" disabled={!afford(l.min_next_bid)} onclick={() => open(l)}><Gavel size={15} /> {l.leading ? 'Raise bid' : 'Bid ' + money(l.min_next_bid)}</button>
+              <button class="pl-btn primary block" disabled={!afford(l.min_next_bid)} onclick={() => open(l)}><InterfaceIcon name="Gavel" fallback={Gavel} size={15} /> {l.leading ? 'Raise bid' : 'Bid ' + money(l.min_next_bid)}</button>
             {:else}
-              <button class="pl-btn primary block" disabled={!afford(l.price)} onclick={() => open(l)}><ShoppingCart size={15} /> {afford(l.price) ? 'Buy' : 'Not enough funds'}</button>
+              <button class="pl-btn primary block" disabled={!afford(l.price)} onclick={() => open(l)}><InterfaceIcon name="ShoppingCart" fallback={ShoppingCart} size={15} /> {afford(l.price) ? 'Buy' : 'Not enough funds'}</button>
             {/if}
           </div>
         </article>
@@ -221,7 +222,7 @@
         {#key play.serverId}<Contracts serverId={play.serverId} onbalance={(v) => v != null && balanceChanged(v)} />{/key}
       {:else if tab === 'browse'}
         <div class="bar">
-          <label class="sbox"><Search size={16} /><input placeholder="Search the market…" bind:value={query} aria-label="Search the market" /></label>
+          <label class="sbox"><InterfaceIcon name="Search" fallback={Search} size={16} /><input placeholder="Search the market…" bind:value={query} aria-label="Search the market" /></label>
           <select class="pl-input sortsel" bind:value={sort} aria-label="Sort">
             <option value="new">Newest</option><option value="ending">Ending soon</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option>
           </select>
@@ -244,30 +245,30 @@
       {:else}
         <div class="pl-stack mine">
           <section>
-            <h2><Package size={16} /> Your listings <span class="pl-chip">{mineListings.length}</span></h2>
+            <h2><InterfaceIcon name="Package" fallback={Package} size={16} /> Your listings <span class="pl-chip">{mineListings.length}</span></h2>
             {#if mineListings.length}<div class="pl-grid" style="--min: 270px">{#each mineListings as l, i (l.id)}{@render card(l, i)}{/each}</div>
             {:else}<div class="pl-card"><Empty icon={Package} title="You aren't selling anything" text="List an item in game with /market sell (or /market auction) and it appears here." /></div>{/if}
           </section>
           {#if leadingBids.length}
             <section>
-              <h2><Crown size={16} /> Auctions you're winning <span class="pl-chip good">{leadingBids.length}</span></h2>
+              <h2><InterfaceIcon name="Crown" fallback={Crown} size={16} /> Auctions you're winning <span class="pl-chip good">{leadingBids.length}</span></h2>
               <div class="pl-grid" style="--min: 270px">{#each leadingBids as l, i (l.id)}{@render card(l, i)}{/each}</div>
             </section>
           {/if}
           {#if outbid.length}
             <section>
-              <h2><TriangleAlert size={16} /> Outbid <span class="pl-chip warn">{outbid.length}</span></h2>
+              <h2><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={16} /> Outbid <span class="pl-chip warn">{outbid.length}</span></h2>
               <div class="pl-grid" style="--min: 270px">{#each outbid as l, i (l.id)}{@render card(l, i)}{/each}</div>
             </section>
           {/if}
           <section>
-            <h2><TrendingUp size={16} /> Recent activity</h2>
+            <h2><InterfaceIcon name="TrendingUp" fallback={TrendingUp} size={16} /> Recent activity</h2>
             <div class="pl-card tight">
               {#if history.length}
                 <div class="pl-list">
                   {#each history as h, i (i)}
                     <div class="pl-item">
-                      <span class="ic {h.kind}">{#if h.kind === 'sold'}<ArrowDownLeft size={16} />{:else if h.kind === 'bought'}<ShoppingCart size={16} />{:else}<Gavel size={16} />{/if}</span>
+                      <span class="ic {h.kind}">{#if h.kind === 'sold'}<InterfaceIcon name="ArrowDownLeft" fallback={ArrowDownLeft} size={16} />{:else if h.kind === 'bought'}<InterfaceIcon name="ShoppingCart" fallback={ShoppingCart} size={16} />{:else}<InterfaceIcon name="Gavel" fallback={Gavel} size={16} />{/if}</span>
                       <div class="grow"><b>{h.kind === 'sold' ? 'Sold' : h.kind === 'bought' ? 'Bought' : 'Bid on'} {h.description.replace(/^(Market purchase|Auction sale|Auction bid):\s*/, '')}</b><span class="sub">{ago(h.at)}</span></div>
                       <div class="end"><b class={h.kind === 'sold' ? 'pos' : 'neg'}>{h.kind === 'sold' ? '+' : '−'}{money(h.amount)}</b></div>
                     </div>
@@ -312,11 +313,11 @@
     {#if target}
       {@const t = target}
       {#if t.mine}
-        {#if !(t.kind === 'auction' && t.bid_count)}<button class="pl-btn lg danger" aria-busy={busy} disabled={busy} onclick={() => act('cancel')}><X size={15} /> Cancel listing</button>{/if}
+        {#if !(t.kind === 'auction' && t.bid_count)}<button class="pl-btn lg danger" aria-busy={busy} disabled={busy} onclick={() => act('cancel')}><InterfaceIcon name="X" fallback={X} size={15} /> Cancel listing</button>{/if}
       {:else if t.kind === 'auction'}
-        <button class="pl-btn lg primary" aria-busy={busy} disabled={busy || bid < t.min_next_bid || !afford(bid)} onclick={() => act('bid')}><Gavel size={15} /> Bid {money(bid)}</button>
+        <button class="pl-btn lg primary" aria-busy={busy} disabled={busy || bid < t.min_next_bid || !afford(bid)} onclick={() => act('bid')}><InterfaceIcon name="Gavel" fallback={Gavel} size={15} /> Bid {money(bid)}</button>
       {:else}
-        <button class="pl-btn lg primary" aria-busy={busy} disabled={busy || !afford(t.price)} onclick={() => act('buy')}><ShoppingCart size={15} /> Buy for {money(t.price)}</button>
+        <button class="pl-btn lg primary" aria-busy={busy} disabled={busy || !afford(t.price)} onclick={() => act('buy')}><InterfaceIcon name="ShoppingCart" fallback={ShoppingCart} size={15} /> Buy for {money(t.price)}</button>
       {/if}
     {/if}
   {/snippet}

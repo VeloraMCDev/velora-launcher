@@ -18,6 +18,8 @@ pub const API_VERSION: u32 = 1;
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(default)]
 pub struct Branding {
+    pub player_guide: Option<PlayerGuide>,
+    pub interface_icons: std::collections::BTreeMap<String, String>,
     pub name: String,
     pub tagline: String,
     pub logo_url: Option<String>,
@@ -44,6 +46,8 @@ pub struct Branding {
 impl Default for Branding {
     fn default() -> Self {
         Self {
+            player_guide: None,
+            interface_icons: Default::default(),
             name: "Velora".into(),
             tagline: "Your worlds, one click away.".into(),
             logo_url: None,
@@ -69,6 +73,135 @@ impl Default for Branding {
             features: Features::default(),
             custom_css: String::new(),
         }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(default)]
+pub struct PlayerGuide {
+    pub title: String,
+    pub introduction: String,
+    pub show_commands: bool,
+    pub articles: Vec<GuideArticle>,
+}
+impl Default for PlayerGuide {
+    fn default() -> Self {
+        Self { title: "Player Guide".into(), introduction: String::new(), show_commands: true, articles: vec![] }
+    }
+}
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
+#[serde(default)]
+pub struct GuideArticle {
+    pub id: String,
+    pub category: String,
+    pub title: String,
+    pub body: String,
+    pub icon: String,
+    pub links: Vec<GuideLink>,
+}
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
+#[serde(default)]
+pub struct GuideLink { pub label: String, pub url: String }
+
+impl Branding {
+    /// Validate bounded presentation content before storing platform or instance branding.
+    pub fn validate_presentation(&self) -> Result<(), &'static str> {
+        fn image(value: &str) -> bool {
+            value.is_empty()
+                || (value.starts_with("https://") && value.len() > 8 && !value.chars().any(char::is_whitespace))
+                || (value.starts_with("/uploads/") && !value.contains("..") && !value.chars().any(char::is_whitespace))
+                || (value.starts_with("iconify:") && value.bytes().all(|c| c.is_ascii_alphanumeric() || b":_-@".contains(&c)))
+                || value.bytes().all(|c| c.is_ascii_alphanumeric() || b"_:".contains(&c))
+        }
+        if self.interface_icons.len() > 4096 || self.interface_icons.iter().map(|(k, v)| k.len() + v.len()).sum::<usize>() > 512_000 {
+            return Err("Interface icon overrides exceed the size limit");
+        }
+        for (key, value) in &self.interface_icons {
+            if !["ui:", "nav:", "item:", "sprite:"].iter().any(|prefix| key.starts_with(prefix))
+                || key.len() > 128 || key.ends_with(':')
+                || !key.bytes().all(|c| c.is_ascii_alphanumeric() || b":_-/".contains(&c))
+                || value.len() > 2048 || !image(value)
+            {
+                return Err("Icons need a ui:, nav:, item: or sprite: key and an item ID, HTTPS image, upload path or iconify value");
+            }
+        }
+        if let Some(guide) = &self.player_guide {
+            if guide.title.trim().is_empty() || guide.title.len() > 320 || guide.introduction.len() > 8000 || guide.articles.len() > 100 {
+                return Err("Player Guide needs a title and at most 100 articles");
+            }
+            let mut ids = std::collections::HashSet::new();
+            let mut total = guide.introduction.len();
+            for article in &guide.articles {
+                if article.id.is_empty() || article.id.len() > 64 || !ids.insert(&article.id)
+                    || article.title.trim().is_empty() || article.title.len() > 480
+                    || article.category.trim().is_empty() || article.category.len() > 320
+                    || article.body.len() > 80_000 || article.icon.len() > 2048 || !image(&article.icon) || article.links.len() > 12
+                {
+                    return Err("Guide articles need unique IDs, a category, title, valid icon and bounded content");
+                }
+                total += article.body.len() + article.title.len() + article.category.len() + article.icon.len();
+                for link in &article.links {
+                    if link.label.trim().is_empty() || link.label.len() > 480 || link.url.len() > 2048
+                        || !link.url.starts_with("https://") || link.url.len() <= 8 || link.url.chars().any(char::is_whitespace)
+                    {
+                        return Err("Guide links need a label and an HTTPS URL");
+                    }
+                    total += link.label.len() + link.url.len();
+                }
+            }
+            if total > 512_000 { return Err("Player Guide exceeds the size limit"); }
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod presentation_tests {
+    use super::*;
+    #[test]
+    fn old_branding_remains_compatible_and_customizations_round_trip() {
+        let mut brand: Branding = serde_json::from_str(r#"{"name":"Legacy"}"#).unwrap();
+        assert!(brand.player_guide.is_none());
+        assert!(brand.interface_icons.is_empty());
+        brand.interface_icons.insert("nav:commands".into(), "book".into());
+        brand.player_guide = Some(PlayerGuide { articles: vec![GuideArticle {
+            id: "rules".into(), title: "Rules".into(), category: "Server".into(), body: "Be kind.".into(),
+            icon: "book".into(), links: vec![GuideLink { label: "Help".into(), url: "https://example.com/help".into() }],
+        }], ..Default::default() });
+        assert!(brand.validate_presentation().is_ok());
+        assert_eq!(brand, serde_json::from_str::<Branding>(&serde_json::to_string(&brand).unwrap()).unwrap());
+        let guide = brand.player_guide.as_mut().unwrap();
+        guide.articles.push(guide.articles[0].clone());
+        assert!(brand.validate_presentation().is_err());
+        brand.player_guide.as_mut().unwrap().articles.pop();
+        brand.player_guide.as_mut().unwrap().articles[0].links[0].url = "javascript:alert(1)".into();
+        assert!(brand.validate_presentation().is_err());
+    }
+    #[test]
+    fn icon_overrides_reject_active_urls_and_invalid_keys() {
+        let mut brand = Branding::default();
+        brand.interface_icons.insert("ui:Search".into(), "iconify:lucide:search@ffffff".into());
+        assert!(brand.validate_presentation().is_ok());
+        brand.interface_icons.insert("item:diamond".into(), "javascript:alert(1)".into());
+        assert!(brand.validate_presentation().is_err());
+        brand.interface_icons.clear();
+        brand.interface_icons.insert("unknown:Search".into(), "book".into());
+        assert!(brand.validate_presentation().is_err());
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct LogoLayout {
+    pub width: u16,
+    pub max_height: u16,
+    pub title_size: u16,
+}
+impl LogoLayout {
+    pub fn validate(&self) -> Result<(), &'static str> {
+        if !(120..=1200).contains(&self.width) || !(40..=400).contains(&self.max_height) || !(24..=96).contains(&self.title_size) {
+            return Err("Logo width must be 120-1200px, height 40-400px and title size 24-96px");
+        }
+        Ok(())
     }
 }
 

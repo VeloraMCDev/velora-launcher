@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import PlayerLink from '../components/PlayerLink.svelte';
   import { onMount } from 'svelte';
   import {
@@ -228,12 +229,12 @@
   <!-- Page Header -->
   <div class="page-header">
     <div class="title-wrap">
-      <h1><Users class="users-icon" size={26} /> Friends & Social</h1>
+      <h1><InterfaceIcon name="Users" fallback={Users} class="users-icon" size={26} /> Friends & Social</h1>
       <p class="lead">Connect with friends, send direct messages, and team up with game invites.</p>
     </div>
     <div class="header-actions">
       <button class="ghost icon" onclick={loadData} title="Refresh" aria-label="Refresh">
-        <RefreshCw size={17} class={loading ? 'spin' : ''} />
+        <InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={17} class={loading ? 'spin' : ''} />
       </button>
     </div>
   </div>
@@ -242,16 +243,16 @@
   <div class="tabs-row">
     <div class="tabs-segmented">
       <button class:active={activeSection === 'friends'} onclick={() => (activeSection = 'friends')}>
-        <Users size={15} /> Friends ({acceptedFriends.length})
+        <InterfaceIcon name="Users" fallback={Users} size={15} /> Friends ({acceptedFriends.length})
       </button>
       <button class:active={activeSection === 'members'} onclick={() => { activeSection = 'members'; if (!membersList.length) searchMembers(); }}>
-        <Sparkles size={15} /> Find Players
+        <InterfaceIcon name="Sparkles" fallback={Sparkles} size={15} /> Find Players
       </button>
       <button class:active={activeSection === 'messages'} onclick={() => (activeSection = 'messages')}>
-        <MessageSquare size={15} /> Direct Messages
+        <InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={15} /> Direct Messages
       </button>
       <button class:active={activeSection === 'invites'} onclick={() => (activeSection = 'invites')}>
-        <Gamepad2 size={15} /> Invites ({invites.filter((i) => i.status === 'pending').length})
+        <InterfaceIcon name="Gamepad2" fallback={Gamepad2} size={15} /> Invites ({invites.filter((i) => i.status === 'pending').length})
       </button>
     </div>
   </div>
@@ -261,7 +262,7 @@
     <div class="friends-layout">
       <!-- Add Friend Bar -->
       <div class="add-friend-bar glass">
-        <UserPlus size={18} class="muted" />
+        <InterfaceIcon name="UserPlus" fallback={UserPlus} size={18} class="muted" />
         <input
           type="text"
           placeholder="Enter a player's username to add them..."
@@ -274,7 +275,7 @@
           onclick={handleSendFriendRequest}
           disabled={sendingFriendReq || !addFriendUsername.trim()}
         >
-          {#if sendingFriendReq}<LoaderCircle size={14} class="spin" />{:else}Send Request{/if}
+          {#if sendingFriendReq}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={14} class="spin" />{:else}Send Request{/if}
         </button>
       </div>
 
@@ -316,10 +317,10 @@
                   </div>
                   <div class="req-actions">
                     <button class="primary icon sm" onclick={() => handleRespondRequest(req.uuid, true)} title="Accept">
-                      <Check size={14} />
+                      <InterfaceIcon name="Check" fallback={Check} size={14} />
                     </button>
                     <button class="ghost icon sm" onclick={() => handleRespondRequest(req.uuid, false)} title="Decline">
-                      <X size={14} />
+                      <InterfaceIcon name="X" fallback={X} size={14} />
                     </button>
                   </div>
                 </div>
@@ -340,7 +341,7 @@
                     </div>
                   </div>
                   <button class="ghost icon sm" onclick={() => handleRemoveFriend(req.uuid)} title="Cancel Request">
-                    <Trash2 size={14} />
+                    <InterfaceIcon name="Trash2" fallback={Trash2} size={14} />
                   </button>
                 </div>
               {/each}
@@ -355,7 +356,7 @@
         </div>
       {:else if displayedFriends.length === 0}
         <div class="empty-state glass">
-          <Users size={32} class="muted" />
+          <InterfaceIcon name="Users" fallback={Users} size={32} class="muted" />
           <p class="muted">No friends found in this view. Add friends by typing their username above!</p>
         </div>
       {:else}
@@ -388,13 +389,13 @@
 
               <div class="friend-actions">
                 <button class="ghost icon sm" onclick={() => selectChatFriend(friend)} title="Message">
-                  <MessageSquare size={15} />
+                  <InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={15} />
                 </button>
                 <button class="ghost icon sm" onclick={() => openInviteModal(friend)} title="Invite to Game">
-                  <Gamepad2 size={15} />
+                  <InterfaceIcon name="Gamepad2" fallback={Gamepad2} size={15} />
                 </button>
                 <button class="ghost icon sm danger-hover" onclick={() => askRemove(friend)} title="Remove Friend">
-                  <UserX size={15} />
+                  <InterfaceIcon name="UserX" fallback={UserX} size={15} />
                 </button>
               </div>
             </div>
@@ -406,7 +407,7 @@
     <!-- Members Directory Section -->
     <div class="members-layout">
       <div class="members-search-bar glass">
-        <Search size={18} class="muted" />
+        <InterfaceIcon name="Search" fallback={Search} size={18} class="muted" />
         <input
           type="text"
           placeholder="Search all Velora network players by username..."
@@ -419,15 +420,15 @@
           onclick={searchMembers}
           disabled={loadingMembers}
         >
-          {#if loadingMembers}<LoaderCircle size={14} class="spin" />{:else}<Search size={14} /> Search{/if}
+          {#if loadingMembers}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={14} class="spin" />{:else}<InterfaceIcon name="Search" fallback={Search} size={14} /> Search{/if}
         </button>
       </div>
 
       {#if loadingMembers && !membersList.length}
-        <div class="center-state"><LoaderCircle class="spin" size={32} /></div>
+        <div class="center-state"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={32} /></div>
       {:else if membersList.length === 0}
         <div class="empty-state glass">
-          <Users size={36} class="muted" />
+          <InterfaceIcon name="Users" fallback={Users} size={36} class="muted" />
           <p class="muted">No players found matching "{memberSearchQuery}". Try another username!</p>
         </div>
       {:else}
@@ -472,10 +473,10 @@
                     const friend = friends.find(f => f.uuid === member.uuid) || { uuid: member.uuid, username: member.username, status: 'accepted', is_online: member.online, playing_on: null };
                     selectChatFriend(friend as FriendInfo);
                   }}>
-                    <MessageSquare size={13} /> Message
+                    <InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={13} /> Message
                   </button>
                   <button class="ghost sm icon" onclick={() => (app.viewProfileUuid = member.uuid)} title="View Profile">
-                    <ExternalLink size={13} />
+                    <InterfaceIcon name="ExternalLink" fallback={ExternalLink} size={13} />
                   </button>
                 {:else}
                   <button
@@ -484,13 +485,13 @@
                     disabled={addingFriendUuid === member.uuid}
                   >
                     {#if addingFriendUuid === member.uuid}
-                      <LoaderCircle size={13} class="spin" />
+                      <InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={13} class="spin" />
                     {:else}
-                      <UserPlus size={13} /> Add Friend
+                      <InterfaceIcon name="UserPlus" fallback={UserPlus} size={13} /> Add Friend
                     {/if}
                   </button>
                   <button class="ghost sm icon" onclick={() => (app.viewProfileUuid = member.uuid)} title="View Profile">
-                    <ExternalLink size={13} />
+                    <InterfaceIcon name="ExternalLink" fallback={ExternalLink} size={13} />
                   </button>
                 {/if}
               </div>
@@ -545,14 +546,14 @@
               </div>
             </div>
             <button class="primary sm" onclick={() => openInviteModal(activeChatFriend!)}>
-              <Gamepad2 size={13} /> Invite
+              <InterfaceIcon name="Gamepad2" fallback={Gamepad2} size={13} /> Invite
             </button>
           </div>
 
           <div class="messages-scroll">
             {#if messages.length === 0}
               <div class="empty-state">
-                <MessageSquare size={28} class="muted" />
+                <InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={28} class="muted" />
                 <p class="tiny muted">No messages yet with {activeChatFriend.username}. Say hello!</p>
               </div>
             {:else}
@@ -582,12 +583,12 @@
               disabled={sendingMessage || !messageInput.trim()}
               aria-label="Send Message"
             >
-              {#if sendingMessage}<LoaderCircle size={15} class="spin" />{:else}<Send size={15} />{/if}
+              {#if sendingMessage}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={15} class="spin" />{:else}<InterfaceIcon name="Send" fallback={Send} size={15} />{/if}
             </button>
           </div>
         {:else}
           <div class="center-state">
-            <MessageSquare size={36} class="muted" />
+            <InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={36} class="muted" />
             <p class="muted">Select a friend to start chatting</p>
           </div>
         {/if}
@@ -598,7 +599,7 @@
     <div class="invites-view">
       {#if invites.length === 0}
         <div class="empty-state glass">
-          <Gamepad2 size={36} class="muted" />
+          <InterfaceIcon name="Gamepad2" fallback={Gamepad2} size={36} class="muted" />
           <p class="muted">No game invites received. When friends invite you to join their server, they will appear here!</p>
         </div>
       {:else}
@@ -618,7 +619,7 @@
                 {#if inv.status === 'pending'}
                   <div class="invite-btns">
                     <button class="primary sm" onclick={() => handleRespondInvite(inv.id, true)}>
-                      <Check size={13} /> Accept
+                      <InterfaceIcon name="Check" fallback={Check} size={13} /> Accept
                     </button>
                     <button class="ghost sm" onclick={() => handleRespondInvite(inv.id, false)}>
                       Decline
@@ -642,7 +643,7 @@
   {#snippet footer()}
     <button class="ghost" onclick={() => (removeModalOpen = false)}>Keep friend</button>
     <button class="danger" onclick={() => { const f = removeTarget; removeModalOpen = false; if (f) handleRemoveFriend(f.uuid); }}>
-      <UserX size={14} /> Remove
+      <InterfaceIcon name="UserX" fallback={UserX} size={14} /> Remove
     </button>
   {/snippet}
 </Modal>
@@ -664,7 +665,7 @@
   {#snippet footer()}
     <button class="ghost" onclick={() => (inviteModalOpen = false)}>Cancel</button>
     <button class="primary" onclick={handleSendInvite} disabled={sendingInvite}>
-      {#if sendingInvite}<LoaderCircle size={14} class="spin" />{:else}<Gamepad2 size={14} />{/if}
+      {#if sendingInvite}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={14} class="spin" />{:else}<InterfaceIcon name="Gamepad2" fallback={Gamepad2} size={14} />{/if}
       Send Game Invite
     </button>
   {/snippet}

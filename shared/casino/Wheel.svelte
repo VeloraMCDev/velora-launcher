@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount, untrack } from 'svelte';
   import { CircleDollarSign, Info } from '@lucide/svelte';
   import BetInput from './BetInput.svelte';
@@ -63,11 +64,11 @@
 
 <div class="game">
   <section class="panel controls">
-    <h2><CircleDollarSign size={18} /> Wheel</h2>
+    <h2><InterfaceIcon name="CircleDollarSign" fallback={CircleDollarSign} size={18} /> Wheel</h2>
     <BetInput bind:value={bet} min={cfg.min_bet} max={cfg.max_bet} {balance} disabled={busy} />
     <button class="spinbtn primary" onclick={spin} disabled={busy || !cfg.enabled || (balance != null && balance < bet)}>{busy ? 'Spinning…' : `Spin · ${money(bet)}`}<kbd class="k">Space</kbd></button>
     {#if !cfg.enabled}<p class="note">The wheel is closed right now.</p>{/if}
-    <p class="note"><Info size={13} /> Pays back {(st.rtp.wheel * 100).toFixed(1)}% over time. Wider slices are likelier.</p>
+    <p class="note"><InterfaceIcon name="Info" fallback={Info} size={13} /> Pays back {(st.rtp.wheel * 100).toFixed(1)}% over time. Wider slices are likelier.</p>
     <div class="legend">
       {#each [...cfg.segments].sort((a, b) => b.value - a.value) as s}<span style="--c:{s.color}"><i></i>{mult(s.value)}</span>{/each}
     </div>

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Upload, Pencil, Trash2, Globe, Tag, Lock, Flag, Users as UsersIcon, ImagePlus } from '@lucide/svelte';
   import CapePreview from '../components/CapePreview.svelte';
   import Modal from '../components/Modal.svelte';
@@ -85,15 +87,15 @@
       <h1>Capes</h1>
       <p>Upload capes and decide who can wear them. They show up in game on every server that uses the panel's sign-in.</p>
     </div>
-    <button class="primary" onclick={openNew}><Upload size={16} /> Upload cape</button>
+    <button class="primary" onclick={openNew}><InterfaceIcon name="Upload" fallback={Upload} size={16} /> Upload cape</button>
   </div>
 
   {#if capes && !capes.length}
     <section class="card empty">
-      <Flag size={32} />
+      <InterfaceIcon name="Flag" fallback={Flag} size={32} />
       <h3>No capes yet</h3>
       <p>Upload a 64×32 cape texture (or an HD multiple like 128×64) to get started.</p>
-      <button class="primary add" onclick={openNew}><Upload size={16} /> Upload cape</button>
+      <button class="primary add" onclick={openNew}><InterfaceIcon name="Upload" fallback={Upload} size={16} /> Upload cape</button>
     </section>
   {:else if capes}
     <div class="grid capes">
@@ -104,13 +106,13 @@
           <div class="meta">
             <strong>{c.name}</strong>
             <div class="row wrap tags">
-              <span class="badge" class:accent={c.visibility === 'public'}><vis.icon size={11} /> {c.visibility === 'groups' ? c.allowed_groups.join(', ') || 'No groups' : vis.label}</span>
-              <span class="muted tiny row gap"><UsersIcon size={12} /> {c.wearers} wearing</span>
+              <span class="badge" class:accent={c.visibility === 'public'}><InterfaceIcon name={iconName(vis.icon)} fallback={vis.icon} size={11} /> {c.visibility === 'groups' ? c.allowed_groups.join(', ') || 'No groups' : vis.label}</span>
+              <span class="muted tiny row gap"><InterfaceIcon name="Users" fallback={UsersIcon} size={12} /> {c.wearers} wearing</span>
             </div>
           </div>
           <div class="actions">
-            <button class="ghost icon" aria-label="Edit {c.name}" onclick={() => openEdit(c)}><Pencil size={15} /></button>
-            <button class="ghost icon" aria-label="Delete {c.name}" onclick={() => { confirm = c; confirmOpen = true; }}><Trash2 size={15} /></button>
+            <button class="ghost icon" aria-label="Edit {c.name}" onclick={() => openEdit(c)}><InterfaceIcon name="Pencil" fallback={Pencil} size={15} /></button>
+            <button class="ghost icon" aria-label="Delete {c.name}" onclick={() => { confirm = c; confirmOpen = true; }}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /></button>
           </div>
         </article>
       {/each}
@@ -122,7 +124,7 @@
   {#if draft}
     <div class="editor">
       <label class="drop" class:has={draft.preview}>
-        {#if draft.preview}<CapePreview src={draft.preview} scale={8} />{:else}<ImagePlus size={24} /><span class="tiny">Choose PNG</span>{/if}
+        {#if draft.preview}<CapePreview src={draft.preview} scale={8} />{:else}<InterfaceIcon name="ImagePlus" fallback={ImagePlus} size={24} /><span class="tiny">Choose PNG</span>{/if}
         {#if !draft.id}<input type="file" accept="image/png" onchange={pick} />{/if}
       </label>
       <div class="col grow">
@@ -132,7 +134,7 @@
           <div class="vis">
             {#each visibilities as v}
               <button type="button" class="opt" class:on={draft.visibility === v.id} onclick={() => draft && (draft.visibility = v.id)}>
-                <v.icon size={16} /><span><strong>{v.label}</strong><span class="tiny muted">{v.help}</span></span>
+                <InterfaceIcon name={iconName(v.icon)} fallback={v.icon} size={16} /><span><strong>{v.label}</strong><span class="tiny muted">{v.help}</span></span>
               </button>
             {/each}
           </div>
@@ -162,7 +164,7 @@
   <p class="muted">{confirm?.wearers ? `${confirm.wearers} player${confirm.wearers === 1 ? '' : 's'} will lose it.` : 'Nobody is wearing it.'} This can't be undone.</p>
   {#snippet footer()}
     <button class="ghost" onclick={() => (confirmOpen = false)}>Cancel</button>
-    <button class="danger" onclick={remove}><Trash2 size={16} /> Delete</button>
+    <button class="danger" onclick={remove}><InterfaceIcon name="Trash2" fallback={Trash2} size={16} /> Delete</button>
   {/snippet}
 </Modal>
 

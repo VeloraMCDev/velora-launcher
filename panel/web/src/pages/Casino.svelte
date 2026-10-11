@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Dice5, Gem, CircleDollarSign, Bomb, Gift, Crosshair, Swords, Save, RotateCcw, TrendingUp, TrendingDown, Coins, Users2, Trash2, Ban, Plus, X, Sparkles, Spade, Rocket, Dices, Flame, Shuffle } from '@lucide/svelte';
   import Toggle from '../components/Toggle.svelte';
@@ -158,7 +160,7 @@
 <div class="page">
 <header class="head">
   <div>
-    <h1><Dice5 size={26} /> Casino</h1>
+    <h1><InterfaceIcon name="Dice5" fallback={Dice5} size={26} /> Casino</h1>
     <p>Slots, Wheel, Plinko, Mines, Blackjack, Crash, Dice, Coin Flip, Double or Nothing, a free daily spin, bounties and player bets. All of it is paid in the Velora economy and shows up for players in the launcher and the player panel.</p>
   </div>
   {#if cfg}<Toggle bind:checked={cfg.enabled} label="Casino open" help="Close everything at once" />{/if}
@@ -168,17 +170,17 @@
   <p class="muted">Loading…</p>
 {:else}
   <div class="tabs seg">
-    {#each TABS as t}<button type="button" class:on={tab === t.id} onclick={() => (tab = t.id)}><t.icon size={14} /> {t.label}</button>{/each}
+    {#each TABS as t}<button type="button" class:on={tab === t.id} onclick={() => (tab = t.id)}><InterfaceIcon name={iconName(t.icon)} fallback={t.icon} size={14} /> {t.label}</button>{/each}
   </div>
 
   <div class="stage">
     {#if tab === 'overview'}
       {#if totals && stats}
         <div class="tiles">
-          <div class="tile"><span><Coins size={14} /> Wagered</span><b>{money(totals.wagered)}</b><small>{totals.rounds.toLocaleString()} rounds</small></div>
+          <div class="tile"><span><InterfaceIcon name="Coins" fallback={Coins} size={14} /> Wagered</span><b>{money(totals.wagered)}</b><small>{totals.rounds.toLocaleString()} rounds</small></div>
           <div class="tile"><span>Paid out</span><b>{money(totals.paid)}</b><small>{totals.wagered ? pct(totals.paid / totals.wagered) : '—'} returned</small></div>
-          <div class="tile" class:pos={totals.profit >= 0} class:neg={totals.profit < 0}><span>{#if totals.profit >= 0}<TrendingUp size={14} />{:else}<TrendingDown size={14} />{/if} House profit</span><b>{money(totals.profit)}</b><small>{money(totals.week)} in the last 7 days</small></div>
-          <div class="tile"><span><Gift size={14} /> Free spins today</span><b>{stats.free_spins_today}</b><small>{cfg.daily.spins_per_day} per player per day</small></div>
+          <div class="tile" class:pos={totals.profit >= 0} class:neg={totals.profit < 0}><span>{#if totals.profit >= 0}<InterfaceIcon name="TrendingUp" fallback={TrendingUp} size={14} />{:else}<InterfaceIcon name="TrendingDown" fallback={TrendingDown} size={14} />{/if} House profit</span><b>{money(totals.profit)}</b><small>{money(totals.week)} in the last 7 days</small></div>
+          <div class="tile"><span><InterfaceIcon name="Gift" fallback={Gift} size={14} /> Free spins today</span><b>{stats.free_spins_today}</b><small>{cfg.daily.spins_per_day} per player per day</small></div>
         </div>
         <section class="card">
           <h2>Wagered per day</h2>
@@ -205,7 +207,7 @@
         </div>
         <div class="two">
           <section class="card">
-            <h2><Users2 size={16} /> Top players by wagered</h2>
+            <h2><InterfaceIcon name="Users2" fallback={Users2} size={16} /> Top players by wagered</h2>
             <table>
               <thead><tr><th>Player</th><th class="n">Rounds</th><th class="n">Wagered</th><th class="n">Net</th></tr></thead>
               <tbody>{#each stats.top_players as p}<tr><td>{p.name}</td><td class="n">{p.rounds}</td><td class="n">{money(p.wagered)}</td><td class="n" class:goodtxt={p.net >= 0} class:badtxt={p.net < 0}>{money(p.net)}</td></tr>{:else}<tr><td colspan="4" class="muted">No players yet</td></tr>{/each}</tbody>
@@ -235,7 +237,7 @@
 
     {:else if tab === 'slots' && preview}
       <section class="card">
-        <header class="sec"><h2><Gem size={18} /> Slots</h2><Toggle bind:checked={cfg.slots.enabled} label="Open" /></header>
+        <header class="sec"><h2><InterfaceIcon name="Gem" fallback={Gem} size={18} /> Slots</h2><Toggle bind:checked={cfg.slots.enabled} label="Open" /></header>
         <div class="fields">
           <label>Smallest bet ($)<input type="number" min="0.01" bind:value={cfg.slots.min_bet} /></label>
           <label>Biggest bet ($)<input type="number" min="0.01" bind:value={cfg.slots.max_bet} /></label>
@@ -250,17 +252,17 @@
               <input bind:value={s.label} maxlength="16" aria-label="Name" />
               <input type="number" min="0" step="1" bind:value={s.pay} />
               <input type="number" min="0.01" step="1" bind:value={s.weight} />
-              <button type="button" class="ghost" disabled={cfg.slots.symbols.length <= 2} onclick={() => cfg && cfg.slots.symbols.splice(i, 1)} aria-label="Remove"><Trash2 size={14} /></button>
+              <button type="button" class="ghost" disabled={cfg.slots.symbols.length <= 2} onclick={() => cfg && cfg.slots.symbols.splice(i, 1)} aria-label="Remove"><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /></button>
             </div>
           {/each}
-          <button type="button" class="ghost" disabled={cfg.slots.symbols.length >= 10} onclick={() => cfg && cfg.slots.symbols.push({ id: 's' + (cfg.slots.symbols.length + 1) + Math.random().toString(36).slice(2, 5), label: 'New', weight: 10, pay: 10, color: '#38bdf8' })}><Plus size={14} /> Add symbol</button>
+          <button type="button" class="ghost" disabled={cfg.slots.symbols.length >= 10} onclick={() => cfg && cfg.slots.symbols.push({ id: 's' + (cfg.slots.symbols.length + 1) + Math.random().toString(36).slice(2, 5), label: 'New', weight: 10, pay: 10, color: '#38bdf8' })}><InterfaceIcon name="Plus" fallback={Plus} size={14} /> Add symbol</button>
         </div>
-        <button type="button" class="ghost reset" onclick={() => resetGame('slots')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('slots')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
 
     {:else if tab === 'wheel' && preview}
       <section class="card">
-        <header class="sec"><h2><CircleDollarSign size={18} /> Wheel</h2><Toggle bind:checked={cfg.wheel.enabled} label="Open" /></header>
+        <header class="sec"><h2><InterfaceIcon name="CircleDollarSign" fallback={CircleDollarSign} size={18} /> Wheel</h2><Toggle bind:checked={cfg.wheel.enabled} label="Open" /></header>
         <div class="fields">
           <label>Smallest bet ($)<input type="number" min="0.01" bind:value={cfg.wheel.min_bet} /></label>
           <label>Biggest bet ($)<input type="number" min="0.01" bind:value={cfg.wheel.max_bet} /></label>
@@ -270,12 +272,12 @@
           <WheelPreview segments={cfg.wheel.segments} size={210} />
           <SegmentsEditor bind:segments={cfg.wheel.segments} valueLabel="Pays (×)" odds={preview.wheel_odds} />
         </div>
-        <button type="button" class="ghost reset" onclick={() => resetGame('wheel')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('wheel')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
 
     {:else if tab === 'plinko' && preview}
       <section class="card">
-        <header class="sec"><h2><Dice5 size={18} /> Plinko</h2><Toggle bind:checked={cfg.plinko.enabled} label="Open" /></header>
+        <header class="sec"><h2><InterfaceIcon name="Dice5" fallback={Dice5} size={18} /> Plinko</h2><Toggle bind:checked={cfg.plinko.enabled} label="Open" /></header>
         <div class="fields">
           <label>Smallest bet ($)<input type="number" min="0.01" bind:value={cfg.plinko.min_bet} /></label>
           <label>Biggest bet ($)<input type="number" min="0.01" bind:value={cfg.plinko.max_bet} /></label>
@@ -302,12 +304,12 @@
           </div>
           <small class="muted">Bars use a log scale so the small payouts stay visible. Edge slots pay the most.</small>
         </div>
-        <button type="button" class="ghost reset" onclick={() => resetGame('plinko')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('plinko')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
 
     {:else if tab === 'mines' && preview}
       <section class="card">
-        <header class="sec"><h2><Bomb size={18} /> Mines</h2><Toggle bind:checked={cfg.mines.enabled} label="Open" /></header>
+        <header class="sec"><h2><InterfaceIcon name="Bomb" fallback={Bomb} size={18} /> Mines</h2><Toggle bind:checked={cfg.mines.enabled} label="Open" /></header>
         <div class="fields">
           <label>Smallest bet ($)<input type="number" min="0.01" bind:value={cfg.mines.min_bet} /></label>
           <label>Biggest bet ($)<input type="number" min="0.01" bind:value={cfg.mines.max_bet} /></label>
@@ -324,12 +326,12 @@
           <thead><tr><th>Mines</th><th class="n">1 tile</th><th class="n">3 tiles</th><th class="n">5 tiles</th></tr></thead>
           <tbody>{#each preview.mines.samples as s}<tr><td>{s.mines}</td>{#each s.steps as v}<td class="n">{v}×</td>{/each}</tr>{/each}</tbody>
         </table>
-        <button type="button" class="ghost reset" onclick={() => resetGame('mines')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('mines')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
 
     {:else if tab === 'blackjack' && preview}
       <section class="card">
-        <header class="sec"><h2><Spade size={18} /> Blackjack</h2><Toggle bind:checked={cfg.blackjack.enabled} label="Open" /></header>
+        <header class="sec"><h2><InterfaceIcon name="Spade" fallback={Spade} size={18} /> Blackjack</h2><Toggle bind:checked={cfg.blackjack.enabled} label="Open" /></header>
         <div class="fields">
           <label>Smallest bet ($)<input type="number" min="0.01" bind:value={cfg.blackjack.min_bet} /></label>
           <label>Biggest bet ($)<input type="number" min="0.01" bind:value={cfg.blackjack.max_bet} /></label>
@@ -337,12 +339,12 @@
         </div>
         <Toggle bind:checked={cfg.blackjack.dealer_hits_soft_17} label="Dealer hits on a soft 17" />
         <p class="muted">Cards come from an endless shoe, so nothing can be counted. With sensible play the game returns about <b>{pct(preview.blackjack.rtp)}</b>; lowering the blackjack payout or having the dealer hit soft 17 widens the house's edge.</p>
-        <button type="button" class="ghost reset" onclick={() => resetGame('blackjack')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('blackjack')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
 
     {:else if tab === 'crash' && preview}
       <section class="card">
-        <header class="sec"><h2><Rocket size={18} /> Crash</h2><Toggle bind:checked={cfg.crash.enabled} label="Open" /></header>
+        <header class="sec"><h2><InterfaceIcon name="Rocket" fallback={Rocket} size={18} /> Crash</h2><Toggle bind:checked={cfg.crash.enabled} label="Open" /></header>
         <div class="fields">
           <label>Smallest bet ($)<input type="number" min="0.01" bind:value={cfg.crash.min_bet} /></label>
           <label>Biggest bet ($)<input type="number" min="0.01" bind:value={cfg.crash.max_bet} /></label>
@@ -352,12 +354,12 @@
           <input class="fancy" type="range" min="0" max="0.2" step="0.005" bind:value={cfg.crash.house_edge} style="--p:{(cfg.crash.house_edge / 0.2) * 100}%" />
           <small>Every round crashes at a random point. Whatever multiplier a player aims for, they get back {pct(preview.crash.rtp)} on average, so there is no safe target to exploit.</small>
         </label>
-        <button type="button" class="ghost reset" onclick={() => resetGame('crash')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('crash')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
 
     {:else if tab === 'dice' && preview}
       <section class="card">
-        <header class="sec"><h2><Dices size={18} /> Dice</h2><Toggle bind:checked={cfg.dice.enabled} label="Open" /></header>
+        <header class="sec"><h2><InterfaceIcon name="Dices" fallback={Dices} size={18} /> Dice</h2><Toggle bind:checked={cfg.dice.enabled} label="Open" /></header>
         <div class="fields">
           <label>Smallest bet ($)<input type="number" min="0.01" bind:value={cfg.dice.min_bet} /></label>
           <label>Biggest bet ($)<input type="number" min="0.01" bind:value={cfg.dice.max_bet} /></label>
@@ -372,7 +374,7 @@
           <thead><tr><th>Win chance</th><th class="n">Pays</th></tr></thead>
           <tbody>{#each preview.dice.samples as d}<tr><td>{d.chance}%</td><td class="n">{d.pays}×</td></tr>{/each}</tbody>
         </table>
-        <button type="button" class="ghost reset" onclick={() => resetGame('dice')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('dice')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
 
     {:else if tab === 'roulette' || tab === 'burst'}
@@ -382,18 +384,18 @@
       <p>{tab==='roulette'?'Single-zero European wheel: 37 equal pockets, 36× straight bets and 2×/3× outside bets.':'A round keeps the odds and payout cap it started with. Closing Burst still allows existing players to cash out.'}</p></section>
     {:else if tab === 'coinflip' && preview}
       <section class="card">
-        <header class="sec"><h2><Coins size={18} /> Coin Flip</h2><Toggle bind:checked={cfg.coinflip.enabled} label="Open" /></header>
+        <header class="sec"><h2><InterfaceIcon name="Coins" fallback={Coins} size={18} /> Coin Flip</h2><Toggle bind:checked={cfg.coinflip.enabled} label="Open" /></header>
         <div class="fields">
           <label>Smallest bet ($)<input type="number" min="0.01" bind:value={cfg.coinflip.min_bet} /></label>
           <label>Biggest bet ($)<input type="number" min="0.01" bind:value={cfg.coinflip.max_bet} /></label>
           <label>Pays (× the bet)<input type="number" min="1" max="2" step="0.01" bind:value={cfg.coinflip.payout} /><small>The coin is always a fair 50/50. A fair payout is 2; {cfg.coinflip.payout} returns {pct(cfg.coinflip.payout / 2)}.</small></label>
         </div>
-        <button type="button" class="ghost reset" onclick={() => resetGame('coinflip')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('coinflip')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
 
     {:else if tab === 'double' && preview}
       <section class="card">
-        <header class="sec"><h2><Flame size={18} /> Double or Nothing</h2><Toggle bind:checked={cfg.double.enabled} label="On" /></header>
+        <header class="sec"><h2><InterfaceIcon name="Flame" fallback={Flame} size={18} /> Double or Nothing</h2><Toggle bind:checked={cfg.double.enabled} label="On" /></header>
         <p class="muted">After any win (slots, wheel, plinko, mines, blackjack, crash, dice or coin flip) the player is offered a gamble on those winnings: win and they double, lose and they're gone. Declining costs nothing, the winnings are already in their balance.</p>
         <label class="slider">Chance the double comes off <b class="rtpval {rtpTone(cfg.double.win_chance * 2)}">{pct(cfg.double.win_chance)}</b>
           <input class="fancy" type="range" min="0.05" max="0.95" step="0.005" bind:value={cfg.double.win_chance} style="--p:{((cfg.double.win_chance - 0.05) / 0.9) * 100}%" />
@@ -403,12 +405,12 @@
           <label>Most doubles in a row<input type="number" min="1" max="20" bind:value={cfg.double.max_streak} /></label>
           <label>Offer stays open for (minutes)<input type="number" min="1" max="60" bind:value={cfg.double.offer_minutes} /></label>
         </div>
-        <button type="button" class="ghost reset" onclick={() => resetGame('double')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('double')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
 
     {:else if tab === 'chaos' && preview}
       <section class="card">
-        <header class="sec"><h2><Shuffle size={18} /> Chaos</h2><Toggle bind:checked={cfg.chaos.enabled} label="On" /></header>
+        <header class="sec"><h2><InterfaceIcon name="Shuffle" fallback={Shuffle} size={18} /> Chaos</h2><Toggle bind:checked={cfg.chaos.enabled} label="On" /></header>
         <p class="muted">Makes instant games (slots, wheel, plinko, dice, coin flip) less predictable than their tables. Every winning round can be hit by a <b>lucky surge</b> (the win is multiplied by 1.5×, 2× or 3×) or a <b>curse</b> (the win is halved). Players see which one hit.</p>
         <label class="slider">Lucky surge chance <b class="rtpval good">{pct(cfg.chaos.surge_chance)}</b>
           <input class="fancy" type="range" min="0" max="0.5" step="0.005" bind:value={cfg.chaos.surge_chance} style="--p:{(cfg.chaos.surge_chance / 0.5) * 100}%" />
@@ -417,12 +419,12 @@
           <input class="fancy" type="range" min="0" max="0.5" step="0.005" bind:value={cfg.chaos.curse_chance} style="--p:{(cfg.chaos.curse_chance / 0.5) * 100}%" />
         </label>
         <p class="muted">Net effect on winning payouts: <b class="rtpval {preview.chaos.factor > 1.005 ? 'bad' : 'good'}">{preview.chaos.factor >= 1 ? '+' : ''}{((preview.chaos.factor - 1) * 100).toFixed(1)}%</b>. {preview.chaos.factor > 1.005 ? 'Surges outweigh curses, so players come out slightly ahead of the tables.' : 'Roughly even, so the tables still describe what players get back.'}</p>
-        <button type="button" class="ghost reset" onclick={() => resetGame('chaos')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('chaos')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
 
     {:else if tab === 'daily' && preview}
       <section class="card">
-        <header class="sec"><h2><Gift size={18} /> Daily free spin</h2><Toggle bind:checked={cfg.daily.enabled} label="Open" /></header>
+        <header class="sec"><h2><InterfaceIcon name="Gift" fallback={Gift} size={18} /> Daily free spin</h2><Toggle bind:checked={cfg.daily.enabled} label="Open" /></header>
         <p class="muted">Every player gets free spins of this wheel each day (UTC). Prizes are paid straight into their balance, so this is the casino's gift to the economy. Expected prize per spin: <b>{money(preview.daily.expected)}</b>, about {money(preview.daily.expected * cfg.daily.spins_per_day)} per player per day.</p>
         <label class="slider">Free spins per player per day <b class="rtpval">{cfg.daily.spins_per_day}</b>
           <input class="fancy" type="range" min="0" max="10" step="1" bind:value={cfg.daily.spins_per_day} style="--p:{cfg.daily.spins_per_day * 10}%" />
@@ -431,12 +433,12 @@
           <WheelPreview segments={cfg.daily.segments} size={210} />
           <SegmentsEditor bind:segments={cfg.daily.segments} valueLabel="Prize ($)" step={5} odds={preview.daily.odds} />
         </div>
-        <button type="button" class="ghost reset" onclick={() => resetGame('daily')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('daily')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
 
     {:else if tab === 'bounties'}
       <section class="card">
-        <header class="sec"><h2><Crosshair size={18} /> Bounties</h2><Toggle bind:checked={cfg.bounties.enabled} label="Open" /></header>
+        <header class="sec"><h2><InterfaceIcon name="Crosshair" fallback={Crosshair} size={18} /> Bounties</h2><Toggle bind:checked={cfg.bounties.enabled} label="Open" /></header>
         <p class="muted">Players put money on another player's head. Whoever kills that player in PvP collects every bounty on them. The money is held until then.</p>
         <div class="fields">
           <label>Smallest bounty ($)<input type="number" min="0.01" bind:value={cfg.bounties.min_amount} /></label>
@@ -448,7 +450,7 @@
         </div>
         <Toggle bind:checked={cfg.bounties.allow_anonymous} label="Allow anonymous bounties" help="Placers can hide their name from the target and the board." />
         <Toggle bind:checked={cfg.bounties.allow_cancel} label="Let players withdraw a bounty" help="They get the reward back; the house keeps its cut." />
-        <button type="button" class="ghost reset" onclick={() => resetGame('bounties')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('bounties')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
       <section class="card">
         <h2>Latest bounties</h2>
@@ -458,7 +460,7 @@
             {#each bounties as b}
               <tr><td><b>{b.target}</b></td><td>{b.placer}{b.anonymous ? ' (hidden)' : ''}</td><td class="n">{money(b.reward)}</td>
                 <td><span class="pill {b.status}">{b.status}</span>{#if b.claimer} <small class="muted">by {b.claimer}</small>{/if}</td>
-                <td class="n">{#if b.status === 'active'}<button type="button" class="ghost" onclick={() => cancelBounty(b.id)}><Ban size={14} /> Remove</button>{/if}</td></tr>
+                <td class="n">{#if b.status === 'active'}<button type="button" class="ghost" onclick={() => cancelBounty(b.id)}><InterfaceIcon name="Ban" fallback={Ban} size={14} /> Remove</button>{/if}</td></tr>
             {:else}<tr><td colspan="5" class="muted">No bounties yet</td></tr>{/each}
           </tbody>
         </table>
@@ -466,7 +468,7 @@
 
     {:else if tab === 'betting'}
       <section class="card">
-        <header class="sec"><h2><Swords size={18} /> Player betting</h2><Toggle bind:checked={cfg.betting.enabled} label="Open" /></header>
+        <header class="sec"><h2><InterfaceIcon name="Swords" fallback={Swords} size={18} /> Player betting</h2><Toggle bind:checked={cfg.betting.enabled} label="Open" /></header>
         <p class="muted">A bet asks "will this player reach N of something before time runs out?". Everyone puts money on Yes or No; when time is up the winning side splits the whole pool, minus the house's rake. If nobody backed the other side, every stake is returned. Results come from the stats the game servers already report.</p>
         <div class="chips">
           <span class="lbl">Who can open a bet</span>
@@ -488,7 +490,7 @@
           <label>Open bets per player<input type="number" min="1" max="50" bind:value={cfg.betting.max_open_per_player} /></label>
           <label>Highest target a bet can set<input type="number" min="1" bind:value={cfg.betting.max_threshold} /></label>
         </div>
-        <button type="button" class="ghost reset" onclick={() => resetGame('betting')}><RotateCcw size={14} /> Standard settings</button>
+        <button type="button" class="ghost reset" onclick={() => resetGame('betting')}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
       </section>
       <section class="card">
         <h2>Latest bets</h2>
@@ -498,7 +500,7 @@
             {#each markets as m}
               <tr><td><b>{m.subject}</b> reaches {m.threshold} {metricName(m.metric)}</td><td>{m.creator}</td><td class="n">{money(m.volume)} <small class="muted">({m.bets})</small></td>
                 <td><span class="pill {m.status}">{m.status}</span>{#if m.outcome} <small class="muted">{m.outcome}</small>{/if}</td>
-                <td class="n">{#if m.status === 'open'}<button type="button" class="ghost" onclick={() => voidMarket(m.id)}><X size={14} /> Cancel</button>{/if}</td></tr>
+                <td class="n">{#if m.status === 'open'}<button type="button" class="ghost" onclick={() => voidMarket(m.id)}><InterfaceIcon name="X" fallback={X} size={14} /> Cancel</button>{/if}</td></tr>
             {:else}<tr><td colspan="5" class="muted">No bets yet</td></tr>{/each}
           </tbody>
         </table>
@@ -508,9 +510,9 @@
 
   {#if dirty}
     <div class="savebar">
-      <span><Sparkles size={14} /> Unsaved changes</span>
+      <span><InterfaceIcon name="Sparkles" fallback={Sparkles} size={14} /> Unsaved changes</span>
       <button type="button" class="ghost" onclick={discard}>Discard</button>
-      <button type="button" onclick={save} disabled={busy}><Save size={14} /> Save casino settings</button>
+      <button type="button" onclick={save} disabled={busy}><InterfaceIcon name="Save" fallback={Save} size={14} /> Save casino settings</button>
     </div>
   {/if}
 {/if}

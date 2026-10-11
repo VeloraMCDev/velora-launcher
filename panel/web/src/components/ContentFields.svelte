@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Plus, X } from '@lucide/svelte';
   import Slide from './Slide.svelte';
   import Toggle from './Toggle.svelte';
@@ -51,9 +52,9 @@
     <div class="cmds">
       <div class="h"><b>Commands on click</b><small>run as the console. <code>{'{player}'}</code> is the player who clicked</small></div>
       {#each lines('commands') as c, i (i)}
-        <div class="cmd"><span>/</span><input value={c} oninput={(e) => cmdTxt(i, e.currentTarget.value)} placeholder="give {'{player}'} diamond 1" maxlength="200" /><button aria-label="Remove command" onclick={() => delCmd(i)}><X size={14} /></button></div>
+        <div class="cmd"><span>/</span><input value={c} oninput={(e) => cmdTxt(i, e.currentTarget.value)} placeholder="give {'{player}'} diamond 1" maxlength="200" /><button aria-label="Remove command" onclick={() => delCmd(i)}><InterfaceIcon name="X" fallback={X} size={14} /></button></div>
       {/each}
-      <button class="add" onclick={addCmd} disabled={lines('commands').length >= 8}><Plus size={14} /> Add a command</button>
+      <button class="add" onclick={addCmd} disabled={lines('commands').length >= 8}><InterfaceIcon name="Plus" fallback={Plus} size={14} /> Add a command</button>
     </div>
     <div class="two">
       <Slide label="Hitbox width" min={0.1} max={4} step={0.1} color="#6fb3ff" format={(n) => `${n.toFixed(1)} blocks`} bind:value={() => hb.width ?? 0.8, (n) => set('hitbox', { ...hb, width: n })} />

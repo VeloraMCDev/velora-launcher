@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount, untrack } from 'svelte';
   import {
     Shield, Map as MapIcon, Users, MessageSquare, Plus, Crown, UserCheck, Trash2, LoaderCircle, RefreshCw, Landmark, Send, Search, Pencil, TriangleAlert,
@@ -280,13 +281,13 @@
     <div class="dir-body">
       <div class="dir-top">{@render emblem(x, 54)}<div class="grow"><b>{x.name}</b><span class="sub">[{x.tag}] · Level {x.level}</span></div></div>
       {#if x.description}<p class="desc">{x.description}</p>{/if}
-      <div class="chips"><span class="pl-chip"><Users size={12} /> {x.member_count}</span><span class="pl-chip"><MapIcon size={12} /> {x.claims_count}{#if x.max_claims}/{x.max_claims}{/if}</span></div>
+      <div class="chips"><span class="pl-chip"><InterfaceIcon name="Users" fallback={Users} size={12} /> {x.member_count}</span><span class="pl-chip"><InterfaceIcon name="Map" fallback={MapIcon} size={12} /> {x.claims_count}{#if x.max_claims}/{x.max_claims}{/if}</span></div>
       {#if x.id === g?.id}
         <button class="pl-btn block" onclick={() => (tab = 'overview')}>Open your faction</button>
       {:else if asked.has(x.id)}
-        <button class="pl-btn block" disabled><Check size={15} /> Request sent</button>
+        <button class="pl-btn block" disabled><InterfaceIcon name="Check" fallback={Check} size={15} /> Request sent</button>
       {:else}
-        <button class="pl-btn primary block" disabled={!!g} title={g ? 'Leave your faction first to join another' : ''} onclick={() => askJoin(x)}><UserPlus size={15} /> {g ? 'Already in a faction' : 'Request to join'}</button>
+        <button class="pl-btn primary block" disabled={!!g} title={g ? 'Leave your faction first to join another' : ''} onclick={() => askJoin(x)}><InterfaceIcon name="UserPlus" fallback={UserPlus} size={15} /> {g ? 'Already in a faction' : 'Request to join'}</button>
       {/if}
     </div>
   </article>
@@ -295,24 +296,24 @@
 <div class="pl-page gld">
   <div class="pl-head">
     <div>
-      <h1><Shield size={26} /> Factions</h1>
+      <h1><InterfaceIcon name="Shield" fallback={Shield} size={26} /> Factions</h1>
       <p>{currentServer() ? `Your faction on ${currentServer()!.name}` : 'Factions, land and treasuries'}</p>
     </div>
     <div class="pl-actions">
-      <button class="pl-iconbtn" aria-label="Refresh" aria-busy={refreshing} onclick={() => load()}><RefreshCw size={16} class={refreshing ? 'spin' : ''} /></button>
+      <button class="pl-iconbtn" aria-label="Refresh" aria-busy={refreshing} onclick={() => load()}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} class={refreshing ? 'spin' : ''} /></button>
     </div>
   </div>
 
   {#if invites.length}
     <section class="pl-card invs">
-      <div class="pl-card-head"><h2><Mail size={17} /> Faction invitations <span class="pl-chip accent">{invites.length}</span></h2></div>
+      <div class="pl-card-head"><h2><InterfaceIcon name="Mail" fallback={Mail} size={17} /> Faction invitations <span class="pl-chip accent">{invites.length}</span></h2></div>
       <div class="pl-list">
         {#each invites as inv (inv.id)}
           <div class="pl-item">
             {@render emblem({ id: inv.guild_id, tag: inv.guild_tag, icon_url: inv.icon_url || null }, 42)}
             <div class="grow"><b>[{inv.guild_tag}] {inv.guild_name}</b><span class="sub">Invited by {inv.inviter}</span></div>
             <button class="pl-btn primary sm" disabled={!!g || busy === `inv${inv.id}`} title={g ? 'Leave your faction first' : ''} onclick={() => answerInvite(inv, true)}>Accept</button>
-            <button class="pl-iconbtn" aria-label="Decline" disabled={busy === `inv${inv.id}`} onclick={() => answerInvite(inv, false)}><X size={16} /></button>
+            <button class="pl-iconbtn" aria-label="Decline" disabled={busy === `inv${inv.id}`} onclick={() => answerInvite(inv, false)}><InterfaceIcon name="X" fallback={X} size={16} /></button>
           </div>
         {/each}
       </div>
@@ -331,16 +332,16 @@
   {:else if !g}
     <!-- Not in a guild -->
     <section class="pl-hero nog">
-      <div class="nog-ic"><Shield size={34} /></div>
+      <div class="nog-ic"><InterfaceIcon name="Shield" fallback={Shield} size={34} /></div>
       <div>
         <h1>No faction yet</h1>
         <p>Found a faction to claim land, share a treasury and play as a faction. Or browse the factions below and ask to join.</p>
-        <button class="pl-btn primary lg" onclick={() => (createOpen = true)}><Plus size={17} /> Create a faction</button>
+        <button class="pl-btn primary lg" onclick={() => (createOpen = true)}><InterfaceIcon name="Plus" fallback={Plus} size={17} /> Create a faction</button>
       </div>
     </section>
     <div class="dirhead">
       <h2>Factions {#if all.length}<span class="pl-chip">{all.length}</span>{/if}</h2>
-      {#if all.length > 3}<div class="pl-search"><Search size={16} /><input class="pl-input" type="search" placeholder="Search factions" bind:value={gq} aria-label="Search factions" /></div>{/if}
+      {#if all.length > 3}<div class="pl-search"><InterfaceIcon name="Search" fallback={Search} size={16} /><input class="pl-input" type="search" placeholder="Search factions" bind:value={gq} aria-label="Search factions" /></div>{/if}
     </div>
     {#if all.length === 0}
       <div class="pl-card"><Empty icon={Compass} title="No factions here yet" text="Be the first to found one on this server." /></div>
@@ -358,14 +359,14 @@
         <div class="grow">
           <div class="title"><h2>{g.name}</h2><span class="tagchip">[{g.tag}]</span></div>
           <div class="chips">
-            <span class="pl-chip accent"><Sparkles size={12} /> Level {g.level}</span>
-            <span class="pl-chip"><Users size={12} /> {g.member_count} members</span>
-            <span class="pl-chip"><MapIcon size={12} /> {g.claims_count}{#if g.max_claims}/{g.max_claims}{/if} chunks</span>
-            {#if myRole}<span class="pl-chip" class:warn={isLeader} class:accent={isOfficer}>{#if isLeader}<Crown size={12} />{:else if isOfficer}<UserCheck size={12} />{/if} {roleLabel(myRole)}</span>{/if}
+            <span class="pl-chip accent"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={12} /> Level {g.level}</span>
+            <span class="pl-chip"><InterfaceIcon name="Users" fallback={Users} size={12} /> {g.member_count} members</span>
+            <span class="pl-chip"><InterfaceIcon name="Map" fallback={MapIcon} size={12} /> {g.claims_count}{#if g.max_claims}/{g.max_claims}{/if} chunks</span>
+            {#if myRole}<span class="pl-chip" class:warn={isLeader} class:accent={isOfficer}>{#if isLeader}<InterfaceIcon name="Crown" fallback={Crown} size={12} />{:else if isOfficer}<InterfaceIcon name="UserCheck" fallback={UserCheck} size={12} />{/if} {roleLabel(myRole)}</span>{/if}
           </div>
         </div>
       </div>
-      {#if g.motd}<div class="motd"><MessageSquare size={14} /> <span>{g.motd}</span></div>{/if}
+      {#if g.motd}<div class="motd"><InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={14} /> <span>{g.motd}</span></div>{/if}
     </section>
 
     <div class="pl-tabs tabs" role="tablist">
@@ -394,7 +395,7 @@
           {#if g.description}<div class="pl-card"><div class="pl-card-head"><h2>About</h2></div><p class="body">{g.description}</p></div>{/if}
           {#if g.posts[0]}
             <div class="pl-card">
-              <div class="pl-card-head"><h2><MessageSquare size={16} /> Latest announcement</h2><button class="more" onclick={() => (tab = 'posts')}>All posts</button></div>
+              <div class="pl-card-head"><h2><InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={16} /> Latest announcement</h2><button class="more" onclick={() => (tab = 'posts')}>All posts</button></div>
               <b>{g.posts[0].title}</b>
               <p class="body clamp">{g.posts[0].content}</p>
               <span class="sub">{g.posts[0].author_name} · {timeAgo(g.posts[0].created_at)}</span>
@@ -404,20 +405,20 @@
         <div class="pl-stack">
           {#if requests.length && can('invite')}
             <div class="pl-card alert-card">
-              <div class="pl-card-head"><h2><Inbox size={16} /> {requests.length} join request{requests.length === 1 ? '' : 's'}</h2></div>
+              <div class="pl-card-head"><h2><InterfaceIcon name="Inbox" fallback={Inbox} size={16} /> {requests.length} join request{requests.length === 1 ? '' : 's'}</h2></div>
               <button class="pl-btn block" onclick={() => (tab = 'members')}>Review requests</button>
             </div>
           {/if}
           <div class="pl-card">
-            <div class="pl-card-head"><h2><Settings2 size={16} /> Manage</h2></div>
+            <div class="pl-card-head"><h2><InterfaceIcon name="Settings2" fallback={Settings2} size={16} /> Manage</h2></div>
             <div class="pl-stack tight">
-              {#if can('invite')}<button class="pl-btn block" onclick={() => (inviteOpen = true)}><UserPlus size={16} /> Invite a player</button>{/if}
-              {#if canManage}<button class="pl-btn block" onclick={openEdit}><Pencil size={16} /> Edit faction details</button>{/if}
-              {#if isLeader}<button class="pl-btn block" onclick={() => (rolesOpen = true)}><ShieldCheck size={16} /> Custom roles <span class="pl-chip">{roles.length}</span></button>{/if}
+              {#if can('invite')}<button class="pl-btn block" onclick={() => (inviteOpen = true)}><InterfaceIcon name="UserPlus" fallback={UserPlus} size={16} /> Invite a player</button>{/if}
+              {#if canManage}<button class="pl-btn block" onclick={openEdit}><InterfaceIcon name="Pencil" fallback={Pencil} size={16} /> Edit faction details</button>{/if}
+              {#if isLeader}<button class="pl-btn block" onclick={() => (rolesOpen = true)}><InterfaceIcon name="ShieldCheck" fallback={ShieldCheck} size={16} /> Custom roles <span class="pl-chip">{roles.length}</span></button>{/if}
               {#if !isLeader}
-                <button class="pl-btn block danger" onclick={() => ask('leave')}><LogOut size={16} /> Leave faction</button>
+                <button class="pl-btn block danger" onclick={() => ask('leave')}><InterfaceIcon name="LogOut" fallback={LogOut} size={16} /> Leave faction</button>
               {:else}
-                <button class="pl-btn block danger" onclick={() => ask('disband')}><Trash2 size={16} /> Disband faction</button>
+                <button class="pl-btn block danger" onclick={() => ask('disband')}><InterfaceIcon name="Trash2" fallback={Trash2} size={16} /> Disband faction</button>
               {/if}
             </div>
             {#if !can('invite') && !canManage && isLeader === false}<p class="sub" style="margin-top:8px">Officers and the leader manage the faction.</p>{/if}
@@ -429,13 +430,13 @@
       <div class="pl-stack">
         {#if requests.length && can('invite')}
           <section class="pl-card alert-card">
-            <div class="pl-card-head"><h2><Inbox size={16} /> Join requests <span class="pl-chip accent">{requests.length}</span></h2></div>
+            <div class="pl-card-head"><h2><InterfaceIcon name="Inbox" fallback={Inbox} size={16} /> Join requests <span class="pl-chip accent">{requests.length}</span></h2></div>
             <div class="pl-list">
               {#each requests as r (r.uuid)}
                 <div class="pl-item">
                   <button class="who" onclick={() => openProfile(r.uuid)}><Avatar name={r.name} uuid={r.uuid} size={40} /><div class="grow"><b>{r.name}</b><span class="sub">{r.message || 'No message'} · {timeAgo(r.created_at)}</span></div></button>
-                  <button class="pl-btn primary sm" disabled={busy === `jr${r.uuid}`} aria-busy={busy === `jr${r.uuid}`} onclick={() => answerJoin(r, true)}><Check size={14} /> Accept</button>
-                  <button class="pl-iconbtn" aria-label="Decline" disabled={busy === `jr${r.uuid}`} onclick={() => answerJoin(r, false)}><X size={16} /></button>
+                  <button class="pl-btn primary sm" disabled={busy === `jr${r.uuid}`} aria-busy={busy === `jr${r.uuid}`} onclick={() => answerJoin(r, true)}><InterfaceIcon name="Check" fallback={Check} size={14} /> Accept</button>
+                  <button class="pl-iconbtn" aria-label="Decline" disabled={busy === `jr${r.uuid}`} onclick={() => answerJoin(r, false)}><InterfaceIcon name="X" fallback={X} size={16} /></button>
                 </div>
               {/each}
             </div>
@@ -443,7 +444,7 @@
         {/if}
         <div class="rowhead">
           <h2>Roster <span class="pl-chip">{g.members.length}</span></h2>
-          {#if can('invite')}<button class="pl-btn primary sm" onclick={() => (inviteOpen = true)}><UserPlus size={15} /> Invite</button>{/if}
+          {#if can('invite')}<button class="pl-btn primary sm" onclick={() => (inviteOpen = true)}><InterfaceIcon name="UserPlus" fallback={UserPlus} size={15} /> Invite</button>{/if}
         </div>
         <div class="pl-grid" style="--min: 300px">
           {#each g.members as m, i (m.uuid)}
@@ -455,9 +456,9 @@
                   <span class="sub">Joined {new Date(m.joined_at).toLocaleDateString()}</span>
                 </div>
               </button>
-              <span class="pl-chip" class:warn={m.role === 'leader'} class:accent={m.role === 'officer'}>{#if m.role === 'leader'}<Crown size={11} />{:else if m.role === 'officer'}<UserCheck size={11} />{/if} {roleLabel(m.role)}</span>
+              <span class="pl-chip" class:warn={m.role === 'leader'} class:accent={m.role === 'officer'}>{#if m.role === 'leader'}<InterfaceIcon name="Crown" fallback={Crown} size={11} />{:else if m.role === 'officer'}<InterfaceIcon name="UserCheck" fallback={UserCheck} size={11} />{/if} {roleLabel(m.role)}</span>
               {#if m.uuid !== me && (isLeader || canKick(m))}
-                <button class="pl-iconbtn" aria-label="Manage {m.name}" onclick={() => { memberSheet = m; memberOpen = true; }}><Ellipsis size={17} /></button>
+                <button class="pl-iconbtn" aria-label="Manage {m.name}" onclick={() => { memberSheet = m; memberOpen = true; }}><InterfaceIcon name="Ellipsis" fallback={Ellipsis} size={17} /></button>
               {/if}
             </div>
           {/each}
@@ -495,19 +496,19 @@
         <div class="pl-grid" style="--min: 320px">
           <div class="pl-stack">
             <section class="pl-hero treasury">
-              <span class="tl"><Landmark size={15} /> Faction treasury · [{g.tag}]</span>
+              <span class="tl"><InterfaceIcon name="Landmark" fallback={Landmark} size={15} /> Faction treasury · [{g.tag}]</span>
               <div class="big"><Count value={wallet.balance} format={fmt} /></div>
               {#if wallet.upkeep}<p>Daily upkeep {fmt(wallet.upkeep.daily_cents/100)} · {wallet.upkeep.grace_days}-day grace period.</p>
                 {#if wallet.upkeep.arrears_cents>0}<p class="neg">Unpaid: {fmt(wallet.upkeep.arrears_cents/100)}. {wallet.upkeep.claims_frozen?'New claims are frozen.':`New claims freeze on ${wallet.upkeep.freezes_at} UTC.`} Deposit funds to settle outstanding bills within a minute. Existing claims remain protected.</p>{/if}
               {/if}
-              <div class="flow"><span class="pos"><ArrowDownToLine size={13} /> {fmt(totals.in)} in</span><span class="neg"><ArrowUpFromLine size={13} /> {fmt(totals.out)} out</span><small>last {wallet.transactions.length} transactions</small></div>
+              <div class="flow"><span class="pos"><InterfaceIcon name="ArrowDownToLine" fallback={ArrowDownToLine} size={13} /> {fmt(totals.in)} in</span><span class="neg"><InterfaceIcon name="ArrowUpFromLine" fallback={ArrowUpFromLine} size={13} /> {fmt(totals.out)} out</span><small>last {wallet.transactions.length} transactions</small></div>
             </section>
             <div class="pl-card">
               <div class="seg" role="tablist">
-                <button class:on={mode === 'deposit'} onclick={() => (mode = 'deposit')}><ArrowDownToLine size={15} /> Deposit</button>
-                <button class:on={mode === 'withdraw'} disabled={!canWithdraw} onclick={() => (mode = 'withdraw')} title={canWithdraw ? '' : 'Only leaders and officers can withdraw'}>{#if !canWithdraw}<Lock size={13} />{:else}<ArrowUpFromLine size={15} />{/if} Withdraw</button>
+                <button class:on={mode === 'deposit'} onclick={() => (mode = 'deposit')}><InterfaceIcon name="ArrowDownToLine" fallback={ArrowDownToLine} size={15} /> Deposit</button>
+                <button class:on={mode === 'withdraw'} disabled={!canWithdraw} onclick={() => (mode = 'withdraw')} title={canWithdraw ? '' : 'Only leaders and officers can withdraw'}>{#if !canWithdraw}<InterfaceIcon name="Lock" fallback={Lock} size={13} />{:else}<InterfaceIcon name="ArrowUpFromLine" fallback={ArrowUpFromLine} size={15} />{/if} Withdraw</button>
               </div>
-              <div class="avail"><Wallet size={14} /> {mode === 'deposit' ? `You have ${fmt(wallet.my_balance ?? 0)}` : `Treasury has ${fmt(wallet.balance)}`}</div>
+              <div class="avail"><InterfaceIcon name="Wallet" fallback={Wallet} size={14} /> {mode === 'deposit' ? `You have ${fmt(wallet.my_balance ?? 0)}` : `Treasury has ${fmt(wallet.balance)}`}</div>
               <form onsubmit={(e) => { e.preventDefault(); void transfer(); }} class="pl-stack tight">
                 <input class="pl-input amt" inputmode="decimal" placeholder="Amount" bind:value={amount} aria-label="Amount" autocomplete="off" />
                 <div class="quick">
@@ -516,19 +517,19 @@
                 </div>
                 {#if over}<div class="pl-alert err">That is more than you can {mode === 'deposit' ? 'afford' : 'take out'}.</div>{/if}
                 {#if valid && !over}<div class="preview">Treasury after: <b>{fmt(wallet.balance + (mode === 'deposit' ? val : -val))}</b></div>{/if}
-                <button class="pl-btn primary lg block" disabled={!valid || over || busy === 'xfer'} aria-busy={busy === 'xfer'}>{#if busy === 'xfer'}<LoaderCircle size={16} class="spin" />{/if} {mode === 'deposit' ? 'Deposit' : 'Withdraw'} {valid ? fmt(val) : ''}</button>
+                <button class="pl-btn primary lg block" disabled={!valid || over || busy === 'xfer'} aria-busy={busy === 'xfer'}>{#if busy === 'xfer'}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={16} class="spin" />{/if} {mode === 'deposit' ? 'Deposit' : 'Withdraw'} {valid ? fmt(val) : ''}</button>
               </form>
             </div>
           </div>
           <div class="pl-card">
-            <div class="pl-card-head"><h2><History size={16} /> Activity</h2></div>
+            <div class="pl-card-head"><h2><InterfaceIcon name="History" fallback={History} size={16} /> Activity</h2></div>
             {#if wallet.transactions.length === 0}
               <Empty icon={History} title="No transactions yet" text="Deposits and withdrawals will show up here." />
             {:else}
               <div class="pl-list">
                 {#each wallet.transactions as t (t.id)}
                   <div class="pl-item">
-                    <span class="txi" class:out={isOut(t.kind)}>{#if isOut(t.kind)}<ArrowUpFromLine size={14} />{:else}<ArrowDownToLine size={14} />{/if}</span>
+                    <span class="txi" class:out={isOut(t.kind)}>{#if isOut(t.kind)}<InterfaceIcon name="ArrowUpFromLine" fallback={ArrowUpFromLine} size={14} />{:else}<InterfaceIcon name="ArrowDownToLine" fallback={ArrowDownToLine} size={14} />{/if}</span>
                     <div class="grow"><b>{who(t.actor_uuid)?.name ?? 'Someone'}</b><span class="sub">{verbs[t.kind] ?? t.kind} · {timeAgo(t.created_at)}</span></div>
                     <b class="end" class:pos={!isOut(t.kind)} class:neg={isOut(t.kind)}>{isOut(t.kind) ? '−' : '+'}{fmt(t.amount)}</b>
                   </div>
@@ -554,7 +555,7 @@
           <LandRules guildId={g.id} />
           {#if bounds}
             <div class="pl-card">
-              <div class="pl-card-head"><h2><MapIcon size={16} /> Territory</h2>
+              <div class="pl-card-head"><h2><InterfaceIcon name="Map" fallback={MapIcon} size={16} /> Territory</h2>
                 {#if dims.length > 1}<div class="pl-tabs mini">{#each dims as d}<button class:on={dim === d} onclick={() => (dim = d)}>{dimName(d)}</button>{/each}</div>{/if}
               </div>
               <svg class="tmap" viewBox="0 0 {bounds.w} {bounds.h}" preserveAspectRatio="xMidYMid meet" style="--h:{hue(g.id)};aspect-ratio:{Math.min(2.2, Math.max(0.6, bounds.w / bounds.h))}" role="img" aria-label="Claimed chunks">
@@ -575,7 +576,7 @@
                 <div class="pl-item">
                   <span class="cx">{c.chunk_x}, {c.chunk_z}</span>
                   <div class="grow"><b>{dimName(c.dimension)}</b><span class="sub">Block {c.chunk_x * 16}, {c.chunk_z * 16} · {who(c.claimed_by_uuid)?.name ?? 'unknown'} · {timeAgo(c.claimed_at)}</span></div>
-                  {#if canRelease}<button class="pl-iconbtn" aria-label="Release chunk" onclick={() => ask('release', { claim: c })}><Trash2 size={15} /></button>{/if}
+                  {#if canRelease}<button class="pl-iconbtn" aria-label="Release chunk" onclick={() => ask('release', { claim: c })}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /></button>{/if}
                 </div>
               {/each}
             </div>
@@ -587,10 +588,10 @@
       <div class="pl-stack">
         {#if can('post')}
           <form class="pl-card compose" onsubmit={(e) => { e.preventDefault(); void publish(); }}>
-            <div class="pl-card-head"><h2><Pencil size={16} /> New announcement</h2></div>
+            <div class="pl-card-head"><h2><InterfaceIcon name="Pencil" fallback={Pencil} size={16} /> New announcement</h2></div>
             <input class="pl-input" placeholder="Title" maxlength="80" bind:value={pTitle} aria-label="Title" />
             <textarea class="pl-input" rows="3" placeholder="Share news, plans or updates with your faction" bind:value={pBody} aria-label="Content"></textarea>
-            <button class="pl-btn primary" disabled={!pTitle.trim() || !pBody.trim() || busy === 'post'} aria-busy={busy === 'post'}>{#if busy === 'post'}<LoaderCircle size={15} class="spin" />{:else}<Send size={15} />{/if} Publish</button>
+            <button class="pl-btn primary" disabled={!pTitle.trim() || !pBody.trim() || busy === 'post'} aria-busy={busy === 'post'}>{#if busy === 'post'}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={15} class="spin" />{:else}<InterfaceIcon name="Send" fallback={Send} size={15} />{/if} Publish</button>
           </form>
         {/if}
         {#if g.posts.length === 0}
@@ -609,7 +610,7 @@
     {:else}
       <div class="dirhead">
         <h2>All factions <span class="pl-chip">{all.length}</span></h2>
-        {#if all.length > 3}<div class="pl-search"><Search size={16} /><input class="pl-input" type="search" placeholder="Search factions" bind:value={gq} aria-label="Search factions" /></div>{/if}
+        {#if all.length > 3}<div class="pl-search"><InterfaceIcon name="Search" fallback={Search} size={16} /><input class="pl-input" type="search" placeholder="Search factions" bind:value={gq} aria-label="Search factions" /></div>{/if}
       </div>
       {#if directory.length === 0}
         <div class="pl-card"><Empty icon={Search} title="No match" text={`Nothing matches “${gq}”.`} /></div>
@@ -633,13 +634,13 @@
         <h4 class="lbl">Role</h4>
         <div class="roles">
           {#each [{ name: 'member' }, { name: 'officer' }, ...roles] as r (r.name)}
-            <button class="pl-chip rolebtn" class:accent={m.role === r.name} onclick={() => setRole(m, r.name)}>{#if m.role === r.name}<Check size={12} />{/if} {roleLabel(r.name)}</button>
+            <button class="pl-chip rolebtn" class:accent={m.role === r.name} onclick={() => setRole(m, r.name)}>{#if m.role === r.name}<InterfaceIcon name="Check" fallback={Check} size={12} />{/if} {roleLabel(r.name)}</button>
           {/each}
         </div>
       </div>
-      <button class="pl-btn block" onclick={() => ask('leader', { member: m })}><Crown size={16} /> Make faction leader</button>
+      <button class="pl-btn block" onclick={() => ask('leader', { member: m })}><InterfaceIcon name="Crown" fallback={Crown} size={16} /> Make faction leader</button>
     {/if}
-    {#if canKick(m)}<button class="pl-btn block danger" onclick={() => ask('kick', { member: m })}><UserMinus size={16} /> Remove from faction</button>{/if}
+    {#if canKick(m)}<button class="pl-btn block danger" onclick={() => ask('kick', { member: m })}><InterfaceIcon name="UserMinus" fallback={UserMinus} size={16} /> Remove from faction</button>{/if}
   {/if}
 </Sheet>
 
@@ -650,7 +651,7 @@
   {:else if confirm?.kind === 'leave'}<p class="body">You will lose access to the faction land and treasury. You can ask to join again later.</p>
   {:else if confirm?.kind === 'release'}<p class="body">Chunk {confirm.claim?.chunk_x}, {confirm.claim?.chunk_z} stops being protected and anyone can claim it.</p>
   {:else if confirm?.kind === 'disband' && g}
-    <div class="pl-alert err"><TriangleAlert size={15} style="vertical-align:-3px" /> This removes the faction for good: every member is released, all {g.claims_count} claimed chunks are freed and roles, posts and invites are deleted. The treasury is paid to you.</div>
+    <div class="pl-alert err"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={15} style="vertical-align:-3px" /> This removes the faction for good: every member is released, all {g.claims_count} claimed chunks are freed and roles, posts and invites are deleted. The treasury is paid to you.</div>
     <label class="field">Type “{g.name}” to confirm<input class="pl-input" bind:value={typed} placeholder={g.name} autocomplete="off" /></label>
   {/if}
   {#snippet footer()}
@@ -663,7 +664,7 @@
 
 <!-- invite -->
 <Sheet bind:open={inviteOpen} title="Invite a player">
-  <div class="pl-search"><Search size={16} /><input class="pl-input" type="search" placeholder="Search players" bind:value={iq} oninput={onIq} aria-label="Search players" /></div>
+  <div class="pl-search"><InterfaceIcon name="Search" fallback={Search} size={16} /><input class="pl-input" type="search" placeholder="Search players" bind:value={iq} oninput={onIq} aria-label="Search players" /></div>
   {#if searching && !found.length}
     <div class="pl-skel" style="height:56px"></div>
   {:else if found.length === 0}
@@ -674,7 +675,7 @@
         <div class="pl-item">
           <Avatar name={u.username} uuid={u.uuid} size={40} />
           <div class="grow"><b>{u.username}</b><span class="sub">Lv {u.global_level} · {u.online ? 'Online' : 'Offline'}</span></div>
-          {#if invited.has(u.uuid)}<span class="pl-chip good"><Check size={12} /> Invited</span>
+          {#if invited.has(u.uuid)}<span class="pl-chip good"><InterfaceIcon name="Check" fallback={Check} size={12} /> Invited</span>
           {:else}<button class="pl-btn primary sm" disabled={busy === `i${u.uuid}`} aria-busy={busy === `i${u.uuid}`} onclick={() => invite(u)}>Invite</button>{/if}
         </div>
       {/each}
@@ -689,7 +690,7 @@
   <div class="pl-list">
     {#each roles as r (r.id)}
       <div class="pl-item"><div class="grow"><b>{r.name}</b><span class="sub">{permList(r).join(', ') || 'No extra permissions'}</span></div>
-        <button class="pl-iconbtn" aria-label="Delete role {r.name}" disabled={busy === `rd${r.id}`} onclick={() => deleteRole(r)}><Trash2 size={15} /></button></div>
+        <button class="pl-iconbtn" aria-label="Delete role {r.name}" disabled={busy === `rd${r.id}`} onclick={() => deleteRole(r)}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /></button></div>
     {/each}
   </div>
   <form class="pl-card tight pl-stack" onsubmit={(e) => { e.preventDefault(); void createRole(); }}>
@@ -729,7 +730,7 @@
   <label class="field">Message (optional)<textarea class="pl-input" rows="3" maxlength="300" bind:value={joinMsg} placeholder="Tell them a bit about you"></textarea></label>
   {#snippet footer()}
     <button class="pl-btn" onclick={() => (joinOpen = false)}>Cancel</button>
-    <button class="pl-btn primary" disabled={busy === 'join'} aria-busy={busy === 'join'} onclick={sendJoin}><Send size={15} /> Send request</button>
+    <button class="pl-btn primary" disabled={busy === 'join'} aria-busy={busy === 'join'} onclick={sendJoin}><InterfaceIcon name="Send" fallback={Send} size={15} /> Send request</button>
   {/snippet}
 </Sheet>
 
@@ -742,7 +743,7 @@
   <label class="field">Banner URL (optional)<input class="pl-input" bind:value={cBanner} placeholder="https://…" /></label>
   {#snippet footer()}
     <button class="pl-btn" onclick={() => (createOpen = false)}>Cancel</button>
-    <button class="pl-btn primary" disabled={cName.trim().length < 3 || cTag.trim().length < 2 || busy === 'create'} aria-busy={busy === 'create'} onclick={createGuild}><Shield size={15} /> Found faction</button>
+    <button class="pl-btn primary" disabled={cName.trim().length < 3 || cTag.trim().length < 2 || busy === 'create'} aria-busy={busy === 'create'} onclick={createGuild}><InterfaceIcon name="Shield" fallback={Shield} size={15} /> Found faction</button>
   {/snippet}
 </Sheet>
 

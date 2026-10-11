@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import {
     ArrowLeft, Save, Trash2, Search, Download, Upload, LoaderCircle, TriangleAlert, FileArchive, Package, Globe, Lock,
     Users as UsersIcon, Server, RotateCcw, ExternalLink, FolderPlus, X,
@@ -10,6 +12,7 @@
   import { api, del, formatBytes, get, loaderLabel, post, put } from '../lib/api';
   import { go, route } from '../lib/router.svelte';
   import { toast, toastError } from '../lib/toast.svelte';
+  import { logoLayout, DEFAULT_LOGO_LAYOUT, type LogoLayout } from '@velora/experience/logo-layout';
   import type { FileRow, Group, Instance } from '../lib/types';
 
   let { id }: { id: string } = $props();
@@ -28,6 +31,8 @@
   let form = $state<Instance | null>(null);
   let files = $state<FileRow[]>([]);
   let groups = $state<Group[]>([]);
+  let logo = $state<LogoLayout>({ ...DEFAULT_LOGO_LAYOUT });
+  let savedLogo = $state('');
   let saving = $state(false);
   let importing = $state<string | null>(null);
   let confirmDelete = $state(false);
@@ -37,6 +42,8 @@
     form = structuredClone($state.snapshot(detail.instance)) as Instance;
     form.server ??= { name: '', address: '', port: 25565, auto_join: false, inject: true };
     files = detail.files;
+    logo = logoLayout(detail.instance.experience);
+    savedLogo = JSON.stringify(logo);
   }
 
   $effect(() => {
@@ -47,7 +54,7 @@
     get<Group[]>('/api/admin/groups').then((g) => (groups = g)).catch(() => {});
   });
 
-  const dirty = $derived(!!inst && !!form && JSON.stringify(normalize(form)) !== JSON.stringify(normalize(inst)));
+  const dirty = $derived(!!inst && !!form && (JSON.stringify(normalize(form)) !== JSON.stringify(normalize(inst)) || JSON.stringify(logo) !== savedLogo));
 
   function normalize(i: Instance) {
     const s = i.server && i.server.address.trim() ? i.server : null;
@@ -58,7 +65,7 @@
     if (!form) return;
     saving = true;
     try {
-      const body = { ...$state.snapshot(form), server: form.server?.address.trim() ? form.server : null };
+      const body = { ...$state.snapshot(form), logo_layout: $state.snapshot(logo), server: form.server?.address.trim() ? form.server : null };
       load(await put(`/api/admin/instances/${encodeURIComponent(id)}`, body));
       toast('Saved — players get the update on their next launch');
     } catch (e) {
@@ -232,10 +239,10 @@
 
 {#if form && inst}
   <div class="page">
-    <a href="#/instances" class="back"><ArrowLeft size={16} /> All instances</a>
+    <a href="#/instances" class="back"><InterfaceIcon name="ArrowLeft" fallback={ArrowLeft} size={16} /> All instances</a>
     <div class="page-head">
       <div class="row head">
-        <div class="icon">{#if form.icon_url}<img src={form.icon_url} alt="" />{:else}<Package size={26} />{/if}</div>
+        <div class="icon">{#if form.icon_url}<img src={form.icon_url} alt="" />{:else}<InterfaceIcon name="Package" fallback={Package} size={26} />{/if}</div>
         <div>
           <h1>{inst.name}</h1>
           <p class="row wrap">
@@ -246,7 +253,7 @@
           </p>
         </div>
       </div>
-      <button class="danger" onclick={() => (confirmDelete = true)}><Trash2 size={16} /> Delete</button>
+      <button class="danger" onclick={() => (confirmDelete = true)}><InterfaceIcon name="Trash2" fallback={Trash2} size={16} /> Delete</button>
     </div>
 
     <div class="tabs">
@@ -266,6 +273,13 @@
           <label class="field">Description<textarea bind:value={form.description} rows="3" placeholder="What makes this instance special?"></textarea></label>
           <ImageInput bind:value={form.icon_url} label="Icon" help="Square image, shown in the launcher sidebar." />
           <ImageInput bind:value={form.logo_url} label="Logo (optional)" help="Wide logo or wordmark image used in place of the instance title text." />
+          <label class="field">Wordmark width: {logo.width}px<input type="range" min="120" max="1200" step="10" bind:value={logo.width} /></label>
+          <label class="field">Wordmark maximum height: {logo.max_height}px<input type="range" min="40" max="400" step="10" bind:value={logo.max_height} /></label>
+          <label class="field">Title text size: {logo.title_size}px<input type="range" min="24" max="96" step="1" bind:value={logo.title_size} /></label>
+          <p class="muted small">The wordmark keeps its proportions and fits the available width. Title size applies when no logo image is set.</p>
+          <div class="logo-preview">{#if form.logo_url}<img src={form.logo_url} alt={form.name} style:width={logo.width + 'px'} style:max-height={logo.max_height + 'px'} />{:else}<strong style:font-size={logo.title_size + 'px'}>{form.name}</strong>{/if}</div>
+          <button type="button" class="ghost" onclick={() => logo = { ...DEFAULT_LOGO_LAYOUT }}>Reset logo sizing</button>
+
           <ImageInput bind:value={form.banner_url} label="Banner / background" help="Wide image shown behind this instance. Overrides the launcher background." />
         </section>
         <section class="card col">
@@ -286,30 +300,30 @@
       </div>
     {:else if tab === 'source'}
       <section class="card current">
-        <FileArchive size={22} />
+        <InterfaceIcon name="FileArchive" fallback={FileArchive} size={22} />
         <div class="grow">
           <strong>{inst.source_label || 'Vanilla'}</strong>
           <span class="muted small">Minecraft {inst.mc_version} · {loaderLabel(inst.loader)} {inst.loader_version ?? ''} · {inst.file_count} files ({formatBytes(inst.total_size)})</span>
         </div>
         {#if inst.source_kind !== 'vanilla'}
-          <button class="sm" onclick={resetSource}><RotateCcw size={14} /> Remove modpack</button>
+          <button class="sm" onclick={resetSource}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Remove modpack</button>
         {/if}
       </section>
 
       <section class="card current">
-        <RotateCcw size={22} />
+        <InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={22} />
         <div class="grow">
           <strong>Clean update</strong>
           <span class="muted small">Make every player's launcher clear this instance's old files and download all of them again on the next launch.{inst.clean_epoch ? ` Pushed ${inst.clean_epoch} time${inst.clean_epoch === 1 ? '' : 's'} so far.` : ''}</span>
         </div>
-        <button class="sm" onclick={cleanUpdate} disabled={cleaning}><RotateCcw size={14} /> {cleaning ? 'Publishing…' : 'Push clean update'}</button>
+        <button class="sm" onclick={cleanUpdate} disabled={cleaning}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> {cleaning ? 'Publishing…' : 'Push clean update'}</button>
       </section>
 
       <div class="segmented modes">
-        <button class:active={sourceMode === 'version'} onclick={() => (sourceMode = 'version')}><Package size={15} /> Version</button>
+        <button class:active={sourceMode === 'version'} onclick={() => (sourceMode = 'version')}><InterfaceIcon name="Package" fallback={Package} size={15} /> Version</button>
         <button class:active={sourceMode === 'modrinth'} onclick={() => { sourceMode = 'modrinth'; results = []; selected = null; }}>Modrinth</button>
         <button class:active={sourceMode === 'curseforge'} onclick={() => { sourceMode = 'curseforge'; results = []; selected = null; }}>CurseForge</button>
-        <button class:active={sourceMode === 'upload'} onclick={() => (sourceMode = 'upload')}><Upload size={15} /> Upload .zip</button>
+        <button class:active={sourceMode === 'upload'} onclick={() => (sourceMode = 'upload')}><InterfaceIcon name="Upload" fallback={Upload} size={15} /> Upload .zip</button>
       </div>
 
       {#if sourceMode === 'version'}
@@ -329,7 +343,7 @@
             onclick={() => document.getElementById('pack-file')?.click()}
             onkeydown={(e) => e.key === 'Enter' && document.getElementById('pack-file')?.click()}
           >
-            <Upload size={28} />
+            <InterfaceIcon name="Upload" fallback={Upload} size={28} />
             {#if uploadFile}
               <strong>{uploadFile.name}</strong><span class="muted small">{formatBytes(uploadFile.size)}</span>
             {:else}
@@ -342,31 +356,31 @@
             <summary class="small muted">Plain zip? Choose its Minecraft version and loader</summary>
             <div style="margin-top: 12px"><VersionPicker bind:mc={fallback.mc} bind:loader={fallback.loader} bind:loaderVersion={fallback.lv} /></div>
           </details>
-          <button class="primary" disabled={!uploadFile} onclick={doUpload}><Upload size={16} /> Import</button>
+          <button class="primary" disabled={!uploadFile} onclick={doUpload}><InterfaceIcon name="Upload" fallback={Upload} size={16} /> Import</button>
         </section>
       {:else}
         <section class="card col">
           <form class="row" onsubmit={(e) => { e.preventDefault(); search(); }}>
             <input bind:value={query} placeholder="Search {sourceMode === 'modrinth' ? 'Modrinth' : 'CurseForge'} modpacks…" />
-            <button class="primary" disabled={searching}>{#if searching}<LoaderCircle class="spin" size={16} />{:else}<Search size={16} />{/if} Search</button>
+            <button class="primary" disabled={searching}>{#if searching}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={16} />{:else}<InterfaceIcon name="Search" fallback={Search} size={16} />{/if} Search</button>
           </form>
 
           {#if selected}
             <div class="picked">
-              <button class="ghost sm" onclick={() => (selected = null)}><ArrowLeft size={14} /> Results</button>
+              <button class="ghost sm" onclick={() => (selected = null)}><InterfaceIcon name="ArrowLeft" fallback={ArrowLeft} size={14} /> Results</button>
               <div class="row">
                 {#if selected.icon}<img src={selected.icon} alt="" class="pi" />{/if}
                 <div><h3>{selected.title}</h3><p class="muted small">{selected.text}</p></div>
               </div>
               {#if loadingVersions}
-                <p class="muted row"><LoaderCircle class="spin" size={16} /> Loading versions…</p>
+                <p class="muted row"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={16} /> Loading versions…</p>
               {:else}
                 <div class="versions">
                   {#each versions as v}
                     <div class="version">
                       <div class="grow"><strong>{v.name}</strong><span class="muted tiny">{v.meta}</span></div>
                       <span class="muted tiny">{v.date ? new Date(v.date).toLocaleDateString() : ''}</span>
-                      <button class="sm primary" onclick={() => importVersion(v)}><Download size={14} /> Use</button>
+                      <button class="sm primary" onclick={() => importVersion(v)}><InterfaceIcon name="Download" fallback={Download} size={14} /> Use</button>
                     </div>
                   {/each}
                 </div>
@@ -376,7 +390,7 @@
             <div class="results">
               {#each results as r}
                 <button class="result" onclick={() => pick(r)}>
-                  {#if r.icon}<img src={r.icon} alt="" />{:else}<span class="ph"><Package size={20} /></span>{/if}
+                  {#if r.icon}<img src={r.icon} alt="" />{:else}<span class="ph"><InterfaceIcon name="Package" fallback={Package} size={20} /></span>{/if}
                   <span class="grow">
                     <strong>{r.title}</strong>
                     <span class="muted tiny">{r.author ? `by ${r.author} · ` : ''}{Intl.NumberFormat(undefined, { notation: 'compact' }).format(r.downloads ?? 0)} downloads</span>
@@ -395,13 +409,13 @@
     {:else if tab === 'files'}
       {#if missing.length}
         <section class="card warnbox">
-          <div class="row"><TriangleAlert size={18} /><strong>{missing.length} file{missing.length > 1 ? 's' : ''} need a manual upload</strong></div>
+          <div class="row"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={18} /><strong>{missing.length} file{missing.length > 1 ? 's' : ''} need a manual upload</strong></div>
           <p class="small">These CurseForge authors block third-party downloads. Download each file and upload it below into the same folder — it replaces the placeholder automatically.</p>
           {#each missing as m}
             <div class="row small miss">
               <code>{m.path}</code>
               <span class="spacer"></span>
-              {#if noteLink(m.note)}<a href={noteLink(m.note)} target="_blank" rel="noreferrer" class="row"><ExternalLink size={13} /> Download page</a>{/if}
+              {#if noteLink(m.note)}<a href={noteLink(m.note)} target="_blank" rel="noreferrer" class="row"><InterfaceIcon name="ExternalLink" fallback={ExternalLink} size={13} /> Download page</a>{/if}
             </div>
           {/each}
         </section>
@@ -421,7 +435,7 @@
           </select>
           {#if folder === 'custom'}<input bind:value={customFolder} placeholder="kubejs/scripts" style="width: 180px" />{/if}
           <button class="primary sm" disabled={uploadingFiles} onclick={() => fileInput?.click()}>
-            {#if uploadingFiles}<LoaderCircle class="spin" size={14} />{:else}<FolderPlus size={14} />{/if} Add files
+            {#if uploadingFiles}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={14} />{:else}<InterfaceIcon name="FolderPlus" fallback={FolderPlus} size={14} />{/if} Add files
           </button>
           <input bind:this={fileInput} type="file" multiple hidden onchange={addFiles} />
         </div>
@@ -435,7 +449,7 @@
                     <td class="mono path">{f.path}</td>
                     <td>{#if !f.url}<span class="badge warn">missing</span>{:else}<span class="badge {originBadge[f.origin] ?? ''}">{f.origin === 'pack' ? 'CDN' : f.origin === 'upload' ? 'uploaded' : 'config'}</span>{/if}</td>
                     <td class="muted">{formatBytes(f.size)}</td>
-                    <td class="actions"><button class="ghost icon" title="Remove" aria-label="Remove {f.path}" onclick={() => deleteFile(f.path)}><X size={15} /></button></td>
+                    <td class="actions"><button class="ghost icon" title="Remove" aria-label="Remove {f.path}" onclick={() => deleteFile(f.path)}><InterfaceIcon name="X" fallback={X} size={15} /></button></td>
                   </tr>
                 {/each}
               </tbody>
@@ -447,7 +461,7 @@
       </section>
     {:else if tab === 'server' && form.server}
       <section class="card col narrow">
-        <div class="row"><Server size={20} /><h3>Built-in server</h3></div>
+        <div class="row"><InterfaceIcon name="Server" fallback={Server} size={20} /><h3>Built-in server</h3></div>
         <p class="muted small">Adds your server to the in-game multiplayer list and shows its live status in the launcher.</p>
         <div class="grid srv">
           <label class="field">Display name<input bind:value={form.server.name} placeholder="Velora SMP" /></label>
@@ -457,7 +471,7 @@
         <Toggle bind:checked={form.server.inject} label="Add to multiplayer list" help="Written into servers.dat without touching servers players added themselves." />
         <Toggle bind:checked={form.server.auto_join} label="Join automatically" help="The game connects straight to the server after loading (Quick Play on 1.20+)." />
         {#if form.server.address}
-          <button class="ghost sm" style="align-self: flex-start" onclick={() => form && (form.server = { name: '', address: '', port: 25565, auto_join: false, inject: true })}><X size={14} /> Remove server</button>
+          <button class="ghost sm" style="align-self: flex-start" onclick={() => form && (form.server = { name: '', address: '', port: 25565, auto_join: false, inject: true })}><InterfaceIcon name="X" fallback={X} size={14} /> Remove server</button>
         {/if}
       </section>
     {:else if tab === 'access'}
@@ -471,7 +485,7 @@
               { id: 'groups', icon: Lock, title: 'Specific groups', text: 'Only members of the groups below' },
             ] as v}
               <button type="button" class="vopt" class:active={form.visibility === v.id} onclick={() => form && (form.visibility = v.id as Instance['visibility'])}>
-                <v.icon size={18} /><span><strong>{v.title}</strong><span class="muted tiny">{v.text}</span></span>
+                <InterfaceIcon name={iconName(v.icon)} fallback={v.icon} size={18} /><span><strong>{v.title}</strong><span class="muted tiny">{v.text}</span></span>
               </button>
             {/each}
           </div>
@@ -503,14 +517,14 @@
     <div class="savebar">
       <span>You have unsaved changes</span>
       <button class="ghost" onclick={() => inst && (form = { ...structuredClone($state.snapshot(inst)), server: inst.server ?? { name: '', address: '', port: 25565, auto_join: false, inject: true } } as Instance)}>Discard</button>
-      <button class="primary" disabled={saving} onclick={save}>{#if saving}<LoaderCircle class="spin" size={16} />{:else}<Save size={16} />{/if} Save changes</button>
+      <button class="primary" disabled={saving} onclick={save}>{#if saving}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={16} />{:else}<InterfaceIcon name="Save" fallback={Save} size={16} />{/if} Save changes</button>
     </div>
   {/if}
 
   {#if importing}
     <div class="importing">
       <div class="card col">
-        <LoaderCircle class="spin" size={32} />
+        <InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={32} />
         <h3>Importing {importing}</h3>
         <p class="muted small">Downloading and unpacking the pack. Large packs can take a minute.</p>
       </div>
@@ -521,14 +535,15 @@
     <p class="muted">The instance disappears from every launcher and its hosted files are deleted. Players keep their local worlds.</p>
     {#snippet footer()}
       <button class="ghost" onclick={() => (confirmDelete = false)}>Cancel</button>
-      <button class="danger" onclick={remove}><Trash2 size={16} /> Delete instance</button>
+      <button class="danger" onclick={remove}><InterfaceIcon name="Trash2" fallback={Trash2} size={16} /> Delete instance</button>
     {/snippet}
   </Modal>
 {:else}
-  <div class="page"><p class="muted row"><LoaderCircle class="spin" size={16} /> Loading…</p></div>
+  <div class="page"><p class="muted row"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={16} /> Loading…</p></div>
 {/if}
 
 <style>
+  .logo-preview { padding: 1rem; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; } .logo-preview img { max-width: 100%; height: auto; object-fit: contain; object-position: left center; }
   .back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.88rem; margin-bottom: 16px; }
   .back:hover { color: var(--text); }
   .head { gap: 16px; }

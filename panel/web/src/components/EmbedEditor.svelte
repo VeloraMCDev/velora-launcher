@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Plus, X } from '@lucide/svelte';
   import ColorInput from './ColorInput.svelte';
   import Toggle from './Toggle.svelte';
@@ -50,13 +51,13 @@
   <Toggle bind:checked={style.timestamp} label="Show the time" />
 
   <div class="fields">
-    <div class="fhead"><span class="lbl">Fields</span><button type="button" class="ghost sm" onclick={addField}><Plus size={14} /> Add field</button></div>
+    <div class="fhead"><span class="lbl">Fields</span><button type="button" class="ghost sm" onclick={addField}><InterfaceIcon name="Plus" fallback={Plus} size={14} /> Add field</button></div>
     {#each style.fields ?? [] as f, i}
       <div class="frow">
         <input bind:value={f.name} onfocus={remember} placeholder="Name" />
         <input bind:value={f.value} onfocus={remember} placeholder="Value" />
         <label class="inl"><input type="checkbox" bind:checked={f.inline} /> Side by side</label>
-        <button type="button" class="ghost icon" aria-label="Remove field" onclick={() => removeField(i)}><X size={14} /></button>
+        <button type="button" class="ghost icon" aria-label="Remove field" onclick={() => removeField(i)}><InterfaceIcon name="X" fallback={X} size={14} /></button>
       </div>
     {/each}
   </div>

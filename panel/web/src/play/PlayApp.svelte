@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { configureIcons } from '@velora/experience/icons.svelte';
   import { playPath } from '../lib/router.svelte';
   import { pageEnabled, enabled, navigation } from '@velora/experience';
   import { onMount } from 'svelte';
@@ -20,12 +22,13 @@
 
   // The phone app has no use for the launcher download page.
   const instance = $derived(play.manifest?.instances.find(i => i.id === route.instanceId));
-  const availablePages = $derived(ALL_PAGES.filter(p => (!nativeApp || p.id !== 'launcher') && (p.id !== 'experience' || !!instance?.experience?.widgets.length) && pageEnabled(instance?.experience, p.id)));
-  const PAGES = $derived(navigation(instance?.experience, availablePages).map(p => ({ ...availablePages.find(a => a.id === p.id)!, label: p.label })));
+  const availablePages = $derived(ALL_PAGES.filter(p => (!nativeApp || p.id !== 'launcher') && (p.id !== 'experience' || !!instance?.experience?.widgets.length) && (p.id === 'commands' || pageEnabled(instance?.experience, p.id))));
+  const PAGES = $derived(navigation(instance?.experience, availablePages, true).map(p => ({ ...availablePages.find(a => a.id === p.id)!, label: p.label })));
   $effect(() => { if (play.manifest && !route.instanceId && play.manifest.instances.length) go(`play/instance/${encodeURIComponent(play.manifest.instances.find(i => i.featured)?.id ?? play.manifest.instances[0].id)}/home`); });
   $effect(() => { const id = route.instanceId; if (id) { play.serverId = null; play.balance = null; play.servers = []; void loadServers(); } });
   const page = $derived(PAGES.find((p) => p.id === (route.params[0] ?? 'home')) ?? PAGES[0]);
   const brand = $derived(instance?.experience?.branding ?? play.manifest?.branding);
+  $effect(() => configureIcons(brand?.interface_icons));
   const primary = $derived(PAGES.filter((p) => p.primary));
   const more = $derived(PAGES.filter((p) => !p.primary));
   const isAdmin = $derived(session.user?.role === 'admin');
@@ -74,12 +77,12 @@
       </a>
       <nav class="pl-links">
         {#each PAGES as p (p.id)}
-          <a class="pl-link" class:on={page.id === p.id} href={`#/play/instance/${encodeURIComponent(route.instanceId ?? '')}/${p.id}`} aria-current={page.id === p.id ? 'page' : undefined}><McIcon item={NAV_ITEMS[p.id]} fallback={p.icon} size={20} /> <span>{p.label}</span></a>
+          <a class="pl-link" class:on={page.id === p.id} href={`#/play/instance/${encodeURIComponent(route.instanceId ?? '')}/${p.id}`} aria-current={page.id === p.id ? 'page' : undefined}><McIcon iconKey={"nav:" + p.id} item={NAV_ITEMS[p.id]} fallback={p.icon} size={20} /> <span>{p.label}</span></a>
         {/each}
       </nav>
       <div class="pl-rail-foot">
-        <button class="pl-kbd-hint" onclick={() => (paletteOpen = true)}><span class="pl-row-flex"><Search size={14} /> Quick search</span><kbd>Ctrl K</kbd></button>
-        {#if isAdmin}<a class="pl-link" href={route.instanceId ? `#/instance/${encodeURIComponent(route.instanceId)}/control` : '#/instances'}><ShieldCheck size={18} /> <span>Admin panel</span></a>{/if}
+        <button class="pl-kbd-hint" onclick={() => (paletteOpen = true)}><span class="pl-row-flex"><InterfaceIcon name="Search" fallback={Search} size={14} /> Quick search</span><kbd>Ctrl K</kbd></button>
+        {#if isAdmin}<a class="pl-link" href={route.instanceId ? `#/instance/${encodeURIComponent(route.instanceId)}/control` : '#/instances'}><InterfaceIcon name="ShieldCheck" fallback={ShieldCheck} size={18} /> <span>Admin panel</span></a>{/if}
       </div>
     </aside>
 
@@ -97,11 +100,11 @@
           <button class="pl-pill" onclick={() => (serverOpen = true)} aria-label="Choose server" title="Choose server">
             <i class="pl-dot" class:on={server?.online}></i>
             <span class="srv-name">{server?.name ?? 'Server'}</span>
-            <ChevronDown size={14} />
+            <InterfaceIcon name="ChevronDown" fallback={ChevronDown} size={14} />
           </button>
         {/if}
         {#if enabled(instance?.experience, 'economy')}<button class="pl-pill gold" onclick={() => go('play/wallet')} title="Your balance" aria-label="Wallet"><Count value={play.balance ?? (play.loaded && play.serverId != null ? 0 : null)} format={(v) => money(v)} /></button>{/if}
-        <button class="pl-iconbtn pl-hide-sm" onclick={() => (paletteOpen = true)} aria-label="Quick search" title="Quick search (Ctrl K)"><Command size={17} /></button>
+        <button class="pl-iconbtn pl-hide-sm" onclick={() => (paletteOpen = true)} aria-label="Quick search" title="Quick search (Ctrl K)"><InterfaceIcon name="Command" fallback={Command} size={17} /></button>
         <NotificationBell inline />
         <button class="me" onclick={() => (menuOpen = !menuOpen)} aria-label="Account menu" aria-expanded={menuOpen}>
           <Avatar name={session.user?.username ?? '?'} uuid={session.user?.uuid} size={38} />
@@ -111,9 +114,9 @@
           <div class="menu" role="menu">
             <div class="who"><Avatar name={session.user?.username ?? '?'} uuid={session.user?.uuid} size={40} /><div><b>{session.user?.username}</b><span>{isAdmin ? 'Administrator' : 'Player'}</span></div></div>
             <a href={playPath('profile')} role="menuitem">Account & skin</a>
-            {#if enabled(instance?.experience, 'commands')}<a href={playPath('commands')} role="menuitem">Command guide</a>{/if}
-            {#if isAdmin}<a href={route.instanceId ? `#/instance/${encodeURIComponent(route.instanceId)}/control` : '#/instances'} role="menuitem"><ShieldCheck size={15} /> Admin panel</a>{/if}
-            <button onclick={() => { logout(); go('login'); }} role="menuitem"><LogOut size={15} /> Sign out</button>
+            <a href={playPath('commands')} role="menuitem">Player Guide</a>
+            {#if isAdmin}<a href={route.instanceId ? `#/instance/${encodeURIComponent(route.instanceId)}/control` : '#/instances'} role="menuitem"><InterfaceIcon name="ShieldCheck" fallback={ShieldCheck} size={15} /> Admin panel</a>{/if}
+            <button onclick={() => { logout(); go('login'); }} role="menuitem"><InterfaceIcon name="LogOut" fallback={LogOut} size={15} /> Sign out</button>
           </div>
         {/if}
       </header>
@@ -135,19 +138,19 @@
 
   <nav class="pl-tabbar" aria-label="Main">
     {#each primary as p (p.id)}
-      <a class="pl-tab" class:on={page.id === p.id} href={`#/play/instance/${encodeURIComponent(route.instanceId ?? '')}/${p.id}`} aria-current={page.id === p.id ? 'page' : undefined}><McIcon item={NAV_ITEMS[p.id]} fallback={p.icon} size={24} /><span>{p.label}</span></a>
+      <a class="pl-tab" class:on={page.id === p.id} href={`#/play/instance/${encodeURIComponent(route.instanceId ?? '')}/${p.id}`} aria-current={page.id === p.id ? 'page' : undefined}><McIcon iconKey={"nav:" + p.id} item={NAV_ITEMS[p.id]} fallback={p.icon} size={24} /><span>{p.label}</span></a>
     {/each}
-    <button class="pl-tab" class:on={more.some((p) => p.id === page.id)} onclick={() => (moreOpen = true)} aria-label="More pages"><Ellipsis size={22} /><span>More</span></button>
+    <button class="pl-tab" class:on={more.some((p) => p.id === page.id)} onclick={() => (moreOpen = true)} aria-label="More pages"><InterfaceIcon name="Ellipsis" fallback={Ellipsis} size={22} /><span>More</span></button>
   </nav>
 
   <Sheet bind:open={moreOpen} title="More">
     <div class="more-grid">
       {#each more as p (p.id)}
-        <a class="more-item" class:on={page.id === p.id} href={`#/play/instance/${encodeURIComponent(route.instanceId ?? '')}/${p.id}`}><span class="ic"><McIcon item={NAV_ITEMS[p.id]} fallback={p.icon} size={28} /></span><b>{p.label}</b><small>{p.blurb}</small></a>
+        <a class="more-item" class:on={page.id === p.id} href={`#/play/instance/${encodeURIComponent(route.instanceId ?? '')}/${p.id}`}><span class="ic"><McIcon iconKey={"nav:" + p.id} item={NAV_ITEMS[p.id]} fallback={p.icon} size={28} /></span><b>{p.label}</b><small>{p.blurb}</small></a>
       {/each}
     </div>
-    <button class="pl-btn block" onclick={() => { moreOpen = false; paletteOpen = true; }}><Search size={16} /> Quick search</button>
-    {#if isAdmin}<a class="btn pl-btn block" href={route.instanceId ? `#/instance/${encodeURIComponent(route.instanceId)}/control` : '#/instances'}><ShieldCheck size={16} /> Open admin panel</a>{/if}
+    <button class="pl-btn block" onclick={() => { moreOpen = false; paletteOpen = true; }}><InterfaceIcon name="Search" fallback={Search} size={16} /> Quick search</button>
+    {#if isAdmin}<a class="btn pl-btn block" href={route.instanceId ? `#/instance/${encodeURIComponent(route.instanceId)}/control` : '#/instances'}><InterfaceIcon name="ShieldCheck" fallback={ShieldCheck} size={16} /> Open admin panel</a>{/if}
   </Sheet>
 
   <Sheet bind:open={serverOpen} title="Choose a server" width={440}>
@@ -156,11 +159,11 @@
         <button class="pl-item press srv" onclick={() => { selectServer(s.id); serverOpen = false; }}>
           <i class="pl-dot" class:on={s.online}></i>
           <div class="grow"><b>{s.name}</b><span class="sub">{s.online ? `${s.players_online}${s.players_max ? ' / ' + s.players_max : ''} online` : 'Offline'}{s.mc_version ? ` · ${s.mc_version}` : ''}</span></div>
-          {#if s.id === play.serverId}<Check size={18} />{/if}
+          {#if s.id === play.serverId}<InterfaceIcon name="Check" fallback={Check} size={18} />{/if}
         </button>
       {/each}
     </div>
-    <p class="hint"><ExternalLink size={12} /> Servers that share an economy share one balance.</p>
+    <p class="hint"><InterfaceIcon name="ExternalLink" fallback={ExternalLink} size={12} /> Servers that share an economy share one balance.</p>
   </Sheet>
 
   <Palette bind:open={paletteOpen} {items} placeholder="Jump to a page, server or command…" />

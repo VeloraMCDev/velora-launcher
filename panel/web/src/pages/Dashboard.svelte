@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Users, UserCheck, Boxes, Activity, Download, ArrowRight, Palette, Rocket, CircleCheck, Circle, Radio, Server } from '@lucide/svelte';
   import BarChart from '../components/BarChart.svelte';
   import Avatar from '../components/Avatar.svelte';
@@ -47,7 +49,7 @@
       <p>Here's what's happening with your launcher.</p>
     </div>
     {#if stats?.launcher_download_url}
-      <a class="btn primary" href={stats.launcher_download_url} target="_blank" rel="noreferrer"><Download size={16} /> Launcher download</a>
+      <a class="btn primary" href={stats.launcher_download_url} target="_blank" rel="noreferrer"><InterfaceIcon name="Download" fallback={Download} size={16} /> Launcher download</a>
     {/if}
     {#if !showGettingStarted}<button class="ghost" onclick={showGuide}>Show getting started</button>{/if}
   </div>
@@ -61,7 +63,7 @@
       { label: 'Instances', value: stats?.instances, icon: Boxes, tone: 'green', href: '#/instances' },
     ] as s}
       <a class="card stat hover {s.tone}" href={s.href ?? '#/dashboard'}>
-        <span class="icon"><s.icon size={18} /></span>
+        <span class="icon"><InterfaceIcon name={iconName(s.icon)} fallback={s.icon} size={18} /></span>
         <span class="value">{s.value ?? '—'}</span>
         <span class="label">{s.label}</span>
       </a>
@@ -86,9 +88,9 @@
       <div class="steps">
         {#each steps as s}
           <a class="step" class:done={s.done} href={s.href}>
-            {#if s.done}<CircleCheck size={18} />{:else}<Circle size={18} />{/if}
+            {#if s.done}<InterfaceIcon name="CircleCheck" fallback={CircleCheck} size={18} />{:else}<InterfaceIcon name="Circle" fallback={Circle} size={18} />{/if}
             <span>{s.label}</span>
-            <ArrowRight size={14} />
+            <InterfaceIcon name="ArrowRight" fallback={ArrowRight} size={14} />
           </a>
         {/each}
       </div>

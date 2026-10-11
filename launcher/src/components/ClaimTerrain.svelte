@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Eraser, Hand, Landmark, Minus, Plus, SquarePlus } from '@lucide/svelte';
   import { invoke } from '../lib/tauri';
@@ -238,17 +239,17 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div class="modes" role="radiogroup" tabindex="-1" aria-label="Map tool" onpointerdown={(e) => e.stopPropagation()}>
     <button role="radio" aria-checked={mode === 'move'} class:on={mode === 'move'} onclick={() => (mode = 'move')} title="Click and drag to move the map (no claiming)">
-      <Hand size={15} /> Move</button>
+      <InterfaceIcon name="Hand" fallback={Hand} size={15} /> Move</button>
     <button role="radio" aria-checked={mode === 'claim'} class:on={mode === 'claim'} class="claim-btn" disabled={!canEdit} onclick={() => (mode = 'claim')}
       title={canEdit ? 'Click and drag to claim chunks. Alt + drag to move.' : 'Join a faction to claim land'}>
-      <SquarePlus size={15} /> Claim</button>
+      <InterfaceIcon name="SquarePlus" fallback={SquarePlus} size={15} /> Claim</button>
     <button role="radio" aria-checked={mode === 'unclaim'} class:on={mode === 'unclaim'} class="unclaim-btn" disabled={!canEdit} onclick={() => (mode = 'unclaim')}
       title={canEdit ? 'Click and drag to un-claim your faction’s chunks. Alt + drag to move.' : 'Join a faction to manage land'}>
-      <Eraser size={15} /> Un-claim</button>
+      <InterfaceIcon name="Eraser" fallback={Eraser} size={15} /> Un-claim</button>
   </div>
   <div class="zoom" role="group" aria-label="Zoom" onpointerdown={(e) => e.stopPropagation()}>
-    <button onclick={() => zoomAt(1.4)} title="Zoom in" aria-label="Zoom in" disabled={pixelsPerBlock >= MAX_PPB}><Plus size={16} /></button>
-    <button onclick={() => zoomAt(1 / 1.4)} title="Zoom out" aria-label="Zoom out" disabled={pixelsPerBlock <= MIN_PPB}><Minus size={16} /></button>
+    <button onclick={() => zoomAt(1.4)} title="Zoom in" aria-label="Zoom in" disabled={pixelsPerBlock >= MAX_PPB}><InterfaceIcon name="Plus" fallback={Plus} size={16} /></button>
+    <button onclick={() => zoomAt(1 / 1.4)} title="Zoom out" aria-label="Zoom out" disabled={pixelsPerBlock <= MIN_PPB}><InterfaceIcon name="Minus" fallback={Minus} size={16} /></button>
   </div>
 
   <div class="help" class:warn={mode !== 'move' && !canPaint}>{hint}</div>

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import PlayerLink from '../components/PlayerLink.svelte';
   import {
     Trophy, Swords, Skull, Pickaxe, Clock, Box, MessageSquare, LogIn,
@@ -217,7 +219,7 @@
 <div class="stats-page">
   <header class="page-header">
     <div class="title-wrap">
-      <h1><Trophy size={24} class="trophy-icon" /> Stats & Leaderboards</h1>
+      <h1><InterfaceIcon name="Trophy" fallback={Trophy} size={24} class="trophy-icon" /> Stats & Leaderboards</h1>
       <p class="lead">Track your Minecraft journey and see how you rank across servers.</p>
     </div>
     <div class="tabs-segmented">
@@ -225,7 +227,7 @@
         My Stats
       </button>
       <button class:active={activeTab === 'economy'} onclick={() => { activeTab = 'economy'; loadEconomy(); }}>
-        <Coins size={14} /> Server Economy
+        <InterfaceIcon name="Coins" fallback={Coins} size={14} /> Server Economy
       </button>
       <button class:active={activeTab === 'leaderboard'} onclick={() => (activeTab = 'leaderboard')}>
         Leaderboards
@@ -236,17 +238,17 @@
   <div class="page-content">
     {#if activeTab === 'personal'}
       {#if loadingPersonal}
-        <div class="center-state"><LoaderCircle size={28} class="spin" /></div>
+        <div class="center-state"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={28} class="spin" /></div>
       {:else if !me || me.kind === 'offline'}
         <div class="card glass empty-state">
-          <Users size={36} class="muted" />
+          <InterfaceIcon name="Users" fallback={Users} size={36} class="muted" />
           <h3>Server account required</h3>
           <p class="muted small">Personal gameplay stats are synced when you play on servers with your Velora server account.</p>
           <button class="sm primary" onclick={() => (app.addAccount = true)}>Sign in with Server Account</button>
         </div>
       {:else if !personalData || !personalData.total}
         <div class="card glass empty-state">
-          <Sparkles size={36} class="muted" />
+          <InterfaceIcon name="Sparkles" fallback={Sparkles} size={36} class="muted" />
           <h3>No recorded stats yet</h3>
           <p class="muted small">Hop into a server through the launcher to begin logging kills, blocks mined, and playtime!</p>
         </div>
@@ -278,7 +280,7 @@
           <div class="stat-card glass">
             <div class="stat-header">
               <span class="stat-label">Playtime</span>
-              <Clock size={18} class="icon-accent" />
+              <InterfaceIcon name="Clock" fallback={Clock} size={18} class="icon-accent" />
             </div>
             <div class="stat-value">{formatPlaytime(t.playtime_secs)}</div>
             <div class="stat-sub tiny muted">Across all servers</div>
@@ -287,7 +289,7 @@
           <div class="stat-card glass">
             <div class="stat-header">
               <span class="stat-label">Player Kills</span>
-              <Swords size={18} class="icon-success" />
+              <InterfaceIcon name="Swords" fallback={Swords} size={18} class="icon-success" />
             </div>
             <div class="stat-value">{formatNumber(t.player_kills)}</div>
             <div class="stat-sub tiny muted">PvP eliminations</div>
@@ -296,7 +298,7 @@
           <div class="stat-card glass">
             <div class="stat-header">
               <span class="stat-label">Deaths</span>
-              <Skull size={18} class="icon-danger" />
+              <InterfaceIcon name="Skull" fallback={Skull} size={18} class="icon-danger" />
             </div>
             <div class="stat-value">{formatNumber(t.deaths)}</div>
             <div class="stat-sub tiny muted">K/D: {kd}</div>
@@ -305,7 +307,7 @@
           <div class="stat-card glass">
             <div class="stat-header">
               <span class="stat-label">Mob Kills</span>
-              <Flame size={18} class="icon-warn" />
+              <InterfaceIcon name="Flame" fallback={Flame} size={18} class="icon-warn" />
             </div>
             <div class="stat-value">{formatNumber(t.mob_kills)}</div>
             <div class="stat-sub tiny muted">Monsters & animals</div>
@@ -314,7 +316,7 @@
           <div class="stat-card glass">
             <div class="stat-header">
               <span class="stat-label">Blocks Mined</span>
-              <Pickaxe size={18} class="icon-accent" />
+              <InterfaceIcon name="Pickaxe" fallback={Pickaxe} size={18} class="icon-accent" />
             </div>
             <div class="stat-value">{formatNumber(t.blocks_broken)}</div>
             <div class="stat-sub tiny muted">Broken blocks</div>
@@ -323,7 +325,7 @@
           <div class="stat-card glass">
             <div class="stat-header">
               <span class="stat-label">Blocks Placed</span>
-              <Box size={18} class="icon-accent" />
+              <InterfaceIcon name="Box" fallback={Box} size={18} class="icon-accent" />
             </div>
             <div class="stat-value">{formatNumber(t.blocks_placed)}</div>
             <div class="stat-sub tiny muted">Structures built</div>
@@ -332,7 +334,7 @@
           <div class="stat-card glass">
             <div class="stat-header">
               <span class="stat-label">Server Joins</span>
-              <LogIn size={18} class="icon-muted" />
+              <InterfaceIcon name="LogIn" fallback={LogIn} size={18} class="icon-muted" />
             </div>
             <div class="stat-value">{formatNumber(t.joins)}</div>
             <div class="stat-sub tiny muted">Sessions played</div>
@@ -341,7 +343,7 @@
           <div class="stat-card glass">
             <div class="stat-header">
               <span class="stat-label">Chat Messages</span>
-              <MessageSquare size={18} class="icon-muted" />
+              <InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={18} class="icon-muted" />
             </div>
             <div class="stat-value">{formatNumber(t.messages)}</div>
             <div class="stat-sub tiny muted">Messages sent</div>
@@ -386,10 +388,10 @@
       <!-- Economy & Balances Tab -->
       <div class="economy-view">
         {#if loadingEconomy && !economyBalances.length}
-          <div class="center-state"><LoaderCircle size={28} class="spin" /></div>
+          <div class="center-state"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={28} class="spin" /></div>
         {:else if !me || me.kind === 'offline'}
           <div class="card glass empty-state">
-            <Coins size={36} class="muted" />
+            <InterfaceIcon name="Coins" fallback={Coins} size={36} class="muted" />
             <h3>Server account required</h3>
             <p class="muted small">In-game economy balances and transactions are synced to your Velora server account.</p>
             <button class="sm primary" onclick={() => (app.addAccount = true)}>Sign in with Server Account</button>
@@ -403,7 +405,7 @@
                 <p class="muted tiny">Synced in real-time from Velora economy plugins and mods.</p>
               </div>
               <button class="ghost sm icon" onclick={loadEconomy} title="Refresh balances">
-                <RefreshCw size={14} class={loadingEconomy ? 'spin' : ''} />
+                <InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={14} class={loadingEconomy ? 'spin' : ''} />
               </button>
             </div>
 
@@ -422,7 +424,7 @@
                   >
                     <div class="econ-card-top row justify-between align-center">
                       <span class="server-badge">{bal.server_name}</span>
-                      <Wallet size={16} class="icon-accent" />
+                      <InterfaceIcon name="Wallet" fallback={Wallet} size={16} class="icon-accent" />
                     </div>
                     <div class="econ-balance-val">
                       <span class="currency-sym">{bal.currency_symbol || '$'}</span>
@@ -510,7 +512,7 @@
                   {@const isSender = tx.from_uuid === me?.uuid}
                   <div class="tx-row">
                     <span class="tx-type-pill badge" class:send={isSender} class:receive={!isSender}>
-                      {#if isSender}<ArrowUpRight size={12} /> Sent{:else}<ArrowDownLeft size={12} /> Received{/if}
+                      {#if isSender}<InterfaceIcon name="ArrowUpRight" fallback={ArrowUpRight} size={12} /> Sent{:else}<InterfaceIcon name="ArrowDownLeft" fallback={ArrowDownLeft} size={12} /> Received{/if}
                     </span>
                     <span class="tx-desc" title={tx.description}>{tx.description || `${tx.from_name} → ${tx.to_name}`}</span>
                     <span class="tx-date tiny muted">{new Date(tx.created_at).toLocaleString()}</span>
@@ -546,17 +548,17 @@
               onclick={() => (sortField = opt.id)}
               title={opt.label}
             >
-              <Icon size={14} /> <span>{opt.label}</span>
+              <InterfaceIcon name={iconName(Icon)} fallback={Icon} size={14} /> <span>{opt.label}</span>
             </button>
           {/each}
         </div>
       </div>
 
       {#if loadingLeaderboard}
-        <div class="center-state"><LoaderCircle size={28} class="spin" /></div>
+        <div class="center-state"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={28} class="spin" /></div>
       {:else if !leaderboardData || leaderboardData.leaderboard.length === 0}
         <div class="card glass empty-state">
-          <Trophy size={36} class="muted" />
+          <InterfaceIcon name="Trophy" fallback={Trophy} size={36} class="muted" />
           <h3>No leaderboard entries yet</h3>
           <p class="muted small">As players explore, mine, and battle on servers, the rankings will appear here automatically.</p>
         </div>

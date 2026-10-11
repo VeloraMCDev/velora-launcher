@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { ArrowDown, ArrowUp, Copy, Download, ExternalLink, Eye, EyeOff, GripVertical, LoaderCircle, Plus, RotateCcw, Save, Trash2, Upload } from '@lucide/svelte';
   import { api, get, put, formatBytes, uploadMedia } from '../lib/api';
   import DownloadsManager from '../components/DownloadsManager.svelte';
@@ -100,16 +101,16 @@
 </script>
 
 {#if !config}
-  <div class="center-loading"><LoaderCircle class="spin" size={28} /></div>
+  <div class="center-loading"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={28} /></div>
 {:else}
   <div class="builder">
     <header class="builder-head">
       <div><h1>Landing page studio</h1><p>Compose the public page from reusable sections. Your changes appear in the preview before publishing.</p></div>
       <div class="head-actions">
         <label class="enabled"><input type="checkbox" bind:checked={config.enabled} /> Public page enabled</label>
-        <a class="btn secondary" href="#/landing" target="_blank"><ExternalLink size={15} /> Live page</a>
-        <button class="btn secondary" disabled={!dirty} onclick={() => { config = JSON.parse(saved); selectedId = config?.blocks[0]?.id ?? null; }}><RotateCcw size={15} /> Discard</button>
-        <button class="btn primary" disabled={!dirty || saving} onclick={save}>{#if saving}<LoaderCircle class="spin" size={15} />{:else}<Save size={15} />{/if} Publish</button>
+        <a class="btn secondary" href="#/landing" target="_blank"><InterfaceIcon name="ExternalLink" fallback={ExternalLink} size={15} /> Live page</a>
+        <button class="btn secondary" disabled={!dirty} onclick={() => { config = JSON.parse(saved); selectedId = config?.blocks[0]?.id ?? null; }}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={15} /> Discard</button>
+        <button class="btn primary" disabled={!dirty || saving} onclick={save}>{#if saving}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={15} />{:else}<InterfaceIcon name="Save" fallback={Save} size={15} />{/if} Publish</button>
       </div>
     </header>
 
@@ -122,7 +123,7 @@
     {#if tab === 'sections'}
       <div class="studio-grid">
         <aside class="section-list card">
-          <div class="list-head"><strong>Sections <span class="muted">{config.blocks.length}</span></strong><button class="btn primary sm" onclick={() => (galleryOpen = !galleryOpen)}><Plus size={15} /> Add</button></div>
+          <div class="list-head"><strong>Sections <span class="muted">{config.blocks.length}</span></strong><button class="btn primary sm" onclick={() => (galleryOpen = !galleryOpen)}><InterfaceIcon name="Plus" fallback={Plus} size={15} /> Add</button></div>
           {#if galleryOpen}
             <div class="gallery">
               {#each BLOCK_GROUPS as group}
@@ -137,8 +138,8 @@
             {#each config.blocks as block, index (block.id)}
               <div class="list-item" role="listitem" class:selected={selectedId === block.id} class:muted-block={!block.enabled}
                 draggable="true" ondragstart={() => (dragFrom = index)} ondragend={() => (dragFrom = null)} ondragover={(e) => e.preventDefault()} ondrop={(e) => { e.preventDefault(); drop(index); }}>
-                <button class="select-block" onclick={() => (selectedId = block.id)}><GripVertical size={14} /><span><strong>{block.title || BLOCK_SCHEMAS[block.type]?.label || block.type}</strong><small>{BLOCK_SCHEMAS[block.type]?.label || block.type}</small></span></button>
-                <button class="icon-action" aria-label={block.enabled ? 'Hide section' : 'Show section'} onclick={() => (block.enabled = !block.enabled)}>{#if block.enabled}<Eye size={14} />{:else}<EyeOff size={14} />{/if}</button>
+                <button class="select-block" onclick={() => (selectedId = block.id)}><InterfaceIcon name="GripVertical" fallback={GripVertical} size={14} /><span><strong>{block.title || BLOCK_SCHEMAS[block.type]?.label || block.type}</strong><small>{BLOCK_SCHEMAS[block.type]?.label || block.type}</small></span></button>
+                <button class="icon-action" aria-label={block.enabled ? 'Hide section' : 'Show section'} onclick={() => (block.enabled = !block.enabled)}>{#if block.enabled}<InterfaceIcon name="Eye" fallback={Eye} size={14} />{:else}<InterfaceIcon name="EyeOff" fallback={EyeOff} size={14} />{/if}</button>
               </div>
             {/each}
           </div>
@@ -150,20 +151,20 @@
             {@const index = config.blocks.findIndex((b) => b.id === selected.id)}
             <div class="inspector-head"><div><span class="eyebrow">{schema.group} / {schema.label}</span><h2>{selected.title || schema.label}</h2><p>{schema.description}</p></div></div>
             <div class="section-actions">
-              <button class="btn secondary sm" disabled={index === 0} onclick={() => move(index, index - 1)}><ArrowUp size={14} /> Up</button>
-              <button class="btn secondary sm" disabled={index === config.blocks.length - 1} onclick={() => move(index, index + 1)}><ArrowDown size={14} /> Down</button>
-              <button class="btn secondary sm" onclick={() => duplicate(index)}><Copy size={14} /> Duplicate</button>
-              <button class="btn secondary sm danger" onclick={() => remove(index)}><Trash2 size={14} /> Delete</button>
+              <button class="btn secondary sm" disabled={index === 0} onclick={() => move(index, index - 1)}><InterfaceIcon name="ArrowUp" fallback={ArrowUp} size={14} /> Up</button>
+              <button class="btn secondary sm" disabled={index === config.blocks.length - 1} onclick={() => move(index, index + 1)}><InterfaceIcon name="ArrowDown" fallback={ArrowDown} size={14} /> Down</button>
+              <button class="btn secondary sm" onclick={() => duplicate(index)}><InterfaceIcon name="Copy" fallback={Copy} size={14} /> Duplicate</button>
+              <button class="btn secondary sm danger" onclick={() => remove(index)}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /> Delete</button>
             </div>
             <fieldset><legend>Content</legend>
               <label>Section title<input bind:value={selected.title} placeholder={schema.label} /></label>
               <label>Subtitle<textarea bind:value={selected.subtitle} rows="2"></textarea></label>
               {#each schema.fields as field (field.key)}
                 {#if field.type === 'list'}
-                  <div class="list-field"><div class="list-head"><strong>{field.label}</strong><button class="btn secondary sm" onclick={() => setOption(selected, field.key, [...(selected.options?.[field.key] ?? []), structuredClone(field.defaultItem ?? {})])}><Plus size={14} /> Add</button></div>
+                  <div class="list-field"><div class="list-head"><strong>{field.label}</strong><button class="btn secondary sm" onclick={() => setOption(selected, field.key, [...(selected.options?.[field.key] ?? []), structuredClone(field.defaultItem ?? {})])}><InterfaceIcon name="Plus" fallback={Plus} size={14} /> Add</button></div>
                     {#each (selected.options?.[field.key] ?? []) as item, itemIndex}
                       <div class="item-editor">
-                        <div class="list-head"><strong>Item {itemIndex + 1}</strong><button class="icon-action danger" aria-label="Remove item" onclick={() => setOption(selected, field.key, selected.options?.[field.key].filter((_: unknown, i: number) => i !== itemIndex))}><Trash2 size={14} /></button></div>
+                        <div class="list-head"><strong>Item {itemIndex + 1}</strong><button class="icon-action danger" aria-label="Remove item" onclick={() => setOption(selected, field.key, selected.options?.[field.key].filter((_: unknown, i: number) => i !== itemIndex))}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /></button></div>
                         {#each field.items ?? [] as sub}
                           <label>{sub.label}
                             {#if sub.type === 'textarea'}<textarea rows="2" value={item[sub.key] ?? ''} oninput={(e) => (item[sub.key] = e.currentTarget.value)}></textarea>
@@ -216,9 +217,9 @@
         <DownloadsManager compact />
       </div>
     {:else if tab === 'faq'}
-      <div class="settings-grid card"><div class="list-head"><div><h2>Frequently asked questions</h2><p>Shown by each FAQ section.</p></div><button class="btn primary sm" onclick={() => config?.faqs.push({ id: crypto.randomUUID(), question: '', answer: '' })}><Plus size={15} /> Add question</button></div>
+      <div class="settings-grid card"><div class="list-head"><div><h2>Frequently asked questions</h2><p>Shown by each FAQ section.</p></div><button class="btn primary sm" onclick={() => config?.faqs.push({ id: crypto.randomUUID(), question: '', answer: '' })}><InterfaceIcon name="Plus" fallback={Plus} size={15} /> Add question</button></div>
         {#each config.faqs as item, index (item.id)}
-          <div class="item-editor"><div class="list-head"><strong>Question {index + 1}</strong><button class="icon-action danger" aria-label="Remove question" onclick={() => config?.faqs.splice(index, 1)}><Trash2 size={15} /></button></div><label>Question<input bind:value={item.question} /></label><label>Answer<textarea rows="4" bind:value={item.answer}></textarea></label></div>
+          <div class="item-editor"><div class="list-head"><strong>Question {index + 1}</strong><button class="icon-action danger" aria-label="Remove question" onclick={() => config?.faqs.splice(index, 1)}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /></button></div><label>Question<input bind:value={item.question} /></label><label>Answer<textarea rows="4" bind:value={item.answer}></textarea></label></div>
         {/each}
       </div>
     {:else}
