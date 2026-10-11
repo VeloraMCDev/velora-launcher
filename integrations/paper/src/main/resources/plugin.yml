@@ -1,0 +1,22 @@
+name: Velora
+prefix: Velora
+version: '${version}'
+main: net.velora.paper.VeloraPlugin
+api-version: '1.20'
+description: Velora Paper plugin for Paper 26.3 with custom auth acceptance, server analytics, and chat formatting.
+load: STARTUP
+softdepend: [LuckPerms]
+
+commands:
+  velora:
+    description: Velora server commands, admin linking, and status
+    permission: velora.admin
+    aliases: [v, vel]
+
+permissions:
+  velora.admin:
+    description: Access to /velora admin commands and status
+    default: op
+  velora.chat.color:
+    description: Allow using color codes and hex colors in chat
+    default: op
