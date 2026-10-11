@@ -1,0 +1,37 @@
+name: Build immutable Monitoring Agent image
+on:
+  workflow_dispatch: null
+permissions:
+  contents: read
+concurrency:
+  group: monitor-agent-release-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  image:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Exact release image coordinates
+        run: |
+          echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/velora-monitor-agent" >> "$GITHUB_ENV"
+          echo "IMAGE_TAG=sha-${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+      - name: Build the agent once
+        run: docker build --platform linux/amd64 --build-arg AGENT_REVISION="$GITHUB_SHA" --tag "$IMAGE:$IMAGE_TAG" panel/operations/agent
+      - name: Test the exact image with Ops enrollment and health reporting
+        run: node panel/operations/agent/smoke.mjs "$IMAGE:$IMAGE_TAG"
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish the tested bytes without rebuilding
+        run: |
+          docker push "$IMAGE:$IMAGE_TAG"
+          echo "Published $(docker image inspect --format '{{index .RepoDigests 0}}' "$IMAGE:$IMAGE_TAG")" >> "$GITHUB_STEP_SUMMARY"

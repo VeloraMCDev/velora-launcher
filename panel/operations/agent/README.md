@@ -3,7 +3,8 @@
 ## Docker installation (recommended)
 
 1. In Ops **Agents**, enroll a host, choose **Linux Docker Engine** or **Docker
-   Desktop**, and add the Minecraft, HTTP/Calagopus or TCP services to check.
+   Desktop**, select a published agent image, and add the Minecraft,
+   HTTP/Calagopus or TCP services to check.
 2. Download the Docker bundle. Extract the ZIP into a private folder on that host.
    It contains Compose, Dockerfile, agent source and the enrolled configuration.
 3. On Linux, give the container's unprivileged UID access to its config:
@@ -16,18 +17,48 @@
 4. From the extracted folder, start the agent:
 
    ```sh
-   docker compose up -d --build
+   docker compose pull
+   docker compose up -d
    docker compose logs --tail=50 monitor
    ```
 
-Docker with Compose is the only host prerequisite. It downloads the official Node
-24 Alpine base and builds the bundled source locally. It restarts the agent unless
+Docker with Compose is the only host prerequisite. Published agent images are
+discovered from GHCR and pinned by digest in the downloaded Compose file. The
+manual **Build immutable Monitoring Agent image** workflow builds linux/amd64,
+tests authenticated Ops reporting and health probes with the exact image, and
+publishes `ghcr.io/veloramcdev/velora-monitor-agent` under immutable build tags.
+Registry package visibility must allow anonymous reads for Ops discovery and host
+pulls; if private, authenticate Docker with read access and use a known digest or
+choose the local build option. Registry credentials never go in the agent config.
+
+For ARM hosts without amd64 emulation, choose **Build locally from bundled
+source** and run `docker compose up -d --build`. That downloads the official Node
+24 Alpine base for the host architecture. It restarts the agent unless
 explicitly stopped, including after reboot if Docker starts at boot. There is no
 agent registry login, Git clone, separate Node install or automatic agent update.
 Stop with `docker compose down`; after editing probes in the JSON file, run
-`docker compose restart monitor`. For an upgrade, download the current Node agent
+`docker compose restart monitor`. To upgrade a published image, replace only the
+image digest in Compose with a new tested agent digest, then pull/start again.
+Retain the existing configuration and host credential. For a local-build upgrade,
+download the current Node agent
 from Ops, replace the bundle's `monitor.mjs`, and run the build/start command again;
 keep the original enrollment configuration. Enrollment never changes the services.
+
+## Connecting to Ops
+
+Enroll the host under Ops **Agents**. Its generated JSON contains `ops_url` (the
+HTTPS address of that Ops deployment), `id` and the one-time `token`. The container
+reads this file at `/config/velora-monitor-config.json` and sends authenticated
+reports to `POST /api/agents/<id>/report` every 30 seconds. No token goes in the
+image, Compose environment or command line. Outbound HTTPS access is enough;
+there is no inbound agent port. Wait for **Online** in Ops after startup.
+
+If it remains **Awaiting first report**, check `docker compose logs --tail=50
+monitor`, DNS/TLS access to the Ops URL and the existing SSO policy. A 401 means an
+invalid/revoked credential; an SSO redirect requires service access headers in
+`ops_headers` or a narrowly scoped report-route policy as described below.
+An offline agent stops reporting for 90 seconds; unhealthy probes can still appear
+while the agent is online. Do not use the Panel login token for enrollment.
 
 Linux Compose uses host networking so `127.0.0.1` can reach host services. Docker
 Desktop uses bridge networking: use `host.docker.internal` for host services or

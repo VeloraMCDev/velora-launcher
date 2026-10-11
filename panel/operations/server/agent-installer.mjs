@@ -1,5 +1,21 @@
 import { readFileSync } from 'node:fs';
 import { config } from '../agent/monitor.mjs';
+import { REPOSITORY, releaseImages } from './updates.mjs';
+
+export const AGENT_IMAGE = `ghcr.io/${REPOSITORY.split('/')[0].toLowerCase()}/velora-monitor-agent`;
+export function validateAgentImage(image) {
+  if (typeof image !== 'string' || !image.startsWith(`${AGENT_IMAGE}@`) || !/^sha256:[a-f0-9]{64}$/.test(image.slice(AGENT_IMAGE.length+1))) throw Object.assign(new Error('Choose a published agent image pinned by digest'),{status:400});
+  return image;
+}
+export function createAgentImageCatalog(get = releaseImages) {
+  let cached, checked=0;
+  return async (now=Date.now()) => {
+    if (cached && now-checked<300000) return cached;
+    checked=now;
+    cached=get('velora-monitor-agent').then(images=>({images:images.filter(i=>{try{validateAgentImage(i.image);return true;}catch{return false;}}),error:null}),()=>({images:[],error:'Agent images are unavailable. Check package visibility/access, or use the local build option.'}));
+    return cached;
+  };
+}
 
 // Store-only ZIP: bounded source/config files, no archive dependency or server-side secrets.
 export function zipFiles(files) {
@@ -22,7 +38,7 @@ export function zipFiles(files) {
   return Buffer.concat([...chunks,directory,end]);
 }
 
-export function installerFiles(value, mode) {
+export function installerFiles(value, mode, image = null) {
   if (!['linux','desktop'].includes(mode)) throw Object.assign(new Error('Choose Linux Docker Engine or Docker Desktop'),{status:400});
   let cfg;
   try { cfg = config(value); } catch { throw Object.assign(new Error('Check the Ops HTTPS URL and monitoring targets'),{status:400}); }
@@ -31,7 +47,7 @@ export function installerFiles(value, mode) {
     ...(cfg.ops_headers ? {ops_headers:cfg.ops_headers} : {}),services:cfg.services,disks:cfg.disks};
   const compose = `services:
   monitor:
-    build: .
+${image ? `    image: ${validateAgentImage(image)}\n    platform: linux/amd64` : '    build: .'}
     restart: unless-stopped
     init: true
     user: "1000:1000"
