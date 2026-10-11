@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Plus, Server, Users, Gauge, ShieldCheck, Rocket, ChevronRight } from '@lucide/svelte';
   import Modal from '../components/Modal.svelte';
   import ServerForm from '../components/ServerForm.svelte';
@@ -58,20 +59,20 @@
       <h1>Servers</h1>
       <p>Game servers running the Velora plugin or mod report players, stats and events here — and ask the panel who may join.</p>
     </div>
-    <button class="primary" onclick={openCreate}><Plus size={16} /> Add server</button>
+    <button class="primary" onclick={openCreate}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> Add server</button>
   </div>
 
   {#if servers && !servers.length}
     <section class="card empty">
-      <Server size={32} />
+      <InterfaceIcon name="Server" fallback={Server} size={32} />
       <h3>Connect your first server</h3>
       <p>Add a server to get a token, drop the Velora plugin or mod on it, and you'll see live players, playtime leaderboards and events.</p>
       <div class="features">
-        <span><Users size={15} /> Live players &amp; stats</span>
-        <span><ShieldCheck size={15} /> Bans &amp; access groups</span>
-        <span><Rocket size={15} /> "Launcher only" joins</span>
+        <span><InterfaceIcon name="Users" fallback={Users} size={15} /> Live players &amp; stats</span>
+        <span><InterfaceIcon name="ShieldCheck" fallback={ShieldCheck} size={15} /> Bans &amp; access groups</span>
+        <span><InterfaceIcon name="Rocket" fallback={Rocket} size={15} /> "Launcher only" joins</span>
       </div>
-      <button class="primary add" onclick={openCreate}><Plus size={16} /> Add server</button>
+      <button class="primary add" onclick={openCreate}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> Add server</button>
     </section>
   {:else if servers}
     <p class="summary muted small"><span class="live"></span> {online} player{online === 1 ? '' : 's'} online across {servers.filter((s) => s.online).length} of {servers.length} server{servers.length === 1 ? '' : 's'}</p>
@@ -86,15 +87,15 @@
               {#if s.last_seen && !s.online} · last seen {timeAgo(s.last_seen)}{/if}
             </span>
           </div>
-          <div class="metric"><Users size={14} /><strong>{s.players}</strong><span class="muted">/ {s.max_players || '–'}</span></div>
-          <div class="metric {tpsTone(s.online ? s.tps : null)}"><Gauge size={14} /><strong>{s.online && s.tps != null ? s.tps.toFixed(1) : '–'}</strong><span class="muted">TPS</span></div>
+          <div class="metric"><InterfaceIcon name="Users" fallback={Users} size={14} /><strong>{s.players}</strong><span class="muted">/ {s.max_players || '–'}</span></div>
+          <div class="metric {tpsTone(s.online ? s.tps : null)}"><InterfaceIcon name="Gauge" fallback={Gauge} size={14} /><strong>{s.online && s.tps != null ? s.tps.toFixed(1) : '–'}</strong><span class="muted">TPS</span></div>
           <div class="tags">
             <span class="badge">{accessLabel(s)}</span>
             {#if s.plugin_version}<span class="badge" title="Velora Core version this server reports">Core {s.plugin_version}</span>{/if}
             {#if s.require_launcher}<span class="badge accent">Launcher only</span>{/if}
             {#if s.online_mode === false}<span class="badge warn">Offline mode</span>{/if}
           </div>
-          <ChevronRight size={16} class="chev" />
+          <InterfaceIcon name="ChevronRight" fallback={ChevronRight} size={16} class="chev" />
         </a>
       {/each}
     </div>

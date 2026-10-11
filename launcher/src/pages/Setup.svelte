@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Link2, LoaderCircle, ArrowRight } from '@lucide/svelte';
   import { connect } from '../lib/store.svelte';
   import { errorText } from '../lib/tauri';
@@ -23,13 +24,13 @@
 
 <div class="center">
   <form class="card glass" onsubmit={submit}>
-    <div class="icon"><Link2 size={26} /></div>
+    <div class="icon"><InterfaceIcon name="Link2" fallback={Link2} size={26} /></div>
     <h1>Connect to your server</h1>
     <p class="muted">Enter the panel address your community gave you. You only need to do this once.</p>
     <input bind:value={url} placeholder="panel.yourserver.com" autocomplete="url" required />
     {#if error}<div class="error selectable">{error}</div>{/if}
     <button class="primary big" disabled={busy || !url.trim()}>
-      {#if busy}<LoaderCircle class="spin" size={18} />{:else}<ArrowRight size={18} />{/if} Connect
+      {#if busy}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={18} />{:else}<InterfaceIcon name="ArrowRight" fallback={ArrowRight} size={18} />{/if} Connect
     </button>
   </form>
 </div>

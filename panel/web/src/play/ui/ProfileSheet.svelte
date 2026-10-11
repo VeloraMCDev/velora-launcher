@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { untrack } from 'svelte';
   import {
     Heart, Image as ImageIcon, Send, Pencil, Check, Clock, Swords, Trophy, Shield, Sparkles, MessageSquare, UserPlus, UserMinus, UserCheck,
@@ -150,7 +152,7 @@
     </div>
   {:else if error}
     <div class="pl-alert err">{error}</div>
-    <button class="pl-btn" onclick={() => cur && load(cur)}><RefreshCw size={15} /> Try again</button>
+    <button class="pl-btn" onclick={() => cur && load(cur)}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={15} /> Try again</button>
   {:else if profile}
     <div class="prof" style:--pa={profile.accent_color || 'var(--accent)'}>
       <div class="banner" style:background-image={profile.banner_url ? `linear-gradient(rgba(0,0,0,.15), rgba(0,0,0,.7)), url(${profile.banner_url})` : undefined}></div>
@@ -164,34 +166,34 @@
             <span class="sep">•</span><span>{profile.friends_count} friends</span>
           </div>
           <div class="chips">
-            <span class="pl-chip accent"><Star size={12} /> Level {profile.level_info?.level ?? 1}</span>
+            <span class="pl-chip accent"><InterfaceIcon name="Star" fallback={Star} size={12} /> Level {profile.level_info?.level ?? 1}</span>
             {#if profile.level_info?.title}<span class="pl-chip">{profile.level_info.title}</span>{/if}
-            {#if profile.guild}<span class="pl-chip good"><Shield size={12} /> [{profile.guild.tag}] {profile.guild.name}</span>{/if}
-            {#if profile.rank}<span class="pl-chip warn"><Sparkles size={12} /> {profile.rank.display}</span>{/if}
+            {#if profile.guild}<span class="pl-chip good"><InterfaceIcon name="Shield" fallback={Shield} size={12} /> [{profile.guild.tag}] {profile.guild.name}</span>{/if}
+            {#if profile.rank}<span class="pl-chip warn"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={12} /> {profile.rank.display}</span>{/if}
           </div>
         </div>
       </div>
 
       {#if isMe}
-        <button class="pl-btn sm" onclick={() => (editing = !editing)}><Pencil size={14} /> {editing ? 'Cancel editing' : 'Edit profile'}</button>
+        <button class="pl-btn sm" onclick={() => (editing = !editing)}><InterfaceIcon name="Pencil" fallback={Pencil} size={14} /> {editing ? 'Cancel editing' : 'Edit profile'}</button>
       {:else if profile.relationship}
         <div class="rel">
           {#if profile.relationship === 'accepted'}
-            <button class="pl-btn primary" onclick={message}><MessageSquare size={15} /> Message</button>
+            <button class="pl-btn primary" onclick={message}><InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={15} /> Message</button>
             {#if confirmRemove}
               <button class="pl-btn" style="color:var(--bad)" disabled={busy} onclick={() => relate('remove')}>Yes, remove</button>
               <button class="pl-btn" onclick={() => (confirmRemove = false)}>Keep</button>
             {:else}
-              <button class="pl-btn" disabled={busy} onclick={() => (confirmRemove = true)}><UserMinus size={15} /> Unfriend</button>
+              <button class="pl-btn" disabled={busy} onclick={() => (confirmRemove = true)}><InterfaceIcon name="UserMinus" fallback={UserMinus} size={15} /> Unfriend</button>
             {/if}
           {:else if profile.relationship === 'pending_incoming'}
-            <button class="pl-btn primary" disabled={busy} aria-busy={busy} onclick={() => relate('accept')}><UserCheck size={15} /> Accept request</button>
+            <button class="pl-btn primary" disabled={busy} aria-busy={busy} onclick={() => relate('accept')}><InterfaceIcon name="UserCheck" fallback={UserCheck} size={15} /> Accept request</button>
             <button class="pl-btn" disabled={busy} onclick={() => relate('decline')}>Decline</button>
           {:else if profile.relationship === 'pending_outgoing'}
             <span class="pl-chip">Request sent</span>
             <button class="pl-btn sm" disabled={busy} onclick={() => relate('remove')}>Cancel</button>
           {:else}
-            <button class="pl-btn primary" disabled={busy} aria-busy={busy} onclick={() => relate('add')}><UserPlus size={15} /> Add friend</button>
+            <button class="pl-btn primary" disabled={busy} aria-busy={busy} onclick={() => relate('add')}><InterfaceIcon name="UserPlus" fallback={UserPlus} size={15} /> Add friend</button>
           {/if}
         </div>
       {/if}
@@ -200,19 +202,19 @@
         <div class="pl-card tight edit">
           <label>Bio<textarea class="pl-input" rows="3" maxlength="300" bind:value={bio} placeholder="Tell other players about yourself"></textarea></label>
           <label>Banner image URL<input class="pl-input" type="url" bind:value={banner} placeholder="https://…" /></label>
-          <div class="sw"><span><Palette size={13} /> Accent</span>
+          <div class="sw"><span><InterfaceIcon name="Palette" fallback={Palette} size={13} /> Accent</span>
             {#each swatches as c}<button type="button" class="swatch" class:on={accent === c} style:background={c} aria-label="Use {c}" onclick={() => (accent = c)}></button>{/each}
             <input type="color" value={accent || '#8b6cff'} oninput={(e) => (accent = e.currentTarget.value)} aria-label="Custom colour" />
             <button type="button" class="pl-btn sm" onclick={() => (accent = '')}>Default</button>
           </div>
-          <button class="pl-btn primary" disabled={saving} aria-busy={saving} onclick={saveProfile}>{#if saving}<LoaderCircle size={15} class="spin" />{:else}<Check size={15} />{/if} Save profile</button>
+          <button class="pl-btn primary" disabled={saving} aria-busy={saving} onclick={saveProfile}>{#if saving}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={15} class="spin" />{:else}<InterfaceIcon name="Check" fallback={Check} size={15} />{/if} Save profile</button>
         </div>
       {:else if profile.bio}
         <p class="bio">{profile.bio}</p>
       {/if}
 
       {#if profile.badges?.length}
-        <div class="chips">{#each profile.badges as b}<span class="pl-chip warn"><Star size={11} /> {b}</span>{/each}</div>
+        <div class="chips">{#each profile.badges as b}<span class="pl-chip warn"><InterfaceIcon name="Star" fallback={Star} size={11} /> {b}</span>{/each}</div>
       {/if}
 
       <div class="pl-tabs" role="tablist">
@@ -223,12 +225,12 @@
 
       {#if tab === 'overview'}
         <div class="facts">
-          <div><Star size={15} /><span>Level</span><b>{profile.level_info?.level ?? 1}</b></div>
-          <div><Clock size={15} /><span>Playtime</span><b>{hours(profile.stats?.playtime_secs ?? 0)}</b></div>
-          <div><Swords size={15} /><span>K/D</span><b>{kd}</b></div>
-          <div><Wallet size={15} /><span>Wealth</span><b>{profile.wealth != null ? '$' + compact(profile.wealth) : '–'}</b></div>
-          <div><MapPin size={15} /><span>Favourite</span><b class="sm">{profile.favorite_server ?? '–'}</b></div>
-          <div><Calendar size={15} /><span>Joined</span><b class="sm">{new Date(profile.created_at).toLocaleDateString()}</b></div>
+          <div><InterfaceIcon name="Star" fallback={Star} size={15} /><span>Level</span><b>{profile.level_info?.level ?? 1}</b></div>
+          <div><InterfaceIcon name="Clock" fallback={Clock} size={15} /><span>Playtime</span><b>{hours(profile.stats?.playtime_secs ?? 0)}</b></div>
+          <div><InterfaceIcon name="Swords" fallback={Swords} size={15} /><span>K/D</span><b>{kd}</b></div>
+          <div><InterfaceIcon name="Wallet" fallback={Wallet} size={15} /><span>Wealth</span><b>{profile.wealth != null ? '$' + compact(profile.wealth) : '–'}</b></div>
+          <div><InterfaceIcon name="MapPin" fallback={MapPin} size={15} /><span>Favourite</span><b class="sm">{profile.favorite_server ?? '–'}</b></div>
+          <div><InterfaceIcon name="Calendar" fallback={Calendar} size={15} /><span>Joined</span><b class="sm">{new Date(profile.created_at).toLocaleDateString()}</b></div>
         </div>
         {#if profile.stats}
           <div class="pl-stats stats">
@@ -239,7 +241,7 @@
           </div>
         {/if}
         {#if profile.mutual_friends?.length}
-          <h4><Users size={14} /> {profile.mutual_friends.length} mutual friend{profile.mutual_friends.length === 1 ? '' : 's'}</h4>
+          <h4><InterfaceIcon name="Users" fallback={Users} size={14} /> {profile.mutual_friends.length} mutual friend{profile.mutual_friends.length === 1 ? '' : 's'}</h4>
           <div class="pl-scroll-x">
             {#each profile.mutual_friends as m (m.uuid)}
               <button class="mutual" onclick={() => (cur = m.uuid)}><Avatar uuid={m.uuid} name={m.username} size={22} /> {m.username}</button>
@@ -251,7 +253,7 @@
           <div class="pl-list">
             {#each profile.recent_activity as a}
               {@const Ic = actIcon[a.kind] ?? Sparkles}
-              <div class="pl-item"><span class="ic"><Ic size={14} /></span><div class="grow"><span>{a.text}</span></div><span class="sub end">{timeAgo(a.at)}</span></div>
+              <div class="pl-item"><span class="ic"><InterfaceIcon name={iconName(Ic)} fallback={Ic} size={14} /></span><div class="grow"><span>{a.text}</span></div><span class="sub end">{timeAgo(a.at)}</span></div>
             {/each}
           </div>
         {:else}
@@ -262,19 +264,19 @@
           <div class="pl-card tight compose">
             <textarea class="pl-input" rows="2" maxlength="500" bind:value={postText} placeholder="Share a milestone or a status update"></textarea>
             <div class="row">
-              <label class="img"><ImageIcon size={15} /><input class="pl-input" type="url" bind:value={postImage} placeholder="Photo URL (optional)" /></label>
-              <button class="pl-btn primary" disabled={posting || !postText.trim()} aria-busy={posting} onclick={publish}>{#if posting}<LoaderCircle size={15} class="spin" />{:else}<Send size={15} />{/if} Post</button>
+              <label class="img"><InterfaceIcon name="Image" fallback={ImageIcon} size={15} /><input class="pl-input" type="url" bind:value={postImage} placeholder="Photo URL (optional)" /></label>
+              <button class="pl-btn primary" disabled={posting || !postText.trim()} aria-busy={posting} onclick={publish}>{#if posting}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={15} class="spin" />{:else}<InterfaceIcon name="Send" fallback={Send} size={15} />{/if} Post</button>
             </div>
           </div>
         {/if}
         {#each profile.posts as p (p.id)}
           <article class="pl-card tight post">
             <div class="ptop"><span class="sub">{timeAgo(p.created_at)}</span>
-              {#if isMe}<button class="x" aria-label="Delete post" onclick={() => removePost(p)}><Trash2 size={14} /></button>{/if}
+              {#if isMe}<button class="x" aria-label="Delete post" onclick={() => removePost(p)}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /></button>{/if}
             </div>
             <p>{p.content}</p>
             {#if p.image_url}<img class="photo" src={p.image_url} alt="" loading="lazy" />{/if}
-            <button class="like" class:liked={p.liked_by_me} onclick={() => like(p)} aria-label="Like"><Heart size={15} fill={p.liked_by_me ? 'currentColor' : 'none'} /> {p.likes_count}</button>
+            <button class="like" class:liked={p.liked_by_me} onclick={() => like(p)} aria-label="Like"><InterfaceIcon name="Heart" fallback={Heart} size={15} fill={p.liked_by_me ? 'currentColor' : 'none'} /> {p.likes_count}</button>
           </article>
         {:else}
           <p class="muted">No posts yet.</p>

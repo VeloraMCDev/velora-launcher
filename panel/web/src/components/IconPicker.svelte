@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Library, Search } from '@lucide/svelte';
   import Modal from './Modal.svelte';
   import { get } from '../lib/api';
@@ -50,14 +51,14 @@
   }
 </script>
 
-<button type="button" class="ghost" onclick={show}><Library size={15} /> {label}</button>
+<button type="button" class="ghost" onclick={show}><InterfaceIcon name="Library" fallback={Library} size={15} /> {label}</button>
 
 <Modal bind:open title="Icon library" width={820}>
   {#if packs.length === 0 && !busy}
     <p class="muted">The icon library isn't installed on this panel. Build it with <code>cd panel/icons &amp;&amp; npm ci &amp;&amp; node build.mjs</code> (the Docker image does this for you) and set <code>VELORA_ICONS_DIR</code>.</p>
   {/if}
   <div class="bar">
-    <label class="search"><Search size={15} /><input bind:value={q} oninput={later} placeholder={total ? `Search ${total.toLocaleString()} icons — sword, heart, crown…` : 'Search icons'} /></label>
+    <label class="search"><InterfaceIcon name="Search" fallback={Search} size={15} /><input bind:value={q} oninput={later} placeholder={total ? `Search ${total.toLocaleString()} icons — sword, heart, crown…` : 'Search icons'} /></label>
     <select bind:value={pack} onchange={() => run()} aria-label="Icon pack">
       <option value="">All packs</option>
       {#each packs as p}<option value={p.id}>{p.label} ({p.total.toLocaleString()})</option>{/each}

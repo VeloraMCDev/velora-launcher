@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Package, Clock, CheckCircle, XCircle, User, Server, Trash2, RefreshCw, Search, Filter } from '@lucide/svelte/icons';
   import { get, post, del } from '../lib/api';
   import { toast } from '../lib/toast.svelte';
@@ -140,36 +141,36 @@
 <div class="page">
   <header>
     <div>
-      <h1><Package size={22} /> Reward Delivery Queue</h1>
+      <h1><InterfaceIcon name="Package" fallback={Package} size={22} /> Reward Delivery Queue</h1>
       <p>Monitor and manage pending reward deliveries to players.</p>
     </div>
-    <button class="ghost" onclick={clearCompleted}><Trash2 size={16} /> Clear delivered</button>
+    <button class="ghost" onclick={clearCompleted}><InterfaceIcon name="Trash2" fallback={Trash2} size={16} /> Clear delivered</button>
   </header>
 
   <div class="stats-row">
     <div class="stat-card">
-      <div class="stat-icon pending"><Clock size={20} /></div>
+      <div class="stat-icon pending"><InterfaceIcon name="Clock" fallback={Clock} size={20} /></div>
       <div class="stat-content">
         <strong>{stats.pending}</strong>
         <small>Pending</small>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon delivered"><CheckCircle size={20} /></div>
+      <div class="stat-icon delivered"><InterfaceIcon name="CheckCircle" fallback={CheckCircle} size={20} /></div>
       <div class="stat-content">
         <strong>{stats.delivered}</strong>
         <small>Delivered</small>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon failed"><XCircle size={20} /></div>
+      <div class="stat-icon failed"><InterfaceIcon name="XCircle" fallback={XCircle} size={20} /></div>
       <div class="stat-content">
         <strong>{stats.failed}</strong>
         <small>Failed</small>
       </div>
     </div>
     <div class="stat-card">
-      <div class="stat-icon total"><Package size={20} /></div>
+      <div class="stat-icon total"><InterfaceIcon name="Package" fallback={Package} size={20} /></div>
       <div class="stat-content">
         <strong>{stats.total}</strong>
         <small>Total</small>
@@ -179,7 +180,7 @@
 
   <div class="controls">
     <div class="search-box">
-      <Search size={16} />
+      <InterfaceIcon name="Search" fallback={Search} size={16} />
       <input type="text" bind:value={search} placeholder="Search by player or reward type..." />
     </div>
     
@@ -199,7 +200,7 @@
       </select>
     {/if}
 
-    <button class="ghost icon" onclick={loadDeliveries} title="Refresh"><RefreshCw size={16} /></button>
+    <button class="ghost icon" onclick={loadDeliveries} title="Refresh"><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} /></button>
   </div>
 
   {#if loading && !deliveries.length}
@@ -212,22 +213,22 @@
         <article class="delivery-card" data-status={delivery.status}>
           <div class="delivery-status" style="background: {statusColor(delivery.status)}20; color: {statusColor(delivery.status)}">
             {#if delivery.status === 'pending'}
-              <Clock size={18} />
+              <InterfaceIcon name="Clock" fallback={Clock} size={18} />
             {:else if delivery.status === 'delivered'}
-              <CheckCircle size={18} />
+              <InterfaceIcon name="CheckCircle" fallback={CheckCircle} size={18} />
             {:else}
-              <XCircle size={18} />
+              <InterfaceIcon name="XCircle" fallback={XCircle} size={18} />
             {/if}
           </div>
 
           <div class="delivery-content">
             <div class="delivery-header">
               <div class="delivery-player">
-                <User size={14} />
+                <InterfaceIcon name="User" fallback={User} size={14} />
                 <strong>{delivery.username}</strong>
               </div>
               <div class="delivery-server">
-                <Server size={13} />
+                <InterfaceIcon name="Server" fallback={Server} size={13} />
                 <span>{delivery.server_name}</span>
               </div>
             </div>
@@ -249,7 +250,7 @@
 
             {#if delivery.error_message}
               <div class="error-box">
-                <XCircle size={14} />
+                <InterfaceIcon name="XCircle" fallback={XCircle} size={14} />
                 <span>{delivery.error_message}</span>
               </div>
             {/if}
@@ -257,9 +258,9 @@
 
           <div class="delivery-actions">
             {#if delivery.status !== 'delivered'}
-              <button class="ghost icon tiny" onclick={() => retryDelivery(delivery.id)} title="Retry"><RefreshCw size={14} /></button>
+              <button class="ghost icon tiny" onclick={() => retryDelivery(delivery.id)} title="Retry"><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={14} /></button>
             {/if}
-            <button class="ghost icon tiny" onclick={() => deleteDelivery(delivery.id)} title="Delete"><Trash2 size={14} /></button>
+            <button class="ghost icon tiny" onclick={() => deleteDelivery(delivery.id)} title="Delete"><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /></button>
           </div>
         </article>
       {/each}

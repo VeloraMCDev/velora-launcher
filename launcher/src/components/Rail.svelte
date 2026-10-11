@@ -1,7 +1,11 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { Settings, Plus, Check, LogOut, Home, Trophy, Target, Shield, Users, Terminal, Store, Dice5, Award } from '@lucide/svelte';
   import { navigation } from '@velora/experience';
   import { selectedInstance } from '../lib/store.svelte';
+  import McIcon from './McIcon.svelte';
+  import { NAV_ITEMS } from '@velora/experience/nav-icons';
   import Avatar from './Avatar.svelte';
   import { abs, activeAccount, app, instances, removeAccount, selectInstance, switchAccount } from '../lib/store.svelte';
 
@@ -9,9 +13,9 @@
     { id: 'home', label: 'Overview' }, { id: 'quests', label: 'Quests & Objectives' },
     { id: 'collections', label: 'Collection' }, { id: 'guilds', label: 'Factions & Claims' },
     { id: 'market', label: 'Market & Auctions' }, { id: 'casino', label: 'Casino' },
-    { id: 'commands', label: 'Command guide' }, { id: 'stats', label: 'Stats & Leaderboards' },
+    { id: 'commands', label: 'Player Guide' }, { id: 'stats', label: 'Stats & Leaderboards' },
     ...(selectedInstance()?.experience?.widgets.length ? [{ id: 'experience', label: 'Experience' }] : []),
-  ]));
+  ], true));
   const icons: Record<string, typeof Home> = { home: Home, quests: Target, collections: Award, guilds: Shield, market: Store, casino: Dice5, commands: Terminal, stats: Trophy, experience: Home };
   let menu = $state(false);
   const kindLabel = { panel: 'Account', offline: 'Offline' };
@@ -39,15 +43,15 @@
   <div class="bottom">
     {#each pages as page (page.id)}
       {@const Icon = icons[page.id] ?? Home}
-      <button class="ghost big nav" class:on={app.view === page.id} aria-current={app.view === page.id ? 'page' : undefined} onclick={() => (app.view = page.id as typeof app.view)} aria-label={page.label}><Icon size={18} /><span>{page.label}</span></button>
+      <button class="ghost big nav" class:on={app.view === page.id} aria-current={app.view === page.id ? 'page' : undefined} onclick={() => (app.view = page.id as typeof app.view)} aria-label={page.label}><McIcon item={NAV_ITEMS[page.id]} iconKey={"nav:" + page.id} fallback={Icon} size={18} /><span>{page.label}</span></button>
     {/each}
     <button class="ghost big nav" class:on={app.view === 'social'} aria-current={app.view === 'social' ? 'page' : undefined} onclick={() => (app.view = 'social')} aria-label="Friends & Social">
-      <Users size={18} /><span>Friends & Social</span>
+      <InterfaceIcon name="Users" fallback={Users} size={18} /><span>Friends & Social</span>
     </button>
 
 
     <button class="ghost big nav" class:on={app.view === 'settings'} aria-current={app.view === 'settings' ? 'page' : undefined} onclick={() => (app.view = 'settings')} aria-label="Settings">
-      <Settings size={18} /><span>Settings</span>
+      <InterfaceIcon name="Settings" fallback={Settings} size={18} /><span>Settings</span>
       {#if app.update}<span class="dot"></span>{/if}
     </button>
   </div>
@@ -64,12 +68,12 @@
               <button class="pick" onclick={() => { switchAccount(a.id); menu = false; }}>
                 <Avatar account={a} size={1.9} />
                 <span class="who"><strong>{a.username}</strong><span class="tiny muted">{kindLabel[a.kind]}</span></span>
-                {#if a.id === app.active}<Check size={16} />{/if}
+                {#if a.id === app.active}<InterfaceIcon name="Check" fallback={Check} size={16} />{/if}
               </button>
-              <button class="ghost icon" title="Sign out" aria-label="Sign out {a.username}" onclick={() => removeAccount(a.id)}><LogOut size={14} /></button>
+              <button class="ghost icon" title="Sign out" aria-label="Sign out {a.username}" onclick={() => removeAccount(a.id)}><InterfaceIcon name="LogOut" fallback={LogOut} size={14} /></button>
             </div>
           {/each}
-          <button class="add" onclick={() => { app.addAccount = true; menu = false; }}><Plus size={16} /> Add account</button>
+          <button class="add" onclick={() => { app.addAccount = true; menu = false; }}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> Add account</button>
         </div>
       {/if}
     </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Plus, Trash2, Save, Wand2, Terminal } from '@lucide/svelte';
   import ItemEditor, { type ItemSpec } from '../components/ItemEditor.svelte';
@@ -38,13 +39,13 @@
 </script>
 
 <div class="page wide">
-  <div class="bar"><button onclick={start}><Plus size={15} /> New item</button></div>
+  <div class="bar"><button onclick={start}><InterfaceIcon name="Plus" fallback={Plus} size={15} /> New item</button></div>
 
   <div class="layout">
     <aside class="card list">
       {#each items as i (i.id)}
         <button class="item" class:on={current === i.id} onclick={() => pick(i)}>
-          <Wand2 size={15} /><span>{i.title}<small>{i.id}</small></span>
+          <InterfaceIcon name="Wand2" fallback={Wand2} size={15} /><span>{i.title}<small>{i.id}</small></span>
         </button>
       {:else}
         <p class="muted">Nothing yet. Make your first item!</p>
@@ -65,14 +66,14 @@
             <label class="grow">Model <small>optional, replaces generated flat texture model</small><input bind:value={draft.spec.model} placeholder="scopenet:item/blade_3d" /></label>
           </div>
         </details>
-        {#if !isNew}<p class="cmd"><Terminal size={14} /> <code>/customitem give &lt;player&gt; {draft.id}</code></p>{/if}
+        {#if !isNew}<p class="cmd"><InterfaceIcon name="Terminal" fallback={Terminal} size={14} /> <code>/customitem give &lt;player&gt; {draft.id}</code></p>{/if}
         <div class="row">
-          <button onclick={save} disabled={!draft.title.trim()}><Save size={14} /> Save</button>
-          {#if !isNew}<button class="danger" onclick={remove}><Trash2 size={14} /> Delete</button>{/if}
+          <button onclick={save} disabled={!draft.title.trim()}><InterfaceIcon name="Save" fallback={Save} size={14} /> Save</button>
+          {#if !isNew}<button class="danger" onclick={remove}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /> Delete</button>{/if}
         </div>
       </section>
     {:else}
-      <section class="card empty"><Wand2 size={28} /><p>Pick an item or create a new one.</p></section>
+      <section class="card empty"><InterfaceIcon name="Wand2" fallback={Wand2} size={28} /><p>Pick an item or create a new one.</p></section>
     {/if}
   </div>
 </div>

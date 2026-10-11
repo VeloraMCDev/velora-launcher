@@ -1,4 +1,8 @@
 <script lang="ts">
+  import InterfaceIcon from './components/InterfaceIcon.svelte';
+  import { iconName } from './lib/icon-components';
+  import { icons } from './lib/icons.svelte';
+  import { api } from './lib/api';
   import { onMount } from 'svelte';
   import { Activity, Gauge, Server, Rocket, Archive, Settings as Cog, ScrollText, LogOut, Bell, Menu, TerminalSquare } from '@lucide/svelte';
   import { app, boot, navigate, refreshOverview, signOut, type Page } from './lib/state.svelte';
@@ -25,6 +29,12 @@
   let menu = $state(false);
 
   onMount(() => { boot(); });
+  onMount(() => {
+    const refreshIcons = () => api<{ interface_icons?: Record<string, string> }>('/api/panel/branding').then(b => icons.overrides = b.interface_icons ?? {}).catch(() => {});
+    void refreshIcons();
+    const timer = setInterval(() => void refreshIcons(), 60_000);
+    return () => clearInterval(timer);
+  });
   $effect(() => {
     if (!app.user) return;
     refreshOverview().catch(() => {});
@@ -50,7 +60,7 @@
         {#each nav as item}
           {@const Icon = item.icon}
           <a href="#/{item.page}" class:active={app.page === item.page} onclick={() => (menu = false)}>
-            <Icon size={18} /> {item.label}
+            <InterfaceIcon iconKey={"nav:operations-" + item.page} name={iconName(Icon)} fallback={Icon} size={18} /> {item.label}
             {#if item.page === 'overview' && alerts.length}<span class="count" class:bad={critical}>{alerts.length}</span>{/if}
             {#if item.page === 'updates' && pendingUpdates}<span class="count">{pendingUpdates}</span>{/if}
           </a>
@@ -58,13 +68,13 @@
       </div>
       <div class="foot">
         <div class="who"><span class="avatar">{app.user.slice(0, 1).toUpperCase()}</span><div><b>{app.user}</b><span class="tiny faint">Administrator</span></div></div>
-        <button class="ghost icon" title="Sign out" onclick={signOut}><LogOut size={17} /></button>
+        <button class="ghost icon" title="Sign out" onclick={signOut}><InterfaceIcon name="LogOut" fallback={LogOut} size={17} /></button>
       </div>
       <div class="tiny faint ver">Operations {app.version}</div>
     </nav>
     <div class="main">
       <header class="top">
-        <button class="ghost icon mobile" onclick={() => (menu = !menu)} aria-label="Menu"><Menu size={20} /></button>
+        <button class="ghost icon mobile" onclick={() => (menu = !menu)} aria-label="Menu"><InterfaceIcon name="Menu" fallback={Menu} size={20} /></button>
         <div class="status">
           {#if !app.overview}<span class="dot"></span> Connecting…
           {:else if alerts.length}<span class="dot {critical ? 'bad' : 'warn'}"></span> {alerts.length} {alerts.length === 1 ? 'issue needs' : 'issues need'} attention
@@ -72,11 +82,11 @@
         </div>
         <span class="spacer"></span>
         {#if running}
-          <button class="sm" onclick={() => { app.job = running; app.jobOpen = true; }}><TerminalSquare size={15} /> {running.kind} running…</button>
+          <button class="sm" onclick={() => { app.job = running; app.jobOpen = true; }}><InterfaceIcon name="TerminalSquare" fallback={TerminalSquare} size={15} /> {running.kind} running…</button>
         {:else if app.job}
-          <button class="sm ghost" onclick={() => (app.jobOpen = !app.jobOpen)}><TerminalSquare size={15} /> Last operation</button>
+          <button class="sm ghost" onclick={() => (app.jobOpen = !app.jobOpen)}><InterfaceIcon name="TerminalSquare" fallback={TerminalSquare} size={15} /> Last operation</button>
         {/if}
-        <a class="btn sm ghost" href="#/settings" title="Notifications"><Bell size={16} /></a>
+        <a class="btn sm ghost" href="#/settings" title="Notifications"><InterfaceIcon name="Bell" fallback={Bell} size={16} /></a>
       </header>
       <main>
         {#key app.page}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { untrack } from 'svelte';
   import { Spade, Info } from '@lucide/svelte';
   import BetInput from './BetInput.svelte';
@@ -74,7 +75,7 @@
 <GameShell title="Blackjack" icon={Spade}>
   {#snippet controls()}
     <BetInput bind:value={bet} min={cfg.min_bet} max={cfg.max_bet} {balance} disabled={active || busy} />
-    <p class="note"><Info size={13} /> Beat the dealer to 21 without going over. Blackjack pays {cfg.blackjack_pay + 1 === 2.5 ? '3 to 2' : `${cfg.blackjack_pay} to 1`}, the dealer stands on {cfg.dealer_hits_soft_17 ? 'hard 17 and hits soft 17' : 'all 17s'}, and you may double down on your first two cards. Cards come from an endless shoe, so nothing can be counted.</p>
+    <p class="note"><InterfaceIcon name="Info" fallback={Info} size={13} /> Beat the dealer to 21 without going over. Blackjack pays {cfg.blackjack_pay + 1 === 2.5 ? '3 to 2' : `${cfg.blackjack_pay} to 1`}, the dealer stands on {cfg.dealer_hits_soft_17 ? 'hard 17 and hits soft 17' : 'all 17s'}, and you may double down on your first two cards. Cards come from an endless shoe, so nothing can be counted.</p>
     {#if active}<p class="note">{hint}</p>{/if}
   {/snippet}
   {#snippet action()}

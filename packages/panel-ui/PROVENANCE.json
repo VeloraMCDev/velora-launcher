@@ -6,11 +6,12 @@
   "scope": "Neutral existing login/registration/password-reset/Discord sign-in page with injected SDK client and token lifecycle callback",
   "adaptations": [
     "Four original platform JSON calls use reviewed typed client methods",
-    "Original live transport calls, polling timing, popup identity, hash reset navigation, strings, markup and CSS retained",
-    "Private session/router imports replaced by client/onToken props; no storage or authorization moved"
+    "Original live transport calls, polling timing, popup identity, hash reset navigation, strings and CSS retained; submit icon supports an optional host renderer",
+    "Private session/router imports replaced by client/onToken props; no storage or authorization moved",
+    "Optional host-supplied iconRenderer customizes sign-in and busy icons without importing application branding"
   ],
-  "output_sha256_lf": "50a62eb102e767d9d3ab7adf53ac60501e500529b14225ae1a1b2e73723be235",
-  "markup_sha256_lf": "45daf64b6e60f430c75d9695da71e939b31de010b3836a7df93acde5b5bce06d",
+  "output_sha256_lf": "b181cfed29b293cd83e2361d65c94bffc4abf3506dd74757518c29d5e9ca376a",
+  "markup_sha256_lf": "771ece8d71413c57dfb6139da248ae788168c307038675603dcab3861fef6a70",
   "source_output_sha256_lf": "b114e5c0350637cbb8eac833921f8a0a944a69bcb30eccac17e62b2f07cd958a",
-  "monorepo_transformation": "Use the canonical shared/http client directly; markup and behavior unchanged."
+  "monorepo_transformation": "Use the canonical shared/http client directly and allow an optional host-supplied icon renderer; authentication behavior preserved."
 }

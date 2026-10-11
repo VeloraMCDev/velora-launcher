@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { ClipboardList, ScrollText, Save, Trash2, RotateCcw } from '@lucide/svelte';
   import Toggle from '../components/Toggle.svelte';
@@ -44,15 +45,15 @@
 <div class="page">
   <header class="head">
     <div>
-      <h1><ClipboardList size={26} /> Buy orders &amp; contracts</h1>
+      <h1><InterfaceIcon name="ClipboardList" fallback={ClipboardList} size={26} /> Buy orders &amp; contracts</h1>
       <p>Buy orders let players ask for items with the money held in escrow until someone delivers them. Contracts are random tasks (kill mobs, hand in resources) that pay money. Both are played with <code>/orders</code> and <code>/contracts</code> in game and from the Market page.</p>
     </div>
-    <button class="primary" onclick={save} disabled={busy || !orders || !contracts}><Save size={15} /> Save changes</button>
+    <button class="primary" onclick={save} disabled={busy || !orders || !contracts}><InterfaceIcon name="Save" fallback={Save} size={15} /> Save changes</button>
   </header>
 
   {#if orders}
     <section class="card">
-      <header class="sec"><h2><ClipboardList size={18} /> Buy orders</h2><Toggle bind:checked={orders.enabled} label="On" /></header>
+      <header class="sec"><h2><InterfaceIcon name="ClipboardList" fallback={ClipboardList} size={18} /> Buy orders</h2><Toggle bind:checked={orders.enabled} label="On" /></header>
       <div class="fields">
         <label>Open orders per player<input type="number" min="1" max="100" bind:value={orders.max_open_per_player} /></label>
         <label>Most items per order<input type="number" min="1" bind:value={orders.max_amount} /></label>
@@ -63,7 +64,7 @@
         <label>Orders one player can pick up<input type="number" min="1" bind:value={orders.max_claims_per_player} /></label>
         <label>House fee (%)<input type="number" min="0" max="50" step="0.5" bind:value={orders.fee_percent} /><small>Taken from the filler's payment. 0 keeps it free.</small></label>
       </div>
-      <button type="button" class="ghost reset" onclick={() => ordersDefaults && (orders = structuredClone($state.snapshot(ordersDefaults)))}><RotateCcw size={14} /> Standard settings</button>
+      <button type="button" class="ghost reset" onclick={() => ordersDefaults && (orders = structuredClone($state.snapshot(ordersDefaults)))}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
     </section>
 
     <section class="card">
@@ -73,7 +74,7 @@
         <tbody>
           {#each list as o (o.id)}
             <tr><td>{o.id}</td><td>{o.buyer}</td><td>{o.amount}× {o.item} <small class="muted">{timeAgo(o.at)}</small></td><td class="n">{money(o.total)}</td><td>{o.status}</td>
-              <td class="n">{#if o.status === 'open' || o.status === 'claimed'}<button class="ghost sm" onclick={() => remove(o)}><Trash2 size={13} /> Remove</button>{/if}</td></tr>
+              <td class="n">{#if o.status === 'open' || o.status === 'claimed'}<button class="ghost sm" onclick={() => remove(o)}><InterfaceIcon name="Trash2" fallback={Trash2} size={13} /> Remove</button>{/if}</td></tr>
           {:else}<tr><td colspan="6" class="muted">No orders yet.</td></tr>{/each}
         </tbody>
       </table>
@@ -82,7 +83,7 @@
 
   {#if contracts}
     <section class="card">
-      <header class="sec"><h2><ScrollText size={18} /> Contracts</h2><Toggle bind:checked={contracts.enabled} label="On" /></header>
+      <header class="sec"><h2><InterfaceIcon name="ScrollText" fallback={ScrollText} size={18} /> Contracts</h2><Toggle bind:checked={contracts.enabled} label="On" /></header>
       {#if stats}<p class="muted">{stats.completed.toLocaleString()} finished so far, {money(stats.paid)} paid out, {stats.active} active right now.</p>{/if}
       <div class="fields">
         <label>Contracts on each player's board<input type="number" min="1" max="12" bind:value={contracts.board_size} /></label>
@@ -95,7 +96,7 @@
         <Toggle bind:checked={contracts.kills} label="Kill contracts" help="Mob kills count by themselves" />
         <Toggle bind:checked={contracts.gather} label="Resource contracts" help="Items are handed in and used up" />
       </div>
-      <button type="button" class="ghost reset" onclick={() => contractsDefaults && (contracts = structuredClone($state.snapshot(contractsDefaults)))}><RotateCcw size={14} /> Standard settings</button>
+      <button type="button" class="ghost reset" onclick={() => contractsDefaults && (contracts = structuredClone($state.snapshot(contractsDefaults)))}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Standard settings</button>
     </section>
   {/if}
 </div>

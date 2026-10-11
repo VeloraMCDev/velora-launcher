@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Award, Check, RefreshCw, Sparkles } from '@lucide/svelte';
   import { invoke } from '../lib/tauri';
@@ -18,10 +19,10 @@
 </script>
 
 <div class="page">
-  <header><div><h1><Award size={22} /> Collection</h1><p>Titles, badges and cosmetics unlocked on your account.</p></div><button class="ghost icon" onclick={load} aria-label="Refresh collection" title="Refresh"><RefreshCw size={16} /></button></header>
+  <header><div><h1><InterfaceIcon name="Award" fallback={Award} size={22} /> Collection</h1><p>Titles, badges and cosmetics unlocked on your account.</p></div><button class="ghost icon" onclick={load} aria-label="Refresh collection" title="Refresh"><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} /></button></header>
   {#if loading && !unlocks.length}<div class="loading"><span class="spin">◌</span></div>
-  {:else if !unlocks.length}<div class="empty"><Sparkles size={24} /><span>No collection unlocks yet</span></div>
-  {:else}<div class="list">{#each unlocks as item (item.key)}<article><span class="icon"><Award size={18} /></span><span class="content"><strong>{title(item)}</strong><small>{item.type.replaceAll('_', ' ')} · {item.source_type}</small></span><button class:primary={item.equipped} class="equip" onclick={() => equip(item)}>{#if item.equipped}<Check size={15} /> Equipped{:else}Equip{/if}</button></article>{/each}</div>{/if}
+  {:else if !unlocks.length}<div class="empty"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={24} /><span>No collection unlocks yet</span></div>
+  {:else}<div class="list">{#each unlocks as item (item.key)}<article><span class="icon"><InterfaceIcon name="Award" fallback={Award} size={18} /></span><span class="content"><strong>{title(item)}</strong><small>{item.type.replaceAll('_', ' ')} · {item.source_type}</small></span><button class:primary={item.equipped} class="equip" onclick={() => equip(item)}>{#if item.equipped}<InterfaceIcon name="Check" fallback={Check} size={15} /> Equipped{:else}Equip{/if}</button></article>{/each}</div>{/if}
 </div>
 
 <style>

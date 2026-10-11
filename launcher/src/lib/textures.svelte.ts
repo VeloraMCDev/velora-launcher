@@ -1,12 +1,9 @@
-// Real Minecraft item textures. The launcher copies them out of the player's own client jar (never shipped with Velora), so
-// until the game has been installed once the UI shows emoji instead and a banner explains why.
+import { iconUrl, spriteUrl } from '@velora/experience/icons.svelte';
+// Legacy texture status remains compatible; interface images load from ccVaults.
 import { invoke, listen } from './tauri';
 
 export const textures = $state({ ready: false, count: 0, version: null as string | null, checked: false, bannerDismissed: false });
 
-const cache = new Map<string, string | null>();
-const waiting = new Map<string, Set<(uri: string | null) => void>>();
-let timer: ReturnType<typeof setTimeout> | null = null;
 /** Bumped whenever the texture set changes so tiles ask again. */
 export const texVersion = $state({ n: 0 });
 
@@ -17,8 +14,6 @@ function apply(s: { ready: boolean; count: number; version: string | null }) {
   textures.version = s.version;
   textures.checked = true;
   if (changed) {
-    cache.clear();
-    spriteCache.clear();
     texVersion.n++;
   }
 }
@@ -32,64 +27,12 @@ export async function initTextures() {
   }
 }
 
-async function flush() {
-  timer = null;
-  const names = [...waiting.keys()];
-  let found: Record<string, string> = {};
-  try {
-    found = await invoke<Record<string, string>>('item_textures', { names });
-  } catch {
-    /* fall back to emoji */
-  }
-  for (const n of names) {
-    const uri = found[n] ?? null;
-    cache.set(n, uri);
-    waiting.get(n)?.forEach((cb) => cb(uri));
-    waiting.delete(n);
-  }
-}
-
-/** The texture for an item id as a data URI, or null when there isn't one (yet). Requests are batched into one call. */
+/** The texture for an item id from ccVaults or the administrator override. */
 export function itemTexture(id: string): Promise<string | null> {
-  if (!textures.ready) return Promise.resolve(null);
-  if (cache.has(id)) return Promise.resolve(cache.get(id) ?? null);
-  return new Promise((resolve) => {
-    const set = waiting.get(id) ?? new Set();
-    set.add(resolve);
-    waiting.set(id, set);
-    timer ??= setTimeout(flush, 16);
-  });
+  return Promise.resolve(iconUrl(id));
 }
 
-const spriteCache = new Map<string, string | null>();
-const spriteWaiting = new Map<string, Set<(uri: string | null) => void>>();
-let spriteTimer: ReturnType<typeof setTimeout> | null = null;
-
-async function flushSprites() {
-  spriteTimer = null;
-  const names = [...spriteWaiting.keys()];
-  let found: Record<string, string> = {};
-  try {
-    found = await invoke<Record<string, string>>('mc_sprites', { names });
-  } catch {
-    /* sprites are decoration only */
-  }
-  for (const n of names) {
-    const uri = found[n] ?? null;
-    spriteCache.set(n, uri);
-    spriteWaiting.get(n)?.forEach((cb) => cb(uri));
-    spriteWaiting.delete(n);
-  }
-}
-
-/** A GUI sprite such as `gui/hud/heart/full.png` or `effect/speed.png` as a data URI (null until the game has been installed). */
+/** Resolve a GUI or effect icon from ccVaults without requiring a game installation. */
 export function sprite(name: string): Promise<string | null> {
-  if (!textures.ready) return Promise.resolve(null);
-  if (spriteCache.has(name)) return Promise.resolve(spriteCache.get(name) ?? null);
-  return new Promise((resolve) => {
-    const set = spriteWaiting.get(name) ?? new Set();
-    set.add(resolve);
-    spriteWaiting.set(name, set);
-    spriteTimer ??= setTimeout(flushSprites, 16);
-  });
+  return Promise.resolve(spriteUrl(name));
 }

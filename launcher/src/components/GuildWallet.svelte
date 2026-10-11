@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import PlayerLink from './PlayerLink.svelte';
   import { onMount,untrack } from 'svelte';
   import {
@@ -114,7 +115,7 @@
 <div class="wallet">
   {#if instanceServers.length === 0}
     <div class="empty glass">
-      <span class="empty-icon"><Server size={26} /></span>
+      <span class="empty-icon"><InterfaceIcon name="Server" fallback={Server} size={26} /></span>
       <h3>No game server linked</h3>
       <p class="muted">The faction treasury lives on a game server's economy. Ask an admin to link a server to this instance in the panel.</p>
     </div>
@@ -123,32 +124,32 @@
       <div class="servers" role="tablist" aria-label="Game server">
         {#each instanceServers as s (s.id)}
           <button role="tab" aria-selected={serverId === s.id} class="srv" class:on={serverId === s.id} onclick={() => (serverId = s.id)}>
-            <Server size={13} /> {s.name}
+            <InterfaceIcon name="Server" fallback={Server} size={13} /> {s.name}
           </button>
         {/each}
       </div>
     {/if}
 
     {#if !wallet && loading}
-      <div class="empty glass"><LoaderCircle class="spin" size={28} /></div>
+      <div class="empty glass"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={28} /></div>
     {:else if wallet}
       <div class="cols">
         <div class="left">
           <section class="treasury">
             <div class="glow" aria-hidden="true"></div>
             <div class="t-top">
-              <span class="t-label"><Landmark size={14} /> Faction treasury</span>
+              <span class="t-label"><InterfaceIcon name="Landmark" fallback={Landmark} size={14} /> Faction treasury</span>
               <span class="tag">[{guild.tag}]</span>
-              <button class="ghost icon sm refresh" onclick={load} aria-label="Refresh wallet" title="Refresh"><RefreshCw size={14} class={loading ? 'spin' : ''} /></button>
+              <button class="ghost icon sm refresh" onclick={load} aria-label="Refresh wallet" title="Refresh"><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={14} class={loading ? 'spin' : ''} /></button>
             </div>
             <div class="amount">{money(shown)}</div>
             {#if wallet.upkeep}<p class="tiny">Daily upkeep {money(wallet.upkeep.daily_cents/100)} · {wallet.upkeep.grace_days}-day grace period.</p>
               {#if wallet.upkeep.arrears_cents>0}<p class="warn tiny">Unpaid: {money(wallet.upkeep.arrears_cents/100)}. {wallet.upkeep.claims_frozen?'New claims are frozen.':`New claims freeze on ${wallet.upkeep.freezes_at} UTC.`} Deposit funds to settle outstanding bills within a minute. Existing claims remain protected.</p>{/if}
             {/if}
             <div class="t-stats">
-              <div><span class="k"><TrendingUp size={12} /> Money in</span><strong class="in">{money(totals.in)}</strong></div>
-              <div><span class="k"><ArrowUpFromLine size={12} /> Money out</span><strong class="out">{money(totals.out)}</strong></div>
-              <div><span class="k"><Wallet size={12} /> Your wallet</span><strong>{wallet.my_balance != null ? money(wallet.my_balance) : '—'}</strong></div>
+              <div><span class="k"><InterfaceIcon name="TrendingUp" fallback={TrendingUp} size={12} /> Money in</span><strong class="in">{money(totals.in)}</strong></div>
+              <div><span class="k"><InterfaceIcon name="ArrowUpFromLine" fallback={ArrowUpFromLine} size={12} /> Money out</span><strong class="out">{money(totals.out)}</strong></div>
+              <div><span class="k"><InterfaceIcon name="Wallet" fallback={Wallet} size={12} /> Your wallet</span><strong>{wallet.my_balance != null ? money(wallet.my_balance) : '—'}</strong></div>
             </div>
             <p class="t-note tiny">Totals cover the last {wallet.transactions.length} transfers.</p>
           </section>
@@ -156,7 +157,7 @@
           <section class="transfer glass">
             <div class="mode" role="tablist">
               <button role="tab" aria-selected={mode === 'deposit'} class:on={mode === 'deposit'} onclick={() => (mode = 'deposit')}>
-                <ArrowDownToLine size={15} /> Deposit
+                <InterfaceIcon name="ArrowDownToLine" fallback={ArrowDownToLine} size={15} /> Deposit
               </button>
               <button
                 role="tab"
@@ -166,7 +167,7 @@
                 title={canWithdraw ? '' : 'Only faction leaders and officers can withdraw'}
                 onclick={() => (mode = 'withdraw')}
               >
-                {#if canWithdraw}<ArrowUpFromLine size={15} />{:else}<Lock size={14} />{/if} Withdraw
+                {#if canWithdraw}<InterfaceIcon name="ArrowUpFromLine" fallback={ArrowUpFromLine} size={15} />{:else}<InterfaceIcon name="Lock" fallback={Lock} size={14} />{/if} Withdraw
               </button>
             </div>
 
@@ -194,17 +195,17 @@
             {/if}
 
             <button class="primary go" disabled={busy || !validAmount || overLimit} onclick={submit}>
-              {#if busy}<LoaderCircle class="spin" size={15} />{:else if mode === 'deposit'}<ArrowDownToLine size={15} />{:else}<ArrowUpFromLine size={15} />{/if}
+              {#if busy}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={15} />{:else if mode === 'deposit'}<InterfaceIcon name="ArrowDownToLine" fallback={ArrowDownToLine} size={15} />{:else}<InterfaceIcon name="ArrowUpFromLine" fallback={ArrowUpFromLine} size={15} />{/if}
               {mode === 'deposit' ? 'Deposit to treasury' : 'Withdraw to wallet'}
             </button>
           </section>
         </div>
 
         <section class="history glass">
-          <header><h3><History size={16} /> Recent activity</h3><span class="chip">{wallet.transactions.length}</span></header>
+          <header><h3><InterfaceIcon name="History" fallback={History} size={16} /> Recent activity</h3><span class="chip">{wallet.transactions.length}</span></header>
           {#if wallet.transactions.length === 0}
             <div class="none">
-              <Coins size={28} />
+              <InterfaceIcon name="Coins" fallback={Coins} size={28} />
               <p>No transfers yet.</p>
               <p class="tiny muted">Be the first to fund the faction treasury.</p>
             </div>
@@ -214,7 +215,7 @@
                 {@const m = who(tx.actor_uuid)}
                 <li>
                   <span class="ic" class:out={isOut(tx.kind)}>
-                    {#if isOut(tx.kind)}<ArrowUpFromLine size={14} />{:else}<ArrowDownToLine size={14} />{/if}
+                    {#if isOut(tx.kind)}<InterfaceIcon name="ArrowUpFromLine" fallback={ArrowUpFromLine} size={14} />{:else}<InterfaceIcon name="ArrowDownToLine" fallback={ArrowDownToLine} size={14} />{/if}
                   </span>
                   <Avatar uuid={tx.actor_uuid} name={m?.name ?? '?'} size={1.7} />
                   <div class="who">

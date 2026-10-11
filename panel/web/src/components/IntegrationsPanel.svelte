@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Plug, RefreshCw, Shield, Gauge, History, Map as MapIcon, Archive } from '@lucide/svelte';
   import Avatar from './Avatar.svelte';
   import { get, put, timeAgo } from '../lib/api';
@@ -59,9 +60,9 @@
     {#if lp}
       <section class="card wide">
         <div class="section-title">
-          <h2><Shield size={17} /> LuckPerms ranks</h2>
+          <h2><InterfaceIcon name="Shield" fallback={Shield} size={17} /> LuckPerms ranks</h2>
           <span class="hint">v{lp.version} · {timeAgo(lp.updated_at)}</span>
-          <button class="ghost icon" aria-label="Refresh" onclick={refresh}><RefreshCw size={15} /></button>
+          <button class="ghost icon" aria-label="Refresh" onclick={refresh}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={15} /></button>
         </div>
         <div class="modes" role="radiogroup" aria-label="Group sync">
           {#each modes as m}
@@ -93,7 +94,7 @@
     {#if spark}
       {@const tps = spark.data?.tps ?? {}}
       <section class="card">
-        <div class="section-title"><h2><Gauge size={17} /> Spark</h2><span class="hint">{timeAgo(spark.updated_at)}</span></div>
+        <div class="section-title"><h2><InterfaceIcon name="Gauge" fallback={Gauge} size={17} /> Spark</h2><span class="hint">{timeAgo(spark.updated_at)}</span></div>
         <div class="stats">
           <div class="stat {tpsClass(tps.m1)}"><span class="muted tiny">TPS (1m)</span><b>{tps.m1 ?? '–'}</b></div>
           <div class="stat"><span class="muted tiny">MSPT (10s)</span><b>{spark.data?.mspt?.s10?.mean ?? '–'}<small>ms</small></b></div>
@@ -110,7 +111,7 @@
     {#if cp}
       {@const d = cp.data ?? {}}
       <section class="card">
-        <div class="section-title"><h2><History size={17} /> CoreProtect</h2><span class="hint">{timeAgo(cp.updated_at)}</span></div>
+        <div class="section-title"><h2><InterfaceIcon name="History" fallback={History} size={17} /> CoreProtect</h2><span class="hint">{timeAgo(cp.updated_at)}</span></div>
         <div class="stats">
           <div class="stat"><span class="muted tiny">Logged last hour</span><b>{d.logged_last_hour ?? 0}</b></div>
           <div class="stat"><span class="muted tiny">Since restart</span><b>{d.logged_total ?? 0}</b></div>
@@ -120,7 +121,7 @@
           <div class="spark" aria-hidden="true">{#each d.per_minute as v}<i style:height="{Math.max(3, (v / max) * 100)}%"></i>{/each}</div>
         {/if}
         <div class="row backup">
-          <Archive size={15} />
+          <InterfaceIcon name="Archive" fallback={Archive} size={15} />
           {#if d.backups?.found}
             <span class="small">{d.backups.count} backup{d.backups.count === 1 ? '' : 's'} · {fmtBytes(d.backups.bytes)}{#if d.backups.latest_at} · latest {timeAgo(new Date(d.backups.latest_at).toISOString())}{/if}</span>
           {:else}
@@ -136,7 +137,7 @@
     {#if wg}
       <section class="card wide">
         <div class="section-title">
-          <h2><MapIcon size={17} /> WorldGuard regions</h2>
+          <h2><InterfaceIcon name="Map" fallback={MapIcon} size={17} /> WorldGuard regions</h2>
           <span class="hint">{wg.data?.regions?.length ?? 0}{wg.data?.truncated ? '+' : ''} · {timeAgo(wg.updated_at)}</span>
           <input class="filter" bind:value={regionFilter} placeholder="Filter" aria-label="Filter regions" />
         </div>
@@ -165,7 +166,7 @@
   </div>
 {:else if p}
   <section class="card empty">
-    <div class="section-title"><h2><Plug size={17} /> Plugin integrations</h2></div>
+    <div class="section-title"><h2><InterfaceIcon name="Plug" fallback={Plug} size={17} /> Plugin integrations</h2></div>
     <p class="muted small">LuckPerms, WorldGuard, Spark and CoreProtect appear here automatically once they are installed on this server and it has synced. Turn them off in <code>config.yml</code> under <code>integrations:</code>.</p>
   </section>
 {/if}

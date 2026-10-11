@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import McItem from '../components/McItem.svelte';
   import { onMount } from 'svelte';
   import {
@@ -133,11 +135,11 @@
   <!-- Page Header -->
   <div class="page-header">
     <div class="title-wrap">
-      <h1><Target class="target-icon" size={26} /> Quests & Progression</h1>
+      <h1><InterfaceIcon name="Target" fallback={Target} class="target-icon" size={26} /> Quests & Progression</h1>
       <p class="lead">Complete daily and weekly quests across servers to level up your Velora account.</p>
     </div>
     <button class="ghost icon" onclick={loadData} title="Refresh" aria-label="Refresh">
-      <RefreshCw size={17} class={loading ? 'spin' : ''} />
+      <InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={17} class={loading ? 'spin' : ''} />
     </button>
   </div>
 
@@ -151,7 +153,7 @@
         </div>
         {#if levelInfo.rank}
           <div class="rank-badge-pill">
-            <Trophy size={11} /> #{levelInfo.rank}
+            <InterfaceIcon name="Trophy" fallback={Trophy} size={11} /> #{levelInfo.rank}
           </div>
         {/if}
       </div>
@@ -160,7 +162,7 @@
           <div class="title-meta">
             <span class="level-name">Velora Progression</span>
             {#if levelInfo.rank}
-              <span class="badge rank-title-badge"><Trophy size={12} /> Global Rank #{levelInfo.rank}</span>
+              <span class="badge rank-title-badge"><InterfaceIcon name="Trophy" fallback={Trophy} size={12} /> Global Rank #{levelInfo.rank}</span>
             {/if}
             {#if levelInfo.title}
               <span class="badge title-badge"><RankTitle text={levelInfo.title} image={levelInfo.title_image} /></span>
@@ -184,7 +186,7 @@
           {#if levelInfo.badges && levelInfo.badges.length > 0}
             <div class="badges-row">
               {#each levelInfo.badges as badge}
-                <span class="badge icon-badge" title={badge}><Star size={11} /> {badge}</span>
+                <span class="badge icon-badge" title={badge}><InterfaceIcon name="Star" fallback={Star} size={11} /> {badge}</span>
               {/each}
             </div>
           {/if}
@@ -197,19 +199,19 @@
   <div class="nav-bar">
     <div class="tabs-segmented">
       <button class:active={activeTab === 'daily'} onclick={() => (activeTab = 'daily')}>
-        <Clock size={15} /> Daily Quests
+        <InterfaceIcon name="Clock" fallback={Clock} size={15} /> Daily Quests
       </button>
       <button class:active={activeTab === 'weekly'} onclick={() => (activeTab = 'weekly')}>
-        <Flame size={15} /> Weekly Quests
+        <InterfaceIcon name="Flame" fallback={Flame} size={15} /> Weekly Quests
       </button>
       <button class:active={activeTab === 'achievements'} onclick={() => (activeTab = 'achievements')}>
-        <Trophy size={15} /> Achievements ({unlockedAchievementsCount}/{achievements.length})
+        <InterfaceIcon name="Trophy" fallback={Trophy} size={15} /> Achievements ({unlockedAchievementsCount}/{achievements.length})
       </button>
     </div>
 
     {#if activeTab !== 'achievements'}
       <div class="reset-countdown muted tiny">
-        <Clock size={13} />
+        <InterfaceIcon name="Clock" fallback={Clock} size={13} />
         <span>Resets in: <strong>{getTimeUntilReset(activeTab)}</strong></span>
         <span class="divider">•</span>
         <span>Completed: <strong>{completedCount} / {totalTabQuests}</strong></span>
@@ -219,7 +221,7 @@
 
   <!-- Content Section -->
   {#if loading && !userQuests.length}
-    <div class="center-state"><LoaderCircle class="spin" size={32} /></div>
+    <div class="center-state"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={32} /></div>
   {:else if activeTab === 'achievements'}
     <!-- Achievements List with Minecraft Frame Styling -->
     <div class="achievements-section">
@@ -235,9 +237,9 @@
               <p class="ach-desc">{ach.description}</p>
               <div class="ach-footer">
                 <span class="xp-tag">+{ach.xp_reward} XP</span>
-                {#each extras[`achievement:${ach.id}`] ?? [] as extra}<span class="extra-tag"><Gift size={10} /> {extra}</span>{/each}
+                {#each extras[`achievement:${ach.id}`] ?? [] as extra}<span class="extra-tag"><InterfaceIcon name="Gift" fallback={Gift} size={10} /> {extra}</span>{/each}
                 {#if ach.unlocked}
-                  <span class="badge unlocked-tag"><Check size={11} /> Unlocked</span>
+                  <span class="badge unlocked-tag"><InterfaceIcon name="Check" fallback={Check} size={11} /> Unlocked</span>
                 {:else}
                   <span class="badge locked-tag">Locked</span>
                 {/if}
@@ -260,7 +262,7 @@
             onclick={() => (selectedCategory = cat)}
           >
             {#if cat !== 'all' && CatIcon}
-              <CatIcon size={13} />
+              <InterfaceIcon name={iconName(CatIcon)} fallback={CatIcon} size={13} />
             {/if}
             <span class="cap">{cat}</span>
           </button>
@@ -269,7 +271,7 @@
 
       {#if filteredQuests.length === 0}
         <div class="empty-state glass">
-          <Target size={36} class="muted" />
+          <InterfaceIcon name="Target" fallback={Target} size={36} class="muted" />
           <p>No {activeTab} quests found in this category.</p>
         </div>
       {:else}
@@ -285,7 +287,7 @@
             <div class="quest-card glass" class:completed={uq.completed} class:claimed={uq.claimed}>
               <div class="quest-top">
                 <div class="quest-icon-wrapper">
-                  {#if imageIcon(q.icon)}<img src={abs(imageIcon(q.icon))} alt="" style="width: 32px; height: 32px; object-fit: contain" />{:else if q.icon && !questIcons[q.icon]}<McItem id={q.icon} size={1.8} emoji={resolveIcon({ icon_item: q.icon }).emoji} />{:else}<IconComponent size={20} class="cat-icon" />{/if}
+                  {#if imageIcon(q.icon)}<img src={abs(imageIcon(q.icon))} alt="" style="width: 32px; height: 32px; object-fit: contain" />{:else if q.icon && !questIcons[q.icon]}<McItem id={q.icon} size={1.8} emoji={resolveIcon({ icon_item: q.icon }).emoji} />{:else}<InterfaceIcon name={iconName(IconComponent)} fallback={IconComponent} size={20} class="cat-icon" />{/if}
                 </div>
                 <div class="quest-meta">
                   <div class="quest-title-row">
@@ -302,7 +304,7 @@
                     <strong>{currentCount}</strong> / {targetCount} ({pct}%)
                   </span>
                   <span class="xp-badge">+{q.xp_reward} XP</span>
-                  {#each extras[`quest:${q.id}`] ?? [] as extra}<span class="extra-tag"><Gift size={10} /> {extra}</span>{/each}
+                  {#each extras[`quest:${q.id}`] ?? [] as extra}<span class="extra-tag"><InterfaceIcon name="Gift" fallback={Gift} size={10} /> {extra}</span>{/each}
                 </div>
                 <div class="progress-bar-bg">
                   <div class="progress-fill" style:width="{pct}%"></div>
@@ -311,7 +313,7 @@
 
               <div class="quest-action-row">
                 {#if uq.claimed}
-                  <span class="badge claimed-badge"><Check size={13} /> Reward Claimed</span>
+                  <span class="badge claimed-badge"><InterfaceIcon name="Check" fallback={Check} size={13} /> Reward Claimed</span>
                 {:else if uq.completed}
                   <button
                     class="primary claim-btn"
@@ -319,9 +321,9 @@
                     disabled={claimingQuestId === qId}
                   >
                     {#if claimingQuestId === qId}
-                      <LoaderCircle size={14} class="spin" />
+                      <InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={14} class="spin" />
                     {:else}
-                      <Gift size={14} />
+                      <InterfaceIcon name="Gift" fallback={Gift} size={14} />
                     {/if}
                     Claim +{q.xp_reward} XP
                   </button>

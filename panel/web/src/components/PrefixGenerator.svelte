@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Wand2, Sparkles } from '@lucide/svelte';
   import Modal from './Modal.svelte';
   import { ICONS, PRESETS, renderPrefix, renderToFile, unsupported, type PrefixStyle } from '../lib/prefixPng';
@@ -36,13 +37,13 @@
   }
 </script>
 
-<button type="button" class="ghost" onclick={show}><Wand2 size={15} /> Design a badge</button>
+<button type="button" class="ghost" onclick={show}><InterfaceIcon name="Wand2" fallback={Wand2} size={15} /> Design a badge</button>
 
 <Modal bind:open title="Rank badge designer" width={640}>
   <div class="stage">
     <div class="checker"><canvas bind:this={canvas} style:--w="{style.scale * 0.35}"></canvas></div>
     <div class="presets">
-      {#each Object.keys(PRESETS) as p}<button type="button" class="ghost sm" onclick={() => preset(p)}><Sparkles size={13} /> {p}</button>{/each}
+      {#each Object.keys(PRESETS) as p}<button type="button" class="ghost sm" onclick={() => preset(p)}><InterfaceIcon name="Sparkles" fallback={Sparkles} size={13} /> {p}</button>{/each}
     </div>
   </div>
 

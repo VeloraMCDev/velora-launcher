@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Search, Check, X, Sparkles, Minus, Plus } from '@lucide/svelte';
   import { ENCHANTS, ENCHANT_CATEGORIES, enchantColor, enchantName, roman, type EnchantInfo } from '../lib/mcData';
 
@@ -38,17 +39,17 @@
             <span class="dot"></span>
             <b>{enchantName(id)}</b>
             <span class="lvl">{roman(level)}</span>
-            {#if level > max}<span class="beyond" title="Vanilla maximum is {roman(max)}"><Sparkles size={11} /> beyond vanilla</span>{/if}
-            <button class="x" aria-label="Remove {enchantName(id)}" onclick={() => remove(id)}><X size={14} /></button>
+            {#if level > max}<span class="beyond" title="Vanilla maximum is {roman(max)}"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={11} /> beyond vanilla</span>{/if}
+            <button class="x" aria-label="Remove {enchantName(id)}" onclick={() => remove(id)}><InterfaceIcon name="X" fallback={X} size={14} /></button>
           </div>
           <div class="slide">
-            <button class="step" aria-label="Lower" onclick={() => setLevel(id, level - 1)}><Minus size={13} /></button>
+            <button class="step" aria-label="Lower" onclick={() => setLevel(id, level - 1)}><InterfaceIcon name="Minus" fallback={Minus} size={13} /></button>
             <div class="track">
               <input class="fancy" type="range" min="0" max="1000" step="1" value={toPos(level)} style:--p="{toPos(level) / 10}%" aria-label="{enchantName(id)} level"
                 oninput={(ev) => setLevel(id, fromPos(+ev.currentTarget.value))} />
               <span class="vmark" style:left="{toPos(max) / 10}%" title="Vanilla maximum"></span>
             </div>
-            <button class="step" aria-label="Raise" onclick={() => setLevel(id, level + 1)}><Plus size={13} /></button>
+            <button class="step" aria-label="Raise" onclick={() => setLevel(id, level + 1)}><InterfaceIcon name="Plus" fallback={Plus} size={13} /></button>
             <input class="num" type="number" min="1" max="255" value={level} aria-label="Level number" onchange={(ev) => setLevel(id, +ev.currentTarget.value)} />
           </div>
           <div class="quick">
@@ -63,7 +64,7 @@
   {/if}
 
   <div class="find">
-    <label class="search"><Search size={14} /><input bind:value={q} placeholder="Search {ENCHANTS.length} enchantments…" /></label>
+    <label class="search"><InterfaceIcon name="Search" fallback={Search} size={14} /><input bind:value={q} placeholder="Search {ENCHANTS.length} enchantments…" /></label>
     <div class="cats">
       {#each ENCHANT_CATEGORIES as c}
         <button class="cat" class:on={cat === c.id} style:--c={c.color} onclick={() => (cat = c.id)}>{c.label}</button>
@@ -77,7 +78,7 @@
         <span class="bar"></span>
         <span class="txt"><b>{e.name}</b><small>{e.blurb}</small></span>
         <span class="max">{roman(e.max)}</span>
-        <span class="tick">{#if on}<Check size={13} />{/if}</span>
+        <span class="tick">{#if on}<InterfaceIcon name="Check" fallback={Check} size={13} />{/if}</span>
       </button>
     {/each}
     {#if !shown.length}<p class="empty">No enchantment matches “{q}”.</p>{/if}

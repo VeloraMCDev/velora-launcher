@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { untrack } from 'svelte';
   import { onMount } from 'svelte';
   import { Triangle, Info } from '@lucide/svelte';
@@ -94,7 +95,7 @@
 
 <div class="game">
   <section class="panel controls">
-    <h2><Triangle size={18} /> Plinko</h2>
+    <h2><InterfaceIcon name="Triangle" fallback={Triangle} size={18} /> Plinko</h2>
     <BetInput bind:value={bet} min={cfg.min_bet} max={cfg.max_bet} {balance} />
     <div class="opt">
       <span class="lbl">Risk</span>
@@ -106,7 +107,7 @@
     </label>
     <button class="drop primary" onclick={drop} disabled={busy || !cfg.enabled || (balance != null && balance < bet)}>Drop ball · {money(bet)}<kbd class="k">Space</kbd></button>
     {#if !cfg.enabled}<p class="note">Plinko is closed right now.</p>{/if}
-    <p class="note"><Info size={13} /> Pays back {(cfg.rtp * 100).toFixed(1)}% over time. Higher risk means bigger edges and smaller middles.</p>
+    <p class="note"><InterfaceIcon name="Info" fallback={Info} size={13} /> Pays back {(cfg.rtp * 100).toFixed(1)}% over time. Higher risk means bigger edges and smaller middles.</p>
     {#if recent.length}
       <div class="recent">{#each recent as r}<span style="--c:{multColor(r.m)}">{mult(r.m)}</span>{/each}</div>
     {/if}

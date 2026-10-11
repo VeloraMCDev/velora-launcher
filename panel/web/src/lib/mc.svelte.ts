@@ -1,5 +1,5 @@
-// Minecraft's own textures, served by the panel from a client jar (see crates/platform-utils/src/mc_textures.rs).
-// Nothing is bundled: until the panel has them every helper returns null and callers keep their own fallback icon.
+import { iconUrl, spriteUrl, VAULT_ITEMS } from '@velora/experience/icons.svelte';
+// UI icons load from ccVaults. Legacy local-texture status is retained for existing operator controls.
 
 export const mc = $state({ loaded: false, ready: false, v: '', version: null as string | null, source: null as string | null });
 
@@ -21,40 +21,31 @@ export function loadMc(force = false): Promise<void> {
   return started;
 }
 
-const ID = /^[a-z0-9_]+$/;
-const url = (kind: string, file: string) => `/api/v1/mc/${kind}/${file}?v=${encodeURIComponent(mc.v)}`;
 
 /** `minecraft:diamond_sword`, `DIAMOND_SWORD` or `diamond_sword` → texture URL, or null when it can't be one. */
 export function itemUrl(id: string | null | undefined): string | null {
-  const name = (id ?? '').trim().replace(/^minecraft:/i, '').toLowerCase();
-  return mc.ready && ID.test(name) ? url('item', `${name}.png`) : null;
+  return iconUrl(id);
 }
 
 /** A GUI sprite such as `hud/heart/full`, `container/slot` (null when textures aren't installed). */
 export function guiUrl(path: string): string | null {
-  return mc.ready && /^[a-z0-9_/]+$/.test(path) ? url('gui', `${path}.png`) : null;
+  return spriteUrl(path);
 }
 
 /** A status-effect icon such as `speed`. */
 export function effectUrl(name: string): string | null {
-  return mc.ready && ID.test(name) ? url('effect', `${name}.png`) : null;
+  return spriteUrl('effect/' + name);
 }
 
 /** A block texture such as `deepslate_bricks` (tiled backdrops). */
 export function blockUrl(name: string): string | null {
-  return mc.ready && ID.test(name) ? url('block', `${name}.png`) : null;
+  return mc.ready && /^[a-z0-9_]+$/.test(name) ? `/api/v1/mc/block/${name}.png?v=${encodeURIComponent(mc.v)}` : null;
 }
 
 /** Every item id that has a texture (admin only — the item pickers search this). */
 export const mcItems = $state({ list: [] as string[], loaded: false });
 
 export async function loadMcItems(): Promise<void> {
-  if (mcItems.loaded) return;
+  mcItems.list = Object.keys(VAULT_ITEMS).sort();
   mcItems.loaded = true;
-  try {
-    const { get } = await import('./api');
-    mcItems.list = (await get<{ items?: string[] }>('/api/admin/mc-textures')).items ?? [];
-  } catch {
-    mcItems.loaded = false;
-  }
 }

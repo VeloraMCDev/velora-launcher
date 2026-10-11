@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   // A scaled-down replica of the launcher's home screen, driven by the
   // branding being edited, so admins see changes instantly.
   import { Play, Settings } from '@lucide/svelte';
@@ -46,7 +47,7 @@
       <span class="inst">CB</span>
       <span class="inst">CA</span>
       <span class="spacer"></span>
-      <Settings size={10} />
+      <InterfaceIcon name="Settings" fallback={Settings} size={10} />
       <span class="avatar"></span>
     </div>
 
@@ -60,7 +61,7 @@
         {/if}
         <p>{b.tagline}</p>
         <div class="row">
-          <span class="pv-play"><Play size={9} fill="currentColor" /> Play</span>
+          <span class="pv-play"><InterfaceIcon name="Play" fallback={Play} size={9} fill="currentColor" /> Play</span>
           {#if b.features.server_status}<span class="status"><i></i> 42/100 online</span>{/if}
         </div>
       </div>

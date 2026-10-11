@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import RankTitle from './RankTitle.svelte';
   import AchievementIcon from './AchievementIcon.svelte';
   import { onMount } from 'svelte';
@@ -165,11 +167,11 @@
 <div class="profile-backdrop" role="presentation" onclick={(e) => e.target === e.currentTarget && onclose()}>
   <div class="profile-modal glass" role="dialog" aria-modal="true" aria-label="Player Profile" style:--pa={profile?.accent_color || 'var(--accent)'}>
     <button class="ghost icon close-btn" onclick={onclose} aria-label="Close Profile">
-      <X size={18} />
+      <InterfaceIcon name="X" fallback={X} size={18} />
     </button>
 
     {#if loading || !profile}
-      <div class="center-state"><LoaderCircle class="spin" size={32} /></div>
+      <div class="center-state"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={32} /></div>
     {:else}
       <!-- Banner & Profile Header -->
       <div
@@ -198,8 +200,8 @@
               </div>
               {#if profile.guild || profile.rank}
                 <div class="chips-row">
-                  {#if profile.guild}<button class="chip guild" onclick={() => { app.view = 'guilds'; onclose(); }} title="{profile.guild.role} of {profile.guild.name}"><Shield size={11} /> [{profile.guild.tag}] {profile.guild.name}</button>{/if}
-                  {#if profile.rank}<span class="chip rank" title="Reported by {profile.rank.server_name}"><Sparkles size={11} /> {profile.rank.display}</span>{/if}
+                  {#if profile.guild}<button class="chip guild" onclick={() => { app.view = 'guilds'; onclose(); }} title="{profile.guild.role} of {profile.guild.name}"><InterfaceIcon name="Shield" fallback={Shield} size={11} /> [{profile.guild.tag}] {profile.guild.name}</button>{/if}
+                  {#if profile.rank}<span class="chip rank" title="Reported by {profile.rank.server_name}"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={11} /> {profile.rank.display}</span>{/if}
                 </div>
               {/if}
             </div>
@@ -207,7 +209,7 @@
 
           {#if isMe}
             <button class="ghost sm edit-btn" onclick={() => (editing = !editing)}>
-              <Edit3 size={14} /> {editing ? 'Cancel' : 'Edit Profile'}
+              <InterfaceIcon name="Edit3" fallback={Edit3} size={14} /> {editing ? 'Cancel' : 'Edit Profile'}
             </button>
           {/if}
         </div>
@@ -216,23 +218,23 @@
       {#if !isMe && profile.relationship}
         <div class="relation-bar">
           {#if profile.relationship === 'accepted'}
-            <button class="sm primary" onclick={message}><MessageSquare size={14} /> Message</button>
+            <button class="sm primary" onclick={message}><InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={14} /> Message</button>
             {#if confirmRemove}
               <span class="tiny muted">Remove {profile.username} from your friends?</span>
               <button class="sm danger" disabled={relationBusy} onclick={() => { confirmRemove = false; relate('remove'); }}>Yes, remove</button>
               <button class="sm ghost" onclick={() => (confirmRemove = false)}>Keep</button>
             {:else}
-              <button class="sm ghost" disabled={relationBusy} onclick={() => (confirmRemove = true)}><UserMinus size={14} /> Remove friend</button>
+              <button class="sm ghost" disabled={relationBusy} onclick={() => (confirmRemove = true)}><InterfaceIcon name="UserMinus" fallback={UserMinus} size={14} /> Remove friend</button>
             {/if}
           {:else if profile.relationship === 'pending_incoming'}
             <span class="tiny muted">{profile.username} wants to be friends</span>
-            <button class="sm primary" disabled={relationBusy} onclick={() => relate('accept')}><UserCheck size={14} /> Accept</button>
+            <button class="sm primary" disabled={relationBusy} onclick={() => relate('accept')}><InterfaceIcon name="UserCheck" fallback={UserCheck} size={14} /> Accept</button>
             <button class="sm ghost" disabled={relationBusy} onclick={() => relate('decline')}>Decline</button>
           {:else if profile.relationship === 'pending_outgoing'}
             <span class="tiny muted">Friend request sent</span>
             <button class="sm ghost" disabled={relationBusy} onclick={() => relate('remove')}>Cancel request</button>
           {:else}
-            <button class="sm primary" disabled={relationBusy} onclick={() => relate('add')}><UserPlus size={14} /> Add friend</button>
+            <button class="sm primary" disabled={relationBusy} onclick={() => relate('add')}><InterfaceIcon name="UserPlus" fallback={UserPlus} size={14} /> Add friend</button>
           {/if}
         </div>
       {/if}
@@ -250,7 +252,7 @@
               <input type="url" bind:value={editBanner} placeholder="https://example.com/banner.jpg" />
             </label>
             <div class="accent-edit">
-              <span class="tiny bold"><Palette size={12} /> Accent colour</span>
+              <span class="tiny bold"><InterfaceIcon name="Palette" fallback={Palette} size={12} /> Accent colour</span>
               <div class="swatches">
                 {#each swatches as c}
                   <button type="button" class="swatch" class:on={editAccent === c} style:background={c} aria-label="Use {c}" onclick={() => (editAccent = c)}></button>
@@ -262,7 +264,7 @@
             <div class="edit-actions">
               <button class="ghost sm" onclick={() => (editing = false)}>Cancel</button>
               <button class="primary sm" onclick={handleSaveProfile} disabled={savingProfile}>
-                {#if savingProfile}<LoaderCircle size={13} class="spin" />{:else}<Check size={13} />{/if}
+                {#if savingProfile}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={13} class="spin" />{:else}<InterfaceIcon name="Check" fallback={Check} size={13} />{/if}
                 Save
               </button>
             </div>
@@ -274,7 +276,7 @@
         {#if profile.badges && profile.badges.length > 0}
           <div class="badges-list">
             {#each profile.badges as badge}
-              <span class="badge custom-badge"><Star size={11} /> {badge}</span>
+              <span class="badge custom-badge"><InterfaceIcon name="Star" fallback={Star} size={11} /> {badge}</span>
             {/each}
           </div>
         {/if}
@@ -283,19 +285,19 @@
       <!-- Segmented Profile Tabs -->
       <div class="profile-tabs">
         <button class:active={activeTab === 'overview'} onclick={() => (activeTab = 'overview')}>
-          <LayoutGrid size={14} /> <span>Overview</span>
+          <InterfaceIcon name="LayoutGrid" fallback={LayoutGrid} size={14} /> <span>Overview</span>
         </button>
         <button class:active={activeTab === 'feed'} onclick={() => (activeTab = 'feed')}>
-          <MessageSquare size={14} /> <span>Posts</span>
+          <InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={14} /> <span>Posts</span>
         </button>
         <button class:active={activeTab === 'progression'} onclick={() => (activeTab = 'progression')}>
-          <Award size={14} /> <span>Levels</span>
+          <InterfaceIcon name="Award" fallback={Award} size={14} /> <span>Levels</span>
         </button>
         <button class:active={activeTab === 'achievements'} onclick={() => (activeTab = 'achievements')}>
-          <Trophy size={14} /> <span>Awards {profile.achievements_count ?? profile.achievements?.length ?? 0}</span>
+          <InterfaceIcon name="Trophy" fallback={Trophy} size={14} /> <span>Awards {profile.achievements_count ?? profile.achievements?.length ?? 0}</span>
         </button>
         <button class:active={activeTab === 'stats'} onclick={() => (activeTab = 'stats')}>
-          <Swords size={14} /> <span>Stats</span>
+          <InterfaceIcon name="Swords" fallback={Swords} size={14} /> <span>Stats</span>
         </button>
       </div>
 
@@ -304,21 +306,21 @@
         {#if activeTab === 'overview'}
           <div class="overview">
             <div class="facts">
-              <div class="fact glass"><Star size={15} class="accent" /><span class="tiny muted">Level</span><strong>{profile.level_info?.level ?? 1}</strong></div>
-              <div class="fact glass"><Clock size={15} class="muted" /><span class="tiny muted">Playtime</span><strong>{formatPlaytime(profile.stats?.playtime_secs ?? 0)}</strong></div>
-              <div class="fact glass"><Swords size={15} class="accent" /><span class="tiny muted">K/D</span><strong>{kd}</strong></div>
-              <div class="fact glass"><Wallet size={15} class="success" /><span class="tiny muted">Wealth</span><strong>{money(profile.wealth ?? 0)}</strong></div>
-              <div class="fact glass"><MapPin size={15} class="warn" /><span class="tiny muted">Favourite server</span><strong class="small-val">{profile.favorite_server ?? '–'}</strong></div>
-              <div class="fact glass"><Calendar size={15} class="muted" /><span class="tiny muted">Joined</span><strong class="small-val">{new Date(profile.created_at).toLocaleDateString()}</strong></div>
+              <div class="fact glass"><InterfaceIcon name="Star" fallback={Star} size={15} class="accent" /><span class="tiny muted">Level</span><strong>{profile.level_info?.level ?? 1}</strong></div>
+              <div class="fact glass"><InterfaceIcon name="Clock" fallback={Clock} size={15} class="muted" /><span class="tiny muted">Playtime</span><strong>{formatPlaytime(profile.stats?.playtime_secs ?? 0)}</strong></div>
+              <div class="fact glass"><InterfaceIcon name="Swords" fallback={Swords} size={15} class="accent" /><span class="tiny muted">K/D</span><strong>{kd}</strong></div>
+              <div class="fact glass"><InterfaceIcon name="Wallet" fallback={Wallet} size={15} class="success" /><span class="tiny muted">Wealth</span><strong>{money(profile.wealth ?? 0)}</strong></div>
+              <div class="fact glass"><InterfaceIcon name="MapPin" fallback={MapPin} size={15} class="warn" /><span class="tiny muted">Favourite server</span><strong class="small-val">{profile.favorite_server ?? '–'}</strong></div>
+              <div class="fact glass"><InterfaceIcon name="Calendar" fallback={Calendar} size={15} class="muted" /><span class="tiny muted">Joined</span><strong class="small-val">{new Date(profile.created_at).toLocaleDateString()}</strong></div>
             </div>
 
             {#if profile.featured_achievement}
-              <div class="featured glass"><Trophy size={15} class="warn" /><span class="tiny muted">Featured</span><strong>{profile.featured_achievement.title}</strong></div>
+              <div class="featured glass"><InterfaceIcon name="Trophy" fallback={Trophy} size={15} class="warn" /><span class="tiny muted">Featured</span><strong>{profile.featured_achievement.title}</strong></div>
             {/if}
 
             {#if profile.mutual_friends && profile.mutual_friends.length}
               <div>
-                <h4 class="subhead"><Users size={14} /> {profile.mutual_friends.length} mutual friend{profile.mutual_friends.length === 1 ? '' : 's'}</h4>
+                <h4 class="subhead"><InterfaceIcon name="Users" fallback={Users} size={14} /> {profile.mutual_friends.length} mutual friend{profile.mutual_friends.length === 1 ? '' : 's'}</h4>
                 <div class="mutuals">
                   {#each profile.mutual_friends as m (m.uuid)}
                     <button class="mutual" onclick={() => (app.viewProfileUuid = m.uuid)}><Avatar uuid={m.uuid} name={m.username} size={1.6} /> {m.username}</button>
@@ -333,7 +335,7 @@
                 <div class="activity">
                   {#each profile.recent_activity as a}
                     {@const Icon = activityIcon[a.kind] ?? Sparkles}
-                    <div class="act"><span class="act-ic {a.kind}"><Icon size={12} /></span><span>{a.text}</span><span class="tiny muted">{ago(a.at)}</span></div>
+                    <div class="act"><span class="act-ic {a.kind}"><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={12} /></span><span>{a.text}</span><span class="tiny muted">{ago(a.at)}</span></div>
                   {/each}
                 </div>
               {:else}
@@ -354,7 +356,7 @@
                 ></textarea>
                 <div class="post-controls">
                   <div class="image-input-wrap">
-                    <ImageIcon size={14} class="muted" />
+                    <InterfaceIcon name="Image" fallback={ImageIcon} size={14} class="muted" />
                     <input
                       type="url"
                       placeholder="Photo URL (optional)"
@@ -367,7 +369,7 @@
                     onclick={handleCreatePost}
                     disabled={posting || !newPostContent.trim()}
                   >
-                    {#if posting}<LoaderCircle size={13} class="spin" />{:else}<Send size={13} />{/if}
+                    {#if posting}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={13} class="spin" />{:else}<InterfaceIcon name="Send" fallback={Send} size={13} />{/if}
                     Post
                   </button>
                 </div>
@@ -402,7 +404,7 @@
                         class:liked={post.liked_by_me}
                         onclick={() => handleLikePost(post)}
                       >
-                        <Heart size={14} fill={post.liked_by_me ? 'currentColor' : 'none'} />
+                        <InterfaceIcon name="Heart" fallback={Heart} size={14} fill={post.liked_by_me ? 'currentColor' : 'none'} />
                         <span>{post.likes_count}</span>
                       </button>
                     </div>
@@ -467,7 +469,7 @@
           <div class="achievements-view">
             {#if profile.achievements.length === 0}
               <div class="empty-state">
-                <Trophy size={32} class="muted" />
+                <InterfaceIcon name="Trophy" fallback={Trophy} size={32} class="muted" />
                 <p class="muted">No achievements unlocked yet.</p>
               </div>
             {:else}
@@ -491,32 +493,32 @@
             {#if profile.stats}
               <div class="stats-cards-grid">
                 <div class="stat-mini-card glass">
-                  <Clock size={16} class="muted" />
+                  <InterfaceIcon name="Clock" fallback={Clock} size={16} class="muted" />
                   <span class="tiny muted">Playtime</span>
                   <strong>{formatPlaytime(profile.stats.playtime_secs)}</strong>
                 </div>
                 <div class="stat-mini-card glass">
-                  <Swords size={16} class="accent" />
+                  <InterfaceIcon name="Swords" fallback={Swords} size={16} class="accent" />
                   <span class="tiny muted">Player Kills</span>
                   <strong>{profile.stats.player_kills.toLocaleString()}</strong>
                 </div>
                 <div class="stat-mini-card glass">
-                  <Flame size={16} class="warn" />
+                  <InterfaceIcon name="Flame" fallback={Flame} size={16} class="warn" />
                   <span class="tiny muted">Mob Kills</span>
                   <strong>{profile.stats.mob_kills.toLocaleString()}</strong>
                 </div>
                 <div class="stat-mini-card glass">
-                  <Pickaxe size={16} class="success" />
+                  <InterfaceIcon name="Pickaxe" fallback={Pickaxe} size={16} class="success" />
                   <span class="tiny muted">Blocks Mined</span>
                   <strong>{profile.stats.blocks_broken.toLocaleString()}</strong>
                 </div>
                 <div class="stat-mini-card glass">
-                  <Box size={16} class="muted" />
+                  <InterfaceIcon name="Box" fallback={Box} size={16} class="muted" />
                   <span class="tiny muted">Blocks Placed</span>
                   <strong>{profile.stats.blocks_placed.toLocaleString()}</strong>
                 </div>
                 <div class="stat-mini-card glass">
-                  <Award size={16} class="accent" />
+                  <InterfaceIcon name="Award" fallback={Award} size={16} class="accent" />
                   <span class="tiny muted">Server Joins</span>
                   <strong>{profile.stats.joins.toLocaleString()}</strong>
                 </div>

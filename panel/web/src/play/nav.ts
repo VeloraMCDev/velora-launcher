@@ -17,6 +17,6 @@ export const PAGES: PlayPage[] = [
   { id: 'stats', label: 'Leaderboards', icon: Trophy, blurb: 'Rankings and your stats', load: () => import('./pages/Stats.svelte') },
   { id: 'map', label: 'Live map', icon: MapIcon, blurb: 'See the world and who is on', load: () => import('./pages/LiveMap.svelte') },
   { id: 'launcher', label: 'Launcher', icon: Download, blurb: 'Download and instances', load: () => import('./pages/Launcher.svelte') },
-  { id: 'commands', label: 'Commands', icon: Terminal, blurb: 'Every in-game command', load: () => import('./pages/Commands.svelte') },
+  { id: 'commands', label: 'Player Guide', icon: Terminal, blurb: 'Modpack, server and integration help', load: () => import('./pages/Commands.svelte') },
   { id: 'profile', label: 'Account', icon: UserRound, blurb: 'Skin, cape and sign-in', load: () => import('./pages/Profile.svelte') },
 ];

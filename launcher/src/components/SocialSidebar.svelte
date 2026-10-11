@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Users, X, MessageSquare, RefreshCw, Gamepad2, Search, ChevronRight, UserPlus } from '@lucide/svelte';
   import Avatar from './Avatar.svelte';
   import { activeAccount, app, instances, saveSettings } from '../lib/store.svelte';
@@ -74,7 +75,7 @@
         <strong>{friend.username}</strong>
         <small class:on={friend.online}>{friend.playing_on ? `Playing ${friend.playing_on}` : friend.online ? 'Online' : 'Offline'}</small>
       </span>
-      {#if friend.unread}<b class="unread" aria-label="{friend.unread} unread">{friend.unread > 9 ? '9+' : friend.unread}</b>{:else}<ChevronRight size={14} class="chev {selected?.uuid === friend.uuid ? 'open' : ''}" />{/if}
+      {#if friend.unread}<b class="unread" aria-label="{friend.unread} unread">{friend.unread > 9 ? '9+' : friend.unread}</b>{:else}<InterfaceIcon name="ChevronRight" fallback={ChevronRight} size={14} class="chev {selected?.uuid === friend.uuid ? 'open' : ''}" />{/if}
     </button>
     {#if selected?.uuid === friend.uuid}
       <div class="preview" aria-label="Message preview">
@@ -86,7 +87,7 @@
             <div class="bubble" class:mine><p>{message.content}</p></div>
           {:else}<p class="muted">No messages yet — say hi!</p>{/each}
         {/if}
-        <button class="primary sm" onclick={openChat}><MessageSquare size={13} /> Open conversation</button>
+        <button class="primary sm" onclick={openChat}><InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={13} /> Open conversation</button>
       </div>
     {/if}
   </li>
@@ -94,23 +95,23 @@
 
 <aside class="social-sidebar" aria-label="Friends and activity">
   <header>
-    <strong><Users size={16} /> Friends</strong>
+    <strong><InterfaceIcon name="Users" fallback={Users} size={16} /> Friends</strong>
     <div class="actions">
-      <button class="ghost icon sm" aria-label="Refresh friends" disabled={loading} onclick={refresh}><RefreshCw size={14} class={loading ? 'spin' : ''} /></button>
-      <button class="ghost icon sm" aria-label="Hide social sidebar" onclick={hide}><X size={16} /></button>
+      <button class="ghost icon sm" aria-label="Refresh friends" disabled={loading} onclick={refresh}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={14} class={loading ? 'spin' : ''} /></button>
+      <button class="ghost icon sm" aria-label="Hide social sidebar" onclick={hide}><InterfaceIcon name="X" fallback={X} size={16} /></button>
     </div>
   </header>
 
   <div class="activity glass" class:live={!!playingNow}>
-    <Gamepad2 size={16} />
+    <InterfaceIcon name="Gamepad2" fallback={Gamepad2} size={16} />
     <span><small>Your activity</small><strong>{playingNow || 'Browsing the launcher'}</strong></span>
   </div>
 
   {#if pending}
-    <button class="requests" onclick={() => (app.view = 'social')}><UserPlus size={14} /> {pending} friend request{pending === 1 ? '' : 's'} waiting</button>
+    <button class="requests" onclick={() => (app.view = 'social')}><InterfaceIcon name="UserPlus" fallback={UserPlus} size={14} /> {pending} friend request{pending === 1 ? '' : 's'} waiting</button>
   {/if}
 
-  <label class="search"><Search size={14} /><input aria-label="Search friends" placeholder="Find a friend…" bind:value={search} /></label>
+  <label class="search"><InterfaceIcon name="Search" fallback={Search} size={14} /><input aria-label="Search friends" placeholder="Find a friend…" bind:value={search} /></label>
   {#if error}<p class="error" role="alert">{error}</p>{/if}
 
   <div class="lists">
@@ -124,14 +125,14 @@
     {/if}
     {#if !online.length && !offline.length}
       <div class="empty">
-        <Users size={22} />
+        <InterfaceIcon name="Users" fallback={Users} size={22} />
         <p>{loading ? 'Loading friends…' : search ? 'No matching friends.' : 'No friends yet.'}</p>
         {#if !loading && !search}<button class="primary sm" onclick={() => (app.view = 'social')}>Find friends</button>{/if}
       </div>
     {/if}
   </div>
 
-  <button class="ghost sm open" onclick={() => (app.view = 'social')}>Open Friends &amp; Social <ChevronRight size={13} /></button>
+  <button class="ghost sm open" onclick={() => (app.view = 'social')}>Open Friends &amp; Social <InterfaceIcon name="ChevronRight" fallback={ChevronRight} size={13} /></button>
 </aside>
 
 <style>

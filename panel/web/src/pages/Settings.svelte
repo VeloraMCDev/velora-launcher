@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Save, LoaderCircle, KeyRound, UserRound, WifiOff, Download, CircleCheck, Copy, Plug } from '@lucide/svelte';
   import Toggle from '../components/Toggle.svelte';
   import DownloadsManager from '../components/DownloadsManager.svelte';
@@ -122,22 +123,22 @@
       <p>How players sign in, and connections to other services.</p>
     </div>
     <button class="primary" disabled={!s || saving} onclick={save}>
-      {#if saving}<LoaderCircle class="spin" size={16} />{:else}<Save size={16} />{/if} Save
+      {#if saving}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={16} />{:else}<InterfaceIcon name="Save" fallback={Save} size={16} />{/if} Save
     </button>
   </div>
 
   {#if s}
     <div class="tabs" role="tablist">
-      <button role="tab" aria-selected={tab === 'signin'} class:active={tab === 'signin'} onclick={() => (tab = 'signin')}><UserRound size={15} /> Sign-in &amp; accounts</button>
-      <button role="tab" aria-selected={tab === 'integrations'} class:active={tab === 'integrations'} onclick={() => (tab = 'integrations')}><Plug size={15} /> Integrations</button>
-      <button role="tab" aria-selected={tab === 'launcher'} class:active={tab === 'launcher'} onclick={() => (tab = 'launcher')}><Download size={15} /> Launcher &amp; apps</button>
+      <button role="tab" aria-selected={tab === 'signin'} class:active={tab === 'signin'} onclick={() => (tab = 'signin')}><InterfaceIcon name="UserRound" fallback={UserRound} size={15} /> Sign-in &amp; accounts</button>
+      <button role="tab" aria-selected={tab === 'integrations'} class:active={tab === 'integrations'} onclick={() => (tab = 'integrations')}><InterfaceIcon name="Plug" fallback={Plug} size={15} /> Integrations</button>
+      <button role="tab" aria-selected={tab === 'launcher'} class:active={tab === 'launcher'} onclick={() => (tab = 'launcher')}><InterfaceIcon name="Download" fallback={Download} size={15} /> Launcher &amp; apps</button>
     </div>
 
     {#if tab === 'launcher'}<DownloadsManager /><McTextures />{/if}
 
     {#if tab === 'signin'}
     <section class="card col">
-      <div class="section-title"><UserRound size={18} /><h2>Panel accounts</h2></div>
+      <div class="section-title"><InterfaceIcon name="UserRound" fallback={UserRound} size={18} /><h2>Panel accounts</h2></div>
       <Toggle bind:checked={s.auth.panel_accounts} label="Allow panel accounts" help="Players sign in with a username and password you manage here. Their UUID, skin and cape come from the panel's auth server." />
       {#if s.auth.panel_accounts}
         <div class="field">
@@ -155,19 +156,19 @@
     </section>
 
     <section class="card col">
-      <div class="section-title"><WifiOff size={18} /><h2>Offline play</h2></div>
+      <div class="section-title"><InterfaceIcon name="WifiOff" fallback={WifiOff} size={18} /><h2>Offline play</h2></div>
       <Toggle bind:checked={s.auth.offline_local} label="Allow local offline accounts" help="Players can type any username and play without an account. They only see public instances." />
     </section>
 
     <section class="card col">
-      <div class="section-title"><UserRound size={18} /><h2>Username blacklist</h2></div>
+      <div class="section-title"><InterfaceIcon name="UserRound" fallback={UserRound} size={18} /><h2>Username blacklist</h2></div>
       <p class="help">Blocked for account sign-ups, admin-created accounts, Discord-created accounts and username changes. One name or word per line. An exact entry blocks that name; <code>*word*</code> also blocks it inside longer names. Keep this list short to avoid blocking innocent names.</p>
       <textarea rows="9" bind:value={usernameRules} spellcheck="false" aria-label="Blocked usernames and words"></textarea>
       <span class="help">Changes apply when you save Settings above. Existing accounts keep their names.</span>
     </section>
 
     <section class="card col">
-      <div class="section-title"><KeyRound size={18} /><h2>Auth server</h2><span class="badge good">Yggdrasil</span></div>
+      <div class="section-title"><InterfaceIcon name="KeyRound" fallback={KeyRound} size={18} /><h2>Auth server</h2><span class="badge good">Yggdrasil</span></div>
       <p class="help">
         The panel is a complete authlib-injector auth server: accounts, UUIDs, skins and capes all live here.
         Point your game servers at it and they verify players against the panel, just like official servers do with Mojang.
@@ -179,11 +180,11 @@
       {#if info}
         <div class="field">
           <span class="lbl">Auth server URL</span>
-          <div class="copyline"><code>{info.yggdrasil_url}</code><button class="ghost icon sm" aria-label="Copy auth server URL" onclick={() => copyText(info!.yggdrasil_url)}><Copy size={14} /></button></div>
+          <div class="copyline"><code>{info.yggdrasil_url}</code><button class="ghost icon sm" aria-label="Copy auth server URL" onclick={() => copyText(info!.yggdrasil_url)}><InterfaceIcon name="Copy" fallback={Copy} size={14} /></button></div>
         </div>
         <div class="field">
           <span class="lbl">Game server start flag</span>
-          <div class="copyline"><code>-javaagent:authlib-injector.jar={info.yggdrasil_url}</code><button class="ghost icon sm" aria-label="Copy start flag" onclick={() => copyText(`-javaagent:authlib-injector.jar=${info!.yggdrasil_url}`)}><Copy size={14} /></button></div>
+          <div class="copyline"><code>-javaagent:authlib-injector.jar={info.yggdrasil_url}</code><button class="ghost icon sm" aria-label="Copy start flag" onclick={() => copyText(`-javaagent:authlib-injector.jar=${info!.yggdrasil_url}`)}><InterfaceIcon name="Copy" fallback={Copy} size={14} /></button></div>
           <span class="help">
             Add this before <code>-jar</code> on each server, keep <code>online-mode=true</code>, and download
             <a href="/api/v1/launcher/authlib-injector.jar">authlib-injector.jar</a> next to the server jar.
@@ -201,10 +202,10 @@
 
     {#if tab === 'integrations'}
     <section class="card col">
-      <div class="section-title"><Download size={18} /><h2>Integrations</h2></div>
+      <div class="section-title"><InterfaceIcon name="Download" fallback={Download} size={18} /><h2>Integrations</h2></div>
       <label class="field">CurseForge API key
         {#if s.curseforge_key_from_env}
-          <span class="set"><CircleCheck size={15} /> Set via the <code>CURSEFORGE_API_KEY</code> environment variable</span>
+          <span class="set"><InterfaceIcon name="CircleCheck" fallback={CircleCheck} size={15} /> Set via the <code>CURSEFORGE_API_KEY</code> environment variable</span>
         {:else}
           <input type="password" bind:value={cfKey} placeholder={s.curseforge_key_set ? '•••••••• (saved — type to replace, "-" to remove)' : 'Paste your key'} autocomplete="off" />
           <span class="help">Needed to search and import CurseForge modpacks. Get a free key at <a href="https://console.curseforge.com" target="_blank" rel="noreferrer">console.curseforge.com</a>.</span>
@@ -217,7 +218,7 @@
     </section>
     {#if connections}
       <section class="card col">
-        <div class="section-title"><KeyRound size={18} /><h2>Discord</h2></div>
+        <div class="section-title"><InterfaceIcon name="KeyRound" fallback={KeyRound} size={18} /><h2>Discord</h2></div>
         <p class="help">Create an OAuth2 application in the Discord Developer Portal. Add <code>{s.public_url || info?.public_url || 'https://panel.example.com'}/api/v1/auth/discord/callback</code> as its redirect URL. A bot token and server ID are optional for role sync.</p>
         <label class="field">Application client ID<input bind:value={connections.discord_client_id} autocomplete="off" /></label>
         <label class="field">Client secret<input type="password" bind:value={discordSecret} placeholder={connections.discord_client_secret_set ? 'Saved — type to replace' : 'Client secret'} autocomplete="off" /></label>
@@ -227,7 +228,7 @@
       </section>
       {#if disc}
         <section class="card col">
-          <div class="section-title"><KeyRound size={18} /><h2>Discord community</h2></div>
+          <div class="section-title"><InterfaceIcon name="KeyRound" fallback={KeyRound} size={18} /><h2>Discord community</h2></div>
           <p class="help">{disc.linked_accounts} linked account{disc.linked_accounts === 1 ? '' : 's'}. Role sync needs the bot token and server ID above{disc.bot_ready ? '' : ' (not saved yet)'}. Map group roles under Players → Groups and title roles under Leveling. The highest earned title role takes priority; obsolete title roles are removed.</p>
           <label class="field">Role sync
             <select bind:value={disc.role_sync}>
@@ -259,7 +260,7 @@
           <span class="help">Roles also sync automatically every 15 minutes.</span>
         </section>
         <section class="card col">
-          <div class="section-title"><KeyRound size={18} /><h2>Discord slash commands</h2></div>
+          <div class="section-title"><InterfaceIcon name="KeyRound" fallback={KeyRound} size={18} /><h2>Discord slash commands</h2></div>
           <p class="help">Let members type <code>/status</code>, <code>/players</code>, <code>/quests</code>, <code>/stats</code>, <code>/leaderboard</code>, <code>/faction</code> and <code>/factions</code> in your server. Discord calls the panel when someone uses one, so nothing else needs to run.</p>
           <ol class="help steps">
             <li>In the <strong>Developer Portal → your application → General Information</strong>, copy the <strong>Public Key</strong> and paste it below.</li>
@@ -274,7 +275,7 @@
         </section>
       {/if}
       <section class="card col">
-        <div class="section-title"><Download size={18} /><h2>Resend SMTP</h2></div>
+        <div class="section-title"><InterfaceIcon name="Download" fallback={Download} size={18} /><h2>Resend SMTP</h2></div>
         <p class="help">Verify the sender domain in Resend, then enter an API key. Velora connects to <code>smtp.resend.com</code> over TLS.</p>
         <label class="field">Resend API key<input type="password" bind:value={resendKey} placeholder={connections.resend_api_key_set ? 'Saved — type to replace' : 're_...'} autocomplete="off" /></label>
         <label class="field">Sender name<input bind:value={connections.sender_name} placeholder="Velora" /></label>

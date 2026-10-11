@@ -73,7 +73,7 @@ export const experienceBranding = () => selectedInstance()?.experience?.branding
 
 function theme() {
   const branding = experienceBranding();
-  if (branding) applyTheme(branding, app.settings);
+  if (branding) applyTheme(branding, app.settings, app.panelUrl ?? '');
 }
 
 function pickSelected() {

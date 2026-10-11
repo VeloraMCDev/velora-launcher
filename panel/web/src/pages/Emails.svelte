@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Mail, Plus, Trash2, Send, Save, Users, Copy } from '@lucide/svelte';
   import Toggle from '../components/Toggle.svelte';
@@ -93,9 +94,9 @@
     <div class="layout">
       <aside class="card list">
         {#each templates as tpl, i}
-          <button class="item" class:on={i === current} onclick={() => (current = i)}><Mail size={15} /><span><strong>{tpl.name || 'Untitled'}</strong><small>{tpl.subject}</small></span></button>
+          <button class="item" class:on={i === current} onclick={() => (current = i)}><InterfaceIcon name="Mail" fallback={Mail} size={15} /><span><strong>{tpl.name || 'Untitled'}</strong><small>{tpl.subject}</small></span></button>
         {/each}
-        <button class="ghost add" onclick={add}><Plus size={15} /> New email</button>
+        <button class="ghost add" onclick={add}><InterfaceIcon name="Plus" fallback={Plus} size={15} /> New email</button>
       </aside>
 
       <section class="card form">
@@ -111,16 +112,16 @@
         </label>
         <Toggle bind:checked={important} label="Account notice" help="Also reaches players who unsubscribed, and leaves out the unsubscribe link. Use only for things about their account." />
         <div class="actions">
-          <button class="primary" onclick={save} disabled={!!busy}><Save size={15} /> Save templates</button>
-          <button class="ghost" onclick={duplicate}><Copy size={15} /> Duplicate</button>
-          <button class="ghost danger" onclick={remove} disabled={templates.length < 2}><Trash2 size={15} /> Delete</button>
+          <button class="primary" onclick={save} disabled={!!busy}><InterfaceIcon name="Save" fallback={Save} size={15} /> Save templates</button>
+          <button class="ghost" onclick={duplicate}><InterfaceIcon name="Copy" fallback={Copy} size={15} /> Duplicate</button>
+          <button class="ghost danger" onclick={remove} disabled={templates.length < 2}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /> Delete</button>
         </div>
 
         <div class="send">
           <h3>Send</h3>
           <div class="testrow">
             <input bind:value={testTo} type="email" placeholder="you@example.com" />
-            <button onclick={sendTest} disabled={!testTo || !!busy || !data.configured}><Send size={15} /> Send a test</button>
+            <button onclick={sendTest} disabled={!testTo || !!busy || !data.configured}><InterfaceIcon name="Send" fallback={Send} size={15} /> Send a test</button>
           </div>
           <div class="aud">
             <label class="field">Send to
@@ -129,8 +130,8 @@
             {#if kind === 'group'}<label class="field">Group<select bind:value={groupId}>{#each data.groups as g}<option value={g.id}>{g.name}</option>{/each}</select></label>{/if}
             {#if kind === 'players'}<label class="field wide">Player names <small>separated by commas or new lines</small><textarea rows="2" bind:value={names}></textarea></label>{/if}
           </div>
-          <p class="muted small"><Users size={13} /> {count ? `${count.count} recipient${count.count === 1 ? '' : 's'}${count.sample.length ? ` (${count.sample.join(', ')}${count.count > 5 ? '…' : ''})` : ''}` : '…'}</p>
-          <button class="primary" onclick={() => (confirmOpen = true)} disabled={!!busy || !count?.count || !data.configured}><Send size={15} /> Send to {count?.count ?? 0} players</button>
+          <p class="muted small"><InterfaceIcon name="Users" fallback={Users} size={13} /> {count ? `${count.count} recipient${count.count === 1 ? '' : 's'}${count.sample.length ? ` (${count.sample.join(', ')}${count.count > 5 ? '…' : ''})` : ''}` : '…'}</p>
+          <button class="primary" onclick={() => (confirmOpen = true)} disabled={!!busy || !count?.count || !data.configured}><InterfaceIcon name="Send" fallback={Send} size={15} /> Send to {count?.count ?? 0} players</button>
         </div>
       </section>
 
@@ -161,7 +162,7 @@
 
 <Modal bind:open={confirmOpen} title="Send this email?">
   <p>This sends <strong>{t?.subject}</strong> to <strong>{count?.count ?? 0}</strong> players. It can't be undone.</p>
-  <div class="actions end"><button class="ghost" onclick={() => (confirmOpen = false)}>Cancel</button><button class="primary" onclick={sendAll}><Send size={15} /> Send now</button></div>
+  <div class="actions end"><button class="ghost" onclick={() => (confirmOpen = false)}>Cancel</button><button class="primary" onclick={sendAll}><InterfaceIcon name="Send" fallback={Send} size={15} /> Send now</button></div>
 </Modal>
 
 <style>

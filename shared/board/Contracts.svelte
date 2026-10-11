@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Swords, Package, Flame, Clock, RefreshCw, Trophy, Info, CheckCircle2 } from '@lucide/svelte';
   import { bget, bpost, errorText, money, toast, untilText, type Contract, type ContractsBoard } from './host';
@@ -36,7 +37,7 @@
     </div>
 
     <section class="panel how">
-      <h2><Info size={16} /> How contracts work</h2>
+      <h2><InterfaceIcon name="Info" fallback={Info} size={16} /> How contracts work</h2>
       <p>Your board is yours alone: a handful of random jobs that pay real money. <b>Kill</b> contracts count on their own as you play. <b>Resource</b> contracts need the actual items: gather them, then run <code>/contracts submit</code> in game to hand them in (they're used up). Finishing contracts makes room for new ones{#if s && s.daily_limit > 0}, up to {s.daily_limit} a day{/if}.</p>
     </section>
 
@@ -45,16 +46,16 @@
     <div class="grid">
       {#each board.contracts as c (c.id)}
         <article class="card" class:hot={c.bonus} class:done={c.progress >= c.required}>
-          {#if c.bonus}<span class="hotbadge"><Flame size={12} /> Hot contract · extra pay</span>{/if}
+          {#if c.bonus}<span class="hotbadge"><InterfaceIcon name="Flame" fallback={Flame} size={12} /> Hot contract · extra pay</span>{/if}
           <div class="head">
-            <span class="ico {c.kind}">{#if c.kind === 'kill'}<Swords size={22} />{:else}<Package size={22} />{/if}</span>
+            <span class="ico {c.kind}">{#if c.kind === 'kill'}<InterfaceIcon name="Swords" fallback={Swords} size={22} />{:else}<InterfaceIcon name="Package" fallback={Package} size={22} />{/if}</span>
             <div class="t"><b>{c.title}</b><small>{c.kind === 'kill' ? 'Counts automatically as you play' : 'Hand in with /contracts submit'}</small></div>
           </div>
           <div class="prog" role="progressbar" aria-valuemin="0" aria-valuemax={c.required} aria-valuenow={c.progress}><i style="width:{pct(c)}%"></i><span>{c.progress.toLocaleString()} / {c.required.toLocaleString()}</span></div>
           <div class="foot">
-            <span class="reward"><Trophy size={14} /> {money(c.reward)}</span>
-            <span class="time"><Clock size={12} /> {untilText(c.expires_at, now)}</span>
-            <button class="ghost" onclick={() => swap(c)} disabled={busy || (s?.rerolls_left ?? 0) <= 0} title="Throw this one away for a fresh contract"><RefreshCw size={13} /> Swap</button>
+            <span class="reward"><InterfaceIcon name="Trophy" fallback={Trophy} size={14} /> {money(c.reward)}</span>
+            <span class="time"><InterfaceIcon name="Clock" fallback={Clock} size={12} /> {untilText(c.expires_at, now)}</span>
+            <button class="ghost" onclick={() => swap(c)} disabled={busy || (s?.rerolls_left ?? 0) <= 0} title="Throw this one away for a fresh contract"><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={13} /> Swap</button>
           </div>
         </article>
       {:else}
@@ -64,7 +65,7 @@
 
     {#if board.recent?.length}
       <section class="panel">
-        <h2><CheckCircle2 size={16} /> Recently finished</h2>
+        <h2><InterfaceIcon name="CheckCircle2" fallback={CheckCircle2} size={16} /> Recently finished</h2>
         <ul class="hist">{#each board.recent as c (c.id)}<li><span>{c.title}</span><b class="g">+{money(c.reward)}</b></li>{/each}</ul>
       </section>
     {/if}

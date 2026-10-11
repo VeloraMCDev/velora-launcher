@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Save, Plus, Trash2, Package, Heart, Drumstick, Plane, Archive, Box, X, ChevronDown } from '@lucide/svelte';
   import Toggle from '../components/Toggle.svelte';
@@ -65,13 +66,13 @@
       <h1>Commands &amp; kits</h1>
       <p>Configure <code>/heal</code>, <code>/feed</code>, <code>/fly</code>, <code>/vault</code>, <code>/echest</code> and <code>/kit</code>. Changes reach every game server within seconds.</p>
     </div>
-    <button onclick={save} disabled={!dirty || busy}><Save size={15} /> Save</button>
+    <button onclick={save} disabled={!dirty || busy}><InterfaceIcon name="Save" fallback={Save} size={15} /> Save</button>
   </header>
 
   {#if u}
     <div class="grid">
       <section class="card">
-        <h3><Heart size={16} /> /heal</h3>
+        <h3><InterfaceIcon name="Heart" fallback={Heart} size={16} /> /heal</h3>
         <Toggle bind:checked={u.heal.enabled} label="Enabled" />
         <div class="row">
           <label>Health restored<input type="number" min="0" step="1" bind:value={u.heal.amount} /><small>2 = one heart · 0 = full health</small></label>
@@ -81,7 +82,7 @@
       </section>
 
       <section class="card">
-        <h3><Drumstick size={16} /> /feed</h3>
+        <h3><InterfaceIcon name="Drumstick" fallback={Drumstick} size={16} /> /feed</h3>
         <Toggle bind:checked={u.feed.enabled} label="Enabled" />
         <div class="row">
           <label>Hunger restored<input type="number" min="0" max="20" bind:value={u.feed.amount} /><small>20 fills the whole bar</small></label>
@@ -91,13 +92,13 @@
       </section>
 
       <section class="card">
-        <h3><Plane size={16} /> /fly</h3>
+        <h3><InterfaceIcon name="Plane" fallback={Plane} size={16} /> /fly</h3>
         <Toggle bind:checked={u.fly.enabled} label="Enabled" />
         <p class="perm"><code>free.fly</code> — fly anywhere<br /><code>faction.fly</code> — fly only inside your own faction's claims (flight switches off when you leave)</p>
       </section>
 
       <section class="card">
-        <h3><Archive size={16} /> /vault &amp; /echest</h3>
+        <h3><InterfaceIcon name="Archive" fallback={Archive} size={16} /> /vault &amp; /echest</h3>
         <Toggle bind:checked={u.vault.enabled} label="Vaults enabled" help="Portable chests: /vault 1, /vault 2 …" />
         <div class="row">
           <label>Vaults<input type="number" min="1" max="54" bind:value={u.vault.count} /></label>
@@ -110,18 +111,18 @@
     </div>
 
     <div class="kits-head">
-      <h2><Package size={18} /> Kits</h2>
-      <button onclick={addKit}><Plus size={14} /> New kit</button>
+      <h2><InterfaceIcon name="Package" fallback={Package} size={18} /> Kits</h2>
+      <button onclick={addKit}><InterfaceIcon name="Plus" fallback={Plus} size={14} /> New kit</button>
     </div>
     <p class="hint">Players run <code>/kit &lt;name&gt;</code>. Restrict a kit to LuckPerms groups, give it a cooldown, or make it claimable once.</p>
 
     {#each u.kits as k (k.id)}
       <section class="card kit">
         <button class="kh" onclick={() => (open = open === k.id ? null : k.id)}>
-          <Package size={16} />
+          <InterfaceIcon name="Package" fallback={Package} size={16} />
           <span><b>{k.name}</b> <code>/kit {k.id}</code></span>
           <small>{k.items.length} item{k.items.length === 1 ? '' : 's'} · {k.one_time ? 'one time' : cooldownText(k.cooldown_secs)} · {k.groups.length ? k.groups.join(', ') : 'everyone'}</small>
-          <ChevronDown size={15} class={open === k.id ? 'flip' : ''} />
+          <InterfaceIcon name="ChevronDown" fallback={ChevronDown} size={15} class={open === k.id ? 'flip' : ''} />
         </button>
         {#if open === k.id}
           <div class="body">
@@ -136,7 +137,7 @@
             <div class="block">
               <b>LuckPerms groups</b> <small>empty = everyone can use it</small>
               <div class="chips">
-                {#each k.groups as g}<span class="chip">{g}<button class="x" onclick={() => (k.groups = k.groups.filter((x) => x !== g))} aria-label="Remove {g}"><X size={11} /></button></span>{/each}
+                {#each k.groups as g}<span class="chip">{g}<button class="x" onclick={() => (k.groups = k.groups.filter((x) => x !== g))} aria-label="Remove {g}"><InterfaceIcon name="X" fallback={X} size={11} /></button></span>{/each}
                 <input class="mini" placeholder="add group…" bind:value={groupInput[k.id]} onkeydown={(e) => e.key === 'Enter' && addGroup(k)} onblur={() => addGroup(k)} />
               </div>
             </div>
@@ -144,8 +145,8 @@
             <div class="block">
               <div class="bh"><b>Items</b>
                 <span class="btns">
-                  <button class="ghost" onclick={() => k.items.push({ item: 'minecraft:diamond', amount: 1 })}><Plus size={13} /> Item</button>
-                  {#if customs.length}<button class="ghost" onclick={() => k.items.push({ custom: customs[0].id, item: '', amount: 1 })}><Plus size={13} /> Custom item</button>{/if}
+                  <button class="ghost" onclick={() => k.items.push({ item: 'minecraft:diamond', amount: 1 })}><InterfaceIcon name="Plus" fallback={Plus} size={13} /> Item</button>
+                  {#if customs.length}<button class="ghost" onclick={() => k.items.push({ custom: customs[0].id, item: '', amount: 1 })}><InterfaceIcon name="Plus" fallback={Plus} size={13} /> Custom item</button>{/if}
                 </span>
               </div>
               {#each k.items as it, i (i)}
@@ -157,7 +158,7 @@
                     <button class="ghost" onclick={() => (detail = detail === `${k.id}:${i}` ? null : `${k.id}:${i}`)}>Customize</button>
                   {/if}
                   <input type="number" min="1" max="64" bind:value={it.amount} class="amt" />
-                  <button class="ghost" onclick={() => (k.items = k.items.filter((_, j) => j !== i))} aria-label="Remove"><X size={14} /></button>
+                  <button class="ghost" onclick={() => (k.items = k.items.filter((_, j) => j !== i))} aria-label="Remove"><InterfaceIcon name="X" fallback={X} size={14} /></button>
                 </div>
                 {#if detail === `${k.id}:${i}` && it.custom === undefined}<div class="inner"><ItemEditor bind:spec={k.items[i]} /></div>{/if}
               {/each}
@@ -166,7 +167,7 @@
             <label>Commands run on claim <small>one per line, {'{player}'} is replaced — e.g. <code>lp user {'{player}'} permission set perk.x true</code></small>
               <textarea rows="2" value={k.commands.join('\n')} oninput={(e) => (k.commands = e.currentTarget.value.split('\n'))}></textarea>
             </label>
-            <div><button class="danger" onclick={() => (u!.kits = u!.kits.filter((x) => x !== k))}><Trash2 size={14} /> Delete kit</button></div>
+            <div><button class="danger" onclick={() => (u!.kits = u!.kits.filter((x) => x !== k))}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /> Delete kit</button></div>
           </div>
         {/if}
       </section>

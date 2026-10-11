@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Plus, Boxes, Star, Lock, Users as UsersIcon, Globe, Server, TriangleAlert, EyeOff, Package } from '@lucide/svelte';
   import Modal from '../components/Modal.svelte';
   import VersionPicker from '../components/VersionPicker.svelte';
@@ -45,17 +47,17 @@
       <h1>Instances</h1>
       <p>Each instance is a playable profile in the launcher: a Minecraft version or a modpack, plus an optional server.</p>
     </div>
-    <button class="primary" onclick={() => (creating = true)}><Plus size={18} /> New instance</button>
+    <button class="primary" onclick={() => (creating = true)}><InterfaceIcon name="Plus" fallback={Plus} size={18} /> New instance</button>
   </div>
 
   {#if instances === null}
     <div class="grid cards">{#each [1, 2, 3] as _}<div class="card sk"></div>{/each}</div>
   {:else if instances.length === 0}
     <div class="card empty">
-      <Boxes size={40} />
+      <InterfaceIcon name="Boxes" fallback={Boxes} size={40} />
       <h3>No instances yet</h3>
       <p>Create one to give players something to launch.</p>
-      <button class="primary" style="margin-top: 16px" onclick={() => (creating = true)}><Plus size={18} /> New instance</button>
+      <button class="primary" style="margin-top: 16px" onclick={() => (creating = true)}><InterfaceIcon name="Plus" fallback={Plus} size={18} /> New instance</button>
     </div>
   {:else}
     <div class="grid cards">
@@ -64,14 +66,14 @@
         <a class="card hover inst" href="#/instance/{inst.id}" class:disabled={!inst.enabled}>
           <div class="banner" style:background-image={inst.banner_url ? `url("${inst.banner_url}")` : undefined}>
             <div class="badges">
-              {#if inst.featured}<span class="badge accent"><Star size={11} /> Featured</span>{/if}
-              {#if !inst.enabled}<span class="badge"><EyeOff size={11} /> Hidden</span>{/if}
-              {#if inst.missing_count}<span class="badge warn"><TriangleAlert size={11} /> {inst.missing_count} missing</span>{/if}
+              {#if inst.featured}<span class="badge accent"><InterfaceIcon name="Star" fallback={Star} size={11} /> Featured</span>{/if}
+              {#if !inst.enabled}<span class="badge"><InterfaceIcon name="EyeOff" fallback={EyeOff} size={11} /> Hidden</span>{/if}
+              {#if inst.missing_count}<span class="badge warn"><InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={11} /> {inst.missing_count} missing</span>{/if}
             </div>
           </div>
           <div class="body">
             <div class="icon">
-              {#if inst.icon_url}<img src={inst.icon_url} alt="" />{:else}<Package size={22} />{/if}
+              {#if inst.icon_url}<img src={inst.icon_url} alt="" />{:else}<InterfaceIcon name="Package" fallback={Package} size={22} />{/if}
             </div>
             <h3>{inst.name}</h3>
             <p class="muted small desc">{inst.description || inst.source_label}</p>
@@ -81,8 +83,8 @@
               {#if inst.file_count}<span class="badge">{inst.file_count} files · {formatBytes(inst.total_size)}</span>{/if}
             </div>
             <div class="foot">
-              <span class="row small muted"><Vis size={14} /> {visLabel[inst.visibility]}</span>
-              {#if inst.server?.address}<span class="row small muted"><Server size={14} /> {inst.server.address}</span>{/if}
+              <span class="row small muted"><InterfaceIcon name={iconName(Vis)} fallback={Vis} size={14} /> {visLabel[inst.visibility]}</span>
+              {#if inst.server?.address}<span class="row small muted"><InterfaceIcon name="Server" fallback={Server} size={14} /> {inst.server.address}</span>{/if}
             </div>
           </div>
         </a>

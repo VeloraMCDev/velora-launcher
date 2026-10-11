@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Play, X, Square, LoaderCircle, TriangleAlert, RotateCcw } from '@lucide/svelte';
   import { app, cancel, kill, play } from '../lib/store.svelte';
   import { bytes } from '../lib/format';
@@ -26,10 +27,10 @@
     <div class="progress glass">
       <div class="top">
         <span class="stage">
-          {#if l.stage === 'launching' || !l.total}<LoaderCircle class="spin" size={15} />{/if}
+          {#if l.stage === 'launching' || !l.total}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={15} />{/if}
           {l.label || 'Preparing…'}
         </span>
-        <button class="ghost icon sm" onclick={cancel} aria-label="Cancel" title="Cancel"><X size={15} /></button>
+        <button class="ghost icon sm" onclick={cancel} aria-label="Cancel" title="Cancel"><InterfaceIcon name="X" fallback={X} size={15} /></button>
       </div>
       <div class="bar" class:indeterminate={!l.total}><span style:width="{pct}%"></span></div>
       <div class="meta tiny muted">
@@ -39,22 +40,22 @@
     </div>
   {:else}
     <button class="play" onclick={() => play(inst.id)} disabled={preparing || noAccount} title={noAccount ? 'Sign in first' : 'Ctrl + Enter'}>
-      <Play size={18} fill="currentColor" />
+      <InterfaceIcon name="Play" fallback={Play} size={18} fill="currentColor" />
       <span class="lbl">{running.length ? 'Launch another window' : 'Play'}</span>
     </button>
   {/if}
   {#if running.length}
     <div class="sessions">
       {#each running as game, index (game.run_id)}
-        <button class="sm session" onclick={() => kill(game.run_id)} title="Stop this Minecraft window"><span class="pulse"></span> Window {index + 1} running <Square size={12} /> Stop</button>
+        <button class="sm session" onclick={() => kill(game.run_id)} title="Stop this Minecraft window"><span class="pulse"></span> Window {index + 1} running <InterfaceIcon name="Square" fallback={Square} size={12} /> Stop</button>
       {/each}
     </div>
   {/if}
   {#if mine && l.state === 'error'}
     <div class="error glass selectable">
-      <TriangleAlert size={17} />
+      <InterfaceIcon name="TriangleAlert" fallback={TriangleAlert} size={17} />
       <span>{l.message}</span>
-      <button class="sm" onclick={() => play(inst.id)}><RotateCcw size={13} /> Retry</button>
+      <button class="sm" onclick={() => play(inst.id)}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={13} /> Retry</button>
     </div>
   {/if}
 </div>

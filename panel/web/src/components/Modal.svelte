@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { X } from '@lucide/svelte';
   import type { Snippet } from 'svelte';
 
@@ -21,7 +22,7 @@
     <div class="modal" style:max-width="{maxWidth}px" role="dialog" aria-modal="true" aria-label={title}>
       <header>
         <h2>{title}</h2>
-        <button class="ghost icon" onclick={() => (open = false)} aria-label="Close"><X size={18} /></button>
+        <button class="ghost icon" onclick={() => (open = false)} aria-label="Close"><InterfaceIcon name="X" fallback={X} size={18} /></button>
       </header>
       <div class="body">{@render children()}</div>
       {#if footer}<footer>{@render footer()}</footer>{/if}

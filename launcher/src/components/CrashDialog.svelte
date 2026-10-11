@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { FolderOpen, FileText, Copy, RotateCcw } from '@lucide/svelte';
   import Modal from './Modal.svelte';
   import { app, play, toast } from '../lib/store.svelte';
@@ -26,10 +27,10 @@
     <pre class="tail selectable">{c.tail.slice(-40).join('\n')}</pre>
   {/if}
   {#snippet footer()}
-    <button class="ghost" onclick={() => { navigator.clipboard.writeText(c?.tail.join('\n') ?? ''); toast('Copied'); }}><Copy size={15} /> Copy</button>
-    {#if c?.crash_report}<button onclick={() => invoke('open_file', { path: c?.crash_report })}><FileText size={15} /> Crash report</button>{/if}
-    <button onclick={() => c && invoke('open_folder', { kind: 'logs', instanceId: c.instance_id })}><FolderOpen size={15} /> Logs</button>
-    <button class="primary" onclick={() => { const id = c?.instance_id; app.crash = null; if (id) play(id); }}><RotateCcw size={15} /> Try again</button>
+    <button class="ghost" onclick={() => { navigator.clipboard.writeText(c?.tail.join('\n') ?? ''); toast('Copied'); }}><InterfaceIcon name="Copy" fallback={Copy} size={15} /> Copy</button>
+    {#if c?.crash_report}<button onclick={() => invoke('open_file', { path: c?.crash_report })}><InterfaceIcon name="FileText" fallback={FileText} size={15} /> Crash report</button>{/if}
+    <button onclick={() => c && invoke('open_folder', { kind: 'logs', instanceId: c.instance_id })}><InterfaceIcon name="FolderOpen" fallback={FolderOpen} size={15} /> Logs</button>
+    <button class="primary" onclick={() => { const id = c?.instance_id; app.crash = null; if (id) play(id); }}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={15} /> Try again</button>
   {/snippet}
 </Modal>
 

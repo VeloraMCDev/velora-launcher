@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { UserRound, WifiOff, LoaderCircle, Check, ArrowRight, UserPlus } from '@lucide/svelte';
   import { accountAdded, app, toast } from '../lib/store.svelte';
   import { errorText, invoke, openUrl } from '../lib/tauri';
@@ -91,7 +92,7 @@
 
   {#if pendingNotice}
     <div class="notice">
-      <Check size={22} />
+      <InterfaceIcon name="Check" fallback={Check} size={22} />
       <div><strong>Account created!</strong><p class="small muted">An admin needs to approve it before you can sign in. Check back soon.</p></div>
     </div>
     <button onclick={() => { pendingNotice = false; registering = false; }}>Back to sign in</button>
@@ -99,7 +100,7 @@
     <form class="col" onsubmit={submit}>
       <label class="field">
         {method === 'offline' ? 'Username' : 'Username'}
-        <div class="inp"><span class="ic">{#if method === 'offline'}<WifiOff size={16} />{:else}<UserRound size={16} />{/if}</span>
+        <div class="inp"><span class="ic">{#if method === 'offline'}<InterfaceIcon name="WifiOff" fallback={WifiOff} size={16} />{:else}<InterfaceIcon name="UserRound" fallback={UserRound} size={16} />{/if}</span>
           <input bind:value={username} autocomplete="username" placeholder={method === 'offline' ? 'Steve' : ''} maxlength="16" required />
         </div>
         {#if method === 'offline'}<span class="help">Play without an account. You'll only see public instances.</span>{/if}
@@ -111,7 +112,7 @@
         {/if}
       {/if}
       <button class="primary big" disabled={busy || !username}>
-        {#if busy}<LoaderCircle class="spin" size={18} />{:else if registering}<UserPlus size={18} />{:else}<ArrowRight size={18} />{/if}
+        {#if busy}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={18} />{:else if registering}<InterfaceIcon name="UserPlus" fallback={UserPlus} size={18} />{:else}<InterfaceIcon name="ArrowRight" fallback={ArrowRight} size={18} />{/if}
         {method === 'offline' ? 'Play offline' : registering ? 'Create account' : 'Sign in'}
       </button>
       {#if method === 'panel' && canRegister}

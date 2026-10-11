@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Map as MapIcon, Users } from '@lucide/svelte';
   import MapViewer from '@velora/map/MapViewer.svelte';
   import { startFeed, type MapInfo, type MapOverlay } from '@velora/map';
@@ -36,8 +37,8 @@
 
 <div class="pl-page mapPage">
   <div class="pl-head">
-    <div><h1><MapIcon size={26} /> Live map</h1><p>{server ? `${server.name}: ` : ''}see the world, claimed land and who is online right now.</p></div>
-    {#if server?.map}<button class="pl-btn" onclick={() => (showPlayers = !showPlayers)} aria-pressed={showPlayers}><Users size={16} /> {players.length} online</button>{/if}
+    <div><h1><InterfaceIcon name="Map" fallback={MapIcon} size={26} /> Live map</h1><p>{server ? `${server.name}: ` : ''}see the world, claimed land and who is online right now.</p></div>
+    {#if server?.map}<button class="pl-btn" onclick={() => (showPlayers = !showPlayers)} aria-pressed={showPlayers}><InterfaceIcon name="Users" fallback={Users} size={16} /> {players.length} online</button>{/if}
   </div>
 
   {#if !play.loaded}

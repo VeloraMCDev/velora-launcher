@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { UserPlus, Check, Pencil, Trash2, Shield, Plus, X, Search, Tag } from '@lucide/svelte';
   import Avatar from '../components/Avatar.svelte';
   import Modal from '../components/Modal.svelte';
@@ -126,7 +127,7 @@
       <h1>Players</h1>
       <p>Accounts, UUIDs, skins and capes all live here. Players sign in through the launcher, and your servers verify them with the panel.</p>
     </div>
-    <button class="primary" onclick={openNew}><UserPlus size={18} /> Add player</button>
+    <button class="primary" onclick={openNew}><InterfaceIcon name="UserPlus" fallback={UserPlus} size={18} /> Add player</button>
   </div>
 
   {#if pending.length}
@@ -135,7 +136,7 @@
       <div class="row wrap">
         {#each pending as u}
           <span class="pend"><Avatar name={u.username} uuid={u.uuid} size={22} /> {u.username}
-            <button class="sm primary" onclick={() => approve(u)}><Check size={14} /> Approve</button>
+            <button class="sm primary" onclick={() => approve(u)}><InterfaceIcon name="Check" fallback={Check} size={14} /> Approve</button>
           </span>
         {/each}
       </div>
@@ -145,7 +146,7 @@
   <div class="grid layout">
     <section class="card">
       <div class="section-title">
-        <div class="search"><Search size={16} /><input bind:value={filter} placeholder="Search players or groups" /></div>
+        <div class="search"><InterfaceIcon name="Search" fallback={Search} size={16} /><input bind:value={filter} placeholder="Search players or groups" /></div>
         <span class="hint">{users.length} accounts</span>
       </div>
       <div class="table-wrap">
@@ -164,16 +165,16 @@
                   </div>
                 </td>
                 <td>
-                  {#if u.role === 'admin'}<span class="badge accent"><Shield size={11} /> Admin</span>{:else}<span class="badge">Player</span>{/if}
+                  {#if u.role === 'admin'}<span class="badge accent"><InterfaceIcon name="Shield" fallback={Shield} size={11} /> Admin</span>{:else}<span class="badge">Player</span>{/if}
                   {#if u.status === 'pending'}<span class="badge warn">Pending</span>{:else if u.status === 'disabled'}<span class="badge bad">Disabled</span>{/if}
                 </td>
                 <td><div class="row wrap chips">{#each u.groups as g}<span class="gchip" style:--c={colorOf(g)}>{g}</span>{/each}</div></td>
                 <td class="small num">{u.playtime_secs ? duration(u.playtime_secs) : '–'}</td>
                 <td class="muted small">{timeAgo(lastSeen(u))}</td>
                 <td class="actions">
-                  <button class="ghost icon" aria-label="Edit {u.username}" onclick={() => openEdit(u)}><Pencil size={15} /></button>
+                  <button class="ghost icon" aria-label="Edit {u.username}" onclick={() => openEdit(u)}><InterfaceIcon name="Pencil" fallback={Pencil} size={15} /></button>
                   {#if u.id !== session.user?.id}
-                    <button class="ghost icon" aria-label="Delete {u.username}" onclick={() => { confirm = u; confirmOpen = true; }}><Trash2 size={15} /></button>
+                    <button class="ghost icon" aria-label="Delete {u.username}" onclick={() => { confirm = u; confirmOpen = true; }}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /></button>
                   {/if}
                 </td>
               </tr>
@@ -184,7 +185,7 @@
     </section>
 
     <section class="card col">
-      <div class="row"><Tag size={18} /><h3>Groups</h3></div>
+      <div class="row"><InterfaceIcon name="Tag" fallback={Tag} size={18} /><h3>Groups</h3></div>
       <p class="muted small">Use groups to give VIPs, staff or testers access to private instances.</p>
       <div class="col tight">
         {#each groups as g (g.id)}
@@ -193,14 +194,14 @@
             <strong>{g.name}</strong>
             <span class="muted tiny">{g.members} member{g.members === 1 ? '' : 's'}</span>
             <span class="spacer"></span>
-            <button class="ghost icon" aria-label="Delete group {g.name}" onclick={() => removeGroup(g)}><X size={14} /></button>
+            <button class="ghost icon" aria-label="Delete group {g.name}" onclick={() => removeGroup(g)}><InterfaceIcon name="X" fallback={X} size={14} /></button>
           </div>
         {/each}
       </div>
       <form class="row" onsubmit={addGroup}>
         <input type="color" bind:value={newGroup.color} aria-label="Group colour" />
         <input bind:value={newGroup.name} placeholder="New group" maxlength="32" />
-        <button class="icon" disabled={!newGroup.name.trim()} aria-label="Add group"><Plus size={16} /></button>
+        <button class="icon" disabled={!newGroup.name.trim()} aria-label="Add group"><InterfaceIcon name="Plus" fallback={Plus} size={16} /></button>
       </form>
     </section>
   </div>
@@ -258,7 +259,7 @@
     <PlayerPanel user={viewing} {capes} onchange={updated} />
   {/if}
   {#snippet footer()}
-    <button class="ghost" onclick={() => { if (viewing) { viewOpen = false; openEdit(viewing); } }}><Pencil size={15} /> Edit account</button>
+    <button class="ghost" onclick={() => { if (viewing) { viewOpen = false; openEdit(viewing); } }}><InterfaceIcon name="Pencil" fallback={Pencil} size={15} /> Edit account</button>
     <button class="primary" onclick={() => (viewOpen = false)}>Done</button>
   {/snippet}
 </Modal>
@@ -267,7 +268,7 @@
   <p class="muted">This removes the account <strong>and all of its data</strong>: levels, XP, quests, achievements, stats, friends, messages, profile and posts, economy balance and market listings, and faction membership. Factions they lead pass to the next member (or are dissolved if they're alone). Their name stays reserved so nobody can impersonate them. This can't be undone.</p>
   {#snippet footer()}
     <button class="ghost" onclick={() => (confirmOpen = false)}>Cancel</button>
-    <button class="danger" onclick={removeUser}><Trash2 size={16} /> Delete</button>
+    <button class="danger" onclick={removeUser}><InterfaceIcon name="Trash2" fallback={Trash2} size={16} /> Delete</button>
   {/snippet}
 </Modal>
 

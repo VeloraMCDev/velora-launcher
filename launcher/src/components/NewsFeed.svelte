@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Pin, ArrowUpRight } from '@lucide/svelte';
   import { abs } from '../lib/store.svelte';
   import { niceDate } from '../lib/format';
@@ -17,14 +18,14 @@
         <div class="body">
           <div class="meta">
             {#if n.tag}<span class="tag">{n.tag}</span>{/if}
-            {#if n.pinned}<Pin size={11} />{/if}
+            {#if n.pinned}<InterfaceIcon name="Pin" fallback={Pin} size={11} />{/if}
             <span class="spacer"></span>
             <span class="tiny muted">{niceDate(n.date)}</span>
           </div>
           <h3>{n.title}</h3>
           <p class="selectable">{n.body}</p>
           {#if n.link}
-            <button class="more ghost sm" onclick={() => n.link && openUrl(n.link)}>Read more <ArrowUpRight size={13} /></button>
+            <button class="more ghost sm" onclick={() => n.link && openUrl(n.link)}>Read more <InterfaceIcon name="ArrowUpRight" fallback={ArrowUpRight} size={13} /></button>
           {/if}
         </div>
       </article>

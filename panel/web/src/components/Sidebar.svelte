@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { ChevronDown, ExternalLink, Globe, LogOut, Search, Smartphone, X } from '@lucide/svelte';
   import { adminGroups, navigationParent } from '../lib/adminNav';
   import { experienceContext } from '../lib/experience.svelte';
@@ -35,13 +36,13 @@
       <strong>{brandName}</strong>
       <span>{experienceContext.instance?.name ?? "Platform administration"}</span>
     </div>
-    <button class="ghost icon close" onclick={() => (open = false)} aria-label="Close menu"><X size={18} /></button>
+    <button class="ghost icon close" onclick={() => (open = false)} aria-label="Close menu"><InterfaceIcon name="X" fallback={X} size={18} /></button>
   </div>
 
   {#if route.instanceId}<a class="find" href="#/instances">← Switch instance</a>{/if}
 
   <button class="find" onclick={() => { open = false; onsearch?.(); }}>
-    <Search size={15} /> <span>Search…</span> <kbd>Ctrl K</kbd>
+    <InterfaceIcon name="Search" fallback={Search} size={15} /> <span>Search…</span> <kbd>Ctrl K</kbd>
   </button>
 
   <nav>
@@ -50,13 +51,13 @@
       <div class="group">
         <button class="gh" onclick={() => toggle(g.id)} aria-expanded={expanded} disabled={g.id === activeGroup}>
           <span>{g.label}</span>
-          <ChevronDown size={13} class={expanded ? '' : 'turned'} />
+          <InterfaceIcon name="ChevronDown" fallback={ChevronDown} size={13} class={expanded ? '' : 'turned'} />
         </button>
         {#if expanded}
           <div class="items">
             {#each g.items as item (item.id)}
               <a href={route.instanceId && !PLATFORM_PAGES.has(item.id) ? `#/instance/${encodeURIComponent(route.instanceId)}/${item.id}` : `#/${item.id}`} class:active={activePage === navigationParent(item.id)} aria-current={activePage === item.id ? 'page' : undefined}>
-                <McIcon item={NAV_ITEMS[item.id]} fallback={item.icon} size={20} />
+                <McIcon iconKey={"nav:" + item.id} item={NAV_ITEMS[item.id]} fallback={item.icon} size={20} />
                 <span>{item.label}</span>
               </a>
             {/each}
@@ -67,10 +68,10 @@
   </nav>
 
   <div class="foot">
-    <a class="player" href="#/play"><Smartphone size={15} /> Player panel <span class="soft">members &amp; mobile</span></a>
+    <a class="player" href="#/play"><InterfaceIcon name="Smartphone" fallback={Smartphone} size={15} /> Player panel <span class="soft">members &amp; mobile</span></a>
     <div class="links">
-      <a href="#/landing" target="_blank" rel="noreferrer"><Globe size={13} /> Landing page</a>
-      <a href="https://github.com/VeloraMCDev/velora-launcher#readme" target="_blank" rel="noreferrer"><ExternalLink size={13} /> Docs</a>
+      <a href="#/landing" target="_blank" rel="noreferrer"><InterfaceIcon name="Globe" fallback={Globe} size={13} /> Landing page</a>
+      <a href="https://github.com/VeloraMCDev/velora-launcher#readme" target="_blank" rel="noreferrer"><InterfaceIcon name="ExternalLink" fallback={ExternalLink} size={13} /> Docs</a>
     </div>
     {#if session.user}
       <div class="me">
@@ -79,7 +80,7 @@
           <strong>{session.user.username}</strong>
           <span>Administrator</span>
         </div>
-        <button class="ghost icon" onclick={logout} title="Sign out" aria-label="Sign out"><LogOut size={16} /></button>
+        <button class="ghost icon" onclick={logout} title="Sign out" aria-label="Sign out"><InterfaceIcon name="LogOut" fallback={LogOut} size={16} /></button>
       </div>
     {/if}
   </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { FolderOpen, Wrench, Trash2, FileCode } from '@lucide/svelte';
   import Modal from './Modal.svelte';
   import { app, repair, saveSettings, toast } from '../lib/store.svelte';
@@ -45,7 +46,7 @@
   {#if inst && app.settings && ov}
     <div class="grid2">
       {#each folders as f}
-        <button class="sm" onclick={() => invoke('open_folder', { kind: f, instanceId: inst.id })}><FolderOpen size={14} /> {f === 'instance' ? 'Game folder' : f}</button>
+        <button class="sm" onclick={() => invoke('open_folder', { kind: f, instanceId: inst.id })}><InterfaceIcon name="FolderOpen" fallback={FolderOpen} size={14} /> {f === 'instance' ? 'Game folder' : f}</button>
       {/each}
     </div>
 
@@ -62,7 +63,7 @@
       <label class="field">Java for this instance
         <div class="row">
           <input value={ov.java_path ?? ''} placeholder="Automatic" readonly />
-          <button class="sm" onclick={async () => { const p = await pickFile('Choose java executable', [{ name: 'Java', extensions: ['exe', ''] }]); if (p) { ov.java_path = p; saveSettings(); } }}><FileCode size={14} /> Browse</button>
+          <button class="sm" onclick={async () => { const p = await pickFile('Choose java executable', [{ name: 'Java', extensions: ['exe', ''] }]); if (p) { ov.java_path = p; saveSettings(); } }}><InterfaceIcon name="FileCode" fallback={FileCode} size={14} /> Browse</button>
           {#if ov.java_path}<button class="sm ghost" onclick={() => { ov.java_path = null; saveSettings(); }}>Reset</button>{/if}
         </div>
       </label>
@@ -93,8 +94,8 @@
     <div class="danger-zone">
       <span class="tiny muted">{local?.installed ? `Uses ${bytes(local.size)} on disk` : 'Not downloaded yet'}</span>
       <span class="spacer"></span>
-      <button class="sm" onclick={() => { app.instanceSettings = null; repair(inst.id); }}><Wrench size={14} /> Repair files</button>
-      <button class="sm danger" onclick={del}><Trash2 size={14} /> Delete local files</button>
+      <button class="sm" onclick={() => { app.instanceSettings = null; repair(inst.id); }}><InterfaceIcon name="Wrench" fallback={Wrench} size={14} /> Repair files</button>
+      <button class="sm danger" onclick={del}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /> Delete local files</button>
     </div>
   {/if}
 </Modal>

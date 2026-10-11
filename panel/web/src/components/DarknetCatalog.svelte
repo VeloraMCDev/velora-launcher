@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Plus, Copy, Trash2, Save } from '@lucide/svelte';
   import { get, put } from '../lib/api';
@@ -45,7 +46,7 @@
 </script>
 
 <section class="catalog">
-  <div class="heading"><div><h2>Darknet catalog</h2><p>Pick an item, set its price in in-game dollars, then publish it. Items are delivered to player vaults.</p></div><button disabled={!loaded || busy || rows.length >= 200} onclick={() => add()}><Plus size={16} /> Add listing</button></div>
+  <div class="heading"><div><h2>Darknet catalog</h2><p>Pick an item, set its price in in-game dollars, then publish it. Items are delivered to player vaults.</p></div><button disabled={!loaded || busy || rows.length >= 200} onclick={() => add()}><InterfaceIcon name="Plus" fallback={Plus} size={16} /> Add listing</button></div>
   {#if error}<p role="alert" class="error">{error}</p>{/if}
   {#if !loaded}<button disabled={busy} onclick={load}>{busy ? 'Loading catalog…' : 'Retry loading'}</button>
   {:else}
@@ -61,12 +62,12 @@
           <label>Quantity<input type="number" min="1" max="64" step="1" bind:value={row.amount} /></label>
           <label>Price ($ in-game)<input type="number" min="0.01" max="1000000000" step="0.01" bind:value={row.price} /></label>
         </div>
-        <div class="actions"><label class="toggle"><input type="checkbox" bind:checked={row.enabled} /> Published</label><button onclick={() => add(row)} disabled={rows.length >= 200}><Copy size={14} /> Duplicate</button><button class="danger" onclick={() => rows.splice(i, 1)}><Trash2 size={14} /> Remove</button></div>
+        <div class="actions"><label class="toggle"><input type="checkbox" bind:checked={row.enabled} /> Published</label><button onclick={() => add(row)} disabled={rows.length >= 200}><InterfaceIcon name="Copy" fallback={Copy} size={14} /> Duplicate</button><button class="danger" onclick={() => rows.splice(i, 1)}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /> Remove</button></div>
       </article>
     {/each}
     {#if !rows.length}<p>No listings yet. Add your first item to start the catalog.</p>{/if}
     </fieldset>
-    <div class="footer"><span>{rows.length}/200 listings · {dirty ? 'Unsaved changes' : 'Saved'}</span><button class="primary" disabled={busy || !dirty} onclick={save}><Save size={16} /> {busy ? 'Saving…' : 'Save catalog'}</button></div>
+    <div class="footer"><span>{rows.length}/200 listings · {dirty ? 'Unsaved changes' : 'Saved'}</span><button class="primary" disabled={busy || !dirty} onclick={save}><InterfaceIcon name="Save" fallback={Save} size={16} /> {busy ? 'Saving…' : 'Save catalog'}</button></div>
     <p class="note">The catalog is shared across instances. Save publishes all edits together. Keep existing listing IDs stable. Verify modded items in staging before publishing.</p>
   {/if}
 </section>

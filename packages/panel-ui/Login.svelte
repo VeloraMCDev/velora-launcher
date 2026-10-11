@@ -1,8 +1,9 @@
 <script lang="ts">
+  import type { Component } from 'svelte';
   import { LogIn, LoaderCircle } from '@lucide/svelte';
   import type { PlatformClient } from '../../shared/http/platform.mjs';
 
-  let { brandName, logo, registration = 'closed', app = false, client, onToken }: { client: PlatformClient; onToken: (token: string) => void; brandName: string; logo: string | null; registration?: 'closed' | 'approval' | 'open'; app?: boolean } = $props();
+  let { brandName, logo, registration = 'closed', app = false, client, onToken, iconRenderer: IconRenderer }: { iconRenderer?: Component<any>; client: PlatformClient; onToken: (token: string) => void; brandName: string; logo: string | null; registration?: 'closed' | 'approval' | 'open'; app?: boolean } = $props();
   let username = $state('');
   let password = $state('');
   let error = $state('');
@@ -92,7 +93,7 @@
     {#if notice}<div class="notice">{notice}</div>{/if}
     {#if error}<div class="error">{error}</div>{/if}
     <button class="primary big" disabled={busy}>
-      {#if busy}<LoaderCircle class="spin" size={18} />{:else}<LogIn size={18} />{/if}
+      {#if IconRenderer}<IconRenderer name={busy ? "LoaderCircle" : "LogIn"} fallback={busy ? LoaderCircle : LogIn} class={busy ? "spin" : undefined} size={18} />{:else if busy}<LoaderCircle class="spin" size={18} />{:else}<LogIn size={18} />{/if}
       {mode === 'login' ? 'Sign in' : mode === 'register' ? 'Create account' : mode === 'forgot' ? 'Email reset link' : 'Reset password'}
     </button>
     {#if mode === 'login' && discordEnabled}<button type="button" onclick={discordSignIn}>Sign in with Discord</button>{/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Bold, Italic, Underline, Strikethrough, Palette, Sparkles, Eraser } from '@lucide/svelte';
   import { ampToMarkdown, markdownToAmp, gradientMarkdown, PALETTE, plainText } from '../lib/mcText';
   import { spans } from '../lib/mccolor';
@@ -83,14 +84,14 @@
 <div class="mt" class:compact bind:this={root}>
   {#if label}<span class="lbl">{label}</span>{/if}
   <div class="bar" role="toolbar" aria-label="Text formatting">
-    <button type="button" title="Bold (Ctrl+B)" onmousedown={(e) => e.preventDefault()} onclick={() => wrap('**')}><Bold size={14} /></button>
-    <button type="button" title="Italic (Ctrl+I)" onmousedown={(e) => e.preventDefault()} onclick={() => wrap('*')}><Italic size={14} /></button>
-    <button type="button" title="Underline (Ctrl+U)" onmousedown={(e) => e.preventDefault()} onclick={() => wrap('__')}><Underline size={14} /></button>
-    <button type="button" title="Strikethrough" onmousedown={(e) => e.preventDefault()} onclick={() => wrap('~~')}><Strikethrough size={14} /></button>
+    <button type="button" title="Bold (Ctrl+B)" onmousedown={(e) => e.preventDefault()} onclick={() => wrap('**')}><InterfaceIcon name="Bold" fallback={Bold} size={14} /></button>
+    <button type="button" title="Italic (Ctrl+I)" onmousedown={(e) => e.preventDefault()} onclick={() => wrap('*')}><InterfaceIcon name="Italic" fallback={Italic} size={14} /></button>
+    <button type="button" title="Underline (Ctrl+U)" onmousedown={(e) => e.preventDefault()} onclick={() => wrap('__')}><InterfaceIcon name="Underline" fallback={Underline} size={14} /></button>
+    <button type="button" title="Strikethrough" onmousedown={(e) => e.preventDefault()} onclick={() => wrap('~~')}><InterfaceIcon name="Strikethrough" fallback={Strikethrough} size={14} /></button>
     <span class="sep"></span>
-    <button type="button" class:on={pop === 'color'} title="Colour" onmousedown={(e) => e.preventDefault()} onclick={() => (pop = pop === 'color' ? '' : 'color')}><Palette size={14} /> <span>Colour</span></button>
-    <button type="button" class:on={pop === 'gradient'} title="Gradient" onmousedown={(e) => e.preventDefault()} onclick={() => (pop = pop === 'gradient' ? '' : 'gradient')}><Sparkles size={14} /> <span>Gradient</span></button>
-    <button type="button" title="Clear all formatting" onmousedown={(e) => e.preventDefault()} onclick={clear}><Eraser size={14} /></button>
+    <button type="button" class:on={pop === 'color'} title="Colour" onmousedown={(e) => e.preventDefault()} onclick={() => (pop = pop === 'color' ? '' : 'color')}><InterfaceIcon name="Palette" fallback={Palette} size={14} /> <span>Colour</span></button>
+    <button type="button" class:on={pop === 'gradient'} title="Gradient" onmousedown={(e) => e.preventDefault()} onclick={() => (pop = pop === 'gradient' ? '' : 'gradient')}><InterfaceIcon name="Sparkles" fallback={Sparkles} size={14} /> <span>Gradient</span></button>
+    <button type="button" title="Clear all formatting" onmousedown={(e) => e.preventDefault()} onclick={clear}><InterfaceIcon name="Eraser" fallback={Eraser} size={14} /></button>
 
     {#if pop === 'color'}
       <div class="pop" role="dialog" aria-label="Pick a colour">

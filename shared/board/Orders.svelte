@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { PackagePlus, Search, Hand, Undo2, Trash2, Clock, Inbox, Info, CheckCircle2, ArrowRight } from '@lucide/svelte';
   import { ago, bget, bpost, COMMON_ITEMS, errorText, money, toast, untilText, type Order, type OrdersBoard } from './host';
@@ -52,7 +53,7 @@
 
   {#if board?.enabled}
     <section class="panel how">
-      <h2><Info size={16} /> How buy orders work</h2>
+      <h2><InterfaceIcon name="Info" fallback={Info} size={16} /> How buy orders work</h2>
       <ol>
         <li><b>Ask</b> for the items you need and set the price. The money is held safely (escrow) until someone delivers.</li>
         <li><b>Someone accepts it</b> {#if board.rules.requester_deadlines}and gathers the items before your chosen deadline. Missed deadlines refund you.{:else}and reserves it for {board.rules.claim_minutes} minutes. After that, someone else can pick it up.{/if}</li>
@@ -61,7 +62,7 @@
     </section>
 
     <section class="panel form">
-      <h2><PackagePlus size={16} /> Post a request</h2>
+      <h2><InterfaceIcon name="PackagePlus" fallback={PackagePlus} size={16} /> Post a request</h2>
       <div class="fields">
         <label>Item<input list="board-items" bind:value={item} placeholder="DIAMOND" autocapitalize="characters" spellcheck="false" /><datalist id="board-items">{#each COMMON_ITEMS as i}<option value={i}></option>{/each}</datalist></label>
         <label>How many<input type="number" min="1" max={board.rules.max_amount} bind:value={amount} /></label>
@@ -69,21 +70,21 @@
         {#if board.rules.requester_deadlines}<label>Deadline after acceptance (minutes)<input type="number" min="5" max="43200" step="1" bind:value={acceptanceMinutes}/></label>{/if}
       </div>
       <div class="sum"><span>{money(each)} each</span><span>Held in escrow: <b>{money(total)}</b></span>{#if board.balance != null}<span class:bad={!afford}>Balance {money(board.balance)}</span>{/if}</div>
-      <button class="primary" onclick={post} disabled={busy || !valid}><PackagePlus size={16} /> Post order</button>
+      <button class="primary" onclick={post} disabled={busy || !valid}><InterfaceIcon name="PackagePlus" fallback={PackagePlus} size={16} /> Post order</button>
       <small class="muted">You can have {board.rules.max_open} open at once ({board.my_open} now). Unfilled orders come down after {Math.round(board.rules.expire_hours / 24 * 10) / 10 || 1} days and refund you. Items must be plain (no enchants or custom names).{board.rules.fee_percent > 0 ? ` The house keeps ${board.rules.fee_percent}% of the price.` : ''}</small>
     </section>
 
     {#if picked.length}
       <section class="panel">
-        <h2><Hand size={16} /> You picked up</h2>
+        <h2><InterfaceIcon name="Hand" fallback={Hand} size={16} /> You picked up</h2>
         <div class="list">{#each picked as o (o.id)}{@render card(o)}{/each}</div>
       </section>
     {/if}
 
     <section class="panel">
       <div class="bar">
-        <h2><Inbox size={16} /> The board <span class="n">{list.length}</span></h2>
-        <label class="search"><Search size={14} /><input placeholder="Search items or players" bind:value={query} /></label>
+        <h2><InterfaceIcon name="Inbox" fallback={Inbox} size={16} /> The board <span class="n">{list.length}</span></h2>
+        <label class="search"><InterfaceIcon name="Search" fallback={Search} size={14} /><input placeholder="Search items or players" bind:value={query} /></label>
         <label class="chk"><input type="checkbox" bind:checked={showMine} /> Show mine</label>
       </div>
       {#if list.length}<div class="list">{#each list as o (o.id)}{@render card(o)}{/each}</div>
@@ -92,7 +93,7 @@
 
     {#if board.history.length}
       <section class="panel">
-        <h2><CheckCircle2 size={16} /> Recent</h2>
+        <h2><InterfaceIcon name="CheckCircle2" fallback={CheckCircle2} size={16} /> Recent</h2>
         <ul class="hist">{#each board.history as o (o.id)}
           <li><b>{o.amount}× {o.item_name}</b> <span class="chip {o.resolved}">{o.resolved}</span> <span class="muted">{o.mine ? (o.resolved === 'filled' ? `filled by ${o.filler_name}` : '') : `for ${o.buyer_name}`}</span><small>{ago(o.created_at, now)}</small><span class="amt">{money(o.total)}</span></li>{/each}</ul>
       </section>
@@ -105,16 +106,16 @@
     <div class="what"><span class="qty">{o.amount}×</span><div><b>{o.item_name}</b><small>{o.mine ? 'Your order' : `from ${o.buyer_name}`} · {ago(o.created_at, now)}</small></div></div>
     <div class="price"><b>{money(o.total)}</b><small>{money(o.each)} each</small></div>
     <div class="state">
-      {#if o.status === 'claimed'}<span class="chip taken"><Clock size={11} /> {o.claimed_by_me ? 'yours' : `${o.claimer_name}`} · {untilText(o.claim_until, now)}</span>{:else}<span class="chip {o.status}">{o.status==='expired'?'Expired · refund pending':o.status}</span>{/if}
+      {#if o.status === 'claimed'}<span class="chip taken"><InterfaceIcon name="Clock" fallback={Clock} size={11} /> {o.claimed_by_me ? 'yours' : `${o.claimer_name}`} · {untilText(o.claim_until, now)}</span>{:else}<span class="chip {o.status}">{o.status==='expired'?'Expired · refund pending':o.status}</span>{/if}
     </div>
     <div class="act">
       {#if o.mine}
-        <button class="ghost" onclick={() => act(`/orders/${o.id}/cancel`, {}, 'Order cancelled, your money is back.')} disabled={busy}><Trash2 size={14} /> Cancel</button>
+        <button class="ghost" onclick={() => act(`/orders/${o.id}/cancel`, {}, 'Order cancelled, your money is back.')} disabled={busy}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /> Cancel</button>
       {:else if o.claimed_by_me}
         <span class="how">In game: <code>/orders fill {o.id}</code></span>
-        <button class="ghost" onclick={() => act(`/orders/${o.id}/release`, {}, 'Order released.')} disabled={busy}><Undo2 size={14} /> Give up</button>
+        <button class="ghost" onclick={() => act(`/orders/${o.id}/release`, {}, 'Order released.')} disabled={busy}><InterfaceIcon name="Undo2" fallback={Undo2} size={14} /> Give up</button>
       {:else if o.status === 'open'}
-        <button class="primary sm" onclick={() => act(`/orders/${o.id}/claim`, {}, `Order #${o.id} is yours. Bring the items and use /orders fill ${o.id} in game.`)} disabled={busy}><Hand size={14} /> Pick up <ArrowRight size={13} /></button>
+        <button class="primary sm" onclick={() => act(`/orders/${o.id}/claim`, {}, `Order #${o.id} is yours. Bring the items and use /orders fill ${o.id} in game.`)} disabled={busy}><InterfaceIcon name="Hand" fallback={Hand} size={14} /> Pick up <InterfaceIcon name="ArrowRight" fallback={ArrowRight} size={13} /></button>
       {/if}
     </div>
   </article>

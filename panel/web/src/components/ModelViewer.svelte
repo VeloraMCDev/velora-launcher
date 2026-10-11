@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { RotateCw, Pause, Play, Grid3x3 } from '@lucide/svelte';
   import type * as THREE from 'three';
@@ -236,9 +237,9 @@
     <p class="msg">Nothing to show yet</p>
   {/if}
   <div class="ctl">
-    <button type="button" title={spinning ? 'Stop spinning' : 'Spin'} aria-label="Toggle spin" onclick={() => (spinning = !spinning)}>{#if spinning}<Pause size={14} />{:else}<Play size={14} />{/if}</button>
-    <button type="button" title="Reset view" aria-label="Reset view" onclick={() => api?.reset()}><RotateCw size={14} /></button>
-    <button type="button" class:on={grid} title="Floor grid" aria-label="Toggle floor grid" onclick={() => (grid = !grid)}><Grid3x3 size={14} /></button>
+    <button type="button" title={spinning ? 'Stop spinning' : 'Spin'} aria-label="Toggle spin" onclick={() => (spinning = !spinning)}>{#if spinning}<InterfaceIcon name="Pause" fallback={Pause} size={14} />{:else}<InterfaceIcon name="Play" fallback={Play} size={14} />{/if}</button>
+    <button type="button" title="Reset view" aria-label="Reset view" onclick={() => api?.reset()}><InterfaceIcon name="RotateCw" fallback={RotateCw} size={14} /></button>
+    <button type="button" class:on={grid} title="Floor grid" aria-label="Toggle floor grid" onclick={() => (grid = !grid)}><InterfaceIcon name="Grid3x3" fallback={Grid3x3} size={14} /></button>
   </div>
   <span class="hint">Drag to rotate · scroll to zoom · right-drag to pan</span>
 </div>

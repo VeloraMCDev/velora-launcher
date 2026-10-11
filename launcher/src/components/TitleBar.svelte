@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Minus, Square, X, WifiOff, Users, Search } from '@lucide/svelte';
   import { experienceBranding, abs, activeAccount, app, saveSettings } from '../lib/store.svelte';
   import { windowAction } from '../lib/tauri';
@@ -17,13 +18,13 @@
       <img src="/velora-icon.png" alt="" />
     {/if}
     {#if b?.logo_url || (b?.name && b.name !== 'Velora')}<span data-tauri-drag-region>{b?.name ?? 'Velora'}</span>{/if}
-    {#if app.offline}<span class="offline" title="Can't reach the server — using saved data"><WifiOff size={12} /> Offline</span>{/if}
+    {#if app.offline}<span class="offline" title="Can't reach the server — using saved data"><InterfaceIcon name="WifiOff" fallback={WifiOff} size={12} /> Offline</span>{/if}
   </div>
   <div class="controls">
-    {#if activeAccount()}<button class="ctl search" title="Quick search (Ctrl+K)" aria-label="Quick search" onclick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))}><Search size={15} /></button><button class="ctl" class:on={app.settings?.show_social_sidebar} title="Friends" aria-label="Toggle social sidebar" aria-pressed={app.settings?.show_social_sidebar ?? false} onclick={() => { if (app.settings) { app.settings.show_social_sidebar = !app.settings.show_social_sidebar; saveSettings(); } }}><Users size={16} /></button><NotificationBell />{/if}
-    <button class="ctl" onclick={() => windowAction('minimize')} aria-label="Minimise"><Minus size={15} /></button>
-    <button class="ctl" onclick={() => windowAction('maximize')} aria-label="Maximise"><Square size={12} /></button>
-    <button class="ctl close" onclick={() => windowAction('close')} aria-label="Close"><X size={16} /></button>
+    {#if activeAccount()}<button class="ctl search" title="Quick search (Ctrl+K)" aria-label="Quick search" onclick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))}><InterfaceIcon name="Search" fallback={Search} size={15} /></button><button class="ctl" class:on={app.settings?.show_social_sidebar} title="Friends" aria-label="Toggle social sidebar" aria-pressed={app.settings?.show_social_sidebar ?? false} onclick={() => { if (app.settings) { app.settings.show_social_sidebar = !app.settings.show_social_sidebar; saveSettings(); } }}><InterfaceIcon name="Users" fallback={Users} size={16} /></button><NotificationBell />{/if}
+    <button class="ctl" onclick={() => windowAction('minimize')} aria-label="Minimise"><InterfaceIcon name="Minus" fallback={Minus} size={15} /></button>
+    <button class="ctl" onclick={() => windowAction('maximize')} aria-label="Maximise"><InterfaceIcon name="Square" fallback={Square} size={12} /></button>
+    <button class="ctl close" onclick={() => windowAction('close')} aria-label="Close"><InterfaceIcon name="X" fallback={X} size={16} /></button>
   </div>
 </header>
 

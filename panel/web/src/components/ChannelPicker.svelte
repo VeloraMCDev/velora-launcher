@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Hash, ListFilter } from '@lucide/svelte';
   import { get } from '../lib/api';
   import { toastError } from '../lib/toast.svelte';
@@ -28,7 +29,7 @@
   <span class="label">{label}{#if hint} <small>{hint}</small>{/if}</span>
   <div class="row">
     <div class="id" class:bad={!looksValid}>
-      <Hash size={15} />
+      <InterfaceIcon name="Hash" fallback={Hash} size={15} />
       <input bind:value inputmode="numeric" {placeholder} autocomplete="off" aria-label="{label} ID" aria-invalid={!looksValid} />
     </div>
     {#if canList}
@@ -39,7 +40,7 @@
         </select>
       {:else}
         <button type="button" class="ghost" onclick={load} disabled={loading} title="List the channels of your Discord server (needs the bot token and server ID)">
-          <ListFilter size={15} /> {loading ? 'Loading…' : 'Pick from server'}
+          <InterfaceIcon name="ListFilter" fallback={ListFilter} size={15} /> {loading ? 'Loading…' : 'Pick from server'}
         </button>
       {/if}
     {/if}

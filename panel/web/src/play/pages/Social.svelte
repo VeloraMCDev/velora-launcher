@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount, tick, untrack } from 'svelte';
   import {
     Users, UserPlus, MessageSquare, Gamepad2, Send, Check, X, ChevronLeft, Search, RefreshCw, UserRound, Clock, Inbox, Sparkles, LoaderCircle, Server
@@ -271,20 +272,20 @@
   {#if !threadMode}
     <div class="pl-head">
       <div>
-        <h1><Users size={26} /> Friends</h1>
+        <h1><InterfaceIcon name="Users" fallback={Users} size={26} /> Friends</h1>
         <p>Friends, messages and invites in one place.</p>
       </div>
       <div class="pl-actions">
-        <button class="pl-btn sm" onclick={() => me && openProfile(me)}><UserRound size={15} /> My profile</button>
-        <button class="pl-iconbtn" aria-label="Refresh" aria-busy={refreshing} onclick={() => loadAll()}><RefreshCw size={16} class={refreshing ? 'spin' : ''} /></button>
+        <button class="pl-btn sm" onclick={() => me && openProfile(me)}><InterfaceIcon name="UserRound" fallback={UserRound} size={15} /> My profile</button>
+        <button class="pl-iconbtn" aria-label="Refresh" aria-busy={refreshing} onclick={() => loadAll()}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={16} class={refreshing ? 'spin' : ''} /></button>
       </div>
     </div>
 
     <div class="pl-tabs tabs" role="tablist">
-      <button role="tab" aria-selected={tab === 'friends'} class:on={tab === 'friends'} onclick={() => (tab = 'friends')}><Users size={15} /> Friends {#if pendingCount}<span class="count">{pendingCount}</span>{/if}</button>
-      <button role="tab" aria-selected={tab === 'messages'} class:on={tab === 'messages'} onclick={() => (tab = 'messages')}><MessageSquare size={15} /> Messages {#if unreadTotal}<span class="count">{unreadTotal}</span>{/if}</button>
-      <button role="tab" aria-selected={tab === 'find'} class:on={tab === 'find'} onclick={() => (tab = 'find')}><Search size={15} /> Find</button>
-      <button role="tab" aria-selected={tab === 'invites'} class:on={tab === 'invites'} onclick={() => (tab = 'invites')}><Gamepad2 size={15} /> Invites {#if invites.length}<span class="count">{invites.length}</span>{/if}</button>
+      <button role="tab" aria-selected={tab === 'friends'} class:on={tab === 'friends'} onclick={() => (tab = 'friends')}><InterfaceIcon name="Users" fallback={Users} size={15} /> Friends {#if pendingCount}<span class="count">{pendingCount}</span>{/if}</button>
+      <button role="tab" aria-selected={tab === 'messages'} class:on={tab === 'messages'} onclick={() => (tab = 'messages')}><InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={15} /> Messages {#if unreadTotal}<span class="count">{unreadTotal}</span>{/if}</button>
+      <button role="tab" aria-selected={tab === 'find'} class:on={tab === 'find'} onclick={() => (tab = 'find')}><InterfaceIcon name="Search" fallback={Search} size={15} /> Find</button>
+      <button role="tab" aria-selected={tab === 'invites'} class:on={tab === 'invites'} onclick={() => (tab = 'invites')}><InterfaceIcon name="Gamepad2" fallback={Gamepad2} size={15} /> Invites {#if invites.length}<span class="count">{invites.length}</span>{/if}</button>
     </div>
   {/if}
 
@@ -298,21 +299,21 @@
   {:else if tab === 'friends'}
     <div class="pl-stack stackgap">
       <form class="pl-card tight addbar" onsubmit={(e) => { e.preventDefault(); sendRequest(addName); }}>
-        <UserPlus size={18} class="muted-ic" />
+        <InterfaceIcon name="UserPlus" fallback={UserPlus} size={18} class="muted-ic" />
         <input class="pl-input" placeholder="Add a friend by username" bind:value={addName} autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Username" />
-        <button class="pl-btn primary" disabled={adding || !addName.trim()} aria-busy={adding}>{#if adding}<LoaderCircle size={15} class="spin" />{:else}Add{/if}</button>
+        <button class="pl-btn primary" disabled={adding || !addName.trim()} aria-busy={adding}>{#if adding}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={15} class="spin" />{:else}Add{/if}</button>
       </form>
 
       {#if incoming.length}
         <section class="pl-card requests">
-          <div class="pl-card-head"><h2><Inbox size={17} /> Friend requests <span class="pl-chip accent">{incoming.length}</span></h2></div>
+          <div class="pl-card-head"><h2><InterfaceIcon name="Inbox" fallback={Inbox} size={17} /> Friend requests <span class="pl-chip accent">{incoming.length}</span></h2></div>
           <div class="pl-list">
             {#each incoming as f, i (f.uuid)}
               <div class="pl-item rise" style:--i={i}>
                 <button class="who" onclick={() => openProfile(f.uuid)}><Avatar name={f.username} uuid={f.uuid} size={44} />
                   <div class="grow"><b>{f.username}</b><span class="sub">wants to be friends</span></div></button>
-                <button class="pl-btn primary sm" disabled={busyUuid === f.uuid} aria-busy={busyUuid === f.uuid} onclick={() => answer(f, true)}><Check size={15} /> Accept</button>
-                <button class="pl-iconbtn" aria-label="Decline" disabled={busyUuid === f.uuid} onclick={() => answer(f, false)}><X size={16} /></button>
+                <button class="pl-btn primary sm" disabled={busyUuid === f.uuid} aria-busy={busyUuid === f.uuid} onclick={() => answer(f, true)}><InterfaceIcon name="Check" fallback={Check} size={15} /> Accept</button>
+                <button class="pl-iconbtn" aria-label="Decline" disabled={busyUuid === f.uuid} onclick={() => answer(f, false)}><InterfaceIcon name="X" fallback={X} size={16} /></button>
               </div>
             {/each}
           </div>
@@ -327,7 +328,7 @@
       {#if shownFriends.length === 0}
         <div class="pl-card">
           <Empty icon={Users} title={filter === 'online' ? 'Nobody is online right now' : 'No friends yet'} text={filter === 'online' ? 'Your friends will show up here when they log in.' : 'Add someone by username above, or find players to befriend.'}>
-            {#if filter === 'all'}<button class="pl-btn primary" onclick={() => (tab = 'find')}><Search size={15} /> Find players</button>{/if}
+            {#if filter === 'all'}<button class="pl-btn primary" onclick={() => (tab = 'find')}><InterfaceIcon name="Search" fallback={Search} size={15} /> Find players</button>{/if}
           </Empty>
         </div>
       {:else}
@@ -343,8 +344,8 @@
                   {:else}<span class="sub">Offline</span>{/if}
                 </div>
               </button>
-              <button class="pl-iconbtn msg" aria-label="Message {f.username}" onclick={() => openChat(f)}><MessageSquare size={17} />{#if f.unread}<span class="badge">{f.unread}</span>{/if}</button>
-              <button class="pl-iconbtn" aria-label="Invite {f.username} to play" onclick={() => askInvite(f)}><Gamepad2 size={17} /></button>
+              <button class="pl-iconbtn msg" aria-label="Message {f.username}" onclick={() => openChat(f)}><InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={17} />{#if f.unread}<span class="badge">{f.unread}</span>{/if}</button>
+              <button class="pl-iconbtn" aria-label="Invite {f.username} to play" onclick={() => askInvite(f)}><InterfaceIcon name="Gamepad2" fallback={Gamepad2} size={17} /></button>
             </div>
           {/each}
         </div>
@@ -352,7 +353,7 @@
 
       {#if outgoing.length}
         <section class="pl-card">
-          <div class="pl-card-head"><h2><Clock size={17} /> Waiting for an answer</h2></div>
+          <div class="pl-card-head"><h2><InterfaceIcon name="Clock" fallback={Clock} size={17} /> Waiting for an answer</h2></div>
           <div class="pl-list">
             {#each outgoing as f (f.uuid)}
               <div class="pl-item">
@@ -367,7 +368,7 @@
 
   {:else if tab === 'find'}
     <div class="pl-stack stackgap">
-      <div class="pl-search"><Search size={17} /><input class="pl-input" type="search" placeholder="Search players by name" bind:value={query} oninput={onQuery} autocomplete="off" aria-label="Search players" /></div>
+      <div class="pl-search"><InterfaceIcon name="Search" fallback={Search} size={17} /><input class="pl-input" type="search" placeholder="Search players by name" bind:value={query} oninput={onQuery} autocomplete="off" aria-label="Search players" /></div>
       {#if searching && !members.length}
         <div class="pl-stack" aria-busy="true">{#each [0, 1, 2, 3] as i}<div class="pl-skel" style="height:66px;border-radius:16px;animation-delay:{i * 80}ms"></div>{/each}</div>
       {:else if members.length === 0}
@@ -385,13 +386,13 @@
                 </div>
               </button>
               {#if rel === 'accepted'}
-                <button class="pl-btn sm" onclick={() => { const f = friends.find((x) => x.uuid === m.uuid); if (f) openChat(f); }}><MessageSquare size={14} /> Message</button>
+                <button class="pl-btn sm" onclick={() => { const f = friends.find((x) => x.uuid === m.uuid); if (f) openChat(f); }}><InterfaceIcon name="MessageSquare" fallback={MessageSquare} size={14} /> Message</button>
               {:else if rel === 'pending_outgoing'}
                 <span class="pl-chip">Requested</span>
               {:else if rel === 'pending_incoming'}
-                <button class="pl-btn primary sm" disabled={busyUuid === m.uuid} onclick={() => { const f = friends.find((x) => x.uuid === m.uuid); if (f) answer(f, true); }}><Check size={14} /> Accept</button>
+                <button class="pl-btn primary sm" disabled={busyUuid === m.uuid} onclick={() => { const f = friends.find((x) => x.uuid === m.uuid); if (f) answer(f, true); }}><InterfaceIcon name="Check" fallback={Check} size={14} /> Accept</button>
               {:else}
-                <button class="pl-btn primary sm" disabled={busyUuid === m.uuid} aria-busy={busyUuid === m.uuid} onclick={() => sendRequest(m.username, m.uuid)}>{#if busyUuid === m.uuid}<LoaderCircle size={14} class="spin" />{:else}<UserPlus size={14} />{/if} Add</button>
+                <button class="pl-btn primary sm" disabled={busyUuid === m.uuid} aria-busy={busyUuid === m.uuid} onclick={() => sendRequest(m.username, m.uuid)}>{#if busyUuid === m.uuid}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={14} class="spin" />{:else}<InterfaceIcon name="UserPlus" fallback={UserPlus} size={14} />{/if} Add</button>
               {/if}
             </div>
           {/each}
@@ -411,11 +412,11 @@
               <Avatar name={inv.sender_name} uuid={inv.sender_uuid} size={48} />
               <div class="grow">
                 <b>{inv.sender_name}</b> invited you to play
-                <div class="sub"><Server size={13} /> {inv.server_name ?? inv.instance_name} · {timeAgo(inv.created_at)}</div>
+                <div class="sub"><InterfaceIcon name="Server" fallback={Server} size={13} /> {inv.server_name ?? inv.instance_name} · {timeAgo(inv.created_at)}</div>
               </div>
             </div>
             <div class="pl-row-flex act">
-              <button class="pl-btn primary grow" disabled={answering === inv.id} aria-busy={answering === inv.id} onclick={() => respondInvite(inv, true)}><Check size={15} /> Accept</button>
+              <button class="pl-btn primary grow" disabled={answering === inv.id} aria-busy={answering === inv.id} onclick={() => respondInvite(inv, true)}><InterfaceIcon name="Check" fallback={Check} size={15} /> Accept</button>
               <button class="pl-btn" disabled={answering === inv.id} onclick={() => respondInvite(inv, false)}>Decline</button>
             </div>
           </div>
@@ -449,12 +450,12 @@
           <div class="blank"><Empty icon={MessageSquare} title="Pick a conversation" text="Choose a friend on the left to start chatting." /></div>
         {:else}
           <header class="thead">
-            <button class="pl-iconbtn back" aria-label="Back to conversations" onclick={closeChat}><ChevronLeft size={20} /></button>
+            <button class="pl-iconbtn back" aria-label="Back to conversations" onclick={closeChat}><InterfaceIcon name="ChevronLeft" fallback={ChevronLeft} size={20} /></button>
             <button class="who" onclick={() => openProfile(chat!.uuid)}>
               <span class="av"><Avatar name={chat.username} uuid={chat.uuid} size={40} /><i class="pl-dot" class:on={chat.online}></i></span>
               <span class="grow"><b>{chat.username}</b><span class="sub" class:on={chat.online}>{chat.online ? (chat.playing_on ? `Playing on ${chat.playing_on}` : 'Online now') : 'Offline'}</span></span>
             </button>
-            <button class="pl-iconbtn" aria-label="Invite to play" onclick={() => askInvite(chat!)}><Gamepad2 size={18} /></button>
+            <button class="pl-iconbtn" aria-label="Invite to play" onclick={() => askInvite(chat!)}><InterfaceIcon name="Gamepad2" fallback={Gamepad2} size={18} /></button>
           </header>
 
           <div class="msgs" bind:this={scroller} onscroll={() => (stick = near())}>
@@ -479,7 +480,7 @@
 
           <form class="composer" onsubmit={(e) => { e.preventDefault(); void send(); }}>
             <textarea bind:this={composer} bind:value={draft} rows="1" maxlength="1000" placeholder="Message {chat.username}" aria-label="Message" oninput={resize} onkeydown={onKey}></textarea>
-            <button class="send" aria-label="Send" disabled={!draft.trim()} aria-busy={sending}><Send size={18} /></button>
+            <button class="send" aria-label="Send" disabled={!draft.trim()} aria-busy={sending}><InterfaceIcon name="Send" fallback={Send} size={18} /></button>
           </form>
         {/if}
       </section>
@@ -497,7 +498,7 @@
         <button class="pl-item press srv" disabled={inviting !== null} onclick={() => sendInvite(s)}>
           <span class="pl-dot" class:on={s.online}></span>
           <div class="grow"><b>{s.name}</b><span class="sub">{s.online ? `${s.players_online}/${s.players_max} online` : 'Offline'}{#if s.mc_version} · {s.mc_version}{/if}</span></div>
-          {#if inviting === s.id}<LoaderCircle size={16} class="spin" />{:else}<Send size={16} />{/if}
+          {#if inviting === s.id}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={16} class="spin" />{:else}<InterfaceIcon name="Send" fallback={Send} size={16} />{/if}
         </button>
       {/each}
     </div>

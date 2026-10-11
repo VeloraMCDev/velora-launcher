@@ -1,4 +1,6 @@
 <script lang="ts" module>
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import type { Component } from 'svelte';
   export type PaletteItem = {
     id: string;
@@ -78,7 +80,7 @@
   <div class="backdrop" role="presentation" onclick={(e) => e.target === e.currentTarget && (open = false)}>
     <div class="palette" role="dialog" aria-modal="true" aria-label="Command palette">
       <label class="search">
-        <Search size={18} />
+        <InterfaceIcon name="Search" fallback={Search} size={18} />
         <input bind:this={input} bind:value={query} {placeholder} onkeydown={key} autocomplete="off" spellcheck="false" aria-label="Search" />
         <kbd>esc</kbd>
       </label>
@@ -87,10 +89,10 @@
           <div class="group">{g.group}</div>
           {#each g.rows as { it, index } (it.id)}
             <button class="item" class:on={index === cursor} onmousemove={() => (cursor = index)} onclick={() => choose(it)}>
-              <span class="ico">{#if it.icon}<it.icon size={16} />{/if}</span>
+              <span class="ico">{#if it.icon}<InterfaceIcon name={iconName(it.icon)} fallback={it.icon} size={16} />{/if}</span>
               <span class="lbl">{it.label}</span>
               {#if it.hint}<span class="hint">{it.hint}</span>{/if}
-              {#if index === cursor}<CornerDownLeft size={13} class="enter" />{/if}
+              {#if index === cursor}<InterfaceIcon name="CornerDownLeft" fallback={CornerDownLeft} size={13} class="enter" />{/if}
             </button>
           {/each}
         {:else}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { X, RefreshCw } from '@lucide/svelte';
   import MapViewer from '@velora/map/MapViewer.svelte';
@@ -39,8 +40,8 @@
       <div><strong>{serverName}</strong><span class="muted">Live Map{#if overlay} · {overlay.players.length} online{/if}</span></div>
     </div>
     <span class="grow"></span>
-    <button class="ghost sm" onclick={reload} title="Reload the map"><RefreshCw size={14} /> Reload</button>
-    <button class="ghost icon close" onclick={onclose} aria-label="Close live map"><X size={18} /></button>
+    <button class="ghost sm" onclick={reload} title="Reload the map"><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={14} /> Reload</button>
+    <button class="ghost icon close" onclick={onclose} aria-label="Close live map"><InterfaceIcon name="X" fallback={X} size={18} /></button>
   </header>
 
   <div class="stage">

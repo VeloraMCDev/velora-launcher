@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount, untrack } from 'svelte';
   import { Coins, Info } from '@lucide/svelte';
   import BetInput from './BetInput.svelte';
@@ -63,7 +64,7 @@
       <button class:on={side === 'tails'} role="radio" aria-checked={side === 'tails'} onclick={() => (side = 'tails')} disabled={busy}>🌑 Tails</button>
     </div>
     <BetInput bind:value={bet} min={cfg.min_bet} max={cfg.max_bet} {balance} disabled={busy} />
-    <p class="note"><Info size={13} /> Call it right and win {mult(cfg.payout)} your bet ({money(bet * cfg.payout)}). A pure 50/50 toss{#if st.config.chaos.enabled}, with the odd lucky surge or curse on a win{/if}.</p>
+    <p class="note"><InterfaceIcon name="Info" fallback={Info} size={13} /> Call it right and win {mult(cfg.payout)} your bet ({money(bet * cfg.payout)}). A pure 50/50 toss{#if st.config.chaos.enabled}, with the odd lucky surge or curse on a win{/if}.</p>
     {#if recent.length}<div class="chips" aria-label="Recent flips">{#each recent as r}<span class={r.win ? 'w' : 'l'}>{r.landed === 'heads' ? 'H' : 'T'}</span>{/each}</div>{/if}
   {/snippet}
   {#snippet action()}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Map as MapIcon, RefreshCw, RotateCcw, Image as ImageIcon, Users } from '@lucide/svelte';
   import MapViewer from '@velora/map/MapViewer.svelte';
@@ -95,19 +96,19 @@
 
 <section class="card map-card">
   <div class="heading">
-    <h2><MapIcon size={17} /> Velora Map</h2>
+    <h2><InterfaceIcon name="Map" fallback={MapIcon} size={17} /> Velora Map</h2>
     <span class="pill" class:ok={enabled}>{enabled ? 'On' : 'Off'}</span>
-    <button class="ghost icon" aria-label="Refresh" onclick={refresh}><RefreshCw size={15} /></button>
-    <button class="ghost sm" onclick={() => (resetOpen = true)} disabled={!enabled}><RotateCcw size={14} /> Redraw world</button>
+    <button class="ghost icon" aria-label="Refresh" onclick={refresh}><InterfaceIcon name="RefreshCw" fallback={RefreshCw} size={15} /></button>
+    <button class="ghost sm" onclick={() => (resetOpen = true)} disabled={!enabled}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={14} /> Redraw world</button>
   </div>
 
   {#if !enabled}
     <p class="muted small">The map is off for this server. Switch it on in the server's settings and the plugin or mod starts drawing the world.</p>
   {:else}
     <div class="stats">
-      <div><ImageIcon size={14} /><span>Tiles</span><strong>{totalTiles.toLocaleString()}</strong></div>
+      <div><InterfaceIcon name="Image" fallback={ImageIcon} size={14} /><span>Tiles</span><strong>{totalTiles.toLocaleString()}</strong></div>
       <div><span>Size</span><strong>{formatBytes(totalBytes)}</strong></div>
-      <div><Users size={14} /><span>Online</span><strong>{status?.players ?? 0}</strong></div>
+      <div><InterfaceIcon name="Users" fallback={Users} size={14} /><span>Online</span><strong>{status?.players ?? 0}</strong></div>
       <div><span>Last tiles</span><strong>{status?.stats.last_upload_at ? timeAgo(status.stats.last_upload_at) : '—'}</strong></div>
       <div><span>Last players</span><strong>{status?.stats.last_players_at ? timeAgo(status.stats.last_players_at) : '—'}</strong></div>
     </div>

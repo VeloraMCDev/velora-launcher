@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { ImageUp, Trash2, Save, Plus } from '@lucide/svelte';
   import AssetPicker from './AssetPicker.svelte';
   import BaseItemPicker from './BaseItemPicker.svelte';
@@ -70,7 +72,7 @@
 
 <section class="ce">
   <header>
-    <span class="badge" style:--c={meta.color}><meta.icon size={18} /></span>
+    <span class="badge" style:--c={meta.color}><InterfaceIcon name={iconName(meta.icon)} fallback={meta.icon} size={18} /></span>
     <div><b>{isNew ? `New ${meta.label.toLowerCase()}` : doc.title}</b><small>{meta.blurb}</small></div>
   </header>
 
@@ -86,7 +88,7 @@
         <b>Appearance</b>
         <small>{display.model ? `Model ${display.model}` : display.texture ? `Texture ${display.texture}` : 'Drop a PNG, upload one, or pick a texture or 3D model from your server assets.'}</small>
         <div class="row">
-          <button type="button" class="ghost" disabled={busy} onclick={() => fileInput?.click()}><ImageUp size={14} /> Upload PNG</button>
+          <button type="button" class="ghost" disabled={busy} onclick={() => fileInput?.click()}><InterfaceIcon name="ImageUp" fallback={ImageUp} size={14} /> Upload PNG</button>
           <input bind:this={fileInput} type="file" accept="image/png" hidden onchange={(e) => upload(e.currentTarget.files?.[0])} />
           <AssetPicker kind="texture" onpick={(r) => chooseLook('texture', r)} />
           <AssetPicker kind="model" onpick={(r) => chooseLook('model', r)} />
@@ -102,13 +104,13 @@
             <div class="stage">
               <span class="n">{i + 1}</span>
               <span class="what">{st.model ?? st.texture ?? 'pick a look'}</span>
-              <button class="ghost sm" disabled={busy} onclick={() => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/png'; inp.onchange = () => upload(inp.files?.[0], i); inp.click(); }}><ImageUp size={13} /></button>
+              <button class="ghost sm" disabled={busy} onclick={() => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/png'; inp.onchange = () => upload(inp.files?.[0], i); inp.click(); }}><InterfaceIcon name="ImageUp" fallback={ImageUp} size={13} /></button>
               <AssetPicker kind="texture" label="Texture" onpick={(r) => setStages(stages.map((s, j) => (j === i ? { ...s, texture: r, model: undefined } : s)))} />
               <AssetPicker kind="model" label="Model" onpick={(r) => setStages(stages.map((s, j) => (j === i ? { ...s, model: r, texture: undefined } : s)))} />
-              <button class="ghost sm" aria-label="Remove stage" disabled={stages.length <= 2} onclick={() => setStages(stages.filter((_, j) => j !== i))}><Trash2 size={13} /></button>
+              <button class="ghost sm" aria-label="Remove stage" disabled={stages.length <= 2} onclick={() => setStages(stages.filter((_, j) => j !== i))}><InterfaceIcon name="Trash2" fallback={Trash2} size={13} /></button>
             </div>
           {/each}
-          <button class="ghost" onclick={addStage} disabled={stages.length >= 8}><Plus size={14} /> Add a stage</button>
+          <button class="ghost" onclick={addStage} disabled={stages.length >= 8}><InterfaceIcon name="Plus" fallback={Plus} size={14} /> Add a stage</button>
         </div>
       {/if}
 
@@ -120,8 +122,8 @@
       <div class="card"><ContentFields kind={doc.kind} title={doc.title} bind:v={doc.spec} /></div>
 
       <div class="actions">
-        <button class="primary" onclick={save} disabled={busy || !doc.title.trim()}><Save size={15} /> {isNew ? 'Create' : 'Save'}</button>
-        {#if !isNew}<button class="danger" onclick={remove}><Trash2 size={15} /> Delete</button>{/if}
+        <button class="primary" onclick={save} disabled={busy || !doc.title.trim()}><InterfaceIcon name="Save" fallback={Save} size={15} /> {isNew ? 'Create' : 'Save'}</button>
+        {#if !isNew}<button class="danger" onclick={remove}><InterfaceIcon name="Trash2" fallback={Trash2} size={15} /> Delete</button>{/if}
         {#if !isNew}<span class="cmd"><code>/customitem give &lt;player&gt; {doc.id}</code></span>{/if}
       </div>
     </div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Minus, Plus } from '@lucide/svelte';
   import { money } from './casino';
   import { betPresets, hotkeys, stepBet } from './hotkeys';
@@ -24,12 +25,12 @@
 <div class="bet" class:off={disabled}>
   <div class="top"><span>{label}</span><small>Balance {money(balance)}</small></div>
   <div class="amount">
-    <button type="button" class="step" {disabled} onclick={() => set(stepBet(value, -1, min, cap))} aria-label="Lower the bet" title="Lower (↓)"><Minus size={16} /></button>
+    <button type="button" class="step" {disabled} onclick={() => set(stepBet(value, -1, min, cap))} aria-label="Lower the bet" title="Lower (↓)"><InterfaceIcon name="Minus" fallback={Minus} size={16} /></button>
     <label class="field">
       <span class="sym">$</span>
       <input type="number" {min} max={cap} step="1" {disabled} bind:value onchange={() => (value = clamp(Number(value) || min))} aria-label={label} />
     </label>
-    <button type="button" class="step" {disabled} onclick={() => set(stepBet(value, 1, min, cap))} aria-label="Raise the bet" title="Raise (↑)"><Plus size={16} /></button>
+    <button type="button" class="step" {disabled} onclick={() => set(stepBet(value, 1, min, cap))} aria-label="Raise the bet" title="Raise (↑)"><InterfaceIcon name="Plus" fallback={Plus} size={16} /></button>
   </div>
   {#if presets.length}
     <div class="chips" role="group" aria-label="Common bets" style="--n:{presets.length}">

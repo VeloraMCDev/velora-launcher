@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Swords, Plus, Search, Clock, Lock, Check, X as XIcon, Ban } from '@lucide/svelte';
   import Avatar from './Avatar.svelte';
@@ -67,10 +68,10 @@
 <div class="wrap">
   <header class="intro">
     <div>
-      <h2><Swords size={20} /> Bet on players</h2>
+      <h2><InterfaceIcon name="Swords" fallback={Swords} size={20} /> Bet on players</h2>
       <p>Will someone reach a target before time runs out? Back <b>Yes</b> or <b>No</b>. The winning side splits the whole pool{data ? ` (the house keeps ${data.rules.rake_percent}%)` : ''}. If nobody takes the other side, everyone is refunded.</p>
     </div>
-    {#if data?.enabled && data.can_create}<button class="primary" onclick={() => (creating = !creating)}><Plus size={15} /> {creating ? 'Close' : 'Open a bet'}</button>{/if}
+    {#if data?.enabled && data.can_create}<button class="primary" onclick={() => (creating = !creating)}><InterfaceIcon name="Plus" fallback={Plus} size={15} /> {creating ? 'Close' : 'Open a bet'}</button>{/if}
   </header>
 
   {#if data && !data.enabled}<p class="note">Betting is switched off right now.</p>{/if}
@@ -83,7 +84,7 @@
         {#if subject}
           <div class="chosen"><Avatar name={subject.name} uuid={subject.uuid} size={2.2} /><b>{subject.name}</b><button class="ghost sm" onclick={() => (subject = null)}>Change</button></div>
         {:else}
-          <label class="search"><Search size={15} /><input placeholder="Find a player…" bind:value={query} /></label>
+          <label class="search"><InterfaceIcon name="Search" fallback={Search} size={15} /><input placeholder="Find a player…" bind:value={query} /></label>
           <div class="results">{#each found.filter((p) => p.uuid !== st.me.uuid) as p (p.uuid)}<button class="player" onclick={() => (subject = p)}><Avatar name={p.name} uuid={p.uuid} size={1.8} /><span>{p.name}</span>{#if p.online}<i class="on"></i>{/if}</button>{/each}</div>
         {/if}
       </div>
@@ -115,7 +116,7 @@
           <div class="head">
             <Avatar name={m.subject} uuid={m.subject_uuid} size={2.6} />
             <div class="title"><span><b>{m.subject}</b> reaches <b>{m.threshold}</b> {m.metric_label}?</span><small>opened by {m.creator} · {m.bettors} bet{m.bettors === 1 ? '' : 's'}</small></div>
-            <span class="time" class:lock>{#if lock}<Lock size={13} /> Betting closed · result in {untilText(m.ends_at, now)}{:else}<Clock size={13} /> {untilText(m.locks_at, now)} to bet{/if}</span>
+            <span class="time" class:lock>{#if lock}<InterfaceIcon name="Lock" fallback={Lock} size={13} /> Betting closed · result in {untilText(m.ends_at, now)}{:else}<InterfaceIcon name="Clock" fallback={Clock} size={13} /> {untilText(m.locks_at, now)} to bet{/if}</span>
           </div>
           <div class="prog" title="{m.progress} of {m.threshold} so far"><i style="width:{Math.min(100, (m.progress / m.threshold) * 100)}%"></i><span>{m.progress} / {m.threshold}</span></div>
           <div class="pool">
@@ -127,8 +128,8 @@
             <div class="place">
               <BetInput bind:value={stake} min={data!.rules.min_stake} max={data!.rules.max_stake} {balance} label="Stake" disabled={busy} />
               <div class="sides">
-                <button class="yes" disabled={busy || mineSide(m) === 'no'} onclick={() => place(m, 'yes')}><Check size={15} /> Back Yes</button>
-                <button class="no" disabled={busy || mineSide(m) === 'yes'} onclick={() => place(m, 'no')}><XIcon size={15} /> Back No</button>
+                <button class="yes" disabled={busy || mineSide(m) === 'no'} onclick={() => place(m, 'yes')}><InterfaceIcon name="Check" fallback={Check} size={15} /> Back Yes</button>
+                <button class="no" disabled={busy || mineSide(m) === 'yes'} onclick={() => place(m, 'no')}><InterfaceIcon name="X" fallback={XIcon} size={15} /> Back No</button>
               </div>
               {#if mineSide(m)}<small class="muted">You can add to your bet, but not switch sides.</small>{/if}
             </div>
@@ -136,7 +137,7 @@
           <div class="foot">
             {#if m.subject_uuid === st.me.uuid}<span class="muted">You can't bet on yourself.</span>
             {:else if !lock}<button class="ghost sm" onclick={() => (openId = openId === m.id ? null : m.id)}>{openId === m.id ? 'Hide' : mineSide(m) ? 'Add to your bet' : 'Place a bet'}</button>{/if}
-            {#if (m.mine_creator || st.me.admin) && m.bettors === 0}<button class="ghost sm" onclick={() => cancel(m)}><Ban size={13} /> Cancel</button>{/if}
+            {#if (m.mine_creator || st.me.admin) && m.bettors === 0}<button class="ghost sm" onclick={() => cancel(m)}><InterfaceIcon name="Ban" fallback={Ban} size={13} /> Cancel</button>{/if}
           </div>
         </article>
       {:else}<p class="note">No open bets. {data?.can_create ? 'Open one and see who dares.' : 'Check back soon.'}</p>{/each}

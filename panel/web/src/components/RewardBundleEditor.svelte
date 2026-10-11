@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   import { Coins, Package, KeyRound, Users, Map as MapIcon, Award, MessageSquare, Terminal, Plus, X, Gift, Sparkles } from '@lucide/svelte';
   import { get } from '../lib/api';
   import type { RewardAction } from '../lib/rewards';
@@ -50,15 +52,15 @@
 
 <section class="bundle">
   <header>
-    <span class="head"><Gift size={16} /> Extra rewards <small>{actions.length ? `${actions.length} attached` : 'none yet'}</small></span>
-    <button type="button" class="ghost sm" onclick={() => (adding = !adding)}><Plus size={14} /> Add reward</button>
+    <span class="head"><InterfaceIcon name="Gift" fallback={Gift} size={16} /> Extra rewards <small>{actions.length ? `${actions.length} attached` : 'none yet'}</small></span>
+    <button type="button" class="ghost sm" onclick={() => (adding = !adding)}><InterfaceIcon name="Plus" fallback={Plus} size={14} /> Add reward</button>
   </header>
 
   {#if adding}
     <div class="menu">
       {#each kinds as k}
         {@const Icon = k.icon}
-        <button type="button" class="kind" onclick={() => add(k.id)}><Icon size={16} /><strong>{k.label}</strong><small>{k.blurb}</small></button>
+        <button type="button" class="kind" onclick={() => add(k.id)}><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={16} /><strong>{k.label}</strong><small>{k.blurb}</small></button>
       {/each}
     </div>
   {/if}
@@ -66,7 +68,7 @@
   {#each actions as a, i}
     {@const Icon = meta(a.type).icon}
     <div class="row">
-      <span class="ic"><Icon size={16} /></span>
+      <span class="ic"><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={16} /></span>
       <div class="fields">
         <strong class="kind-name">{meta(a.type).label}</strong>
         {#if a.type === 'money'}
@@ -108,7 +110,7 @@
           </label>
         {/if}
       </div>
-      <button type="button" class="ghost icon" onclick={() => remove(i)} aria-label="Remove reward"><X size={15} /></button>
+      <button type="button" class="ghost icon" onclick={() => remove(i)} aria-label="Remove reward"><InterfaceIcon name="X" fallback={X} size={15} /></button>
     </div>
   {/each}
   <datalist id="reward-items">{#each items as it}<option value={it}></option>{/each}</datalist>

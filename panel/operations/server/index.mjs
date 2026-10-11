@@ -21,7 +21,7 @@ const SECURITY_HEADERS = {
   'x-content-type-options': 'nosniff',
   'referrer-policy': 'same-origin',
   'x-frame-options': 'DENY',
-  'content-security-policy': "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
+  'content-security-policy': "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
   'permissions-policy': 'camera=(), microphone=(), geolocation=()',
 };
 
@@ -118,6 +118,24 @@ route('GET', '/api/jobs/([0-9a-f-]{36})', (req, res, s, [id]) => {
 });
 
 // ----- Panel activity (proxied with the admin's own Panel token) -----
+// Read-only public presentation metadata and public icon assets from the fixed Panel origin.
+route('GET', '/api/panel/branding', async (req, res) => {
+  const manifest = await auth.panelFetch('/api/v1/launcher/manifest');
+  send(res, 200, { interface_icons: manifest.branding?.interface_icons ?? {} });
+}, { open: true });
+route('GET', '/api/panel/icon', async (req, res, s) => {
+  const value = new URL(req.url, 'http://ops').searchParams.get('value') ?? '';
+  const icon = /^iconify:([a-z0-9-]+):([a-z0-9_-]+)(?:@([0-9a-f]{3}|[0-9a-f]{6}))?$/i.exec(value);
+  let path;
+  if (icon) path = `/api/v1/icons/${icon[1]}/${icon[2]}.svg${icon[3] ? '?color=' + icon[3] : ''}`;
+  else if (/^\/uploads\/[a-z0-9_./-]+$/i.test(value) && !value.includes('..')) path = value;
+  else return send(res, 400, { error: 'Invalid icon reference' });
+  const response = await fetch(auth.PANEL_INTERNAL_URL + path, { signal: AbortSignal.timeout(10_000) });
+  if (!response.ok) return send(res, response.status, 'Icon unavailable');
+  const type = response.headers.get('content-type') ?? '';
+  if (!type.startsWith('image/')) return send(res, 400, 'Not an image');
+  send(res, 200, Buffer.from(await response.arrayBuffer()), { 'content-type': type, 'cache-control': 'public, max-age=300' });
+}, { open: true });
 route('GET', '/api/panel/summary', async (req, res, s) => send(res, 200, await auth.panelFetch('/api/admin/operations/summary', { token: s.token })));
 route('GET', '/api/panel/activity', async (req, res, s) => {
   const q = new URL(req.url, 'http://ops').searchParams;

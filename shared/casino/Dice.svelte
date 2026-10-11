@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount, untrack } from 'svelte';
   import { Dices, Info } from '@lucide/svelte';
   import BetInput from './BetInput.svelte';
@@ -76,7 +77,7 @@
       <input class="fancy" type="range" min="0" max="100" step="0.1" value={sliderPos} oninput={(e) => (chance = fromSlider(Number(e.currentTarget.value)))} disabled={busy} style="--p:{sliderPos}%" aria-label="Win chance" />
       <div class="stats"><div><span>Pays</span><b>{mult(pays)}</b></div><div><span>{over ? 'Roll over' : 'Roll under'}</span><b>{target.toFixed(2)}</b></div><div><span>Win</span><b class="g">+{money(bet * pays - bet)}</b></div></div>
     </div>
-    <p class="note"><Info size={13} /> You choose the odds: the smaller the chance, the bigger the payout. Pays back {(st.rtp.dice * 100).toFixed(0)}% over time{#if st.config.chaos.enabled}, plus the odd surge or curse on wins{/if}.</p>
+    <p class="note"><InterfaceIcon name="Info" fallback={Info} size={13} /> You choose the odds: the smaller the chance, the bigger the payout. Pays back {(st.rtp.dice * 100).toFixed(0)}% over time{#if st.config.chaos.enabled}, plus the odd surge or curse on wins{/if}.</p>
     {#if recent.length}<div class="chips" aria-label="Recent rolls">{#each recent as r}<span class={r.win ? 'w' : 'l'}>{r.roll.toFixed(2)}</span>{/each}</div>{/if}
   {/snippet}
   {#snippet action()}

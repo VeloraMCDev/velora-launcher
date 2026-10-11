@@ -4,6 +4,8 @@
   import { get, post, put } from '../lib/api';
   import { toast, toastError } from '../lib/toast.svelte';
   import { route } from '../lib/router.svelte';
+  import GuideEditor from '../components/GuideEditor.svelte';
+  import InterfaceIconsEditor from '../components/InterfaceIconsEditor.svelte';
   import InstanceGroupLinks from '../components/InstanceGroupLinks.svelte';
   import DarknetCatalog from '../components/DarknetCatalog.svelte';
   import type { Branding } from '../lib/types';
@@ -104,6 +106,8 @@
   {/if}
   <section><h2>Instance identity</h2>
     {#if form.branding}
+      <h3>Player Guide</h3><GuideEditor bind:value={form.branding.player_guide} />
+      <h3>Interface icons</h3><InterfaceIconsEditor bind:value={form.branding.interface_icons} />
       <label>Name<input bind:value={form.branding.name} /></label>
       <label>Tagline<input bind:value={form.branding.tagline} /></label>
       <label>Logo URL<input bind:value={form.branding.logo_url} /></label>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { Plus, X, ArrowUp, ArrowDown, Sparkles } from '@lucide/svelte';
   import McTextInput from './McTextInput.svelte';
   import { spans } from '../lib/mccolor';
@@ -28,16 +29,16 @@
       {#each lines as line, i (i)}
         <div class="row">
           <div class="ctl">
-            <button type="button" aria-label="Move up" disabled={i === 0} onclick={() => move(i, -1)}><ArrowUp size={13} /></button>
-            <button type="button" aria-label="Move down" disabled={i === lines.length - 1} onclick={() => move(i, 1)}><ArrowDown size={13} /></button>
+            <button type="button" aria-label="Move up" disabled={i === 0} onclick={() => move(i, -1)}><InterfaceIcon name="ArrowUp" fallback={ArrowUp} size={13} /></button>
+            <button type="button" aria-label="Move down" disabled={i === lines.length - 1} onclick={() => move(i, 1)}><InterfaceIcon name="ArrowDown" fallback={ArrowDown} size={13} /></button>
           </div>
           <div class="in"><McTextInput compact showPreview={false} base="#aa00aa" placeholder="Line {i + 1}" bind:value={() => lines[i], (v) => set(i, v)} /></div>
-          <button type="button" class="del" aria-label="Remove line" onclick={() => remove(i)}><X size={14} /></button>
+          <button type="button" class="del" aria-label="Remove line" onclick={() => remove(i)}><InterfaceIcon name="X" fallback={X} size={14} /></button>
         </div>
       {/each}
       <div class="add">
-        <button type="button" class="addbtn" onclick={add} disabled={lines.length >= max}><Plus size={14} /> Add a line</button>
-        <span class="snips"><Sparkles size={12} />{#each SNIPPETS as [n, md]}<button type="button" class="snip" onclick={() => { if (lines.length < max) lines = [...lines, markdownToAmp(md)]; }}>{n}</button>{/each}</span>
+        <button type="button" class="addbtn" onclick={add} disabled={lines.length >= max}><InterfaceIcon name="Plus" fallback={Plus} size={14} /> Add a line</button>
+        <span class="snips"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={12} />{#each SNIPPETS as [n, md]}<button type="button" class="snip" onclick={() => { if (lines.length < max) lines = [...lines, markdownToAmp(md)]; }}>{n}</button>{/each}</span>
       </div>
     </div>
     <aside class="tip" aria-label="Item tooltip preview">

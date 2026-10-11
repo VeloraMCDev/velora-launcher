@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '../components/InterfaceIcon.svelte';
   import { LoaderCircle, LockKeyhole } from '@lucide/svelte';
   import { signIn } from '../lib/state.svelte';
 
@@ -29,7 +30,7 @@
     <label class="field">Password<input type="password" bind:value={password} autocomplete="current-password" required /></label>
     {#if error}<div class="error" role="alert">{error}</div>{/if}
     <button class="primary" type="submit" disabled={busy || !username || !password}>
-      {#if busy}<LoaderCircle size={16} class="spin" />{:else}<LockKeyhole size={16} />{/if} Sign in
+      {#if busy}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={16} class="spin" />{:else}<InterfaceIcon name="LockKeyhole" fallback={LockKeyhole} size={16} />{/if} Sign in
     </button>
     <p class="tiny faint">Every action is recorded in the audit log. Sessions last 12 hours.</p>
   </form>

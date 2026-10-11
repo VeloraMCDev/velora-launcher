@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   // The gamble offered after a win: risk the winnings for a chance to double them. Taking it flips a coin on the server; a win
   // can be doubled again, up to the streak limit. Declining costs nothing, the winnings are already in the balance.
   import { onMount, untrack } from 'svelte';
@@ -66,11 +67,11 @@
     </div>
     {#if cur}
       <div class="btns">
-        <button class="go" onclick={take} disabled={busy || expired}><Flame size={16} /> {busy ? 'Flipping…' : 'Double'}</button>
-        <button class="no ghost" onclick={() => { cur = null; hidden = true; }} disabled={busy} aria-label="Keep the winnings"><Coins size={15} /> Keep it</button>
+        <button class="go" onclick={take} disabled={busy || expired}><InterfaceIcon name="Flame" fallback={Flame} size={16} /> {busy ? 'Flipping…' : 'Double'}</button>
+        <button class="no ghost" onclick={() => { cur = null; hidden = true; }} disabled={busy} aria-label="Keep the winnings"><InterfaceIcon name="Coins" fallback={Coins} size={15} /> Keep it</button>
       </div>
     {:else}
-      <button class="x ghost icon" onclick={() => (hidden = true)} aria-label="Dismiss"><X size={15} /></button>
+      <button class="x ghost icon" onclick={() => (hidden = true)} aria-label="Dismiss"><InterfaceIcon name="X" fallback={X} size={15} /></button>
     {/if}
   </div>
 {/if}

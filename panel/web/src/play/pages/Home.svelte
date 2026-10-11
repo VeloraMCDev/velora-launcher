@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { playPath } from '../../lib/router.svelte';
   import { enabled, pageEnabled } from '@velora/experience';
   import ExperienceWidgets from '@velora/experience/ExperienceWidgets.svelte';
@@ -107,7 +109,7 @@
     {/if}
     {#if enabled(instance?.experience, 'progression')}<div class="xp">
       {#if level}
-        <div class="xrow"><span class="lv"><Sparkles size={13} /> Level {level.global_level}{level.title ? ` · ${level.title}` : ''}</span><span>{num(level.global_xp)} XP</span></div>
+        <div class="xrow"><span class="lv"><InterfaceIcon name="Sparkles" fallback={Sparkles} size={13} /> Level {level.global_level}{level.title ? ` · ${level.title}` : ''}</span><span>{num(level.global_xp)} XP</span></div>
         <div class="pl-progress"><i style="width: {Math.max(3, level.progress_pct)}%"></i></div>
         <small>{Math.round(level.progress_pct)}% to level {level.global_level + 1}</small>
       {:else}<div class="pl-skel" style="height: 38px"></div>{/if}
@@ -119,7 +121,7 @@
   <div class="tilesbar pl-scroll-x" aria-label="Quick actions">
     {#each tiles as t, i (t.id)}{@const I = t.icon}
       <a class="qt" href={playPath(t.id)} style="--h: var({t.hue}); --i: {i}">
-        <span class="qi"><I size={22} /></span><span>{t.label}</span>
+        <span class="qi"><InterfaceIcon name={iconName(I)} fallback={I} size={22} /></span><span>{t.label}</span>
         {#if t.id === 'quests' && readyToClaim}<em>{readyToClaim}</em>{/if}
         {#if t.id === 'social' && (incoming.length + unread)}<em>{incoming.length + unread}</em>{/if}
         {#if t.id === 'casino' && spins}<em>{spins}</em>{/if}
@@ -129,15 +131,15 @@
 
   {#if spins}
     <a class="freespin pl-card" href={playPath('casino')}>
-      <span class="gift"><Gift size={26} /></span>
+      <span class="gift"><InterfaceIcon name="Gift" fallback={Gift} size={26} /></span>
       <div class="grow"><b>{spins} free spin{spins === 1 ? '' : 's'} today</b><span>Daily casino spin on {server?.name} — tap to play</span></div>
-      <ChevronRight size={20} />
+      <InterfaceIcon name="ChevronRight" fallback={ChevronRight} size={20} />
     </a>
   {/if}
 
   <div class="pl-grid cols" style="--min: 330px">
     <section class="pl-card">
-      <div class="pl-card-head"><h2><ServerIcon size={17} /> Servers</h2></div>
+      <div class="pl-card-head"><h2><InterfaceIcon name="Server" fallback={ServerIcon} size={17} /> Servers</h2></div>
       {#if !play.loaded}
         <div class="pl-skel" style="height: 62px"></div>
       {:else if play.servers.length}
@@ -155,7 +157,7 @@
 
     {#if enabled(instance?.experience, 'quests')}
     <section class="pl-card">
-      <div class="pl-card-head"><h2><Target size={17} /> Today's quests</h2><a class="more" href={playPath('quests')}>All quests</a></div>
+      <div class="pl-card-head"><h2><InterfaceIcon name="Target" fallback={Target} size={17} /> Today's quests</h2><a class="more" href={playPath('quests')}>All quests</a></div>
       {#if quests == null}
         {#each Array(3) as _, i (i)}<div class="pl-skel" style="height: 50px; margin-bottom: 8px"></div>{/each}
       {:else if shownQ.length}
@@ -165,8 +167,8 @@
               <div class="qtop"><b>{q.quest.title}</b><span class="pl-chip accent">+{q.quest.xp_reward} XP</span></div>
               <div class="pl-progress thin"><i style="width: {pct(q)}%"></i></div>
               <div class="qbot"><small>{prog(q)} / {q.quest.target_count}</small>
-                {#if q.claimed}<span class="pl-chip good"><Check size={12} /> Claimed</span>
-                {:else if q.completed}<button class="pl-btn sm primary" aria-busy={claiming === q.quest.id} disabled={!!claiming} onclick={() => claim(q)}><Gift size={13} /> Claim</button>{/if}</div>
+                {#if q.claimed}<span class="pl-chip good"><InterfaceIcon name="Check" fallback={Check} size={12} /> Claimed</span>
+                {:else if q.completed}<button class="pl-btn sm primary" aria-busy={claiming === q.quest.id} disabled={!!claiming} onclick={() => claim(q)}><InterfaceIcon name="Gift" fallback={Gift} size={13} /> Claim</button>{/if}</div>
             </div>
           {/each}
         </div>
@@ -176,7 +178,7 @@
     {/if}
 
     <section class="pl-card">
-      <div class="pl-card-head"><h2><Users size={17} /> Friends</h2><a class="more" href={playPath('social')}>Open</a></div>
+      <div class="pl-card-head"><h2><InterfaceIcon name="Users" fallback={Users} size={17} /> Friends</h2><a class="more" href={playPath('social')}>Open</a></div>
       {#if friends == null}
         <div class="pl-skel" style="height: 56px"></div>
       {:else}
@@ -199,13 +201,13 @@
 
     {#if watching.length}
       <section class="pl-card">
-        <div class="pl-card-head"><h2><Flame size={17} /> Auctions to watch</h2><a class="more" href={playPath('market')}>Market</a></div>
+        <div class="pl-card-head"><h2><InterfaceIcon name="Flame" fallback={Flame} size={17} /> Auctions to watch</h2><a class="more" href={playPath('market')}>Market</a></div>
         <div class="pl-list">
           {#each watching as a (a.id)}
             <a class="pl-item press" href={playPath('market')}>
               <MoneyItem id={a.item_id} amount={a.amount} size={42} />
               <div class="grow"><b>{stripColors(a.item_name)}</b><span class="sub">{a.leading ? 'You lead' : 'Your auction'} · {money(a.current_bid ?? a.price)}</span></div>
-              <div class="end"><span class="pl-chip" class:warn={parseTime(a.ends_at ?? '') - now < 600e3}><Clock size={11} /> {timeLeft(a.ends_at, now)}</span></div>
+              <div class="end"><span class="pl-chip" class:warn={parseTime(a.ends_at ?? '') - now < 600e3}><InterfaceIcon name="Clock" fallback={Clock} size={11} /> {timeLeft(a.ends_at, now)}</span></div>
             </a>
           {/each}
         </div>
@@ -213,7 +215,7 @@
     {/if}
 
     <section class="pl-card news">
-      <div class="pl-card-head"><h2><Newspaper size={17} /> News</h2></div>
+      <div class="pl-card-head"><h2><InterfaceIcon name="Newspaper" fallback={Newspaper} size={17} /> News</h2></div>
       {#if !play.manifest}
         <div class="pl-skel" style="height: 80px"></div>
       {:else if news.length}

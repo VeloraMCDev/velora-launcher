@@ -3,6 +3,8 @@ export interface NewsItem { id: string; title: string; body: string; image_url: 
 export interface SocialLink { label: string; url: string; icon: string }
 
 export interface Branding {
+  player_guide?: PlayerGuide | null;
+  interface_icons?: Record<string, string>;
   name: string;
   tagline: string;
   logo_url: string | null;
@@ -18,4 +20,19 @@ export interface Branding {
   about: { title: string; icon_url: string | null; body: string; links: SocialLink[] };
   features: { news: boolean; server_status: boolean; allow_user_theme: boolean; allow_advanced_java: boolean };
   custom_css: string;
+}
+
+export interface GuideArticle {
+  id: string;
+  category: string;
+  title: string;
+  body: string;
+  icon: string;
+  links: { label: string; url: string }[];
+}
+export interface PlayerGuide {
+  title: string;
+  introduction: string;
+  show_commands: boolean;
+  articles: GuideArticle[];
 }

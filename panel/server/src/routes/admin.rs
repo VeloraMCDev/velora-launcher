@@ -169,6 +169,7 @@ pub async fn get_branding(_: AdminUser, State(state): State<AppState>) -> AppRes
 
 pub async fn put_branding(_: AdminUser, State(state): State<AppState>, Json(b): Json<Branding>) -> AppResult<Json<Branding>> {
     velora_panel_settings::validate_branding_name(&b.name).map_err(|e| AppError::bad_request(e.0))?;
+    b.validate_presentation().map_err(AppError::bad_request)?;
     store::kv_set(&state, "branding", &b).await?;
     Ok(Json(b))
 }
@@ -221,6 +222,7 @@ pub struct InstanceInput {
     icon_url: Option<String>,
     banner_url: Option<String>,
     logo_url: Option<String>,
+    logo_layout: Option<velora_shared::LogoLayout>,
     mc_version: String,
     loader: Loader,
     loader_version: Option<String>,
@@ -235,6 +237,7 @@ pub struct InstanceInput {
 }
 
 async fn validated(state: &AppState, mut input: InstanceInput) -> AppResult<InstanceInput> {
+    if let Some(layout) = input.logo_layout { layout.validate().map_err(AppError::bad_request)?; }
     input.name = input.name.trim().to_string();
     if input.name.is_empty() {
         return Err(AppError::bad_request("give the instance a name"));
@@ -279,6 +282,14 @@ fn instance_write(input: &InstanceInput) -> AppResult<velora_panel_instances::mu
     })
 }
 
+async fn save_logo_layout(state: &AppState, id: &str, layout: Option<velora_shared::LogoLayout>) -> AppResult<()> {
+    if let Some(layout) = layout {
+        sqlx::query("UPDATE instances SET experience=json_set(COALESCE(NULLIF(experience, ''), '{}'), '$.modules.launcher_presentation', json(?)) WHERE id=?")
+            .bind(serde_json::to_string(&layout)?).bind(id).execute(&state.platform_db).await?;
+    }
+    Ok(())
+}
+
 pub async fn create_instance(
     _: AdminUser,
     State(state): State<AppState>,
@@ -292,6 +303,7 @@ pub async fn create_instance(
         sqlx::query("UPDATE instances SET experience=? WHERE id=?")
             .bind(serde_json::to_string(&crate::velora_core::preset())?).bind(&id).execute(&state.db).await?;
     }
+    save_logo_layout(&state, &id, input.logo_layout).await?;
     detail(&state, id).await.map(|Json(v)| Json(v.instance))
 }
 
@@ -323,6 +335,7 @@ pub async fn update_instance(
     // admin explicitly changes them here.
     let label = if existing.source_kind == "vanilla" { format!("Minecraft {}", input.mc_version) } else { existing.source_label.clone() };
     velora_panel_instances::mutations::update_instance(&state.db, &id, &instance_write(&input)?, &label, &crate::db::now()).await?;
+    save_logo_layout(&state, &id, input.logo_layout).await?;
     detail(&state, id).await
 }
 

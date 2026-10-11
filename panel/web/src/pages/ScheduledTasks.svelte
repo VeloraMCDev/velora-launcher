@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Play, Clock, CircleCheck, CircleAlert, ChevronDown, Save, Lock, Loader } from '@lucide/svelte';
   import Toggle from '../components/Toggle.svelte';
@@ -86,11 +87,11 @@
         <article class="card task" class:off={t.driven && !t.enabled}>
           <div class="row">
             <span class="state" class:ok={t.last_ok === true} class:bad={t.last_ok === false}>
-              {#if t.last_ok === false}<CircleAlert size={18} />{:else if t.last_ok}<CircleCheck size={18} />{:else}<Clock size={18} />{/if}
+              {#if t.last_ok === false}<InterfaceIcon name="CircleAlert" fallback={CircleAlert} size={18} />{:else if t.last_ok}<InterfaceIcon name="CircleCheck" fallback={CircleCheck} size={18} />{:else}<InterfaceIcon name="Clock" fallback={Clock} size={18} />{/if}
             </span>
             <div class="main">
               <h3>{t.name}
-                {#if !t.driven}<span class="pill"><Lock size={11} /> built-in</span>{/if}
+                {#if !t.driven}<span class="pill"><InterfaceIcon name="Lock" fallback={Lock} size={11} /> built-in</span>{/if}
                 {#if t.driven && !t.enabled}<span class="pill warn">paused</span>{/if}
               </h3>
               <p>{t.description}</p>
@@ -105,10 +106,10 @@
             <div class="side">
               {#if t.driven}<div class="tg"><Toggle bind:checked={t.enabled} label="" onchange={() => toggle(t)} /></div>{/if}
               <button onclick={() => runNow(t)} disabled={running === t.id}>
-                {#if running === t.id}<Loader size={14} class="spin" />{:else}<Play size={14} />{/if} Run now
+                {#if running === t.id}<InterfaceIcon name="Loader" fallback={Loader} size={14} class="spin" />{:else}<InterfaceIcon name="Play" fallback={Play} size={14} />{/if} Run now
               </button>
               <button class="ghost" onclick={() => (open = open === t.id ? null : t.id)} aria-expanded={open === t.id}>
-                Details <ChevronDown size={14} class={open === t.id ? 'flip' : ''} />
+                Details <InterfaceIcon name="ChevronDown" fallback={ChevronDown} size={14} class={open === t.id ? 'flip' : ''} />
               </button>
             </div>
           </div>
@@ -133,14 +134,14 @@
                   <label class="field"><span class="lbl">Inactive for (days)</span><input type="number" min="1" bind:value={t.settings.grace_days} /></label>
                 {/if}
               {/if}
-              <div class="actions"><button onclick={() => save(t)}><Save size={14} /> Save changes</button></div>
+              <div class="actions"><button onclick={() => save(t)}><InterfaceIcon name="Save" fallback={Save} size={14} /> Save changes</button></div>
 
               <h4>Recent runs</h4>
               {#if t.history.length}
                 <ul class="hist">
                   {#each t.history as r}
                     <li class:bad={!r.ok}>
-                      {#if r.ok}<CircleCheck size={14} />{:else}<CircleAlert size={14} />{/if}
+                      {#if r.ok}<InterfaceIcon name="CircleCheck" fallback={CircleCheck} size={14} />{:else}<InterfaceIcon name="CircleAlert" fallback={CircleAlert} size={14} />{/if}
                       <span class="when">{timeAgo(r.at)}</span>
                       <span class="what">{r.message}</span>
                       <span class="dur">{r.duration_ms} ms</span>

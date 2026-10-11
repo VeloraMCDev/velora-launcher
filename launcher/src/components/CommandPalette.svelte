@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { iconName } from '@velora/experience/icon-components';
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { pageEnabled, enabled } from '@velora/experience';
   import { selectedInstance } from '../lib/store.svelte';
   import { tick } from 'svelte';
@@ -23,13 +25,13 @@
     { id: 'p-market', label: 'Market & auctions', group: 'Go to', icon: Store, run: go('market'), keywords: 'buy sell bid shop' },
     { id: 'p-casino', label: 'Casino', group: 'Go to', icon: Dice5, run: go('casino'), keywords: 'slots wheel plinko mines bounty bet gamble' },
     { id: 'p-social', label: 'Friends & social', group: 'Go to', icon: Users, run: go('social'), keywords: 'messages dm chat profile' },
-    { id: 'p-commands', label: 'Command guide', group: 'Go to', icon: Terminal, run: go('commands'), keywords: 'help in-game' },
+    { id: 'p-commands', label: 'Player Guide', group: 'Go to', icon: Terminal, run: go('commands'), keywords: 'help in-game' },
     { id: 'p-stats', label: 'Stats & leaderboards', group: 'Go to', icon: Trophy, run: go('stats'), keywords: 'ranking top' },
     { id: 'p-settings', label: 'Settings', group: 'Go to', icon: Settings, run: go('settings') },
   ];
 
   const items = $derived<Item[]>([
-    ...pages.filter(p => pageEnabled(selectedInstance()?.experience, p.id.replace('p-', ''))),
+    ...pages.filter(p => p.id === 'p-commands' || pageEnabled(selectedInstance()?.experience, p.id.replace('p-', ''))),
     ...instances().map((i) => ({ id: `i-${i.id}`, label: `Open ${i.name}`, group: 'Instances', hint: `${i.mc_version} · ${i.loader}`, icon: Play, run: () => { selectInstance(i.id); app.view = 'home'; } })),
     ...(app.panelUrl ? [{ id: 'a-web', label: 'Open the player panel in your browser', group: 'Actions', hint: 'Everything here, on any device', icon: Smartphone, run: () => void openUrl(`${app.panelUrl}/#/play`) }] : []),
     { id: 'a-refresh', label: 'Refresh from the server', group: 'Actions', icon: RefreshCw, run: () => void refresh().then(() => toast('Up to date')) },
@@ -82,7 +84,7 @@
   <div class="backdrop" role="presentation" onclick={(e) => e.target === e.currentTarget && (open = false)}>
     <div class="palette glass" role="dialog" aria-modal="true" aria-label="Command palette">
       <label class="search">
-        <Search size={17} />
+        <InterfaceIcon name="Search" fallback={Search} size={17} />
         <input bind:this={input} bind:value={query} onkeydown={key} placeholder="Jump to a page, instance or in-game command…" autocomplete="off" spellcheck="false" aria-label="Search" />
         <kbd>esc</kbd>
       </label>
@@ -91,10 +93,10 @@
           <div class="group">{g.group}</div>
           {#each g.rows as { it, index } (it.id)}
             <button class="item" class:on={index === cursor} onmousemove={() => (cursor = index)} onclick={() => choose(it)}>
-              <span class="ico">{#if it.icon}<it.icon size={15} />{/if}</span>
+              <span class="ico">{#if it.icon}<InterfaceIcon name={iconName(it.icon)} fallback={it.icon} size={15} />{/if}</span>
               <span class="lbl">{it.label}</span>
               {#if it.hint}<span class="hint">{it.hint}</span>{/if}
-              {#if index === cursor}<CornerDownLeft size={12} />{/if}
+              {#if index === cursor}<InterfaceIcon name="CornerDownLeft" fallback={CornerDownLeft} size={12} />{/if}
             </button>
           {/each}
         {:else}

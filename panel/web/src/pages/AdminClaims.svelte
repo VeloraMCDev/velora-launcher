@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Plus, Trash2, Save, MapPin, Layers, Eraser, Flag, RotateCcw, Users } from '@lucide/svelte';
   import { get, post, patch, put, del } from '../lib/api';
@@ -85,7 +86,7 @@
   </header>
 
   <section class="card new">
-    <h3><Plus size={16} /> New admin claim</h3>
+    <h3><InterfaceIcon name="Plus" fallback={Plus} size={16} /> New admin claim</h3>
     <div class="row">
       <label>Name<input bind:value={draft.name} placeholder="Spawn" maxlength="32" /></label>
       <label class="grow">Description<input bind:value={draft.description} placeholder="Welcome! PvP is disabled here." maxlength="300" /></label>
@@ -95,7 +96,7 @@
   </section>
 
   <details class="card guild-rules">
-    <summary><Users size={16} /> Faction land rules <small>which rules faction leaders may change on their own claims</small></summary>
+    <summary><InterfaceIcon name="Users" fallback={Users} size={16} /> Faction land rules <small>which rules faction leaders may change on their own claims</small></summary>
     <p class="hint">Factions can open their land to visitors or tighten it from the Land tab in the player panel and launcher. Switch a rule off here to keep it at its default for every faction.</p>
     <div class="rule-grid">
       {#each guildRules as r (r.id)}
@@ -110,7 +111,7 @@
   {#each claims as c (c.id)}
     <section class="card claim" style:--c={c.color}>
       <div class="head">
-        <span class="swatch"><MapPin size={16} /></span>
+        <span class="swatch"><InterfaceIcon name="MapPin" fallback={MapPin} size={16} /></span>
         <div class="grow">
           <div class="row">
             <label class="grow">Name<input bind:value={c.name} maxlength="32" /></label>
@@ -120,12 +121,12 @@
         </div>
       </div>
       <div class="stats">
-        <span><Layers size={13} /> {c.chunks} chunk{c.chunks === 1 ? '' : 's'}</span>
+        <span><InterfaceIcon name="Layers" fallback={Layers} size={13} /> {c.chunks} chunk{c.chunks === 1 ? '' : 's'}</span>
         {#if c.bounds}<span>blocks {c.bounds.min_x * 16} … {c.bounds.max_x * 16 + 15} × {c.bounds.min_z * 16} … {c.bounds.max_z * 16 + 15}</span>{/if}
         {#each c.dimensions as d}<span class="chip">{d.replace('minecraft:', '')}</span>{/each}
       </div>
       <details class="flags" open>
-        <summary><Flag size={14} /> Flags <small>what is allowed inside{#if changed(c)} · {changed(c)} changed{/if}</small></summary>
+        <summary><InterfaceIcon name="Flag" fallback={Flag} size={14} /> Flags <small>what is allowed inside{#if changed(c)} · {changed(c)} changed{/if}</small></summary>
         <p class="hint">Green means <b>allowed</b>. Staff with <code>velora.claims.bypass</code> are never held back by a flag. Flags are enforced by the Paper plugin; save to apply them (they reach the server within seconds).</p>
         {#each groups as g}
           <h4>{g}</h4>
@@ -137,7 +138,7 @@
             {/each}
           </div>
         {/each}
-        <button type="button" class="ghost sm" onclick={() => standard(c)}><RotateCcw size={13} /> Standard flags</button>
+        <button type="button" class="ghost sm" onclick={() => standard(c)}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={13} /> Standard flags</button>
       </details>
       <details>
         <summary>Add or remove land</summary>
@@ -146,13 +147,13 @@
           <label>Dimension<select bind:value={area[c.id].dimension}><option>minecraft:overworld</option><option>minecraft:the_nether</option><option>minecraft:the_end</option></select></label>
           <label>X 1<input type="number" bind:value={area[c.id].x1} /></label><label>Z 1<input type="number" bind:value={area[c.id].z1} /></label>
           <label>X 2<input type="number" bind:value={area[c.id].x2} /></label><label>Z 2<input type="number" bind:value={area[c.id].z2} /></label>
-          <button onclick={() => apply(c, false)} disabled={busy === c.id}><Plus size={14} /> Claim area</button>
-          <button class="ghost" onclick={() => apply(c, true)} disabled={busy === c.id}><Eraser size={14} /> Release area</button>
+          <button onclick={() => apply(c, false)} disabled={busy === c.id}><InterfaceIcon name="Plus" fallback={Plus} size={14} /> Claim area</button>
+          <button class="ghost" onclick={() => apply(c, true)} disabled={busy === c.id}><InterfaceIcon name="Eraser" fallback={Eraser} size={14} /> Release area</button>
         </div>
       </details>
       <div class="foot">
-        <button onclick={() => save(c)} disabled={busy === c.id}><Save size={14} /> Save</button>
-        <button class="danger" onclick={() => remove(c)}><Trash2 size={14} /> Delete</button>
+        <button onclick={() => save(c)} disabled={busy === c.id}><InterfaceIcon name="Save" fallback={Save} size={14} /> Save</button>
+        <button class="danger" onclick={() => remove(c)}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /> Delete</button>
       </div>
     </section>
   {:else}

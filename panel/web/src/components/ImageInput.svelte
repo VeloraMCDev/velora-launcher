@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { ImageUp, Trash2, LoaderCircle } from '@lucide/svelte';
   import { uploadMedia } from '../lib/api';
   import { toastError } from '../lib/toast.svelte';
@@ -32,14 +33,14 @@
   <div class="row">
     <button type="button" class="preview" onclick={() => input.click()} aria-label="Upload {label}">
       {#if busy}
-        <LoaderCircle class="spin" size={20} />
+        <InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={20} />
       {:else if value && isVideo}
         <!-- svelte-ignore a11y_media_has_caption -->
         <video src={value} muted autoplay loop playsinline></video>
       {:else if preview}
         <img src={preview} alt="" />
       {:else}
-        <ImageUp size={20} />
+        <InterfaceIcon name="ImageUp" fallback={ImageUp} size={20} />
       {/if}
     </button>
     <div class="col grow">
@@ -47,7 +48,7 @@
       {#if help}<span class="help">{help}</span>{/if}
     </div>
     {#if value}
-      <button type="button" class="ghost icon" onclick={() => (value = null)} aria-label="Remove"><Trash2 size={16} /></button>
+      <button type="button" class="ghost icon" onclick={() => (value = null)} aria-label="Remove"><InterfaceIcon name="Trash2" fallback={Trash2} size={16} /></button>
     {/if}
   </div>
   <input bind:this={input} type="file" accept={video ? 'image/*,video/mp4,video/webm' : accept} hidden onchange={pick} />

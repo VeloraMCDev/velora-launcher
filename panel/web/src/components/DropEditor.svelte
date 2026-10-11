@@ -1,4 +1,5 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import { onMount } from 'svelte';
   import { Plus, X } from '@lucide/svelte';
   import BaseItemPicker from './BaseItemPicker.svelte';
@@ -29,7 +30,7 @@
           <button role="radio" aria-checked={modeOf(d) === 'vanilla'} class:on={modeOf(d) === 'vanilla'} onclick={() => patch(i, { item: 'diamond' })}>Vanilla item</button>
           <button role="radio" aria-checked={modeOf(d) === 'custom'} class:on={modeOf(d) === 'custom'} disabled={!custom.length} onclick={() => patch(i, { item: custom[0]?.id ?? d.item })}>My custom item</button>
         </div>
-        <button class="x" aria-label="Remove drop" onclick={() => remove(i)}><X size={14} /></button>
+        <button class="x" aria-label="Remove drop" onclick={() => remove(i)}><InterfaceIcon name="X" fallback={X} size={14} /></button>
       </div>
       {#if modeOf(d) === 'vanilla'}
         <BaseItemPicker label="Item" bind:value={() => vanilla(d), (v) => patch(i, { item: v.replace('minecraft:', '') })} />
@@ -45,7 +46,7 @@
       <Slide label="Chance" min={0} max={1} step={0.01} color="#e2a336" bind:value={() => d.chance, (v) => patch(i, { chance: v })} format={(n) => `${Math.round(n * 100)}%`} />
     </div>
   {/each}
-  <button class="add" onclick={add} disabled={value.length >= 16}><Plus size={14} /> Add a drop</button>
+  <button class="add" onclick={add} disabled={value.length >= 16}><InterfaceIcon name="Plus" fallback={Plus} size={14} /> Add a drop</button>
 </div>
 
 <style>

@@ -1,21 +1,18 @@
 <script lang="ts">
   import { resolveIcon } from '../lib/achievementIcons';
-  import { itemTexture, texVersion } from '../lib/textures.svelte';
+  import { iconUrl } from '@velora/experience/icons.svelte';
+  import { abs } from '../lib/store.svelte';
   let { id, amount = 1, size = 3.2 }: { id: string; amount?: number; size?: number } = $props();
   const emoji = $derived(resolveIcon({ icon_item: id.toLowerCase() }).emoji);
   // A steady colour per item so the same thing always looks the same.
-  let tex = $state<string | null>(null);
-  $effect(() => {
-    texVersion.n;
-    const want = id;
-    tex = null;
-    itemTexture(want).then((u) => { if (want === id) tex = u; });
-  });
+  const tex = $derived(iconUrl(id));
+  let failed = $state(false);
+  $effect(() => { void tex; failed = false; });
   const hue = $derived([...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 360, 7));
 </script>
 
 <span class="tile" style:--s="{size}rem" style:--h={hue} title={id.replace(/_/g, ' ').toLowerCase()}>
-  {#if tex}<img class="px" src={tex} alt="" draggable="false" />{:else}<span class="g">{emoji}</span>{/if}
+  {#if tex && !failed}<img class="px" src={abs(tex)} alt="" draggable="false" onerror={() => (failed = true)} />{:else}<span class="g">{emoji}</span>{/if}
   {#if amount > 1}<b>{amount}</b>{/if}
 </span>
 

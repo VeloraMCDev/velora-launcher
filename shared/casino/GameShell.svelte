@@ -1,4 +1,6 @@
 <script lang="ts">
+  import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
+  import { iconName } from '@velora/experience/icon-components';
   // The frame every table shares: a controls panel and a stage side by side on desktop, stage first on a phone with the
   // main button pinned above the tab bar so it is always under your thumb.
   import type { Component, Snippet } from 'svelte';
@@ -8,7 +10,7 @@
 
 <div class="game">
   <section class="panel controls">
-    <h2><Icon size={18} /> {title}
+    <h2><InterfaceIcon name={iconName(Icon)} fallback={Icon} size={18} /> {title}
     </h2>
     {@render controls()}
     {#if action}<div class="act">{@render action()}</div>{/if}

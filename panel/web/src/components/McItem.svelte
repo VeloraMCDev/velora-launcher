@@ -2,7 +2,7 @@
   import { itemUrl } from '../lib/mc.svelte';
   import { resolveIcon } from '../lib/achievementIcons';
 
-  // A Minecraft item or block drawn with its real texture, falling back to an emoji until textures are installed.
+  // Shared ccVaults source with administrator overrides and a graceful image fallback.
   let { id, size = 32, slot = false, emoji, title }: { id: string; size?: number; slot?: boolean; emoji?: string; title?: string } = $props();
 
   let failed = $state(false);
