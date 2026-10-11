@@ -1,0 +1,29 @@
+# Linux Docker Engine example. Save the configuration downloaded from Ops Agents
+# beside this file, then give UID/GID 1000 read access (see README.md).
+# This digest identifies the tested agent build from workflow run 38152699202.
+services:
+  monitor:
+    image: ghcr.io/veloramcdev/velora-monitor-agent@sha256:292477c9863558d50d7711fe8b20b27d227a9db3e0517652a8ab9b47136d16ee
+    platform: linux/amd64
+    restart: unless-stopped
+    init: true
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    # Linux: probes can reach host services at 127.0.0.1.
+    # Docker Desktop: remove network_mode and use host.docker.internal in probes.
+    network_mode: host
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+    volumes:
+      - type: bind
+        source: ./velora-monitor-config.json
+        target: /config/velora-monitor-config.json
+        read_only: true
+        bind:
+          create_host_path: false

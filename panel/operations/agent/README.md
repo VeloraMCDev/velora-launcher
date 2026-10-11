@@ -1,5 +1,29 @@
 # Velora monitoring agent
 
+## Repository Compose example
+
+[compose.yml](compose.yml) runs the tested published agent image on Linux Docker
+Engine. Enroll a host in Ops **Agents** and save its downloaded configuration as
+`velora-monitor-config.json` beside the Compose file. The configuration contains
+the Ops HTTPS URL, host ID and token; it is ignored by Git. Do not commit it.
+
+From this directory:
+
+```sh
+sudo chown 1000:1000 velora-monitor-config.json
+sudo chmod 600 velora-monitor-config.json
+docker compose -f compose.yml pull
+docker compose -f compose.yml up -d
+docker compose -f compose.yml logs --tail=50 monitor
+```
+
+Wait for **Online** in Ops. Stop with `docker compose -f compose.yml down`.
+The example pins linux/amd64; for an ARM host without emulation, use Ops's local
+build bundle. On Docker Desktop remove `network_mode: host` and use
+`host.docker.internal` for host service probes. The guided Ops installer below
+generates the appropriate networking automatically. Replace the image digest only
+when intentionally upgrading to another tested agent release.
+
 ## Docker installation (recommended)
 
 1. In Ops **Agents**, enroll a host, choose **Linux Docker Engine** or **Docker
