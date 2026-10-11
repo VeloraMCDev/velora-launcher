@@ -56,5 +56,13 @@ export function createAgentRegistry({ read = () => loadState('monitor-agents', [
     if (at < 0) throw Object.assign(new Error('Agent not found'), { status: 404 });
     write(agents.filter(a => a.id !== id)); agents.splice(at, 1);
   }
-  return { list, enroll, authenticate, report, revoke };
+  function rename(id, name) {
+    if (!text(name, 80)) throw invalid('Enter a host name (up to 80 characters)');
+    const a = agents.find(a => a.id === id);
+    if (!a) throw Object.assign(new Error('Agent not found'), {status:404});
+    const updated = {...a, name:name.trim()};
+    write(agents.map(item=>item.id === id ? updated : item));
+    Object.assign(a, updated);
+  }
+  return { list, enroll, authenticate, report, revoke, rename };
 }

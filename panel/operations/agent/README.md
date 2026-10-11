@@ -68,6 +68,21 @@ download the current Node agent
 from Ops, replace the bundle's `monitor.mjs`, and run the build/start command again;
 keep the original enrollment configuration. Enrollment never changes the services.
 
+## Editing an enrolled host
+
+Use **Edit host** on its Ops card to rename the host. Its ID, credential and last
+reported metrics are retained. To edit monitored services, load that host's
+current `velora-monitor-config.json` into the editor. The file stays in your
+browser; Ops receives only the host-name update. Add, remove or edit the probes,
+then save and download the updated configuration. Existing Ops/Pangolin headers,
+HTTP probe headers, disk checks and reporting interval are preserved.
+
+Replace the configuration on the host, retain UID 1000 access on Linux, and run
+`docker compose up -d --force-recreate monitor`. Recreating the container also
+refreshes its file bind mount when an editor/copy replaces the file's inode.
+The agent reports the updated service results at its next interval. You do not
+need to re-enroll the host or change its agent image.
+
 ## Connecting to Ops
 
 Enroll the host under Ops **Agents**. Its generated JSON contains `ops_url` (the

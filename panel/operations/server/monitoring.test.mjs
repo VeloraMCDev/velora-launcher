@@ -30,6 +30,16 @@ test('bad reports and failed persistence never change accepted state',()=>{
   assert.throws(()=>a.report(e.id,e.token,report()),/disk full/);assert.equal(a.list()[0].report,null);
   assert.throws(()=>a.revoke(e.id),/disk full/);a.authenticate(e.id,e.token);
 });
+test('host renames retain identity, credentials and metrics across restart; failed writes do not mutate the host',()=>{
+  let saved=[],fail=false;
+  const registry=()=>createAgentRegistry({read:()=>structuredClone(saved),write:v=>{if(fail)throw Error('disk full');saved=structuredClone(v);}});
+  const a=registry(),e=a.enroll('Before'),now=Date.now();a.report(e.id,e.token,report(),now);
+  const before=a.list(now)[0];a.rename(e.id,' After ');
+  assert.deepEqual(a.list(now)[0],{...before,name:'After'});
+  const b=registry();b.authenticate(e.id,e.token);assert.equal(b.list(now)[0].name,'After');
+  assert.throws(()=>b.rename(e.id,''),{status:400});assert.throws(()=>b.rename('missing','Name'),{status:404});
+  fail=true;assert.throws(()=>b.rename(e.id,'Lost'),/disk full/);assert.equal(b.list(now)[0].name,'After');
+});
 test('catalog lists all release assets and trusted main output, with expiry and partial source failures',async()=>{
   const get=async p=>p.includes('releases?') ? [{tag_name:'core-v1',published_at:'2026-01-01',assets:[{id:1,state:'uploaded',name:'fabric.jar',size:10},{id:2,state:'uploaded',name:'paper.jar',size:10}]}] : p.includes('artifacts?') ? {total_count:101,artifacts:[artifact({expired:true})]} : run();
   const c=await artifactCatalog('',1,get);assert.equal(c.items.length,3);assert.equal(c.has_more,true);assert.equal(c.items.find(i=>i.source==='build').expired,true);
