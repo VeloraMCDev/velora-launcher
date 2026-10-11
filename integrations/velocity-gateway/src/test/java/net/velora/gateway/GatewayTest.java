@@ -60,4 +60,29 @@ class GatewayTest {
         Player p = player("unknown.example.com"); var initial = new PlayerChooseInitialServerEvent(p,null); g.initial(initial);
         assertTrue(initial.getInitialServer().isEmpty()); verify(p).disconnect(any());
     }
+    @Test void persistenceFailureKeepsPreviousRouteAndCleansNewRegistration() throws Exception {
+        ProxyServer proxy = mock(ProxyServer.class); Gateway g = gateway(proxy);
+        var r = new Routes.Route("smp","SMP","smp.velora.scopedd.lol","100.64.0.2",25565,true);
+        apply(g,new Routes.Snapshot(1,List.of(r)));
+        Player p = player(r.hostname()); var initial = new PlayerChooseInitialServerEvent(p,null); g.initial(initial);
+        RegisteredServer old = initial.getInitialServer().orElseThrow();
+        java.nio.file.Files.createDirectory(dir.resolve("routes.json.tmp"));
+        var changed = new Routes.Route(r.id(),r.experience(),r.hostname(),"100.64.0.3",25566,true);
+        assertThrows(Exception.class, () -> apply(g,new Routes.Snapshot(2,List.of(changed))));
+        verify(proxy, never()).unregisterServer(old.getServerInfo());
+        verify(proxy, times(1)).unregisterServer(any());
+        var own = new ServerPreConnectEvent(p,old); g.connect(own); assertTrue(own.getResult().isAllowed());
+    }
+    @Test void knownHostRequiresOnlineAuthenticationAndKickCannotFallback() throws Exception {
+        ProxyServer proxy = mock(ProxyServer.class); Gateway g = gateway(proxy);
+        var r = new Routes.Route("smp","SMP","smp.velora.scopedd.lol","100.64.0.2",25565,true);
+        apply(g,new Routes.Snapshot(1,List.of(r)));
+        var known = new PreLoginEvent(player(r.hostname()), "Synthetic");
+        known.setResult(PreLoginEvent.PreLoginComponentResult.forceOfflineMode()); g.login(known);
+        assertSame(PreLoginEvent.PreLoginComponentResult.forceOnlineMode(), known.getResult());
+        var unknown = new PreLoginEvent(player("unknown.example.com"), "Synthetic"); g.login(unknown);
+        assertFalse(unknown.getResult().isAllowed());
+        var kicked = mock(KickedFromServerEvent.class); g.kicked(kicked);
+        verify(kicked).setResult(isA(KickedFromServerEvent.DisconnectPlayer.class));
+    }
 }
