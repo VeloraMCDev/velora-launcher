@@ -18,6 +18,12 @@ test('HTTP enrollment requires admin session and CSRF; report tokens cannot admi
     assert.equal((await request('/api/agents',{method:'POST',headers:{cookie:admin.cookie},body:'{}'})).status,403);
     const response=await request('/api/agents',{method:'POST',headers:admin,body:JSON.stringify({name:'Synthetic host'})});assert.equal(response.status,201);
     const enrolled=await response.json(), bearer={authorization:`Bearer ${enrolled.token}`,'content-type':'application/json'};
+    const editPath=`/api/agents/${enrolled.id}`, renameBody=JSON.stringify({name:'Renamed synthetic host'});
+    assert.equal((await request(editPath,{method:'PATCH',headers:bearer,body:renameBody})).status,401);
+    assert.equal((await request(editPath,{method:'PATCH',headers:{cookie:admin.cookie},body:renameBody})).status,403);
+    assert.equal((await request(editPath,{method:'PATCH',headers:admin,body:JSON.stringify({name:'',token:'replacement'})})).status,400);
+    assert.equal((await request(editPath,{method:'PATCH',headers:admin,body:renameBody})).status,200);
+    const renamed=await(await request('/api/agents',{headers:admin})).json();assert.equal(renamed[0].name,'Renamed synthetic host');assert.equal(renamed[0].id,enrolled.id);
     const installerBody=JSON.stringify({mode:'linux',configuration:{ops_url:'https://ops.example.org',...enrolled}});
     assert.equal((await request('/api/agents/installer',{method:'POST',headers:bearer,body:installerBody})).status,401);
     assert.equal((await request('/api/agents/installer',{method:'POST',headers:{cookie:admin.cookie},body:installerBody})).status,403);

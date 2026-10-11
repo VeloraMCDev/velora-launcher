@@ -128,6 +128,13 @@ route('POST', '/api/agents', async (req, res, session) => {
 route('DELETE', '/api/agents/([a-f0-9-]{36})', (req, res, session, [id]) => {
   agents.revoke(id); audit({ user: session.username, action: 'revoke-monitor-agent', target: id, result: 'revoked' }); send(res, 200, { ok: true });
 });
+route('PATCH', '/api/agents/([a-f0-9-]{36})', async (req, res, session, [id]) => {
+  const body = await readBody(req);
+  if (!body || Object.keys(body).some(key=>key !== 'name')) throw Object.assign(new Error('Only the host name can be updated here'), {status:400});
+  agents.rename(id, body.name);
+  audit({user:session.username,action:'rename-monitor-agent',target:id,result:'saved'});
+  send(res, 200, {ok:true});
+});
 route('POST', '/api/agents/([a-f0-9-]{36})/report', async (req, res, session, [id]) => {
   const token = String(req.headers.authorization ?? '').replace(/^Bearer /, '');
   agents.authenticate(id, token); agents.report(id, token, await readBody(req)); send(res, 200, { ok: true });
