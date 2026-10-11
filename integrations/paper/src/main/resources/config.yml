@@ -1,0 +1,57 @@
+# ==============================================================================
+# Velora Paper Server Configuration (Paper 26.3+)
+# ==============================================================================
+# Connect this Minecraft server to your Velora Admin Panel instance.
+# Create a server entry under 'Servers' in the web panel to generate a token.
+
+panel-url: "http://localhost:3000"
+token: ""
+
+# ==============================================================================
+# Custom Authentication Acceptance
+# ==============================================================================
+# Velora servers use custom authentication (Yggdrasil / authlib-injector).
+# Incoming player logins are verified against the Velora Admin Panel.
+auth:
+  enabled: true
+  # Seconds to wait for panel login response before failing closed
+  timeout-seconds: 6
+  # Kick message displayed if the Velora panel is unreachable
+  unavailable-message: "Velora sign-in is unavailable. Please try again shortly."
+  # Kick message displayed if player is rejected by the panel
+  unauthorized-message: "You are not authorized to join this server. Please use the Velora launcher."
+
+# ==============================================================================
+# Server Analytics and Tracking
+# ==============================================================================
+# Periodic heartbeat and telemetry sent to the Velora Admin Panel:
+# TPS, online roster, player join/leave, deaths, PvP kills, and block interactions.
+analytics:
+  enabled: true
+  # Reporting interval in seconds (default: 30)
+  sync-interval-seconds: 30
+  # Track block breaks and placements
+  track-blocks: true
+  # Track player deaths and PvP kills
+  track-combat: true
+  # Track command usage for administrative audit
+  track-commands: true
+
+# ==============================================================================
+# Simple Chat Formatting
+# ==============================================================================
+# Format template supports:
+#   {prefix}      - LuckPerms prefix (with trailing space if present)
+#   {suffix}      - LuckPerms suffix (with leading space if present)
+#   {group}       - LuckPerms primary group
+#   {player}      - Player username
+#   {displayname} - Player display name
+#   {world}       - World name
+#   {message}     - Chat message
+#
+# Supports & color codes and hex colors (&#RRGGBB or <#RRGGBB>).
+# Players with 'velora.chat.color' permission can use colors in their messages.
+chat:
+  enabled: true
+  format: "{prefix}&f{player}{suffix}&7: &f{message}"
+  allow-colors: true
