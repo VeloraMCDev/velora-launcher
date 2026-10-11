@@ -44,7 +44,7 @@ export function installerFiles(value, mode) {
       options:
         max-size: "5m"
         max-file: "2"
-${mode === 'linux' ? '    network_mode: host\n' : '    extra_hosts: ["host.docker.internal:host-gateway"]\n'}    volumes:
+${mode === 'linux' ? '    network_mode: host\n' : ''}    volumes:
       - type: bind
         source: ./velora-monitor-config.json
         target: /config/velora-monitor-config.json

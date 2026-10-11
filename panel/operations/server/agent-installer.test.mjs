@@ -4,7 +4,7 @@ import { installerFiles, zipFiles } from './agent-installer.mjs';
 const cfg={ops_url:'https://ops.example.org',id:'a'.repeat(36),token:'synthetic'.repeat(5),services:[{name:'SMP',kind:'minecraft',host:'127.0.0.1',port:25565}]};
 test('installer uses selected networking and isolates credentials from Docker build context',()=>{
   const linux=installerFiles(cfg,'linux'),desktop=installerFiles(cfg,'desktop');
-  assert.match(linux['compose.yaml'],/network_mode: host/);assert.ok(!desktop['compose.yaml'].includes('network_mode: host'));assert.match(desktop['compose.yaml'],/host.docker.internal/);
+  assert.match(linux['compose.yaml'],/network_mode: host/);assert.ok(!desktop['compose.yaml'].includes('network_mode: host'));assert.ok(!desktop['compose.yaml'].includes('extra_hosts')); // Preserve Desktop's built-in host.docker.internal DNS.
   assert.match(linux['compose.yaml'],/create_host_path: false/);assert.match(linux['compose.yaml'],/user: "1000:1000"/);
   assert.match(linux['.dockerignore'].toString(),/^\*\n!Dockerfile\n!monitor.mjs/m);
   assert.ok(!linux.Dockerfile.toString().includes('COPY .'));assert.equal(JSON.parse(linux['velora-monitor-config.json']).token,cfg.token);
