@@ -1,6 +1,56 @@
 # Velora monitoring agent
 
-Download the agent from Ops **Agents** or **Builds**. Requires Node 24 on Windows,
+## Docker installation (recommended)
+
+1. In Ops **Agents**, enroll a host, choose **Linux Docker Engine** or **Docker
+   Desktop**, and add the Minecraft, HTTP/Calagopus or TCP services to check.
+2. Download the Docker bundle. Extract the ZIP into a private folder on that host.
+   It contains Compose, Dockerfile, agent source and the enrolled configuration.
+3. On Linux, give the container's unprivileged UID access to its config:
+
+   ```sh
+   sudo chown 1000:1000 velora-monitor-config.json
+   sudo chmod 600 velora-monitor-config.json
+   ```
+
+4. From the extracted folder, start the agent:
+
+   ```sh
+   docker compose up -d --build
+   docker compose logs --tail=50 monitor
+   ```
+
+Docker with Compose is the only host prerequisite. It downloads the official Node
+24 Alpine base and builds the bundled source locally. It restarts the agent unless
+explicitly stopped, including after reboot if Docker starts at boot. There is no
+agent registry login, Git clone, separate Node install or automatic agent update.
+Stop with `docker compose down`; after editing probes in the JSON file, run
+`docker compose restart monitor`. For an upgrade, download the current Node agent
+from Ops, replace the bundle's `monitor.mjs`, and run the build/start command again;
+keep the original enrollment configuration. Enrollment never changes the services.
+
+Linux Compose uses host networking so `127.0.0.1` can reach host services. Docker
+Desktop uses bridge networking: use `host.docker.internal` for host services or
+reachable DNS/IP targets. Existing probes are not rewritten when changing install
+mode; review their targets. Docker Desktop metrics describe its Linux VM, not the
+native Windows/macOS host; use the standalone agent for native metrics.
+See [Docker networking](https://docs.docker.com/engine/network/drivers/host/).
+
+The container runs as UID/GID 1000 with a read-only filesystem, dropped
+capabilities, bounded logs and no Docker socket, host PID access, inbound ports or
+privileged mode. Only its configuration file is mounted by default. To monitor a
+disk, add a read-only bind mount for that particular directory in Compose and use
+the container path in `disks`. Do not mount the whole host filesystem. Keep SSO
+service access headers in the local JSON as described below.
+
+The ZIP contains a credential: restrict folder access, keep it out of Git/backups
+shared with others, and remove extra downloaded copies after installation. Protect
+the extracted configuration using the Linux ownership/mode above or a restricted
+Windows ACL. Revoking the agent in Ops immediately invalidates its credential.
+
+## Standalone Node installation
+
+Download the Node agent from Ops **Agents** or **Builds**. Requires Node 24 on Windows,
 Linux or macOS. Enroll each host separately in Ops, save the one-time configuration,
 and edit its `services` and `disks` locally. Protect the file as a credential: on
 Linux use mode 0600; on Windows restrict its ACL to the service account. Never add
@@ -55,4 +105,4 @@ Ops stores only a hash of the enrollment credential and sanitized metrics.
 Target URLs, HTTP headers, filesystem paths and player identities stay on the
 agent. This process provides monitoring only; it cannot restart game servers,
 install artifacts or administer Calagopus. Licensing follows the repository's
-[license boundaries](../../../LICENSE.md).
+[license boundaries](https://github.com/VeloraMCDev/velora-launcher/blob/main/LICENSE.md).

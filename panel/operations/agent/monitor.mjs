@@ -4,6 +4,7 @@ import { readFile, statfs } from 'node:fs/promises';
 import { connect } from 'node:net';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { setTimeout as sleep } from 'node:timers/promises';
 
 export function config(value) {
   const url = new URL(value.ops_url);
@@ -99,14 +100,14 @@ export function createCollector() {
 }
 export async function start(filename) {
   const cfg = config(JSON.parse(await readFile(filename, 'utf8'))), collect = createCollector();
-  let stopped = false;
-  for (const signal of ['SIGINT','SIGTERM']) process.on(signal, () => { stopped = true; });
+  let stopped = false; const shutdown = new AbortController();
+  for (const signal of ['SIGINT','SIGTERM']) process.on(signal, () => { stopped = true; shutdown.abort(); });
   while (!stopped) {
     try {
-      const r = await fetch(`${cfg.ops_url}/api/agents/${cfg.id}/report`, { method:'POST', redirect:'manual', headers:{...cfg.ops_headers,authorization:`Bearer ${cfg.token}`,'content-type':'application/json'},body:JSON.stringify(await collect(cfg)),signal:AbortSignal.timeout(10000) });
+      const r = await fetch(`${cfg.ops_url}/api/agents/${cfg.id}/report`, { method:'POST', redirect:'manual', headers:{...cfg.ops_headers,authorization:`Bearer ${cfg.token}`,'content-type':'application/json'},body:JSON.stringify(await collect(cfg)),signal:AbortSignal.any([shutdown.signal,AbortSignal.timeout(10000)]) });
       await r.body?.cancel(); if (!r.ok) console.error(`Monitoring report rejected (${r.status})`);
     } catch { console.error('Monitoring report could not reach Ops'); }
-    if (!stopped) await new Promise(resolve => setTimeout(resolve,cfg.interval_seconds*1000));
+    if (!stopped) await sleep(cfg.interval_seconds*1000,undefined,{signal:shutdown.signal}).catch(()=>{});
   }
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

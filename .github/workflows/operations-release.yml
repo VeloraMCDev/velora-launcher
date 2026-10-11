@@ -27,6 +27,8 @@ jobs:
           echo "OPS_VERSION=$(node -p "require('./panel/operations/package.json').version")+${GITHUB_SHA::7}" >> "$GITHUB_ENV"
       - name: Build once (runs type checks and server tests)
         run: docker build --platform linux/amd64 --build-arg OPS_VERSION="$OPS_VERSION" --build-arg OPS_REVISION="$GITHUB_SHA" --tag "$IMAGE:$IMAGE_TAG" panel/operations
+      - name: Test the downloadable Docker agent bundle
+        run: node panel/operations/agent/smoke.mjs
       - name: Smoke-test the exact image
         run: |
           docker run -d --name ops-smoke --read-only --tmpfs /tmp --tmpfs /data:uid=1000 --cap-drop ALL \

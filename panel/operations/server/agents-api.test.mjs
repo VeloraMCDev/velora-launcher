@@ -18,6 +18,11 @@ test('HTTP enrollment requires admin session and CSRF; report tokens cannot admi
     assert.equal((await request('/api/agents',{method:'POST',headers:{cookie:admin.cookie},body:'{}'})).status,403);
     const response=await request('/api/agents',{method:'POST',headers:admin,body:JSON.stringify({name:'Synthetic host'})});assert.equal(response.status,201);
     const enrolled=await response.json(), bearer={authorization:`Bearer ${enrolled.token}`,'content-type':'application/json'};
+    const installerBody=JSON.stringify({mode:'linux',configuration:{ops_url:'https://ops.example.org',...enrolled}});
+    assert.equal((await request('/api/agents/installer',{method:'POST',headers:bearer,body:installerBody})).status,401);
+    assert.equal((await request('/api/agents/installer',{method:'POST',headers:{cookie:admin.cookie},body:installerBody})).status,403);
+    const installer=await request('/api/agents/installer',{method:'POST',headers:admin,body:installerBody});assert.equal(installer.status,200);assert.equal(installer.headers.get('content-type'),'application/zip');assert.equal(installer.headers.get('cache-control'),'no-store');
+    const zip=Buffer.from(await installer.arrayBuffer());assert.equal(zip.readUInt32LE(),0x04034b50);assert.ok(zip.includes(Buffer.from(enrolled.token)));
     assert.equal((await request('/api/agents',{headers:bearer})).status,401);
     assert.equal((await request('/api/actions/redeploy',{method:'POST',headers:bearer})).status,401);
     const path=`/api/agents/${enrolled.id}/report`;
@@ -28,6 +33,7 @@ test('HTTP enrollment requires admin session and CSRF; report tokens cannot admi
     const download=await request('/api/agents/download',{headers:admin});assert.equal(download.status,200);assert.match(await download.text(),/Monitoring report/);
     assert.equal((await request(`/api/agents/${enrolled.id}`,{method:'DELETE',headers:admin})).status,200);
     assert.equal((await request(path,{method:'POST',headers:bearer,body:JSON.stringify(report)})).status,401);
+    assert.equal((await request('/api/agents/installer',{method:'POST',headers:admin,body:installerBody})).status,401);
   } finally { _test.sessions.delete(id);await new Promise(resolve=>server.close(resolve)); }
 });
 test.after(()=>rmSync(process.env.OPS_DATA_DIR,{recursive:true,force:true}));

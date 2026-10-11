@@ -68,9 +68,14 @@ are displayed so a partial catalog cannot masquerade as an empty repository.
 
 ## Monitoring other hosts
 
-Use Agents to enroll a host, then save its one-time configuration and download the
-bundled standalone Node agent. Follow [agent/README.md](agent/README.md) to configure
-the selected services, access headers and process supervisor. Each credential can
+Use Agents to enroll a host, add selected probes and download a Docker installation
+bundle. Extract it on the host and start with Docker Compose; Node is included in
+the container. Linux and Docker Desktop networking options are provided. Native
+Node installation remains available for Windows/macOS host resource metrics.
+Follow [agent/README.md](agent/README.md) for installation, access headers and disk
+mounts. Installer downloads require the admin session, CSRF and a valid enrollment
+credential; configuration remains local and is never saved in plaintext by Ops.
+Each credential can
 only submit bounded monitoring reports for its enrolled host. Revocation takes
 effect immediately; hosts become offline after 90 seconds without a received report.
 Agent outage and service health failures use the existing service/endpoint alert

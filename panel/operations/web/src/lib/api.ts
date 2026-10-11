@@ -1,6 +1,20 @@
 let csrf = '';
 export const setCsrf = (token: string) => (csrf = token);
 
+export async function downloadInstaller(body: unknown): Promise<Blob> {
+  const response = await fetch('/api/agents/installer', {
+    method: 'POST', credentials: 'same-origin',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': csrf },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    if (response.status === 401) window.dispatchEvent(new CustomEvent('ops:signed-out'));
+    const error = await response.json().catch(() => ({}));
+    throw new ApiError(error.error ?? `Download failed (${response.status})`, response.status);
+  }
+  return response.blob();
+}
+
 export class ApiError extends Error {
   constructor(message: string, public status: number) {
     super(message);
