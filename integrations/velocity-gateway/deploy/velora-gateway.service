@@ -1,0 +1,23 @@
+[Unit]
+Description=Velora Velocity Gateway
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=velora-gateway
+Group=velora-gateway
+WorkingDirectory=/var/lib/velora-gateway
+EnvironmentFile=/etc/velora-gateway/environment
+ExecStart=/bin/bash /opt/velora-gateway/start.sh
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/velora-gateway
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

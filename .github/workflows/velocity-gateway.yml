@@ -1,0 +1,39 @@
+name: Velora Velocity Gateway
+on:
+  pull_request:
+    paths: ['integrations/velocity-gateway/**', 'integrations/build.gradle', 'integrations/settings.gradle', '.github/workflows/velocity-gateway.yml']
+  push:
+    branches: [main]
+    paths: ['integrations/velocity-gateway/**', 'integrations/build.gradle', 'integrations/settings.gradle', '.github/workflows/velocity-gateway.yml']
+  workflow_dispatch: null
+permissions:
+  contents: read
+concurrency:
+  group: velocity-gateway-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: integrations
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+      - name: Build and test
+        run: bash gradlew :velocity-gateway:build --no-daemon
+      - name: Package only when manually requested
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: velora-velocity-gateway-jar
+          path: integrations/velocity-gateway/build/libs/velora-velocity-gateway-*.jar
+          if-no-files-found: error
+          retention-days: 3

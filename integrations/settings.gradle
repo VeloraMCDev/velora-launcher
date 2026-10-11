@@ -12,3 +12,5 @@ include 'paper'
 if (providers.gradleProperty('loader').orNull == 'fabric') include 'fabric'
 // Velora Core (Client), Fabric 1.20.1.
 if (providers.gradleProperty('loader').orNull == 'fabric-client') include 'fabric-client'
+
+include 'velocity-gateway'

@@ -28,6 +28,7 @@ export const ADMIN_GROUPS: AdminGroup[] = [
     { id: 'activity', label: 'Activity', icon: Activity, hint: 'Recent sign-ins and admin actions' },
   ] },
   { id: 'launcher', label: 'Launcher & site', items: [
+    { id: 'gateway', label: 'Gateway', icon: Server, hint: 'Hostname routes and tunnel health' },
     { id: 'instances', label: 'Instances', icon: Boxes, hint: 'Versions and modpacks players can play' },
     { id: 'branding', label: 'Design & website', icon: Palette, hint: 'Launcher appearance and public website' },
     { id: 'landing-builder', label: 'Landing page', icon: Globe, hint: 'Your public website' },

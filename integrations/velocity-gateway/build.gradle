@@ -1,0 +1,15 @@
+plugins { id 'java' }
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+dependencyLocking { lockAllConfigurations() }
+repositories { maven { url = 'https://repo.papermc.io/repository/maven-public/' } }
+dependencies {
+    compileOnly 'com.velocitypowered:velocity-api:3.4.0-SNAPSHOT'
+    annotationProcessor 'com.velocitypowered:velocity-api:3.4.0-SNAPSHOT'
+    compileOnly 'com.google.code.gson:gson:2.11.0'
+    testImplementation 'com.google.code.gson:gson:2.11.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testImplementation 'org.mockito:mockito-core:5.14.2'
+    testImplementation 'com.velocitypowered:velocity-api:3.4.0-SNAPSHOT'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+jar { archiveBaseName = 'velora-velocity-gateway' }
