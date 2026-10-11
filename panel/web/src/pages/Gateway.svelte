@@ -9,7 +9,7 @@
   let now = $state(Date.now());
   const online = $derived(!!data?.status && now - Date.parse(data.status.received_at) < 90000);
   const synced = $derived(online && data?.status?.report.revision === data?.snapshot.revision && !data?.status?.report.error);
-  async function refresh() { try { data = await get<Overview>('/api/admin/gateway'); } catch (e) { error = String(e); } }
+  async function refresh() { try { data = await get<Overview>('/api/admin/gateway'); error = ''; } catch (e) { error = String(e); } }
   onMount(() => { void refresh(); const timer = setInterval(() => { now = Date.now(); if (!busy && !draft) void refresh(); }, 5000); return () => clearInterval(timer); });
   function edit(route?: Route) {
     editing = !!route;
@@ -45,6 +45,7 @@
     <h2>Recent connections</h2>
     <p>Latest 50 assignment and closure events. Player identities and addresses are omitted.</p>
     {#each [...(data.status?.report.events ?? [])].reverse() as event}<p><time>{event.at}</time> · {event.hostname} · {event.kind}</p>{:else}<p>No connection events reported.</p>{/each}
+  {:else if error}<p>Unable to load gateway. Retrying automatically…</p><button onclick={() => refresh()}>Retry now</button>
   {:else}<p>Loading gateway…</p>{/if}
 </div>
 {#if draft}

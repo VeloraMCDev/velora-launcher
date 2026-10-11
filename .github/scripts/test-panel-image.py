@@ -85,6 +85,15 @@ def main(image):
         summary = request("/api/admin/operations/summary", token=token)
         assert summary["users"] == 1 and summary["admins"] == 1, summary
         assert summary["logins_24h"] == 1, summary
+        # Gateway configuration belongs to the proxy, across all experiences.
+        gateway = request("/api/admin/gateway", token=token)
+        assert gateway["snapshot"] == {"revision": 0, "routes": []}, gateway
+        routes = {"revision": 0, "routes": [{"id": "smoke-smp", "experience": "Smoke SMP",
+                  "hostname": "smp.velora.scopedd.lol", "address": "100.64.0.2", "port": 25565, "enabled": False}]}
+        saved_gateway = request("/api/admin/gateway", "PUT", routes, token)
+        assert saved_gateway["revision"] == 1, saved_gateway
+        for instance, _ in instances:
+            assert request("/api/admin/gateway", token=token, instance=instance)["snapshot"] == saved_gateway
         # Opening scoped stores exercises SQLite TEMP views and legacy import.
         # A restart also exercises startup workers against persistent instances.
         for _ in range(2):
@@ -128,12 +137,13 @@ def main(image):
         assert request("/api/v1/auth/me", token=token)["uuid"] == owner
         assert request("/api/yggdrasil")["signaturePublickey"] == signed_identity
         token = login()
+        assert request("/api/admin/gateway", token=token)["snapshot"] == saved_gateway
         for instance, expected in instances:
             actual = request("/api/admin/progression", token=token, instance=instance)
             assert actual["settings"]["level_base"] == expected, actual
             profile = request("/api/v1/profiles/" + owner, token=token, instance=instance)
             assert any(row["id"] == post["id"] and row["content"] == post["content"] for row in profile["posts"]), profile
-        print("Image passed: instance isolation, platform posts, two restarts, cold restore, credentials and signing continuity")
+        print("Image passed: instance isolation, global gateway routes, platform posts, two restarts, cold restore, credentials and signing continuity")
     except Exception:
         subprocess.run(["docker", "logs", name], check=False)
         raise

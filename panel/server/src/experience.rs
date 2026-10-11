@@ -327,6 +327,11 @@ pub fn feature_for_path(path: &str) -> Option<&'static str> {
 }
 
 pub fn platform_path(path: &str) -> bool {
+    // One Velocity proxy routes every experience; both browser administration
+    // and proxy polling/reporting use the shared platform store.
+    if matches!(path, "/api/admin/gateway" | "/api/gateway/v1/routes" | "/api/gateway/v1/status") {
+        return true;
+    }
     // Operations aggregates the shared account and audit store across instances.
     if path == "/api/admin/operations/summary" {
         return true;
@@ -583,6 +588,16 @@ fn start_workers(state: AppState) {
 
 #[cfg(test)]
 mod platform_path_tests {
+    #[test]
+    fn gateway_administration_and_proxy_requests_need_no_instance_selection() {
+        for path in ["/api/admin/gateway", "/api/gateway/v1/routes", "/api/gateway/v1/status"] {
+            assert!(super::platform_path(path), "{path}");
+        }
+        for path in ["/api/admin/gateway-other", "/api/gateway/v1/other", "/api/admin/progression"] {
+            assert!(!super::platform_path(path), "{path}");
+        }
+    }
+
     #[test]
     fn minecraft_textures_need_no_instance_selection() {
         for path in ["/api/v1/mc/status", "/api/v1/mc/item/diamond_sword.png", "/api/v1/mc/gui/hud/heart/full.png", "/api/admin/mc-textures", "/api/admin/mc-textures/upload"] {
