@@ -9,18 +9,21 @@
   let enrolled=$state<{id:string;name:string;token:string}|null>(null);
   type Target = {name:string;kind:'minecraft'|'http'|'tcp';host:string;port:number;url:string;virtual_host:string};
   let mode=$state<'linux'|'desktop'>('linux'), targets=$state<Target[]>([]), downloading=$state(false);
+  type Image = {image:string;commit:string;run:number};
+  let images=$state<Image[]>([]), image=$state(''), imageError=$state('');
+  async function loadImages() { try {const catalog=await api<{images:Image[];error:string|null}>('/api/agents/images');images=catalog.images;image=images[0]?.image ?? '';imageError=catalog.error ?? '';}catch{imageError='Image discovery unavailable; local build remains available.';} }
   const cfg=$derived(enrolled ? {ops_url:location.origin,id:enrolled.id,token:enrolled.token,interval_seconds:30,
     services:targets.map(t=>t.kind==='http' ? {name:t.name,kind:t.kind,url:t.url} : {name:t.name,kind:t.kind,host:t.host,port:Number(t.port),...(t.virtual_host && t.kind==='minecraft' ? {virtual_host:t.virtual_host} : {})}),disks:[]} : null);
   const configuration=$derived(cfg ? JSON.stringify(cfg,null,2) : '');
   async function load() { try { agents=await api<Agent[]>('/api/agents'); } catch(e) { error=(e as Error).message; } }
-  onMount(()=>{ void load(); const timer=setInterval(()=>void load(),15000); return ()=>clearInterval(timer); });
+  onMount(()=>{ void load();void loadImages(); const timer=setInterval(()=>void load(),15000); return ()=>clearInterval(timer); });
   async function enroll(e:SubmitEvent) { e.preventDefault();busy=true;error='';try { enrolled=await api('/api/agents',{method:'POST',body:{name}});name='';targets=[];await load(); } catch(e) {error=(e as Error).message;} finally {busy=false;} }
   async function revoke(a:Agent) { if (!await ask(`Revoke ${a.name}?`,'Its monitoring credential will stop working. Running services are unaffected.','Revoke',true)) return;try {await api(`/api/agents/${a.id}`,{method:'DELETE'});if(enrolled?.id===a.id)enrolled=null;await load();}catch(e){toast((e as Error).message,'error');} }
   function downloadConfig() { const url=URL.createObjectURL(new Blob([configuration],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download='velora-monitor-config.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000); }
   function addTarget() { targets.push({name:'',kind:'minecraft',host:mode==='linux'?'127.0.0.1':'host.docker.internal',port:25565,url:mode==='linux'?'http://127.0.0.1:8080/health':'http://host.docker.internal:8080/health',virtual_host:''}); }
   async function install(e:SubmitEvent) {
     e.preventDefault();downloading=true;error='';
-    try { const file=await downloadInstaller({configuration:cfg,mode});const url=URL.createObjectURL(file);const a=document.createElement('a');a.href=url;a.download='velora-monitor-install.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000); }
+    try { const file=await downloadInstaller({configuration:cfg,mode,image:image || null});const url=URL.createObjectURL(file);const a=document.createElement('a');a.href=url;a.download='velora-monitor-install.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000); }
     catch(e) { error=(e as Error).message; } finally {downloading=false;}
   }
 </script>
@@ -29,6 +32,9 @@
 {#if error}<p role="alert" class="bad">{error}</p>{/if}
 {#if enrolled}<div class="card credential"><h2>Install on {enrolled.name}</h2><p>The bundle contains this host's one-time credential. Keep it private; revoke and enroll again if lost.</p>
 <form class="installer" onsubmit={install}>
+  <label>Agent image<select bind:value={image}>{#each images as release}<option value={release.image}>Published amd64 image · {release.commit.slice(0,7)} · run {release.run}</option>{/each}<option value="">Build locally from bundled source</option></select></label>
+  {#if imageError}<p class="tiny muted">{imageError}</p>{/if}
+  <p class="tiny muted">Published images are pinned to an exact digest. Choose a local build for ARM hosts without amd64 emulation. Agent upgrades require a new image selection; enrollment stays the same.</p>
   <label>Docker host<select bind:value={mode}><option value="linux">Linux Docker Engine</option><option value="desktop">Docker Desktop (Windows / macOS)</option></select></label>
   <p class="tiny muted">{mode==='linux' ? 'Local services can use 127.0.0.1 through host networking.' : 'Use host.docker.internal to reach host services. Resource metrics describe Docker’s Linux VM; use the standalone agent for native Windows/macOS metrics.'}</p>
   <h3>Services to monitor</h3>
@@ -42,7 +48,7 @@
   <button class="primary" disabled={downloading}>Download Docker bundle</button>
 </form>
 <h3>Start the agent</h3><p>Extract the ZIP into its own folder on the host. Open a terminal in that folder and run:</p>
-<pre>{mode==='linux' ? 'sudo chown 1000:1000 velora-monitor-config.json\nsudo chmod 600 velora-monitor-config.json\ndocker compose up -d --build' : 'docker compose up -d --build'}</pre>
+<pre>{(mode==='linux' ? 'sudo chown 1000:1000 velora-monitor-config.json\nsudo chmod 600 velora-monitor-config.json\n' : '') + (image ? 'docker compose pull\ndocker compose up -d' : 'docker compose up -d --build')}</pre>
 <p class="tiny muted">Check <code>docker compose logs --tail=50 monitor</code> and wait for Online here. To stop it, run <code>docker compose down</code>. Docker must be configured to start at boot.</p>
 <details><summary>Standalone Node installation / configuration</summary><pre>{configuration}</pre><div class="row"><button onclick={downloadConfig}>Download configuration</button><a class="btn" href="/api/agents/download">Download Node agent</a></div><p class="tiny muted">With Node 24 installed: <code>node velora-monitor-agent.mjs velora-monitor-config.json</code>.</p></details>
 <button onclick={()=>enrolled=null}>I saved the bundle</button></div>{/if}

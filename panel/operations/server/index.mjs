@@ -11,13 +11,14 @@ import { applySettingsUpdate, audit, loadSettings, publicSettings, readAudit, sa
 import { sendEmail } from './notify.mjs';
 import { createCatalogCache, artifactDownload } from './artifacts.mjs';
 import { createAgentRegistry } from './agents.mjs';
-import { installerFiles, zipFiles } from './agent-installer.mjs';
+import { installerFiles, zipFiles, createAgentImageCatalog } from './agent-installer.mjs';
 
 const PORT = Number(process.env.PORT ?? 8080);
 const SECURE = process.env.OPS_INSECURE_COOKIES !== '1';
 const WEB = resolve(fileURLToPath(new URL('../web/dist', import.meta.url)));
 const VERSION = process.env.OPS_VERSION ?? 'development';
 const agents = createAgentRegistry();
+const agentImages = createAgentImageCatalog();
 const catalog = createCatalogCache();
 const monitor = createMonitor({ agentList: () => agents.list() });
 
@@ -106,10 +107,11 @@ route('GET', '/api/artifacts/([0-9]+)/download', async (req, res, session, [id])
 });
 // Agent reports authenticate independently; enrollment/revocation retain admin + CSRF guards.
 route('GET', '/api/agents', (req, res) => send(res, 200, agents.list()));
+route('GET', '/api/agents/images', async (req, res) => send(res, 200, await agentImages()));
 route('POST', '/api/agents/installer', async (req, res, session) => {
-  const { configuration, mode } = await readBody(req);
+  const { configuration, mode, image } = await readBody(req);
   agents.authenticate(configuration?.id, configuration?.token);
-  const bundle = zipFiles(installerFiles(configuration, mode));
+  const bundle = zipFiles(installerFiles(configuration, mode, image));
   audit({ user: session.username, action: 'download-agent-installer', target: configuration.id, result: 'created' });
   send(res, 200, bundle, {
     'content-type': 'application/zip', 'content-disposition': 'attachment; filename="velora-monitor-install.zip"',

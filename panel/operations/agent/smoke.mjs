@@ -14,6 +14,8 @@ const compose = (...args) => exec('docker',['compose','-p',project,'-f',join(dir
 let server, resolveReport;
 const received = new Promise(resolve=>{resolveReport=resolve;});
 const token = randomBytes(32).toString('base64url'), id = randomUUID();
+const image = process.argv[2];
+if (image) assert.match(image,/^ghcr\.io\/[a-z0-9-]+\/velora-monitor-agent:sha-[a-f0-9]{40}-\d+-\d+$/);
 try {
   await exec('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',join(dir,'key.pem'),'-out',join(dir,'ca.pem'),'-days','1','-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost,IP:127.0.0.1']);
   await chmod(join(dir,'ca.pem'),0o644);
@@ -25,6 +27,7 @@ try {
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
   const origin=`https://127.0.0.1:${server.address().port}`;
   const files=installerFiles({ops_url:origin,id,token,services:[{name:'Calagopus fixture',kind:'http',url:`${origin}/health`}],disks:[]},'linux');
+  if (image) files['compose.yaml']=files['compose.yaml'].replace('    build: .',`    image: ${image}`);
   for(const [name,data]of Object.entries(files))await writeFile(join(dir,name),data,{mode:0o600});
   await exec('sudo',['chown','1000:1000',join(dir,'velora-monitor-config.json')]);
   await writeFile(join(dir,'compose.yaml'),files['compose.yaml']+'      - ./ca.pem:/config/ca.pem:ro\n    environment:\n      NODE_EXTRA_CA_CERTS: /config/ca.pem\n');
