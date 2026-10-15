@@ -29,6 +29,8 @@ Calagopus extension. Each result is independent; a green source CI job does not
 mean these packaging jobs succeeded. Mobile Android requires the existing
 configured signing identity; iOS requires personal signing before installation.
 No new signing identity is generated or production release workflow dispatched.
+The Java/UI workflow exports the gameplay and SDK-contract JARs for host testing;
+its UI job validates a source library, not a standalone installable application.
 
 ## Testing safely
 
