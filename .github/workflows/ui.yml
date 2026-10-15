@@ -22,6 +22,14 @@ jobs:
           distribution: temurin
           java-version: '21'
       - run: bash gradlew build --no-daemon --max-workers=2
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: private-gameplay-java-${{ github.sha }}
+          path: |
+            java/build/libs/*.jar
+            java/sdk-contracts/build/libs/*.jar
+          if-no-files-found: error
+          retention-days: 7
   ui:
     runs-on: ubuntu-latest
     timeout-minutes: 30

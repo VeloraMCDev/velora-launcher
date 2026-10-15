@@ -120,7 +120,7 @@ async fn slash_commands_answer_only_signed_requests_and_register_in_one_click() 
     let (_, v) = t.send(signer.request(&command("players", json!([])), false)).await;
     assert!(v["data"]["embeds"][0]["title"].as_str().unwrap().contains("Nobody"));
     let (_, v) = t.send(signer.request(&command("guilds", json!([])), false)).await;
-    assert_eq!(v["data"]["content"], "No guilds yet.");
+    assert_eq!(v["data"]["content"], "No factions yet.");
 
     // Autocomplete suggests player names.
     let ac = json!({"type": 4, "data": {"name": "quests", "options": [{"name": "player", "value": "al", "focused": true}]}});
@@ -137,10 +137,10 @@ async fn slash_commands_answer_only_signed_requests_and_register_in_one_click() 
     t.call("PUT", "/api/admin/connections", Some(&admin), Some(conn)).await;
     let (s, r) = t.call("POST", "/api/admin/discord/commands/register", Some(&admin), None).await;
     assert_eq!(s, StatusCode::OK, "{r}");
-    assert_eq!(r["commands"], 7);
+    assert_eq!(r["commands"], 9);
     let seen = seen.lock().unwrap();
     let (route, auth, body) = seen.last().unwrap();
     assert_eq!((route.as_str(), auth.as_str()), ("PUT /applications/123456789012345678/guilds/999999999999999999/commands", "Bot bot-secret"));
     let names: Vec<&str> = body.as_array().unwrap().iter().map(|c| c["name"].as_str().unwrap()).collect();
-    assert_eq!(names, ["status", "players", "quests", "stats", "leaderboard", "guild", "guilds"]);
+    assert_eq!(names, ["status", "players", "quests", "stats", "leaderboard", "faction", "factions", "guild", "guilds"]);
 }

@@ -110,7 +110,7 @@ async fn shop_sales_and_guild_payments() {
             json!({"operation_id": "sale-2", "uuid": "00000000-0000-0000-0000-000000000009", "username": "X", "amount": 5.0}),
         )
         .await;
-    assert!(nobody["error"].as_str().unwrap().contains("not in a guild"));
+    assert!(nobody["error"].as_str().unwrap().contains("not in a faction"));
 
     let pay = |op: &str, who: &str, tag: &str, amount: f64| json!({"operation_id": op, "uuid": who, "to_tag": tag, "amount": amount});
     assert_eq!(f.post("guilds/bank/pay", pay("p1", &f.steve_uuid, "VOID", 10.0)).await.0, StatusCode::FORBIDDEN, "members can't spend");
