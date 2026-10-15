@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Velora synthetic lazy-page fixture</title></head>
+<body>
+  <div id="fixture"></div>
+  <script type="module">
+    import { mount } from 'svelte';
+    import Harness from './LazyPageHarness.svelte';
+    mount(Harness, { target: document.getElementById('fixture') });
+  </script>
+</body>
+</html>

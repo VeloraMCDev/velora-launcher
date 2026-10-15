@@ -41,9 +41,9 @@
   .card img { width: 100%; aspect-ratio: 16 / 7; object-fit: cover; display: block; }
   .body { padding: 0.85rem 1rem 0.9rem; display: flex; flex-direction: column; gap: 0.35rem; }
   .meta { display: flex; align-items: center; gap: 0.4rem; color: var(--muted); }
-  .tag { font-size: 0.72rem; font-weight: 560; color: var(--accent); }
+  .tag { font-size: 0.72rem; font-weight: 560; color: var(--state-info-text); }
   h3 { font-size: 0.95rem; font-weight: 600; line-height: 1.35; }
   p { font-size: 0.83rem; line-height: 1.55; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  .more { align-self: flex-start; padding-left: 0; color: var(--accent); margin-top: 0.1rem; }
+  .more { align-self: flex-start; padding-left: 0; color: var(--state-info-text); margin-top: 0.1rem; }
   .more:hover { background: transparent; color: var(--text); }
 </style>

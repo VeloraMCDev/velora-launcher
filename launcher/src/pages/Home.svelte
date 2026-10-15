@@ -5,7 +5,7 @@
   import { logoLayout } from '@velora/experience/logo-layout';
   import ExperienceWidgets from '@velora/experience/ExperienceWidgets.svelte';
   import { enabled } from '@velora/experience';
-  import PlayButton from '../components/PlayButton.svelte';
+  import OperationStatus from '../components/OperationStatus.svelte';
   import ServerStatus from '../components/ServerStatus.svelte';
   import NewsFeed from '../components/NewsFeed.svelte';
   import Console from '../components/Console.svelte';
@@ -56,9 +56,10 @@
         {/if}
         <p class="desc">{inst.description || b.tagline}</p>
       </section>
+    {/key}
 
       <section class="actions">
-        <PlayButton {inst} />
+        <OperationStatus {inst} />
         <div class="row tools">
           <button class="glass tool" onclick={() => (app.instanceSettings = inst.id)} title="Instance settings"><InterfaceIcon name="SlidersHorizontal" fallback={SlidersHorizontal} size={17} /></button>
           <button class="glass tool" class:on={app.consoleOpen} onclick={() => (app.consoleOpen = !app.consoleOpen)} title="Game console"><InterfaceIcon name="SquareTerminal" fallback={SquareTerminal} size={17} /></button>
@@ -67,7 +68,6 @@
           {#if inst.server && b.features.server_status}<ServerStatus server={inst.server} />{/if}
         </div>
       </section>
-    {/key}
   {:else}
     <section class="hero empty">
       <h1>{b.name}</h1>
@@ -113,7 +113,7 @@
   .hero > :nth-child(2) { animation-delay: 0.06s; } .hero > :nth-child(3) { animation-delay: 0.12s; } .hero > :nth-child(4) { animation-delay: 0.18s; }
   .actions { animation-delay: 0.22s; }
   .desc { font-size: 0.95rem; line-height: 1.6; color: var(--muted); max-width: 32rem; }
-  .actions { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; gap: 0.8rem; animation: fade 0.3s ease both; }
+  .actions { grid-column: 1; grid-row: 2; display: flex; flex-direction: column; gap: 0.8rem; animation: fade 0.3s ease both; max-height: 60vh; overflow-y: auto; min-width: 0; padding: 0.25rem; }
   .tools { flex-wrap: wrap; gap: 0.6rem; }
   .tool { width: 2.75rem; height: 2.75rem; padding: 0; border-radius: var(--radius); color: color-mix(in srgb, var(--text) 75%, transparent); background: var(--surface); }
   .tool:hover { color: var(--text); }

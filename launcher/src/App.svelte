@@ -13,20 +13,12 @@
   import { initTextures } from './lib/textures.svelte';
   import Setup from './pages/Setup.svelte';
   import Login from './pages/Login.svelte';
-  import Market from './pages/Market.svelte';
-  import Casino from './pages/Casino.svelte';
-  import Collections from './pages/Collections.svelte';
+  import LazyPage from './components/LazyPage.svelte';
   import SocialSidebar from './components/SocialSidebar.svelte';
   import { pageEnabled } from '@velora/experience';
   import ExperienceWidgets from '@velora/experience/ExperienceWidgets.svelte';
   import { selectedInstance } from './lib/store.svelte';
   import Home from './pages/Home.svelte';
-  import Settings from './pages/Settings.svelte';
-  import Stats from './pages/Stats.svelte';
-  import Quests from './pages/Quests.svelte';
-  import Guilds from './pages/Guilds.svelte';
-  import Commands from './pages/Commands.svelte';
-  import Social from './pages/Social.svelte';
   import PlayerProfileModal from './components/PlayerProfileModal.svelte';
   import CommandPalette from './components/CommandPalette.svelte';
   import { app, init, refreshUpdates } from './lib/store.svelte';
@@ -58,7 +50,7 @@
     <div class="center"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={28} /></div>
   {:else if app.view === 'settings'}
     <div class="body">
-      <Rail /><main><Settings /></main>
+      <Rail /><main><LazyPage name="settings" /></main>
       {#if app.settings?.show_social_sidebar && app.accounts.length && app.manifest}<SocialSidebar />{/if}
     </div>
   {:else if !app.panelUrl || !app.manifest}
@@ -73,21 +65,21 @@
         {#if app.view === 'experience'}
           <div class="experience-page"><h1>{selectedInstance()?.name}</h1><ExperienceWidgets experience={selectedInstance()?.experience} /></div>
         {:else if app.view === 'stats'}
-          <Stats />
+          <LazyPage name="stats" />
         {:else if app.view === 'quests'}
-          <Quests />
+          <LazyPage name="quests" />
         {:else if app.view === 'collections'}
-          <Collections />
+          <LazyPage name="collections" />
         {:else if app.view === 'guilds'}
-          <Guilds />
+          <LazyPage name="guilds" />
         {:else if app.view === 'social'}
-          <Social />
+          <LazyPage name="social" />
         {:else if app.view === 'market'}
-          <Market />
+          <LazyPage name="market" />
         {:else if app.view === 'casino'}
-          <Casino />
+          <LazyPage name="casino" />
         {:else if app.view === 'commands'}
-          <Commands />
+          <LazyPage name="commands" />
         {:else}
           <Home />
         {/if}

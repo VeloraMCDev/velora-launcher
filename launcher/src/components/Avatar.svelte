@@ -25,7 +25,7 @@
 {#if src && !failed}
   <img {src} alt="" style:width="{size}rem" style:height="{size}rem" onerror={() => (failed = true)} />
 {:else}
-  <span class="fb" style:width="{size}rem" style:height="{size}rem" style:background="hsl({hue} 45% 40%)">{username.slice(0, 1).toUpperCase()}</span>
+  <span class="fb" style:width="{size}rem" style:height="{size}rem" style:background="hsl({hue} 45% 30%)">{username.slice(0, 1).toUpperCase()}</span>
 {/if}
 
 <style>

@@ -38,9 +38,9 @@
   h1,h2 { display: flex; align-items: center; gap: .6rem; } h1 { font-size: 1.7rem; } h2 { font-size: 1.2rem; } h3 { margin-bottom: .3rem; }
   p,li { line-height: 1.6; color: var(--muted); } header p { max-width: 800px; }
   .search { display: flex; align-items: center; gap: .6rem; padding: .6rem .9rem; border: 1px solid var(--line); border-radius: 8px; } input { width: 100%; background: transparent; border: 0; color: inherit; outline: none; font: inherit; }
-  nav { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; } nav button { padding: .5rem .8rem; } .active { border-color: var(--accent); color: var(--accent); }
+  nav { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; } nav button { padding: .5rem .8rem; } .active { border-color: var(--accent); color: var(--state-info-text, color-mix(in srgb, var(--accent) 65%, var(--text))); }
   section,article { border: 1px solid var(--line); background: var(--surface, var(--bg-2)); border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
-  .articles,.commands { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,340px),1fr)); gap: 1rem; } .body { white-space: pre-wrap; overflow-wrap: anywhere; } .category { font-size: .75rem; color: var(--accent); } 
-  .links { display: flex; flex-wrap: wrap; gap: 1rem; } a,code { color: var(--accent); } .command { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: .4rem; text-align: left; padding: 1rem 2rem 1rem 1rem; } code,small { overflow-wrap: anywhere; } small { color: var(--muted); } .copy { position: absolute; right: .5rem; top: .8rem; }
+  .articles,.commands { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,340px),1fr)); gap: 1rem; } .body { white-space: pre-wrap; overflow-wrap: anywhere; } .category { font-size: .75rem; color: var(--state-info-text, color-mix(in srgb, var(--accent) 65%, var(--text))); }
+  .links { display: flex; flex-wrap: wrap; gap: 1rem; } a,code { color: var(--state-info-text, color-mix(in srgb, var(--accent) 65%, var(--text))); } .command { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: .4rem; text-align: left; padding: 1rem 2rem 1rem 1rem; } code,small { overflow-wrap: anywhere; } small { color: var(--muted); } .copy { position: absolute; right: .5rem; top: .8rem; }
   dl { display: flex; flex-wrap: wrap; gap: 1rem 2rem; } dt { color: var(--muted); font-size: .8rem; } dd { margin: .3rem 0 0; overflow-wrap: anywhere; } li { margin-bottom: .4rem; }
 </style>

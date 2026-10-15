@@ -140,13 +140,111 @@ impl Default for Settings {
 
 impl Settings {
     pub fn load(path: &Path) -> Self {
-        std::fs::read(path).ok().and_then(|b| serde_json::from_slice(&b).ok()).unwrap_or_default()
+        match crate::persistence::read_json(path) {
+            Ok(Some(settings)) => settings,
+            Ok(None) => Self::default(),
+            Err(_) => {
+                tracing::warn!("Settings could not be loaded; using defaults without changing the source file");
+                Self::default()
+            }
+        }
     }
 
     pub fn save(&self, path: &Path) -> anyhow::Result<()> {
-        let tmp = path.with_extension("json.tmp");
-        std::fs::write(&tmp, serde_json::to_vec_pretty(self)?)?;
-        std::fs::rename(tmp, path)?;
+        crate::persistence::atomic_write_json(path, self)
+    }
+
+    pub fn update(current: &mut Self, path: &Path, change: impl FnOnce(&mut Self)) -> anyhow::Result<()> {
+        let mut next = current.clone();
+        change(&mut next);
+        next.save(path)?;
+        *current = next;
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::persistence::tests::TestDirectory;
+    use std::fs;
+
+    #[test]
+    fn legacy_partial_settings_keep_all_defaults() {
+        let directory = TestDirectory::new();
+        let path = directory.settings_path();
+        fs::write(&path, br#"{"width":1600,"companion":{"opacity":0.5,"widgets":[{"id":"synthetic","enabled":true,"x":0.1,"y":0.2}]},"instance_overrides":{"synthetic":{"memory_max_mb":2048}}}"#).unwrap();
+        let mut expected = Settings::default();
+        expected.width = 1600;
+        expected.companion.opacity = 0.5;
+        expected.companion.widgets = vec![CompanionWidget { id: "synthetic".into(), enabled: true, x: 0.1, y: 0.2, scale: 1.0 }];
+        expected.instance_overrides.insert("synthetic".into(), InstanceOverride { memory_max_mb: 2048, ..InstanceOverride::default() });
+        assert_eq!(Settings::load(&path), expected);
+        expected.save(&path).unwrap();
+        assert_eq!(Settings::load(&path), expected);
+        fs::write(&path, b"{}").unwrap();
+        assert_eq!(Settings::load(&path), Settings::default());
+    }
+
+    #[test]
+    fn missing_settings_can_be_saved_and_valid_settings_replaced() {
+        let directory = TestDirectory::new();
+        let path = directory.settings_path();
+        assert_eq!(Settings::load(&path), Settings::default());
+        let mut settings = Settings::default();
+        settings.save(&path).unwrap();
+        settings.width = 1920;
+        settings.save(&path).unwrap();
+        assert_eq!(Settings::load(&path), settings);
+        directory.assert_only_settings();
+    }
+
+    #[test]
+    fn corrupt_or_wrong_typed_settings_survive_default_load_and_save() {
+        let directory = TestDirectory::new();
+        let path = directory.settings_path();
+        for bytes in [b"{synthetic corrupt".as_slice(), br#"{"width":"synthetic-invalid"}"#, b"null", b""] {
+            fs::write(&path, bytes).unwrap();
+            let settings = Settings::load(&path);
+            assert_eq!(settings, Settings::default());
+            assert!(settings.save(&path).is_err());
+            assert_eq!(fs::read(&path).unwrap(), bytes);
+            directory.assert_only_settings();
+        }
+    }
+
+    #[test]
+    fn failed_update_preserves_memory_and_successful_update_commits_both() {
+        let directory = TestDirectory::new();
+        let path = directory.settings_path();
+        let mut current = Settings::default();
+        let previous = current.clone();
+        fs::write(&path, b"synthetic corrupt JSON").unwrap();
+        assert!(Settings::update(&mut current, &path, |settings| settings.width = 1920).is_err());
+        assert_eq!(current, previous);
+        assert_eq!(fs::read(&path).unwrap(), b"synthetic corrupt JSON");
+        fs::write(&path, b"{}").unwrap();
+        Settings::update(&mut current, &path, |settings| settings.width = 1920).unwrap();
+        assert_eq!(current.width, 1920);
+        assert_eq!(Settings::load(&path), current);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn unreadable_settings_are_not_replaced() {
+        use std::os::unix::fs::PermissionsExt;
+        let directory = TestDirectory::new();
+        let path = directory.settings_path();
+        fs::write(&path, b"{}").unwrap();
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o000)).unwrap();
+        let read_result = fs::read(&path);
+        if read_result.is_err() {
+            let settings = Settings::load(&path);
+            assert_eq!(settings, Settings::default());
+            assert!(settings.save(&path).is_err());
+            directory.assert_only_settings();
+        }
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).unwrap();
+        assert_eq!(fs::read(&path).unwrap(), b"{}");
     }
 }

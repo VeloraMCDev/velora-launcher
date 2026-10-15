@@ -2,11 +2,15 @@
 use crate::state::build;
 use anyhow::{anyhow, bail, Context, Result};
 use futures::StreamExt;
-pub use velora_shared::LauncherUpdate as UpdateInfo;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
-use std::{path::Path, time::Duration};
-use tokio::io::AsyncWriteExt;
+use std::{
+    fs::File,
+    io::Write,
+    path::{Path, PathBuf},
+    time::Duration,
+};
+pub use velora_shared::LauncherUpdate as UpdateInfo;
 
 const MAX_INSTALLER: u64 = 256 * 1024 * 1024;
 #[derive(Deserialize)]
@@ -160,46 +164,76 @@ pub async fn check(http: &reqwest::Client, panel: Option<&str>) -> Result<Option
     let (hosted, repository) = tokio::join!(panel_update(http, panel), repository_update(http));
     select_update(hosted, repository)
 }
+struct InstallerPart {
+    path: PathBuf,
+    file: Option<File>,
+    published: bool,
+}
+
+impl InstallerPart {
+    fn create(path: PathBuf) -> Result<Self> {
+        let mut options = std::fs::OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let file = options.open(&path)?;
+        Ok(Self { path, file: Some(file), published: false })
+    }
+
+    fn publish(mut self, destination: &Path) -> Result<()> {
+        self.file.as_ref().unwrap().sync_all()?;
+        drop(self.file.take());
+        std::fs::rename(&self.path, destination)?;
+        self.published = true;
+        Ok(())
+    }
+}
+
+impl Drop for InstallerPart {
+    fn drop(&mut self) {
+        drop(self.file.take());
+        if !self.published {
+            if let Err(error) = std::fs::remove_file(&self.path) {
+                if error.kind() != std::io::ErrorKind::NotFound {
+                    tracing::warn!("couldn't remove incomplete installer");
+                }
+            }
+        }
+    }
+}
+
 /// Bounded download and verification, separated from execution for testing.
 async fn download_installer(http: &reqwest::Client, info: &UpdateInfo, dest: &Path) -> Result<()> {
     validate_size(info.size)?;
     let expected =
         info.sha256.as_deref().filter(|digest| valid_digest(digest)).ok_or_else(|| anyhow!("Installer has no valid checksum"))?;
-    let part = dest.with_extension("exe.part");
-    let result = async {
-        let response = http.get(&info.url).timeout(Duration::from_secs(300)).send().await?.error_for_status()?;
-        if response.content_length().is_some_and(|n| n != info.size) {
-            bail!("Installer size differs from its release metadata");
-        }
-        let mut stream = response.bytes_stream();
-        let mut file = tokio::fs::File::create(&part).await?;
-        let mut hasher = Sha256::new();
-        let mut written = 0;
-        while let Some(chunk) = stream.next().await {
-            let chunk = chunk?;
-            written += chunk.len() as u64;
-            if written > info.size {
-                bail!("Installer exceeds its advertised size");
-            }
-            hasher.update(&chunk);
-            file.write_all(&chunk).await?;
-        }
-        file.flush().await?;
-        drop(file);
-        if written != info.size {
-            bail!("Installer download was incomplete");
-        }
-        if !format!("{:x}", hasher.finalize()).eq_ignore_ascii_case(expected) {
-            bail!("Installer checksum verification failed");
-        }
-        tokio::fs::rename(&part, dest).await?;
-        Ok(())
+    let response = http.get(&info.url).timeout(Duration::from_secs(300)).send().await?.error_for_status()?;
+    if response.content_length().is_some_and(|n| n != info.size) {
+        bail!("Installer size differs from its release metadata");
     }
-    .await;
-    if result.is_err() {
-        tokio::fs::remove_file(&part).await.ok();
+    let mut stream = response.bytes_stream();
+    let mut part = InstallerPart::create(dest.with_extension("exe.part"))?;
+    let mut hasher = Sha256::new();
+    let mut written = 0;
+    while let Some(chunk) = stream.next().await {
+        let chunk = chunk?;
+        written += chunk.len() as u64;
+        if written > info.size {
+            bail!("Installer exceeds its advertised size");
+        }
+        hasher.update(&chunk);
+        part.file.as_mut().unwrap().write_all(&chunk)?;
     }
-    result
+    if written != info.size {
+        bail!("Installer download was incomplete");
+    }
+    if !format!("{:x}", hasher.finalize()).eq_ignore_ascii_case(expected) {
+        bail!("Installer checksum verification failed");
+    }
+    part.publish(dest)
 }
 pub async fn download_and_run(http: &reqwest::Client, info: &UpdateInfo) -> Result<()> {
     let ext = if cfg!(windows) {
@@ -228,8 +262,13 @@ pub async fn download_and_run(http: &reqwest::Client, info: &UpdateInfo) -> Resu
     Ok(())
 }
 #[cfg(test)]
+#[path = "updater/shutdown_tests.rs"]
+mod shutdown_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
+    use tokio::io::AsyncWriteExt;
     async fn serve(body: Vec<u8>, status: &str) -> String {
         use tokio::{io::AsyncReadExt, net::TcpListener};
         let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
@@ -307,7 +346,14 @@ mod tests {
         tokio::fs::remove_dir(&dir).await.unwrap();
     }
     fn update(v: &str) -> UpdateInfo {
-        UpdateInfo { version: v.into(), notes: String::new(), url: "https://panel.test/setup.exe".into(), size: 100, sha256: None, signature: None }
+        UpdateInfo {
+            version: v.into(),
+            notes: String::new(),
+            url: "https://panel.test/setup.exe".into(),
+            size: 100,
+            sha256: None,
+            signature: None,
+        }
     }
     #[tokio::test]
     async fn installer_without_checksum_cannot_be_downloaded_or_executed() {

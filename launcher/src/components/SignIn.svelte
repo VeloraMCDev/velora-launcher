@@ -3,7 +3,7 @@
   import { UserRound, WifiOff, LoaderCircle, Check, ArrowRight, UserPlus } from '@lucide/svelte';
   import { accountAdded, app, toast } from '../lib/store.svelte';
   import { errorText, invoke, openUrl } from '../lib/tauri';
-  import type { Account } from '../lib/types';
+  import type { Account, DiscordStartResponse, DiscordSignInPollResult } from '../lib/types';
 
   const auth = $derived(app.manifest?.auth);
   const methods = $derived(
@@ -55,11 +55,11 @@
   async function signInDiscord() {
     error = ''; busy = true;
     try {
-      const flow = await invoke<{url: string; state: string}>('discord_sign_in_start');
+      const flow = await invoke<DiscordStartResponse>('discord_sign_in_start');
       await openUrl(flow.url);
       for (let i = 0; i < 120; i++) {
         await new Promise(resolve => setTimeout(resolve, 1500));
-        const result = await invoke<{account?: Account; pending?: boolean}>('discord_sign_in_poll', {oauthState: flow.state});
+        const result = await invoke<DiscordSignInPollResult>('discord_sign_in_poll', {oauthState: flow.state});
         if (result.account) {
           await accountAdded(result.account);
           toast(`Signed in as ${result.account.username}`);

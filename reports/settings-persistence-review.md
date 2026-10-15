@@ -1,0 +1,60 @@
+# Independent launcher settings-persistence review
+
+Date: October 12, 2026. Separate source review of `settings.rs`, `persistence.rs`, module wiring, `AppState` persistence and command/game callers. Read the four mandatory root documents. No production/test edits, duplicate builds, live stores, branch, commit, PR or deployment. Worker-reported synthetic results are distinguished from reviewer-observed evidence.
+
+## Verdict
+
+**Accept the bounded source hardening and the subsequent transactional host-settings integration:** corrupt/unreadable/nonregular settings destinations are not intentionally replaced, sibling temporary files are UUID-named and exclusively created, and normal writes sync and close the temporary before rename. Host settings updates now commit memory only after successful persistence, under the AppState write lock. No new blocker was found for ordinary single-process, nonadversarial disk-preservation and returned-error memory-preservation behavior. `launcher/src-tauri/src/lib.rs:8` wires `mod persistence`, so `Settings::load/save/update` references are connected in the application source.
+
+**Do not claim frontend rollback, crash-durable replacement, adversarial/path-race safety, multiprocess serialization or complete schema compatibility.** The latest full locked utility/core/launcher regression is reported running, not completed. The caveats below are gates on those stronger claims, not evidence that the narrowly stated hardening fails on every normal save.
+
+## Destination and failure handling
+
+- `launcher/src-tauri/src/persistence.rs:7` uses `symlink_metadata`, rejects nonregular destinations including symlinks, reads existing bytes and deserializes as the actual requested type. Missing files alone are allowed. Corrupt JSON, wrong-typed settings and ordinary read/metadata errors propagate to save. `launcher/src-tauri/src/settings.rs:158` defaults on load failure with a generic warning, without writing defaults back. The save guard rechecks the destination; recovery requires explicitly repairing/removing invalid data, not silently overwriting it.
+- `persistence.rs:28` constructs a hidden same-directory UUID-v4 sibling; `:47` rejects the destination itself and nonsibling paths. Serialization and initial destination validation occur before opening the temporary. `create_new(true)` avoids truncating/removing an existing collision; an open failure returns before cleanup. Unix creation requests mode 0600.
+- `persistence.rs:60` captures temporary metadata, writes all bytes, calls `sync_all`, closes the file, verifies the path is still regular (and matching device/inode on Unix), revalidates the typed destination, then renames without an explicit destination delete. Partial-write, sync, identity/revalidation and rename errors return before successful replacement. The closure owns the file, so an early error drops its handle before cleanup; no retained handle or spawned task is introduced here.
+- `persistence.rs:83` attempts cleanup only after successful temporary creation followed by failure. Cleanup failure logs a warning and retains the original error, but can leave an orphan. Normal early write/rename failures clean up; cleanup is best-effort, not a promise of zero residual files or zero crash remnants. The helper does not perform orphan discovery/recovery.
+
+## Memory, resources and application integration
+
+`launcher/src-tauri/src/settings.rs:174` clones the current value, applies the closure to the candidate, persists it with `next.save(path)?`, and only then assigns the candidate to current. Any returned save error leaves current unchanged. `launcher/src-tauri/src/state.rs:91` delegates while holding the settings **write** guard for the entire clone/change/save/commit sequence. Readers and other settings updates cannot observe the candidate or interleave within this sequence. Synchronous filesystem work can now block both readers and writers on slow storage; this is the tradeoff for host-level serialization. In addition to full destination bytes/deserialized state and serialized output, the candidate is a full settings clone; there is no file-size limit. No background resource owner is introduced, and ordinary file/lock resources release by scope.
+
+**Closed in current source — mutate-before-save host divergence:** panel URL (`launcher/src-tauri/src/commands.rs:123`), selected experience (`:135`), general settings (`:139`), captured instance options (`:154`) and FOV (`:165`) all use `update_settings`. The general settings closure still preserves the host's panel URL and captured instance options, now from the locked candidate, without IPC field/signature changes. Panel manifest caching follows successful settings persistence. Game-exit preference capture (`launcher/src-tauri/src/game.rs:380`) also uses the transactional helper and now warns on failure instead of silently committing memory and ignoring a failed save. A source-wide search of native settings writes found only the write-guard delegate, not a remaining direct mutation bypass in these callers.
+
+The new actual `Settings::update` test at `launcher/src-tauri/src/settings.rs:234` uses a corrupt synthetic destination, attempts to change width, and asserts unchanged current memory and destination bytes. It then replaces the fixture with valid JSON and asserts that successful update changes memory and reloads identically from disk. This closes the direct-helper memory-preservation coverage gap in source. It does not itself call Tauri IPC/AppState or the game watcher. Request command-level failure tests for protected panel/captured-options fields and background capture, and concurrent AppState updates, before claiming complete native integration acceptance; the inspected delegates support the bounded transactional host verdict without inventing those test results.
+
+**Frontend state is still optimistic:** `launcher/src/lib/store.svelte.ts:158` sends its already-mutated settings snapshot and only toasts an error; it does not reload or roll back the UI. A failed save can therefore leave the visible frontend different from unchanged host memory/disk. Host transactionality is not end-to-end UI transactionality. Also, when the starting disk file is corrupt, default host memory and corrupt disk bytes were already different; the helper preserves that starting state rather than repairing it.
+
+The persistence helper adds no resource lease or cross-process lock. AppState's write guard serializes its host updates, but other processes can validate and replace different valid snapshots. UUID temporaries prevent collision, not last-writer-wins loss. Do not infer coordination with preparation/mutation leases. A process crash after rename and before the memory assignment is outside returned-error transactional guarantees.
+
+## Data compatibility
+
+Compared the whitespace-insensitive settings diff: field names/types, defaults, `claimBorders` rename, widget scale default, nested defaults and instance map shapes are unchanged. `AppState` retains `data_dir/settings.json`; there is no ID, Minecraft namespace, database/volume, credential or updater/signing migration. Only temporary naming/permissions and persistence failure policy change. Symlinked settings files are now deliberately refused rather than followed; this is a compatibility restriction to document, not transparent support for every legacy layout.
+
+Typed deserialization is **not** schema/version preservation. Unknown JSON fields are not retained by `Settings`; a compatible-looking future file can deserialize and lose unknown data on save. Invalid known-field types/unknown enum variants can now prevent saves until explicit repair. No migration, preserved extension map, semantic range validation or serialized-output round-trip validation is added. Finite numeric values, complete representative old/future settings, permission/ACL changes and Windows replacement behavior need explicit compatibility tests. The old generic pretty-serialization behavior is not proof of safe handling for every possible in-memory float value.
+
+## Test and CI evidence
+
+Inspected **15 synthetic Rust test functions: 5 settings and 10 persistence**, with Unix-only cases. They cover partial/default legacy loading and replacement, invalid destination preservation, failure-preserved memory and success-committed memory/disk through actual `Settings::update`, UUID siblings, collisions/preexisting temporary directories, unsafe locations, partial write, rename failure, cleanup error precedence, destination corruption during write, symlink/nonregular rejection and Unix private permissions. Tests use UUID-named synthetic temporary directories, not application/player stores. The unreadable-file case only exercises its protection assertions when a read actually fails; privileged environments can bypass that branch. Windows does not execute the Unix cases.
+
+The user reports the worker's earlier 14 local synthetic tests, the new test's presence, and current frontend **19 passed / check zero warnings**; **this reviewer did not rerun or independently observe those executions**. The final full locked utility/core/launcher tests are reported running; do not treat them as passed. Root Source CI's launcher step runs frontend tests/check/runes/build, not these Rust tests. Scoped whitespace validation of settings/state/commands/game passed after the refinement. No isolated-worker or frontend result substitutes for the application build/test with the new module wiring and target-native filesystem behavior.
+
+## Explicit remaining gates and requested evidence
+
+1. **Native integration:** finish the main native regression with `mod persistence` enabled, capture exact command/toolchain/outcome and failures/skips, and validate synthetic create/replace/failure behavior on supported target systems. No duplicate build is launched by this reviewer.
+2. **Fsync/crash durability:** the temporary file is synced, but the parent directory is not synced after rename; power-loss persistence of the directory entry is unproved. Request injected `sync_all` failure coverage asserting unchanged destination, closed handle, cleanup and original error. If crash durability is a requirement, add directory-sync policy plus target-native crash/fault evidence; existing write/rename injection does not establish it.
+3. **TOCTOU/cleanup:** metadata/read and final verification/rename are separate path operations. Destination/parent paths can change between checks; a valid concurrent replacement is not detected as a lost update. The temporary can change after Unix identity checking, and failure cleanup removes by path without checking that it still names the originally created file. Windows lacks the Unix inode/device comparison. Request deterministic synthetic replacement/cleanup-race tests before claiming protection against another process or hostile writable directories. This source is not descriptor-relative, no-follow transactional path security.
+4. **Schema/data continuity:** request representative synthetic old-settings round trips, unknown-field/future-schema downgrade policy, finite/range validation, and target permission/ACL preservation tests. The existing legacy partial-settings test supports default compatibility only, not all installed data. No live store or operational schema migration was modified.
+
+## Reviewed snapshot
+
+```text
+fc1183ce68f07cf365fe7832be7c63dcce02e258ef44aefb9c99ebfd67875621  launcher/src-tauri/src/settings.rs
+ab40c9c7e5a7da71750c62f5a5bf7e123b776ed09db637f8d18651b7700b79e0  launcher/src-tauri/src/persistence.rs
+d60c9fef756591ad5b3ff72d0728962c1d052e1e1017f49d3176e9e62f9e8b33  launcher/src-tauri/src/state.rs
+6963bfacc588eb9b1c782e72434c058ac9d50b4bb80b4f9c928a95c4b68ab359  launcher/src-tauri/src/lib.rs
+0371ee381c2600f7884c24d58f4020c1ebfd2deb82c5277af41c8360534f5e09  launcher/src-tauri/src/commands.rs
+6e99b7301c7894ca88d8cb8291bbe7b773a7e60e18bcb1e7dbc14fd5f38c09ea  launcher/src-tauri/src/game.rs
+```
+
+This is a separate settings source verdict, not approval inherited from the operation-event review or from the worker's reported tests.

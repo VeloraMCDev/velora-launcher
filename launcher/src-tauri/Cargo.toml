@@ -11,6 +11,9 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
+[features]
+native-acceptance = []
+
 [dependencies]
 velora-shared.workspace = true
 velora-launcher-core.workspace = true

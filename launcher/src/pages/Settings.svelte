@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { settingsTabIndex } from '../lib/settings-navigation';
+  import { actionContrast } from '../lib/action-contrast';
   import { iconName } from '@velora/experience/icon-components';
   import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
   import {
@@ -10,31 +12,32 @@
   import Modal from '../components/Modal.svelte';
   import SkinView from '../components/SkinView.svelte';
   import CompanionSettings from '../components/CompanionSettings.svelte';
-  import Toggle from '../components/Toggle.svelte';
+  import Toggle from '../components/ui/SettingSwitch.svelte';
+  import StateMessage from '../components/ui/StateMessage.svelte';
   import { abs, activeAccount, app, connect, instances, refresh, removeAccount, saveSettings, switchAccount, toast } from '../lib/store.svelte';
   import { BIND_GROUPS, defaults, fromKeyboard, fromMouse, keyLabel } from '../lib/keys';
   import { bytes, gb } from '../lib/format';
   import { errorText, invoke, openUrl, pickFile } from '../lib/tauri';
-  import type { Account, Gc, PlayerProfile, SkinProfile, UpdateInfo } from '../lib/types';
+  import type { Account, DiscordConnectionResponse, DiscordInfoResponse, DiscordSignInPollResult, DiscordStartResponse, Gc, PlayerProfile, SkinProfile, UpdateInfo } from '../lib/types';
 
   const serverAccount = $derived(activeAccount()?.kind === 'panel');
-  let discordConnection = $state<{id: string; name: string} | null>(null);
+  let discordConnection = $state<DiscordConnectionResponse>(null);
   let discordBusy = $state(false);
   let discordInvite = $state('');
   $effect(() => {
     if (serverAccount && app.settingsTab === 'account') {
-      invoke<{id: string; name: string} | null>('discord_connection').then(x => discordConnection = x).catch(() => discordConnection = null);
-      invoke<{invite_url: string}>('discord_info').then(x => discordInvite = x.invite_url ?? '').catch(() => discordInvite = '');
+      invoke<DiscordConnectionResponse>('discord_connection').then(x => discordConnection = x).catch(() => discordConnection = null);
+      invoke<DiscordInfoResponse>('discord_info').then(x => discordInvite = x.invite_url ?? '').catch(() => discordInvite = '');
     }
   });
   async function linkDiscord() {
     discordBusy = true;
     try {
-      const flow = await invoke<{url: string; state: string}>('discord_link_start');
+      const flow = await invoke<DiscordStartResponse>('discord_link_start');
       await openUrl(flow.url);
       for (let i = 0; i < 120; i++) {
         await new Promise(resolve => setTimeout(resolve, 1500));
-        const result = await invoke<{linked?: boolean; pending?: boolean}>('discord_sign_in_poll', {oauthState: flow.state});
+        const result = await invoke<DiscordSignInPollResult>('discord_sign_in_poll', {oauthState: flow.state});
         if (result.linked) {
           discordConnection = await invoke('discord_connection');
           toast('Discord connected'); return;
@@ -62,6 +65,17 @@
     { id: 'storage', label: 'Storage', icon: HardDrive },
     { id: 'about', label: 'About', icon: Info },
   ]);
+
+  function navigateTabs(event: KeyboardEvent) {
+    if (event.isComposing || !(event.target instanceof HTMLButtonElement) || event.target.getAttribute('role') !== 'tab') return;
+    const controls = Array.from(event.currentTarget instanceof HTMLElement ? event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]') : []);
+    const index = settingsTabIndex(event.key, controls.indexOf(event.target), controls.length);
+    if (index === null) return;
+    event.preventDefault();
+    event.stopPropagation();
+    controls[index].focus();
+    controls[index].click();
+  }
 
   const s = $derived(app.settings!);
   const b = $derived(app.manifest?.branding);
@@ -326,17 +340,17 @@
 <svelte:window onkeydown={capturing ? capture : undefined} onmousedown={capturing ? capture : undefined} />
 
 <div class="settings">
-  <nav class="tabs glass">
+  <div class="tabs glass" role="tablist" tabindex="-1" aria-label="Settings categories" aria-orientation="vertical" onkeydown={navigateTabs}>
     <h2>Settings</h2>
     {#each tabs as t}
-      <button class="tab" class:active={app.settingsTab === t.id} onclick={() => (app.settingsTab = t.id)}>
+      <button type="button" class="tab" role="tab" id={'settings-tab-' + t.id} class:active={app.settingsTab === t.id} aria-selected={app.settingsTab === t.id} tabindex={app.settingsTab === t.id ? 0 : -1} aria-controls="settings-content" onclick={() => (app.settingsTab = t.id)}>
         <InterfaceIcon name={iconName(t.icon)} fallback={t.icon} size={17} /> {t.label}
         {#if t.id === 'about' && app.update}<span class="dot"></span>{/if}
       </button>
     {/each}
-  </nav>
+  </div>
 
-  <div class="content">
+  <div class="content" id="settings-content" role="tabpanel" aria-labelledby={'settings-tab-' + app.settingsTab} tabindex="0">
     {#key app.settingsTab}
       <div class="pane">
         {#if app.settingsTab === 'account'}
@@ -385,9 +399,9 @@
           </form>
           <p class="lead">Stored on {b?.name ?? 'the server'} — visible to everyone on servers that use its sign-in.</p>
           {#if profileError}
-            <div class="card glass"><p class="warn small">{profileError}</p></div>
+            <div class="card glass"><StateMessage tone="danger" class="small">{profileError}</StateMessage></div>
           {:else if !profile}
-            <div class="card glass center"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={20} class="spin" /></div>
+            <div class="card glass center"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} size={20} class="spin" /><StateMessage tone="busy">Loading skin and cape…</StateMessage></div>
           {:else}
             <div class="card glass skin-card" class:busy={skinBusy}>
               <div class="preview">
@@ -403,7 +417,7 @@
                 <label class="field">Arm style
                   <div class="segmented full">
                     {#each [['classic', 'Classic (4px)'], ['slim', 'Slim (3px)']] as [id, label]}
-                      <button class:active={profile.skin_model === id} disabled={skinBusy} onclick={() => profile!.skin_model !== id && skinAction('set_skin_model', { model: id })}>{label}</button>
+                      <button class:active={profile.skin_model === id} aria-pressed={profile.skin_model === id} disabled={skinBusy} onclick={() => profile!.skin_model !== id && skinAction('set_skin_model', { model: id })}>{label}</button>
                     {/each}
                   </div>
                 </label>
@@ -416,11 +430,11 @@
               <span class="label">Cape</span>
               {#if profile.available_capes.length}
                 <div class="capes">
-                  <button class="cape" class:active={!profile.cape} disabled={skinBusy} onclick={() => profile!.cape && skinAction('set_cape', { capeId: null })}>
+                  <button class="cape" class:active={!profile.cape} aria-pressed={!profile.cape} disabled={skinBusy} onclick={() => profile!.cape && skinAction('set_cape', { capeId: null })}>
                     <span class="cape-img none"><InterfaceIcon name="Ban" fallback={Ban} size={18} /></span>No cape
                   </button>
                   {#each profile.available_capes as c (c.id)}
-                    <button class="cape" class:active={profile.cape?.id === c.id} disabled={skinBusy} onclick={() => profile!.cape?.id !== c.id && skinAction('set_cape', { capeId: c.id })}>
+                    <button class="cape" class:active={profile.cape?.id === c.id} aria-pressed={profile.cape?.id === c.id} disabled={skinBusy} onclick={() => profile!.cape?.id !== c.id && skinAction('set_cape', { capeId: c.id })}>
                       <span class="cape-img" style:background-image={c.url ? `url(${c.url})` : undefined}></span>{c.name}
                     </button>
                   {/each}
@@ -450,7 +464,7 @@
 
               {#if savingCurrentLook}
                 <form class="save-look-box row gap-sm" onsubmit={(e) => { e.preventDefault(); saveCurrentLook(); }}>
-                  <input bind:value={profileNameInput} placeholder="Profile name (e.g. PvP, Casual, Outfit 1)" required />
+                  <input bind:value={profileNameInput} aria-label="Profile name" placeholder="Profile name (e.g. PvP, Casual, Outfit 1)" required />
                   <button type="submit" class="sm primary">Save</button>
                   <button type="button" class="sm ghost" onclick={() => { savingCurrentLook = false; profileNameInput = ''; }}>Cancel</button>
                 </form>
@@ -490,7 +504,7 @@
                               Equip
                             {/if}
                           </button>
-                          <button class="sm ghost icon" title="Delete preset" onclick={() => deleteProfile(sp.id, sp.name)}>
+                          <button class="sm ghost icon" title="Delete preset" aria-label={`Delete preset ${sp.name}`} onclick={() => deleteProfile(sp.id, sp.name)}>
                             <InterfaceIcon name="Trash2" fallback={Trash2} size={13} />
                           </button>
                         </div>
@@ -517,8 +531,8 @@
                   <label class="field">
                     <span>Arm model</span>
                     <div class="segmented full">
-                      <button type="button" class:active={newProfileModel === 'classic'} onclick={() => (newProfileModel = 'classic')}>Classic (4px)</button>
-                      <button type="button" class:active={newProfileModel === 'slim'} onclick={() => (newProfileModel = 'slim')}>Slim (3px)</button>
+                      <button type="button" class:active={newProfileModel === 'classic'} aria-pressed={newProfileModel === 'classic'} onclick={() => (newProfileModel = 'classic')}>Classic (4px)</button>
+                      <button type="button" class:active={newProfileModel === 'slim'} aria-pressed={newProfileModel === 'slim'} onclick={() => (newProfileModel = 'slim')}>Slim (3px)</button>
                     </div>
                   </label>
                   <label class="field">
@@ -565,7 +579,7 @@
             <label class="field">When the game starts
               <div class="segmented full">
                 {#each [['minimize', 'Minimise'], ['hide', 'Hide'], ['keep', 'Stay open'], ['close', 'Close launcher']] as [id, label]}
-                  <button class:active={s.after_launch === id} onclick={() => { s.after_launch = id as typeof s.after_launch; saveSettings(); }}>{label}</button>
+                  <button class:active={s.after_launch === id} aria-pressed={s.after_launch === id} onclick={() => { s.after_launch = id as typeof s.after_launch; saveSettings(); }}>{label}</button>
                 {/each}
               </div>
               <span class="help">{s.after_launch === 'close' ? 'Frees the most memory, but game logs and crash help are unavailable.' : s.after_launch === 'hide' ? 'The launcher comes back when you quit the game.' : 'Minimising keeps the console and crash help available.'}</span>
@@ -579,7 +593,7 @@
             <span class="label">Garbage collector</span>
             <div class="presets">
               {#each gcPresets as g}
-                <button class="preset" class:active={s.gc === g.id} onclick={() => { s.gc = g.id; saveSettings(); }}>
+                <button class="preset" class:active={s.gc === g.id} aria-pressed={s.gc === g.id} onclick={() => { s.gc = g.id; saveSettings(); }}>
                   <InterfaceIcon name={iconName(g.icon)} fallback={g.icon} size={20} /><strong>{g.title}</strong><span class="tiny muted">{g.text}</span>
                 </button>
               {/each}
@@ -621,8 +635,9 @@
           </div>
           <div class="card glass col">
             <Toggle bind:checked={s.keybinds_enabled} onchange={saveSettings} label="Apply these keybinds to the game" help="Writes to options.txt before launch (Minecraft 1.13 and newer)." />
+            {#if !s.keybinds_enabled}<p class="help">You can edit bindings below. Enable this switch to apply them when Minecraft starts.</p>{/if}
           </div>
-          <div class="binds" class:disabled={!s.keybinds_enabled}>
+          <div class="binds">
             {#each BIND_GROUPS as group}
               <div class="card glass">
                 <h3 class="group">{group.title}</h3>
@@ -631,6 +646,8 @@
                   <div class="bind">
                     <span>{bind.label}</span>
                     <button class="key" class:capturing={capturing === bind.id} class:conflict={conflicts.has(key)} class:changed={key !== bind.default}
+                      aria-label={`${bind.label}: ${capturing === bind.id ? 'press a key, Escape clears binding' : keyLabel(key)}${conflicts.has(key) ? ', conflicting binding' : ''}`}
+                      aria-pressed={capturing === bind.id}
                       onclick={(e) => { e.stopPropagation(); capturing = bind.id; }}>
                       {#if capturing === bind.id}<InterfaceIcon name="MousePointerClick" fallback={MousePointerClick} size={13} /> Press a key…{:else}{keyLabel(key)}{/if}
                     </button>
@@ -651,15 +668,15 @@
           {#if themeAllowed}
             <div class="card glass col">
               <div class="segmented">
-                <button class:active={s.theme_mode === 'server'} onclick={() => { s.theme_mode = 'server'; saveSettings(); }}>Server theme</button>
-                <button class:active={s.theme_mode === 'custom'} onclick={() => { s.theme_mode = 'custom'; s.accent ??= accents[0]; saveSettings(); }}>Custom accent</button>
+                <button class:active={s.theme_mode === 'server'} aria-pressed={s.theme_mode === 'server'} onclick={() => { s.theme_mode = 'server'; saveSettings(); }}>Server theme</button>
+                <button class:active={s.theme_mode === 'custom'} aria-pressed={s.theme_mode === 'custom'} onclick={() => { s.theme_mode = 'custom'; s.accent ??= accents[0]; saveSettings(); }}>Custom accent</button>
               </div>
               {#if s.theme_mode === 'custom'}
                 <div class="swatches">
                   {#each accents as c}
-                    <button class="swatch" class:on={s.accent === c} style:background={c} aria-label="Accent {c}" onclick={() => { s.accent = c; saveSettings(); }}>{#if s.accent === c}<InterfaceIcon name="Check" fallback={Check} size={15} />{/if}</button>
+                    <button class="swatch" class:on={s.accent === c} style:background={c} style:color={actionContrast(c).foreground} aria-label="Accent {c}" aria-pressed={s.accent === c} onclick={() => { s.accent = c; saveSettings(); }}>{#if s.accent === c}<InterfaceIcon name="Check" fallback={Check} size={15} />{/if}</button>
                   {/each}
-                  <label class="swatch picker" title="Custom colour"><input type="color" value={s.accent ?? '#7c5cff'} oninput={(e) => { s.accent = (e.target as HTMLInputElement).value; saveSettings(); }} /></label>
+                  <label class="swatch picker" title="Custom colour"><input type="color" aria-label="Custom accent colour" value={s.accent ?? '#7c5cff'} oninput={(e) => { s.accent = (e.target as HTMLInputElement).value; saveSettings(); }} /></label>
                 </div>
               {/if}
             </div>
@@ -684,7 +701,7 @@
                 <span class="help">This launcher is built for this server.</span>
               {:else}
                 <div class="row">
-                  <input bind:value={panelInput} placeholder="panel.yourserver.com" />
+                  <input bind:value={panelInput} aria-label="Server panel address" placeholder="panel.yourserver.com" />
                   <button class="sm" disabled={panelBusy || !panelInput || panelInput === app.panelUrl} onclick={changePanel}>{#if panelBusy}<InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={14} />{:else}<InterfaceIcon name="Link2" fallback={Link2} size={14} />{/if} Connect</button>
                 </div>
                 {#if app.boot?.app.default_panel_url && app.panelUrl !== app.boot.app.default_panel_url}
@@ -699,9 +716,10 @@
           </div>
           <div class="card glass col">
             <Toggle bind:checked={s.check_updates} onchange={saveSettings} label="Check for launcher updates" />
+            <Toggle bind:checked={s.send_stats} onchange={saveSettings} label="Share launcher activity" help="Send activity events, your username and instance ID to the configured panel. After this setting is saved, activity checks skip new reports while sharing is off. Reports already admitted or in flight may still be sent. A failed save does not change the saved preference." />
             <Toggle bind:checked={s.show_social_sidebar} onchange={saveSettings} label="Show social sidebar" help="Friends, activity and message previews beside every page." />
             <Toggle bind:checked={s.show_news} onchange={saveSettings} label="Show news and announcements" help="Hide the news feed on the launcher home screen." />
-            <p class="help">Official server accounts report launcher activity and gameplay to the panel, linked to your permanent UUID. Chat is counted; message text, passwords and command arguments are not collected.</p>
+            <p class="help">This preference controls optional launcher activity reports, not authentication, server connections or gameplay data collected by the server.</p>
           </div>
         {:else if app.settingsTab === 'storage'}
           <h1>Storage</h1>
@@ -726,7 +744,7 @@
               {#each storage.instances as [id, n]}
                 <div class="acc">
                   <div class="who"><strong>{instName(id)}</strong><span class="tiny muted">{bytes(n)} · worlds, mods & settings</span></div>
-                  <button class="sm" onclick={() => invoke('open_folder', { kind: 'instance', instanceId: id })}><InterfaceIcon name="FolderOpen" fallback={FolderOpen} size={14} /></button>
+                  <button class="sm" aria-label={`Open folder for ${instName(id)}`} onclick={() => invoke('open_folder', { kind: 'instance', instanceId: id })}><InterfaceIcon name="FolderOpen" fallback={FolderOpen} size={14} /></button>
                   <button class="sm danger" onclick={async () => { try { await invoke('delete_instance_data', { instanceId: id }); loadStorage(); toast('Deleted'); } catch (e) { toast(errorText(e), 'error'); } }}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /> Delete</button>
                 </div>
               {:else}
@@ -735,7 +753,7 @@
             </div>
             <button class="sm link-btn" onclick={async () => { await invoke('clear_cache'); toast('Cache cleared'); loadStorage(); }}><InterfaceIcon name="Trash2" fallback={Trash2} size={14} /> Clear download cache</button>
           {:else}
-            <p class="muted row"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={16} /> Measuring…</p>
+            <StateMessage tone="busy" class="row"><InterfaceIcon name="LoaderCircle" fallback={LoaderCircle} class="spin" size={16} /> Measuring storage…</StateMessage>
           {/if}
         {:else if app.settingsTab === 'about'}
           <h1>About</h1>
@@ -771,11 +789,11 @@
 
 <style>
   .settings { height: 100%; display: flex; min-height: 0; }
-  .tabs { width: 13.5rem; flex-shrink: 0; padding: 1.2rem 0.6rem; display: flex; flex-direction: column; gap: 0.1rem; border: none; border-right: 1px solid var(--line); border-radius: 0; background: transparent; }
+  .tabs { width: 13.5rem; flex-shrink: 0; min-height: 0; overflow-y: auto; padding: 1.2rem 0.6rem; display: flex; flex-direction: column; gap: 0.1rem; border: none; border-right: 1px solid var(--line); border-radius: 0; background: transparent; }
   .tabs h2 { font-size: 0.8rem; font-weight: 560; color: var(--muted); padding: 0 0.75rem 0.7rem; }
-  .tab { justify-content: flex-start; gap: 0.7rem; background: transparent; border-color: transparent; color: var(--muted); padding: 0.55rem 0.75rem; font-weight: 500; position: relative; }
+  .tab { flex-shrink: 0; justify-content: flex-start; gap: 0.7rem; background: transparent; border-color: transparent; color: var(--muted); padding: 0.55rem 0.75rem; font-weight: 500; position: relative; }
   .tab:hover { color: var(--text); }
-  .tab.active { background: color-mix(in srgb, var(--text) 7%, transparent); color: var(--text); }
+  .tab.active { background: var(--state-selected-surface); color: var(--text); box-shadow: inset 3px 0 var(--state-focus-ring); }
   .tab.active :global(svg) { color: var(--text); }
   .dot { width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--accent); margin-left: auto; }
   .content { flex: 1; overflow-y: auto; min-width: 0; padding: 1.2rem 2rem 2.5rem; }
@@ -791,7 +809,7 @@
   .acc { display: flex; align-items: center; gap: 0.8rem; padding: 0.6rem 0.7rem; border-radius: var(--radius-sm); }
   .acc.current { background: color-mix(in srgb, var(--text) 5%, transparent); }
   .who { flex: 1; display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
-  .active-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; font-weight: 650; color: var(--accent); padding: 0.3rem 0.6rem; }
+  .active-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; font-weight: 650; color: var(--state-info-text); padding: 0.3rem 0.6rem; }
   .add { border-style: dashed; background: transparent; margin: 0.2rem; }
   .val { color: var(--text); font-weight: 560; font-variant-numeric: tabular-nums; }
   .scale { display: flex; justify-content: space-between; }
@@ -807,8 +825,7 @@
   .preset :global(svg) { color: var(--muted); margin-bottom: 0.2rem; }
   .preset.active { border-color: color-mix(in srgb, var(--accent) 60%, transparent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
   .preset.active :global(svg) { color: var(--accent); }
-  .binds { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; transition: opacity 0.2s; }
-  .binds.disabled { opacity: 0.55; }
+  .binds { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
   .group { font-size: 0.8rem; font-weight: 560; color: var(--muted); margin-bottom: 0.4rem; }
   .bind { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.3rem 0; font-size: 0.88rem; }
   .key { min-width: 7.5rem; padding: 0.4rem 0.7rem; font-size: 0.82rem; font-family: var(--mono); font-weight: 600; background: color-mix(in srgb, var(--bg) 60%, transparent); }
@@ -870,4 +887,16 @@
   .tiny-badge { padding: 0.15rem 0.4rem; font-size: 0.72rem; }
   .profile-actions { margin-top: 0.2rem; }
   @media (max-width: 1050px) { .binds { grid-template-columns: 1fr; } .tabs { width: 12rem; } .skin-card { flex-direction: column; align-items: stretch; } .preview { justify-content: center; } }
+  @media (max-width: 760px) {
+    .settings { flex-direction: column; }
+    .tabs { width: 100%; max-height: 9rem; flex-direction: row; flex-wrap: wrap; overflow: auto; padding: 0.5rem; border-right: none; border-bottom: 1px solid var(--line); }
+    .tabs h2 { width: 100%; padding: 0 0.4rem 0.2rem; }
+    .tab { flex: 0 1 auto; padding: 0.5rem; font-size: 0.8rem; }
+    .content { padding: 1rem 0.75rem 1.5rem; min-height: 0; }
+    .content :global(.row) { flex-wrap: wrap; }
+    .content :global(.segmented) { flex-wrap: wrap; }
+    .content :global(input), .content :global(select) { min-width: 0; max-width: 100%; }
+    .profiles-grid { grid-template-columns: repeat(auto-fill, minmax(min(13rem, 100%), 1fr)); }
+    .acc, .update, .bind, .legend { flex-wrap: wrap; }
+  }
 </style>

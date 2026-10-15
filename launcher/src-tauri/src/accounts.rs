@@ -1,13 +1,14 @@
 //! Player accounts: panel accounts (authenticated by the panel's Yggdrasil
 //! server through authlib-injector) and local offline accounts.
 
+use crate::panel_client::{ErrorPolicy, PanelClient};
 use crate::secrets::Secret;
 use crate::state::AppState;
 use anyhow::{anyhow, bail, Context, Result};
-use velora_shared::{offline_uuid, valid_username, AuthResponse, LoginRequest, RegisterRequest};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::path::Path;
+use velora_shared::{offline_uuid, valid_username, AuthResponse, LoginRequest, RegisterRequest};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Account {
@@ -32,7 +33,7 @@ pub struct AccountsFile {
 
 impl AccountsFile {
     pub fn load(path: &Path) -> Self {
-        let mut file: Self = std::fs::read(path).ok().and_then(|b| serde_json::from_slice(&b).ok()).unwrap_or_default();
+        let mut file: Self = crate::persistence::read_json(path).ok().flatten().unwrap_or_default();
         // Microsoft accounts are no longer supported.
         file.accounts.retain(|a| a.kind == "panel" || a.kind == "offline");
         if file.active.as_ref().is_some_and(|id| !file.accounts.iter().any(|a| &a.id == id)) {
@@ -42,8 +43,15 @@ impl AccountsFile {
     }
 
     pub fn save(&self, path: &Path) -> Result<()> {
-        std::fs::write(path, serde_json::to_vec_pretty(self)?)?;
-        Ok(())
+        crate::persistence::atomic_write_json(path, self)
+    }
+
+    pub fn update<Value>(current: &mut Self, path: &Path, change: impl FnOnce(&mut Self) -> Result<Value>) -> Result<Value> {
+        let mut candidate = current.clone();
+        let value = change(&mut candidate)?;
+        candidate.save(path)?;
+        *current = candidate;
+        Ok(value)
     }
 
     pub fn active(&self) -> Option<&Account> {
@@ -67,48 +75,52 @@ impl AccountsFile {
     }
 }
 
-pub(crate) async fn panel_error(resp: reqwest::Response) -> anyhow::Error {
-    let status = resp.status();
-    let body: serde_json::Value = resp.json().await.unwrap_or_default();
-    anyhow!(
-        "{}",
-        body.get("error")
-            .and_then(|e| e.as_str())
-            .or_else(|| body.get("errorMessage").and_then(|e| e.as_str()))
-            .map(String::from)
-            .unwrap_or_else(|| format!("panel returned {status}"))
-    )
+pub fn select(state: &AppState, id: String) -> Result<()> {
+    state.update_accounts(|accounts| {
+        if !accounts.accounts.iter().any(|account| account.id == id) {
+            bail!("account not found");
+        }
+        accounts.active = Some(id);
+        Ok(())
+    })
+}
+
+pub fn remove(state: &AppState, id: &str) -> Result<()> {
+    let _work = state.shutdown.enter().map_err(anyhow::Error::msg)?;
+    let mut current = state.accounts.write().unwrap();
+    let mut candidate = current.clone();
+    candidate.accounts.retain(|account| account.id != id);
+    if candidate.active.as_deref() == Some(id) {
+        candidate.active = candidate.accounts.first().map(|account| account.id.clone());
+    }
+    state.secrets.remove_with_accounts(id, &candidate)?;
+    *current = candidate;
+    Ok(())
 }
 
 pub async fn login_panel(state: &AppState, username: &str, password: &str) -> Result<Account> {
     let panel = state.panel_url().ok_or_else(|| anyhow!("no panel configured"))?;
-    let resp = state
-        .http
-        .post(format!("{panel}/api/v1/auth/login"))
-        .json(&LoginRequest { username: username.trim().into(), password: password.into() })
-        .send()
-        .await
-        .context("couldn't reach the server")?;
-    if !resp.status().is_success() {
-        return Err(panel_error(resp).await);
-    }
-    let auth: AuthResponse = resp.json().await?;
+    let client = PanelClient::new(state.http.clone(), &panel, None)?;
+    let resp = PanelClient::send(
+        client
+            .request(reqwest::Method::POST, "/auth/login")?
+            .json(&LoginRequest { username: username.trim().into(), password: password.into() }),
+    )
+    .await?;
+    let auth: AuthResponse = PanelClient::json(resp, ErrorPolicy::Account).await?;
     save_panel_account(state, &panel, auth)
 }
 
 pub async fn register_panel(state: &AppState, username: &str, password: &str, email: Option<String>) -> Result<(Option<Account>, bool)> {
     let panel = state.panel_url().ok_or_else(|| anyhow!("no panel configured"))?;
-    let resp = state
-        .http
-        .post(format!("{panel}/api/v1/auth/register"))
-        .json(&RegisterRequest { username: username.trim().into(), password: password.into(), email })
-        .send()
-        .await
-        .context("couldn't reach the server")?;
-    if !resp.status().is_success() {
-        return Err(panel_error(resp).await);
-    }
-    let auth: AuthResponse = resp.json().await?;
+    let client = PanelClient::new(state.http.clone(), &panel, None)?;
+    let resp = PanelClient::send(client.request(reqwest::Method::POST, "/auth/register")?.json(&RegisterRequest {
+        username: username.trim().into(),
+        password: password.into(),
+        email,
+    }))
+    .await?;
+    let auth: AuthResponse = PanelClient::json(resp, ErrorPolicy::Account).await?;
     if auth.pending {
         return Ok((None, true));
     }
@@ -116,6 +128,11 @@ pub async fn register_panel(state: &AppState, username: &str, password: &str, em
 }
 
 pub(crate) fn save_panel_account(state: &AppState, panel: &str, auth: AuthResponse) -> Result<Account> {
+    let _work = state.shutdown.enter().map_err(anyhow::Error::msg)?;
+    commit_panel_account(state, panel, auth)
+}
+
+fn commit_panel_account(state: &AppState, panel: &str, auth: AuthResponse) -> Result<Account> {
     let account = Account {
         id: uuid::Uuid::new_v4().to_string(),
         kind: "panel".into(),
@@ -124,33 +141,35 @@ pub(crate) fn save_panel_account(state: &AppState, panel: &str, auth: AuthRespon
         panel_url: Some(panel.to_string()),
         role: Some(auth.user.role.clone()),
     };
-    let account = state.accounts.write().unwrap().upsert(account);
     let ygg = auth.yggdrasil.ok_or_else(|| anyhow!("the server didn't start a game session — is the panel up to date?"))?;
-    state.secrets.set(
+    let mut current = state.accounts.write().unwrap();
+    let mut candidate = current.clone();
+    let account = candidate.upsert(account);
+    state.secrets.set_with_accounts(
         &account.id,
         Secret { panel_token: Some(auth.token), ygg_access_token: Some(ygg.access_token), ygg_client_token: Some(ygg.client_token) },
+        &candidate,
     )?;
-    state.save_accounts()?;
+    *current = candidate;
     Ok(account)
 }
 
 pub async fn rename_panel(state: &AppState, username: &str, password: &str) -> Result<Account> {
-    if !state.game.lock().unwrap().is_empty() || state.task.lock().unwrap().as_ref().is_some_and(|t| !t.is_finished()) {
+    let _lease = state
+        .mutation_lease()
+        .map_err(|_| anyhow!("close Minecraft and wait for any installation to finish before changing your username"))?;
+    if !state.game.lock().unwrap().is_empty() {
         bail!("close Minecraft and wait for any installation to finish before changing your username");
     }
-    let panel = state.panel_url().ok_or_else(|| anyhow!("no panel configured"))?;
-    let token = panel_token(state).ok_or_else(|| anyhow!("sign in to your server account first"))?;
-    let resp = state
-        .http
-        .put(format!("{panel}/api/v1/account/username"))
-        .bearer_auth(token)
-        .json(&json!({"username": username, "password": password}))
-        .send()
-        .await?;
-    if !resp.status().is_success() {
-        return Err(panel_error(resp).await);
-    }
-    save_panel_account(state, &panel, resp.json().await?)
+    let context = crate::panel_context::current(state).ok_or_else(|| anyhow!("no panel configured"))?;
+    let panel = context.panel;
+    let token = context.token.ok_or_else(|| anyhow!("sign in to your server account first"))?;
+    let client = PanelClient::new(state.http.clone(), &panel, Some(&token))?;
+    let resp = PanelClient::send(
+        client.request(reqwest::Method::PUT, "/account/username")?.json(&json!({"username": username, "password": password})),
+    )
+    .await?;
+    commit_panel_account(state, &panel, PanelClient::json(resp, ErrorPolicy::Account).await?)
 }
 
 pub fn add_offline(state: &AppState, username: &str) -> Result<Account> {
@@ -170,9 +189,7 @@ pub fn add_offline(state: &AppState, username: &str) -> Result<Account> {
         panel_url: None,
         role: None,
     };
-    let account = state.accounts.write().unwrap().upsert(account);
-    state.save_accounts()?;
-    Ok(account)
+    state.update_accounts(|accounts| Ok(accounts.upsert(account)))
 }
 
 /// The panel's Yggdrasil API root for an account.
@@ -222,6 +239,7 @@ async fn ensure_session(state: &AppState, account: &Account, api: &str) -> Resul
         client_token: String,
     }
     let r: Refreshed = resp.json().await?;
+    let _work = state.shutdown.enter().map_err(anyhow::Error::msg)?;
     state
         .secrets
         .set(&account.id, Secret { ygg_access_token: Some(r.access_token.clone()), ygg_client_token: Some(r.client_token), ..secret })?;
@@ -254,24 +272,6 @@ pub async fn game_auth(state: &AppState, account: &Account) -> Result<(velora_la
     }
 }
 
-/// Panel token for requests, when the active account belongs to this panel.
-pub fn panel_token(state: &AppState) -> Option<String> {
-    let panel = state.panel_url()?;
-    let accounts = state.accounts.read().unwrap();
-    let active = accounts.active()?;
-    if active.kind != "panel" {
-        return None;
-    }
-    if let Some(active_url) = &active.panel_url {
-        let a = active_url.trim_end_matches('/');
-        let p = panel.trim_end_matches('/');
-        if !a.eq_ignore_ascii_case(p) {
-            return None;
-        }
-    }
-    state.secrets.get(&active.id).panel_token
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -302,3 +302,14 @@ mod tests {
         std::fs::remove_dir_all(dir).ok();
     }
 }
+#[cfg(test)]
+#[path = "accounts/persistence_tests.rs"]
+mod persistence_tests;
+
+#[cfg(test)]
+#[path = "accounts/shutdown_tests.rs"]
+mod shutdown_tests;
+
+#[cfg(test)]
+#[path = "accounts/restart_tests.rs"]
+mod restart_tests;

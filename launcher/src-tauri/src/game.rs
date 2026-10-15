@@ -3,11 +3,6 @@
 use crate::accounts;
 use crate::state::{AppState, RunningGame};
 use anyhow::{anyhow, Context, Result};
-use velora_launcher_core::install::{self, InstallSpec};
-use velora_launcher_core::launch::{self, LaunchOptions};
-use velora_launcher_core::progress::{Event, Reporter, Stage};
-use velora_launcher_core::{options, servers_dat, sync};
-use velora_shared::InstanceManifest;
 use serde::Serialize;
 use std::collections::VecDeque;
 use std::path::PathBuf;
@@ -15,10 +10,19 @@ use std::sync::Arc;
 use std::time::Duration;
 use tauri::{AppHandle, Emitter, Manager};
 use tokio::io::{AsyncBufReadExt, BufReader};
+use velora_launcher_core::install::{self, InstallSpec};
+use velora_launcher_core::launch::{self, LaunchOptions};
+use velora_launcher_core::progress::{Event, Reporter, Stage};
+use velora_launcher_core::{options, servers_dat, sync};
+use velora_shared::InstanceManifest;
+
+mod manifest_cache;
+pub(crate) mod manifest_denials;
 
 #[derive(Serialize, Clone)]
 pub struct StatePayload {
     pub instance_id: String,
+    pub operation_id: String,
     pub run_id: Option<String>,
     /// "preparing" | "running" | "idle" | "error"
     pub state: String,
@@ -38,8 +42,10 @@ pub struct ExitPayload {
 /// Copy item textures out of the downloaded client jar (a no-op when they are already there) and tell the UI. Runs off the
 /// async runtime because it unzips; safe to call as often as we like.
 pub fn refresh_textures(app: &AppHandle) {
+    let Ok(work) = app.state::<AppState>().shutdown.enter() else { return };
     let app = app.clone();
     std::thread::spawn(move || {
+        let _work = work;
         let layout = app.state::<AppState>().layout.clone();
         match velora_launcher_core::textures::ensure(&layout) {
             Ok(true) => tracing::info!("extracted item textures from the client jar"),
@@ -50,57 +56,110 @@ pub fn refresh_textures(app: &AppHandle) {
     });
 }
 
-pub fn emit_state(app: &AppHandle, id: &str, state: &str, message: Option<String>) {
-    app.emit("launch://state", StatePayload { instance_id: id.into(), run_id: None, state: state.into(), message }).ok();
+#[derive(Serialize, Clone)]
+pub struct ProgressPayload {
+    pub instance_id: String,
+    pub operation_id: String,
+    #[serde(flatten)]
+    pub event: Event,
+}
+
+#[derive(Serialize, Clone)]
+pub struct LogPayload {
+    pub instance_id: String,
+    pub operation_id: String,
+    pub run_id: String,
+    pub lines: Vec<String>,
+}
+
+fn run_state(instance_id: &str, operation_id: uuid::Uuid, run_id: &str, state: &str) -> StatePayload {
+    StatePayload {
+        instance_id: instance_id.into(),
+        operation_id: operation_id.to_string(),
+        run_id: Some(run_id.into()),
+        state: state.into(),
+        message: None,
+    }
+}
+
+pub fn emit_state(app: &AppHandle, id: &str, operation_id: uuid::Uuid, state: &str, message: Option<String>) {
+    app.emit(
+        "launch://state",
+        StatePayload { instance_id: id.into(), operation_id: operation_id.to_string(), run_id: None, state: state.into(), message },
+    )
+    .ok();
 }
 
 /// Fetch the instance definition, falling back to the last copy we saw so
 /// the game still starts without internet.
 async fn instance_manifest(state: &AppState, id: &str) -> Result<InstanceManifest> {
     let cache = state.layout.instance_dir(id).join(".scopenet").join("manifest.json");
+    let observed_denial = state.manifest_denials.observe(&cache);
+    let panel = state.panel_url().ok_or_else(|| anyhow!("no panel configured"))?;
+    let (authority, token) = {
+        let accounts = state.accounts.read().unwrap();
+        let account = accounts.active();
+        let panel_scope = manifest_cache::Authority::new(&panel, account, false)?;
+        let token = account
+            .filter(|account| account.kind == "panel")
+            .filter(|account| account.panel_url.as_deref().is_some_and(|url| panel_scope.same_panel(url)))
+            .and_then(|account| state.secrets.get(&account.id).panel_token);
+        (manifest_cache::Authority::new(&panel, account, token.is_some())?, token)
+    };
     let fetched = async {
-        let panel = state.panel_url().ok_or_else(|| anyhow!("no panel configured"))?;
-        let mut req = state.http.get(format!("{panel}/api/v1/launcher/instances/{id}"));
-        if let Some(token) = accounts::panel_token(state) {
-            req = req.bearer_auth(token);
-        }
-        let resp = req.send().await?;
-        if resp.status().as_u16() == 404 {
-            anyhow::bail!("this instance no longer exists or you don't have access to it");
-        }
-        Ok::<_, anyhow::Error>(resp.error_for_status()?.json::<InstanceManifest>().await?)
+        let client = crate::panel_client::PanelClient::new(state.http.clone(), &panel, token.as_deref())?;
+        let resp =
+            crate::panel_client::PanelClient::send(client.request(reqwest::Method::GET, &format!("/launcher/instances/{id}"))?).await?;
+        let manifest = crate::panel_client::PanelClient::json::<InstanceManifest>(resp, crate::panel_client::ErrorPolicy::Generic).await?;
+        anyhow::ensure!(manifest.instance.id == id, "instance manifest identity mismatch");
+        Ok::<_, anyhow::Error>(manifest)
     }
     .await;
     match fetched {
         Ok(m) => {
-            std::fs::create_dir_all(cache.parent().unwrap()).ok();
-            std::fs::write(&cache, serde_json::to_vec(&m)?).ok();
+            if state.manifest_denials.refresh(&cache, observed_denial, || manifest_cache::publish(&cache, &authority, id, &m)).is_err() {
+                tracing::warn!("instance manifest cache publication failed");
+            }
             Ok(m)
         }
-        Err(e) => {
-            let bytes = std::fs::read(&cache).map_err(|_| e)?;
-            tracing::warn!("panel unreachable, using cached instance manifest");
-            Ok(serde_json::from_slice(&bytes)?)
+        Err(error) => {
+            if error
+                .downcast_ref::<crate::panel_client::PanelFailure>()
+                .is_some_and(|failure| matches!(failure.status, Some(401 | 403 | 404)))
+                && state.manifest_denials.deny(&cache, || manifest_cache::invalidate(&cache, &authority)).is_err()
+            {
+                tracing::warn!("instance manifest cache invalidation failed");
+            }
+            manifest_cache::recover_with(Err(error), || {
+                let manifest = state.manifest_denials.read(&cache, || manifest_cache::read(&cache, &authority, id))?;
+                tracing::warn!("network unavailable, using cached instance manifest");
+                Ok(manifest)
+            })
         }
     }
 }
 
-fn reporter(app: &AppHandle) -> Reporter {
+fn reporter(app: &AppHandle, instance_id: &str, operation_id: uuid::Uuid) -> Reporter {
     let app = app.clone();
+    let instance_id = instance_id.to_owned();
     Arc::new(move |ev: Event| {
-        app.emit("launch://progress", ev).ok();
+        app.emit(
+            "launch://progress",
+            ProgressPayload { instance_id: instance_id.clone(), operation_id: operation_id.to_string(), event: ev },
+        )
+        .ok();
     })
 }
 
 /// Install/verify an instance and (when `start`) run the game.
-pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -> Result<()> {
+pub async fn run(app: AppHandle, instance_id: String, operation_id: uuid::Uuid, start: bool, deep: bool) -> Result<()> {
     let state = app.state::<AppState>();
-    let report = reporter(&app);
+    let report = reporter(&app, &instance_id, operation_id);
     let activity = crate::telemetry::capture(&state);
     if let Some(recorder) = &activity {
         recorder.background(if deep { "repair_start" } else { "install_start" }, &instance_id);
     }
-    emit_state(&app, &instance_id, "preparing", None);
+    emit_state(&app, &instance_id, operation_id, "preparing", None);
 
     let account = state.accounts.read().unwrap().active().cloned();
     let account = match (start, account) {
@@ -151,7 +210,8 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
     }
     // Do not rewrite pack files or options while another copy is using this directory.
     if !already_running {
-        sync::sync(&state.http, &panel, &game_dir, inst.revision, inst.clean_epoch, &manifest.files, spec.concurrency, deep, &report).await?;
+        sync::sync(&state.http, &panel, &game_dir, inst.revision, inst.clean_epoch, &manifest.files, spec.concurrency, deep, &report)
+            .await?;
         options::apply(&game_dir, &mut saved_options)?;
         if inst.mc_version == "26.3" && inst.loader == velora_shared::Loader::Fabric {
             let branding = state.manifest.read().unwrap().as_ref().map(|m| m.branding.clone()).unwrap_or_default();
@@ -179,7 +239,7 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
         recorder.background(if deep { "repair_complete" } else { "install_complete" }, &instance_id);
     }
     if !start {
-        emit_state(&app, &instance_id, "idle", Some("Instance is up to date".into()));
+        emit_state(&app, &instance_id, operation_id, "idle", Some("Instance is up to date".into()));
         return Ok(());
     }
     let (auth, auth_server) = auth.unwrap();
@@ -189,8 +249,9 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
     let agent_args = match &auth_server {
         Some(api) => {
             report(Event::Stage { stage: Stage::Launching, label: "Preparing sign-in".into() });
-            let jar =
-                velora_launcher_core::authlib::ensure(&state.http, &state.layout, Some(&panel)).await.context("setting up authlib-injector")?;
+            let jar = velora_launcher_core::authlib::ensure(&state.http, &state.layout, Some(&panel))
+                .await
+                .context("setting up authlib-injector")?;
             let prefetched = velora_launcher_core::authlib::prefetch_metadata(&state.http, api).await.ok();
             velora_launcher_core::authlib::jvm_args(&jar, api, prefetched.as_deref())
         }
@@ -238,6 +299,10 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
     if let Some(recorder) = &activity {
         recorder.send("launch", &instance_id).await?;
     }
+    let monitor_work = if close_after { None } else { Some(state.shutdown.enter().map_err(anyhow::Error::msg)?) };
+    if state.shutdown.is_closing() {
+        return Err(anyhow!("launcher is shutting down"));
+    }
     let mut child = launch::spawn(&cmd, installed.java_major, !close_after).context("couldn't start Java")?;
 
     if close_after {
@@ -249,11 +314,7 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
     let (kill_tx, kill_rx) = tokio::sync::oneshot::channel();
     let run_id = uuid::Uuid::new_v4().to_string();
     state.game.lock().unwrap().push(RunningGame { run_id: run_id.clone(), instance_id: instance_id.clone(), kill: Some(kill_tx) });
-    app.emit(
-        "launch://state",
-        StatePayload { instance_id: instance_id.clone(), run_id: Some(run_id.clone()), state: "running".into(), message: None },
-    )
-    .ok();
+    app.emit("launch://state", run_state(&instance_id, operation_id, &run_id, "running")).ok();
 
     if let Some(window) = app.get_webview_window("main") {
         match settings.after_launch.as_str() {
@@ -276,8 +337,10 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
     .into_iter()
     .flatten()
     {
+        let Ok(work) = state.shutdown.enter() else { continue };
         let tx = tx.clone();
-        tokio::spawn(async move {
+        let task = tokio::spawn(async move {
+            let _work = work;
             let mut lines = BufReader::new(stream).lines();
             while let Ok(Some(line)) = lines.next_line().await {
                 if tx.send(line).is_err() {
@@ -285,13 +348,15 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
                 }
             }
         });
+        state.shutdown.track_cancellable(task.abort_handle());
     }
     drop(tx);
 
     let app2 = app.clone();
     let id2 = instance_id.clone();
     let run_id2 = run_id.clone();
-    tokio::spawn(async move {
+    let task = tokio::spawn(async move {
+        let _work = monitor_work;
         let mut tail: VecDeque<String> = VecDeque::with_capacity(200);
         let mut batch: Vec<String> = Vec::new();
         let mut kill_rx = kill_rx;
@@ -311,7 +376,7 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
                 },
                 _ = tick.tick() => {
                     if !batch.is_empty() {
-                        app2.emit("game://log", std::mem::take(&mut batch)).ok();
+                        app2.emit("game://log", LogPayload { instance_id: id2.clone(), operation_id: operation_id.to_string(), run_id: run_id2.clone(), lines: std::mem::take(&mut batch) }).ok();
                     }
                 },
                 res = &mut kill_rx, if kill_armed => {
@@ -330,7 +395,11 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
             batch.push(l);
         }
         if !batch.is_empty() {
-            app2.emit("game://log", batch).ok();
+            app2.emit(
+                "game://log",
+                LogPayload { instance_id: id2.clone(), operation_id: operation_id.to_string(), run_id: run_id2.clone(), lines: batch },
+            )
+            .ok();
         }
         let code = status.and_then(|s| s.code());
         let crashed = !killed && code.is_some_and(|c| c != 0);
@@ -349,8 +418,11 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
         );
         let preferences = options::read_vanilla_preferences(&st.layout.instance_dir(&id2)).unwrap_or_default();
         if !preferences.is_empty() {
-            st.settings.write().unwrap().instance_game_options.insert(id2.clone(), preferences);
-            st.save_settings().ok();
+            if let Err(error) = st.update_settings(|settings| {
+                settings.instance_game_options.insert(id2.clone(), preferences);
+            }) {
+                tracing::warn!("could not persist captured game preferences: {error:#}");
+            }
         }
         st.game.lock().unwrap().retain(|g| g.run_id != run_id2);
         if st.game.lock().unwrap().is_empty() {
@@ -364,20 +436,36 @@ pub async fn run(app: AppHandle, instance_id: String, start: bool, deep: bool) -
         }
         app2.emit(
             "game://exit",
-            ExitPayload { instance_id: id2.clone(), run_id: run_id2, code, crashed, tail: tail.into_iter().collect(), crash_report },
+            ExitPayload {
+                instance_id: id2.clone(),
+                run_id: run_id2.clone(),
+                code,
+                crashed,
+                tail: tail.into_iter().collect(),
+                crash_report,
+            },
         )
         .ok();
-        emit_state(&app2, &id2, "idle", None);
+        app2.emit("launch://state", run_state(&id2, operation_id, &run_id2, "idle")).ok();
         refresh_textures(&app2);
     });
+    state.shutdown.track_cancellable(task.abort_handle());
     Ok(())
 }
 
 /// Launcher-owned presentation data. Contains no authentication tokens or URLs.
-fn write_companion_preferences(game_dir: &std::path::Path, settings: &crate::settings::Settings, branding: &velora_shared::Branding) -> Result<()> {
+fn write_companion_preferences(
+    game_dir: &std::path::Path,
+    settings: &crate::settings::Settings,
+    branding: &velora_shared::Branding,
+) -> Result<()> {
     let mut prefs = serde_json::to_value(&settings.companion)?;
     prefs["brand"] = serde_json::json!(branding.name);
-    prefs["accent"] = serde_json::json!(if settings.theme_mode == "custom" { settings.accent.as_ref().unwrap_or(&branding.colors.accent) } else { &branding.colors.accent });
+    prefs["accent"] = serde_json::json!(if settings.theme_mode == "custom" {
+        settings.accent.as_ref().unwrap_or(&branding.colors.accent)
+    } else {
+        &branding.colors.accent
+    });
     prefs["reduceMotion"] = serde_json::json!(settings.reduce_motion);
     let config = game_dir.join("config");
     std::fs::create_dir_all(&config)?;
@@ -396,4 +484,82 @@ fn newest_crash_report(app: &AppHandle, id: &str) -> Option<String> {
         .max_by_key(|(t, _)| *t)?;
     // Only if it was written in the last few minutes (i.e. by this session).
     (newest.0.elapsed().ok()? < Duration::from_secs(300)).then(|| newest.1.to_string_lossy().into_owned())
+}
+
+#[cfg(test)]
+mod operation_regression_tests {
+    use super::{run_state, Event, ExitPayload, LogPayload, ProgressPayload, Stage, StatePayload};
+    use crate::state::RunningGame;
+
+    fn idle_payload() -> StatePayload {
+        run_state("synthetic-alpha", uuid::Uuid::nil(), "synthetic-run-1", "idle")
+    }
+
+    #[test]
+    fn operation_exit_payload_preserves_run_identity() {
+        let payload = ExitPayload {
+            instance_id: "synthetic-alpha".into(),
+            run_id: "synthetic-run-1".into(),
+            code: Some(0),
+            crashed: false,
+            tail: vec!["Synthetic game shutdown".into()],
+            crash_report: None,
+        };
+        let encoded = serde_json::to_value(payload).unwrap();
+        assert_eq!(encoded["instance_id"], "synthetic-alpha");
+        assert_eq!(encoded["run_id"], "synthetic-run-1");
+        assert_eq!(encoded["code"], 0);
+        assert_eq!(encoded["crashed"], false);
+    }
+
+    #[test]
+    fn operation_progress_payload_preserves_core_fields_and_owner_identity() {
+        let encoded = serde_json::to_value(ProgressPayload {
+            instance_id: "synthetic-alpha".into(),
+            operation_id: uuid::Uuid::nil().to_string(),
+            event: Event::Progress { stage: Stage::Files, done: 512, total: 1024, files_done: 1, files_total: 2 },
+        })
+        .unwrap();
+        assert_eq!(encoded["type"], "progress");
+        assert_eq!(encoded["stage"], "files");
+        assert_eq!(encoded["done"], 512);
+        assert_eq!(encoded["instance_id"], "synthetic-alpha");
+        assert_eq!(encoded["operation_id"], uuid::Uuid::nil().to_string());
+    }
+
+    #[test]
+    fn operation_old_exit_removes_only_its_run_and_idle_identifies_owner() {
+        let mut games = vec![
+            RunningGame { run_id: "synthetic-run-1".into(), instance_id: "synthetic-alpha".into(), kill: None },
+            RunningGame { run_id: "synthetic-run-2".into(), instance_id: "synthetic-alpha".into(), kill: None },
+        ];
+        games.retain(|game| game.run_id != "synthetic-run-1");
+        assert_eq!(games.len(), 1);
+        assert_eq!(games[0].run_id, "synthetic-run-2");
+        let encoded = serde_json::to_value(idle_payload()).unwrap();
+        assert_eq!(encoded["state"], "idle");
+        assert_eq!(encoded["run_id"], "synthetic-run-1");
+        assert_eq!(encoded["operation_id"], uuid::Uuid::nil().to_string());
+    }
+
+    #[test]
+    fn operation_terminal_state_should_identify_the_finished_run() {
+        let encoded = serde_json::to_value(idle_payload()).unwrap();
+        assert_eq!(encoded["run_id"], "synthetic-run-1", "a delayed exit must be distinguishable from a newer run");
+    }
+
+    #[test]
+    fn operation_log_payload_identifies_instance_operation_and_run() {
+        let encoded = serde_json::to_value(LogPayload {
+            instance_id: "synthetic-alpha".into(),
+            operation_id: uuid::Uuid::nil().to_string(),
+            run_id: "synthetic-run-1".into(),
+            lines: vec!["synthetic log".into()],
+        })
+        .unwrap();
+        assert_eq!(encoded["run_id"], "synthetic-run-1");
+        assert_eq!(encoded["instance_id"], "synthetic-alpha");
+        assert_eq!(encoded["operation_id"], uuid::Uuid::nil().to_string());
+        assert_eq!(encoded["lines"][0], "synthetic log");
+    }
 }

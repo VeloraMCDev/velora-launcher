@@ -836,7 +836,7 @@
     white-space: nowrap;
   }
   .playing-on {
-    color: var(--accent);
+    color: var(--state-info-text);
     font-weight: 560;
   }
   .online-label {

@@ -25,6 +25,7 @@ jobs:
           cache: npm
           cache-dependency-path: |
             infra/package-lock.json
+            launcher/package-lock.json
             docs/package-lock.json
             panel/operations/package-lock.json
       - run: node scripts/verify-identity.mjs
@@ -44,6 +45,11 @@ jobs:
         run: node --test scripts/sign-launcher-release.test.mjs scripts/sign-core-release.test.mjs
       - name: Mobile shell configuration
         run: node --test panel/mobile/config.test.mjs
+      - run: npm ci --no-audit --no-fund
+        working-directory: launcher
+      - name: Launcher frontend
+        working-directory: launcher
+        run: npm test && npm run check && npm run check:runes && npm run build
       - run: npm ci --no-audit --no-fund
         working-directory: panel/operations
       - name: Operations dashboard

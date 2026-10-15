@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
+    "test": "node --experimental-vm-modules --test tests/*.test.mjs",
     "tauri": "tauri",
     "check:runes": "node check-runes.mjs"
   },

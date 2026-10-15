@@ -5,6 +5,7 @@
 
 use serde::{Deserialize, Serialize};
 mod experience;
+pub mod launcher_contracts;
 mod updates;
 pub use experience::*;
 pub use updates::{core_signed_message, newer_release, release_version, signed_message, verify_core_signature, verify_release_signature, LauncherUpdate, RELEASE_SIGNING_KEY};

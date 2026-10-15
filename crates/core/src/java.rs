@@ -5,13 +5,15 @@
 use crate::http::{self, Download};
 use crate::paths::Layout;
 use crate::progress::{self, Reporter, Stage};
-use anyhow::{anyhow, Context, Result};
+use anyhow::{anyhow, bail, Context, Result};
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
 pub const RUNTIME_INDEX: &str =
     "https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json";
+
+const MAX_RUNTIME_MANIFEST_BYTES: usize = 16 * 1024 * 1024;
 
 #[derive(Deserialize)]
 struct RuntimeEntry {
@@ -53,6 +55,33 @@ struct RawDownload {
     sha1: String,
     size: u64,
     url: String,
+}
+
+async fn verified_runtime_manifest(client: &reqwest::Client, reference: &ManifestRef) -> Result<RuntimeManifest> {
+    if reference.sha1.len() != 40 || !reference.sha1.bytes().all(|byte| byte.is_ascii_hexdigit()) {
+        bail!("Java runtime manifest reference must contain exactly 40 ASCII hexadecimal SHA-1 digits");
+    }
+    let mut response = client
+        .get(&reference.url)
+        .send()
+        .await
+        .context("fetching Java runtime manifest")?
+        .error_for_status()
+        .context("fetching Java runtime manifest")?;
+    if response.content_length().is_some_and(|length| length > MAX_RUNTIME_MANIFEST_BYTES as u64) {
+        bail!("Java runtime manifest exceeds the {MAX_RUNTIME_MANIFEST_BYTES}-byte limit (Content-Length)");
+    }
+    let mut bytes = Vec::new();
+    while let Some(chunk) = response.chunk().await.context("reading Java runtime manifest")? {
+        if chunk.len() > MAX_RUNTIME_MANIFEST_BYTES - bytes.len() {
+            bail!("Java runtime manifest exceeds the {MAX_RUNTIME_MANIFEST_BYTES}-byte limit (streamed body)");
+        }
+        bytes.extend_from_slice(&chunk);
+    }
+    if !http::sha1_bytes(&bytes).eq_ignore_ascii_case(&reference.sha1) {
+        bail!("Java runtime manifest SHA-1 mismatch");
+    }
+    serde_json::from_slice(&bytes).context("decoding verified Java runtime manifest")
 }
 
 pub fn platform_key() -> &'static str {
@@ -102,11 +131,22 @@ pub async fn ensure_runtime(
     concurrency: usize,
     reporter: &Reporter,
 ) -> Result<PathBuf> {
+    ensure_runtime_from_index(client, layout, component, concurrency, reporter, RUNTIME_INDEX).await
+}
+
+pub(crate) async fn ensure_runtime_from_index(
+    client: &reqwest::Client,
+    layout: &Layout,
+    component: &str,
+    concurrency: usize,
+    reporter: &Reporter,
+    index_origin: &str,
+) -> Result<PathBuf> {
     let dir = layout.runtimes().join(component);
     let marker = dir.join(".scopenet-runtime");
     let installed = std::fs::read_to_string(&marker).ok();
 
-    let index: HashMap<String, HashMap<String, Vec<RuntimeEntry>>> = match http::get_json(client, RUNTIME_INDEX).await {
+    let index: HashMap<String, HashMap<String, Vec<RuntimeEntry>>> = match http::get_json(client, index_origin).await {
         Ok(i) => i,
         Err(e) if installed.is_some() && java_exe(&dir, false).exists() => {
             tracing::warn!("java index unreachable ({e}); using installed {component}");
@@ -120,12 +160,8 @@ pub async fn ensure_runtime(
         .and_then(|v| v.first())
         .ok_or_else(|| anyhow!("Mojang has no '{component}' Java runtime for {}", platform_key()))?;
 
-    if installed.as_deref() == Some(entry.manifest.sha1.as_str()) && java_exe(&dir, false).exists() {
-        return Ok(dir);
-    }
-
+    let manifest = verified_runtime_manifest(client, &entry.manifest).await?;
     progress::stage(reporter, Stage::Java, format!("Installing Java {}", entry.version.name));
-    let manifest: RuntimeManifest = http::get_json(client, &entry.manifest.url).await?;
     let mut downloads = Vec::new();
     let mut executables = Vec::new();
     let mut links = Vec::new();
@@ -170,7 +206,9 @@ pub async fn ensure_runtime(
     #[cfg(not(unix))]
     let _ = (executables, links);
 
-    std::fs::write(&marker, &entry.manifest.sha1)?;
+    if installed.as_deref() != Some(entry.manifest.sha1.as_str()) {
+        std::fs::write(&marker, &entry.manifest.sha1)?;
+    }
     Ok(dir)
 }
 
@@ -197,6 +235,9 @@ pub fn parse_java_version(text: &str) -> Option<u32> {
         Some(first)
     }
 }
+
+#[cfg(test)]
+mod profile_tests;
 
 #[cfg(test)]
 mod tests {
