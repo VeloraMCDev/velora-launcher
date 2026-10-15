@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Velora synthetic frontend-domain acceptance</title></head>
+<body>
+  <div id="app"></div>
+  <script type="module">
+    const callbacks = new Map();
+    const listeners = new Map();
+    const calls = [];
+    let identifier = 0;
+    let disconnected = false;
+    window.__TAURI_INTERNALS__ = {
+      metadata: {currentWindow: {label: 'main'}, currentWebview: {label: 'main'}},
+      transformCallback(callback) {
+        callbacks.set(++identifier, callback);
+        return identifier;
+      },
+      unregisterCallback(callbackId) {
+        callbacks.delete(callbackId);
+      },
+      async invoke(command, args = {}) {
+        calls.push(command);
+        if (command === 'plugin:event|listen') {
+          const listenerId = ++identifier;
+          listeners.set(listenerId, {event: args.event, callback: args.handler});
+          return listenerId;
+        }
+        if (command === 'plugin:event|unlisten') {
+          const listener = listeners.get(args.eventId);
+          if (listener) callbacks.delete(listener.callback);
+          listeners.delete(args.eventId);
+          return null;
+        }
+        if (command === 'record_activity') return null;
+        if (command === 'refresh_manifest' && disconnected) throw 'Synthetic connection unavailable';
+        const {mockInvoke} = await import('../src/lib/mock.ts');
+        return mockInvoke(command, args);
+      }
+    };
+    await import('../src/main.ts');
+    const {app, refresh} = await import('../src/lib/store.svelte.ts');
+    window.veloraDomainFixture = {
+      setDisconnected(value) {disconnected = Boolean(value);},
+      refresh,
+      state() {
+        return {ready: app.ready, offline: app.offline, view: app.view, selected: app.selected,
+          accounts: app.accounts.map(account => ({id: account.id, username: account.username})),
+          instances: app.manifest?.instances.map(instance => instance.id) ?? [],
+          listenerCount: listeners.size, calls: [...calls]};
+      },
+      emit(event, payload) {
+        for (const [listenerId, listener] of listeners) {
+          if (listener.event === event) callbacks.get(listener.callback)?.({event, id: listenerId, payload});
+        }
+      }
+    };
+  </script>
+</body>
+</html>

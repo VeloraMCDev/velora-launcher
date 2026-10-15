@@ -1,0 +1,17 @@
+[
+  {"type":"config","value":{"discord_enabled":true,"email_enabled":false,"synthetic_extension":7}},
+  {"type":"start","value":{"url":"https://synthetic.invalid/oauth","state":"synthetic-flow","synthetic_extension":"preserved"}},
+  {"type":"connection","value":null},
+  {"type":"connection","value":{"id":"synthetic-discord-id","name":"Synthetic","synthetic_extension":true}},
+  {"type":"info","value":{"invite_url":"https://synthetic.invalid/invite","linked":false}},
+  {"type":"info","value":{"invite_url":"","linked":true,"display_name":null}},
+  {"type":"poll","value":{"pending":true,"synthetic_extension":"preserved"}},
+  {"type":"poll","value":{"linked":true,"synthetic_extension":true}},
+  {"type":"poll","value":{"token":"synthetic-panel-token","user":{"id":7,"username":"Synthetic","uuid":"synthetic-player-uuid","role":"player","groups":[],"synthetic_extension":true}}},
+  {"type":"poll","value":{"token":"synthetic-panel-token","pending":false,"yggdrasil":null,"user":{"id":7,"username":"Synthetic","uuid":"synthetic-player-uuid","role":"player","groups":[]}}},
+  {"type":"poll","value":{"token":"synthetic-panel-token","pending":false,"yggdrasil":{"access_token":"synthetic-game-token","client_token":"synthetic-client-token","synthetic_extension":7},"user":{"id":7,"username":"Synthetic","uuid":"synthetic-player-uuid","role":"player","groups":[]}}},
+  {"type":"unlink","value":{"ok":true,"synthetic_extension":"preserved"}},
+  {"type":"ipc_poll","value":{"pending":true}},
+  {"type":"ipc_poll","value":{"linked":true}},
+  {"type":"ipc_poll","value":{"account":{"id":"synthetic-account-id","kind":"panel","username":"Synthetic","uuid":"synthetic-player-uuid","panel_url":"https://synthetic.invalid","role":"player"}}}
+]

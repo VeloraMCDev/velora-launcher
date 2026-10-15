@@ -1,11 +1,20 @@
 //! Velora launcher (Tauri shell). The heavy lifting lives in
 //! `velora-launcher-core`; this crate wires it to the UI.
 
+mod account_transaction;
 mod accounts;
 mod commands;
 mod game;
+#[cfg(feature = "native-acceptance")]
+mod native_acceptance;
+mod panel_client;
+mod panel_context;
+mod persistence;
+mod preparation;
+mod profiles;
 mod secrets;
 mod settings;
+mod shutdown;
 mod state;
 mod telemetry;
 mod updater;
@@ -17,7 +26,20 @@ pub fn run() {
         .with_env_filter(tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()))
         .init();
 
-    tauri::Builder::default()
+    #[cfg(feature = "native-acceptance")]
+    let fixture = native_acceptance::FixtureRoot::from_environment().expect("synthetic native acceptance preflight failed");
+
+    let context = tauri::generate_context!();
+    #[cfg(feature = "native-acceptance")]
+    let context = {
+        let mut context = context;
+        fixture.isolate_windows(&mut context.config_mut().app.windows);
+        context
+    };
+
+    let builder = tauri::Builder::default();
+    #[cfg(not(feature = "native-acceptance"))]
+    let builder = builder
         // A second launch just focuses the existing window.
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             if let Some(w) = app.get_webview_window("main") {
@@ -25,17 +47,30 @@ pub fn run() {
                 w.unminimize().ok();
                 w.set_focus().ok();
             }
-        }))
+        }));
+    builder
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .setup(|app| {
+        .setup(move |app| {
+            #[cfg(not(feature = "native-acceptance"))]
             let data_dir = app.path().app_data_dir()?;
-            app.manage(state::AppState::new(data_dir));
+            #[cfg(feature = "native-acceptance")]
+            let data_dir = {
+                let root = fixture.root.clone();
+                app.manage(fixture);
+                root
+            };
+            app.manage(state::AppState::try_new(data_dir)?);
             // The window starts hidden and the UI reveals it once painted (no
             // white flash). If the UI never does, show it anyway.
             let handle = app.handle().clone();
+            let work = app.state::<state::AppState>().shutdown.enter().map_err(anyhow::Error::msg)?;
             std::thread::spawn(move || {
+                let _work = work;
                 std::thread::sleep(std::time::Duration::from_secs(4));
+                if handle.state::<state::AppState>().shutdown.is_closing() {
+                    return;
+                }
                 if let Some(w) = handle.get_webview_window("main") {
                     if !w.is_visible().unwrap_or(true) {
                         tracing::warn!("UI didn't signal ready; showing window");
@@ -173,6 +208,28 @@ pub fn run() {
             commands::create_user_post,
             commands::like_user_post,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running the launcher");
+        .build(context)
+        .expect("error while building the launcher")
+        .run(|app, event| {
+            if let tauri::RunEvent::ExitRequested { api, code, .. } = event {
+                let state = app.state::<state::AppState>();
+                if state.shutdown.is_ready() {
+                    return;
+                }
+                api.prevent_exit();
+                if !state.shutdown.begin() {
+                    return;
+                }
+                state.preparations.lock().unwrap().shutdown();
+                let app = app.clone();
+                tauri::async_runtime::spawn(async move {
+                    let state = app.state::<state::AppState>();
+                    state.shutdown.wait_idle().await;
+                    let _mutations = state.mutations.clone().lock_owned().await;
+                    if state.shutdown.mark_ready() {
+                        app.exit(code.unwrap_or(0));
+                    }
+                });
+            }
+        });
 }

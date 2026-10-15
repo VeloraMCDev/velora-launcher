@@ -44,6 +44,18 @@ export interface Manifest {
 
 export interface Account { id: string; kind: 'panel' | 'offline'; username: string; uuid: string; panel_url: string | null; role: string | null }
 
+export interface ConnectionsConfig { discord_enabled: boolean; email_enabled: boolean; [extension: string]: unknown }
+export interface DiscordStartResponse { url: string; state: string; [extension: string]: unknown }
+export interface DiscordConnection { id: string; name: string; [extension: string]: unknown }
+export type DiscordConnectionResponse = DiscordConnection | null;
+export interface DiscordInfoResponse { invite_url: string; linked: boolean; display_name?: string | null; [extension: string]: unknown }
+export interface DiscordAuthUser { id: number; username: string; uuid: string; role: string; groups: string[]; [extension: string]: unknown }
+export interface DiscordGameTokens { access_token: string; client_token: string; [extension: string]: unknown }
+export interface DiscordAuthResponse { token: string; user: DiscordAuthUser; pending?: boolean; yggdrasil?: DiscordGameTokens | null; [extension: string]: unknown }
+export type DiscordPollResponse = DiscordAuthResponse | { linked: true; [extension: string]: unknown } | { pending: true; [extension: string]: unknown };
+export interface DiscordUnlinkResponse { ok: boolean; [extension: string]: unknown }
+export type DiscordSignInPollResult = { account: Account; pending?: never; linked?: never } | { pending: true; account?: never; linked?: never } | { linked: true; account?: never; pending?: never };
+
 export type Gc = 'default' | 'g1' | 'zgc';
 
 export interface InstanceOverride { memory_max_mb: number; memory_min_mb: number; jvm_args: string; java_path: string | null }

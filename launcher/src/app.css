@@ -9,6 +9,15 @@
   --success: #3fb97c;
   --danger: #e5484d;
   --warn: #e2a336;
+  --state-success-text: color-mix(in srgb, var(--success) 70%, var(--text));
+  --state-danger-text: color-mix(in srgb, var(--danger) 70%, var(--text));
+  --state-warning-text: color-mix(in srgb, var(--warn) 70%, var(--text));
+  --state-info-text: color-mix(in srgb, var(--accent) 65%, var(--text));
+  --state-busy-text: var(--state-info-text);
+  --state-neutral-surface: color-mix(in srgb, var(--text) 14%, var(--surface));
+  --state-selected-surface: color-mix(in srgb, var(--accent) 20%, var(--surface));
+  --state-focus-ring: color-mix(in srgb, var(--accent) 55%, var(--text));
+  --state-disabled-opacity: 0.55;
   --radius: 10px;
   --radius-sm: 7px;
   --font: 'Inter Variable', system-ui, sans-serif;
@@ -54,7 +63,7 @@ svg, img, canvas, video, input[type='checkbox'], input[type='radio'] { flex-shri
 
 h1, h2, h3, h4 { margin: 0; letter-spacing: -0.015em; }
 p { margin: 0; }
-a { color: var(--accent); text-decoration: none; }
+a { color: var(--state-info-text); text-decoration: none; }
 code, .mono { font-family: var(--mono); }
 .selectable, input, textarea { user-select: text; -webkit-user-select: text; }
 
@@ -66,7 +75,12 @@ code, .mono { font-family: var(--mono); }
   animation-duration: 0.001ms !important;
   animation-iteration-count: 1 !important;
   transition-duration: 0.001ms !important;
+  animation-delay: 0ms !important;
+  transition-delay: 0ms !important;
+  scroll-behavior: auto !important;
 }
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 
 /* ---------- surfaces ---------- */
 .glass {
@@ -102,14 +116,14 @@ button.icon, button.tool { white-space: nowrap; }
 button:hover { background: color-mix(in srgb, var(--text) 11%, transparent); }
 button:active { background: color-mix(in srgb, var(--text) 14%, transparent); }
 button:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
-button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--state-focus-ring); outline-offset: 2px; }
 
 button.primary {
-  background: var(--accent);
+  background: var(--filled-action-bg, #6d6af5);
   border-color: transparent;
-  color: white;
+  color: var(--filled-action-fg, #000000);
 }
-button.primary:hover { background: color-mix(in srgb, var(--accent) 88%, white); }
+button.primary:hover { background: color-mix(in srgb, var(--filled-action-bg, #6d6af5) 88%, var(--filled-action-highlight, #ffffff)); }
 button.ghost { background: transparent; border-color: transparent; color: color-mix(in srgb, var(--text) 75%, transparent); }
 button.ghost:hover { background: color-mix(in srgb, var(--text) 7%, transparent); color: var(--text); }
 button.danger { color: color-mix(in srgb, var(--danger) 70%, white); background: color-mix(in srgb, var(--danger) 12%, transparent); border-color: color-mix(in srgb, var(--danger) 30%, transparent); }
@@ -184,14 +198,14 @@ pre { white-space: pre-wrap; }
 button { transition: background 0.15s, border-color 0.15s, opacity 0.15s, transform 0.08s var(--ease), box-shadow 0.15s; }
 button:active:not(:disabled) { transform: translateY(1px) scale(0.99); }
 button.primary {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 88%, white), var(--accent));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--filled-action-bg, #6d6af5) 88%, var(--filled-action-highlight, #ffffff)), var(--filled-action-bg, #6d6af5));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0.4rem 1rem -0.5rem color-mix(in srgb, var(--accent) 85%, transparent);
 }
 button.primary:hover:not(:disabled) { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 0.5rem 1.2rem -0.5rem color-mix(in srgb, var(--accent) 95%, transparent); }
 
 /* Fields: a soft ring instead of a hard outline. */
 input:focus, select:focus, textarea:focus { box-shadow: var(--ring); }
-input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--state-focus-ring); outline-offset: 2px; }
 input:disabled, select:disabled, textarea:disabled { opacity: 0.55; cursor: not-allowed; }
 .segmented button { transition: background 0.15s, color 0.15s; }
 
@@ -200,9 +214,8 @@ input:disabled, select:disabled, textarea:disabled { opacity: 0.55; cursor: not-
 @keyframes shimmer { to { background-position: -200% 0; } }
 
 /* Anyone who asks their system for less motion gets none (the in-app switch does the same). */
-/* The casino is exempt: its reels, wheel and tiles ARE the game, so they keep moving unless "Reduce motion" is switched on in Settings. */
 @media (prefers-reduced-motion: reduce) {
-  *:not(.casino-motion):not(.casino-motion *), *:not(.casino-motion):not(.casino-motion *)::before, *:not(.casino-motion):not(.casino-motion *)::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; animation-delay: 0ms !important; transition-duration: 0.001ms !important; transition-delay: 0ms !important; scroll-behavior: auto !important; }
 }
 
 /* ---------- atmosphere and motion ---------- */

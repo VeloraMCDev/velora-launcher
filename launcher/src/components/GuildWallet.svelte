@@ -8,6 +8,7 @@
   import Avatar from './Avatar.svelte';
   import { invoke } from '../lib/tauri';
   import { toast } from '../lib/store.svelte';
+  import { prefersReducedMotion } from '../lib/reduced-motion';
   import type { Guild, GuildMember } from '../lib/types';
 
   type Tx = { id: number; actor_uuid: string; kind: string; amount: number; created_at: string; note?: string };
@@ -67,8 +68,9 @@
     const from = untrack(()=>shown);
     const start = performance.now();
     cancelAnimationFrame(frame);
-    if(document.hidden){shown=target;return;}
+    if(document.hidden || prefersReducedMotion()){shown=target;return;}
     const step = (now: number) => {
+      if (document.hidden || prefersReducedMotion()) { shown = target; return; }
       const t = Math.min(1, (now - start) / 550);
       shown = from + (target - from) * (1 - Math.pow(1 - t, 3));
       if (t < 1) frame = requestAnimationFrame(step);

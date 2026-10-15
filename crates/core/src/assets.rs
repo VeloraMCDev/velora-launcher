@@ -40,6 +40,10 @@ pub async fn load_index(client: &reqwest::Client, layout: &Layout, index: &Asset
 
 /// Downloads needed for missing/corrupt objects.
 pub fn missing_objects(layout: &Layout, index: &AssetIndex, deep: bool) -> Vec<Download> {
+    missing_objects_from(layout, index, deep, RESOURCES)
+}
+
+pub(crate) fn missing_objects_from(layout: &Layout, index: &AssetIndex, deep: bool, resources: &str) -> Vec<Download> {
     let mut seen = std::collections::HashSet::new();
     index
         .objects
@@ -50,7 +54,7 @@ pub fn missing_objects(layout: &Layout, index: &AssetIndex, deep: bool) -> Vec<D
             if http::file_ok(&path, Some(&o.hash), Some(o.size), deep) {
                 None
             } else {
-                Some(Download::new(format!("{RESOURCES}/{}/{}", &o.hash[..2], o.hash), path, Some(o.hash.clone()), Some(o.size)))
+                Some(Download::new(format!("{resources}/{}/{}", &o.hash[..2], o.hash), path, Some(o.hash.clone()), Some(o.size)))
             }
         })
         .collect()

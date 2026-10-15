@@ -93,7 +93,7 @@
   .has { color: var(--accent); }
   .has :global(svg) { animation: ring 2.4s ease-in-out infinite; transform-origin: 50% 10%; }
   @keyframes ring { 0%, 70%, 100% { transform: rotate(0); } 75% { transform: rotate(14deg); } 85% { transform: rotate(-12deg); } 92% { transform: rotate(6deg); } }
-  .badge { position: absolute; top: 0.45rem; right: 0.5rem; min-width: 1rem; height: 1rem; padding: 0 0.25rem; border-radius: 99rem; background: var(--danger); color: white; font-size: 0.62rem; font-weight: 700; display: grid; place-items: center; line-height: 1; }
+  .badge { position: absolute; top: 0.45rem; right: 0.5rem; min-width: 1rem; height: 1rem; padding: 0 0.25rem; border-radius: 99rem; background: var(--filled-danger-bg, #e5484d); color: var(--filled-danger-fg, #000000); font-size: 0.62rem; font-weight: 700; display: grid; place-items: center; line-height: 1; }
   .panel { position: absolute; top: calc(100% + 0.35rem); right: 0.4rem; width: 22rem; max-height: 26rem; display: flex; flex-direction: column; z-index: 60; background: var(--surface); border-color: var(--line-strong); box-shadow: 0 1rem 2.5rem -0.8rem rgba(0, 0, 0, 0.6); animation: pop 0.14s ease; overflow: hidden; }
   @keyframes pop { from { opacity: 0; transform: translateY(-4px) scale(0.98); } }
   header { all: unset; display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--line); font-size: 0.85rem; box-sizing: border-box; }

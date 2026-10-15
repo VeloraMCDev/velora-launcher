@@ -3,3 +3,6 @@
 
 pub mod fabric;
 pub mod forge;
+
+#[cfg(test)]
+mod compatibility_tests;

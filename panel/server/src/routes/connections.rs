@@ -8,7 +8,8 @@ use axum::extract::Query;
 use axum::http::StatusCode;
 use axum::response::{Html, IntoResponse};
 use axum::Json;
-use serde::Deserialize;
+use serde::{de::DeserializeOwned, Deserialize};
+use velora_shared::launcher_contracts::{ConnectionsConfig, DiscordConnectionResponse, DiscordPollResponse, DiscordStartResponse, DiscordUnlinkResponse};
 use serde_json::{json, Value};
 
 pub use velora_panel_communications::settings::{ConnectionsSettings, SettingsInput};
@@ -49,9 +50,13 @@ pub async fn admin_put(_: AdminUser, State(state): State<AppState>, Json(input):
     Ok(Json(communication_settings::masked(&next)))
 }
 
-pub async fn public_config(State(state): State<AppState>) -> AppResult<Json<Value>> {
+fn launcher_response<Payload: DeserializeOwned>(value: Value) -> AppResult<Json<Payload>> {
+    serde_json::from_value(value).map(Json).map_err(|_| AppError::new(StatusCode::INTERNAL_SERVER_ERROR, "invalid launcher contract"))
+}
+
+pub async fn public_config(State(state): State<AppState>) -> AppResult<Json<ConnectionsConfig>> {
     let s = settings(&state).await?;
-    Ok(Json(communication_settings::public_config(&s)))
+    launcher_response(communication_settings::public_config(&s))
 }
 
 async fn send_email(state: &AppState, to: &str, subject: &str, body: &str) -> AppResult<()> {
@@ -172,8 +177,8 @@ pub async fn discord_start(
     State(state): State<AppState>,
     MaybeUser(user): MaybeUser,
     Query(input): Query<OAuthStart>,
-) -> AppResult<Json<Value>> {
-    Ok(Json(
+) -> AppResult<Json<DiscordStartResponse>> {
+    launcher_response(
         velora_auth_http::oauth::start(
             &crate::auth::account::context(&state),
             &DiscordHost(state.clone()),
@@ -182,7 +187,7 @@ pub async fn discord_start(
         )
         .await
         .map_err(reset_host_error)?,
-    ))
+    )
 }
 #[derive(Deserialize)]
 pub struct OAuthCallback {
@@ -207,12 +212,12 @@ pub async fn discord_callback(State(state): State<AppState>, Query(input): Query
 pub struct Poll {
     state: String,
 }
-pub async fn discord_poll(State(state): State<AppState>, Query(input): Query<Poll>) -> AppResult<Json<Value>> {
-    Ok(Json(velora_auth_http::oauth::poll(&crate::auth::account::context(&state), &input.state).await.map_err(reset_host_error)?))
+pub async fn discord_poll(State(state): State<AppState>, Query(input): Query<Poll>) -> AppResult<Json<DiscordPollResponse>> {
+    launcher_response(velora_auth_http::oauth::poll(&crate::auth::account::context(&state), &input.state).await.map_err(reset_host_error)?)
 }
-pub async fn my_discord(State(state): State<AppState>, AuthUser(user): AuthUser) -> AppResult<Json<Value>> {
-    Ok(Json(velora_auth_http::oauth::linked(&crate::auth::account::context(&state), user.id).await.map_err(reset_host_error)?))
+pub async fn my_discord(State(state): State<AppState>, AuthUser(user): AuthUser) -> AppResult<Json<DiscordConnectionResponse>> {
+    launcher_response(velora_auth_http::oauth::linked(&crate::auth::account::context(&state), user.id).await.map_err(reset_host_error)?)
 }
-pub async fn unlink_discord(State(state): State<AppState>, AuthUser(user): AuthUser) -> AppResult<Json<Value>> {
-    Ok(Json(velora_auth_http::oauth::unlink(&crate::auth::account::context(&state), user.id).await.map_err(reset_host_error)?))
+pub async fn unlink_discord(State(state): State<AppState>, AuthUser(user): AuthUser) -> AppResult<Json<DiscordUnlinkResponse>> {
+    launcher_response(velora_auth_http::oauth::unlink(&crate::auth::account::context(&state), user.id).await.map_err(reset_host_error)?)
 }

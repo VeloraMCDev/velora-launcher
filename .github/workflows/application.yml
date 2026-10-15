@@ -1,4 +1,4 @@
-name: Complete private applications
+name: Application testing artifacts
 on:
   workflow_dispatch: null
 permissions:
@@ -41,10 +41,16 @@ jobs:
       - run: npm run check
       - run: npm run check:runes
       - run: npm run build
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: web-validation-${{ strategy.job-index }}-${{ github.sha }}
+          path: ${{ matrix.project }}/dist/
+          if-no-files-found: error
+          retention-days: 3
   panel:
     needs: source
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     env:
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_INCREMENTAL: '0'
@@ -61,7 +67,78 @@ jobs:
       - run: cargo test --locked -j 2 -p velora-panel -p velora-launcher-core -p
           velora-experiences-gameplay -p velora-experiences-storage
           --no-fail-fast
-      - run: docker build --target web --progress=plain .
+      - name: Build the testing image without publishing
+        run: docker build --platform linux/amd64 --build-arg VELORA_BUILD_REVISION="$GITHUB_SHA" --tag velora-panel:testing .
+      - run: node scripts/check-panel-container.mjs velora-panel:testing "$GITHUB_SHA"
+      - run: python3 .github/scripts/test-panel-image.py velora-panel:testing
+      - name: Export the tested image
+        run: |
+          mkdir -p testing-artifacts
+          docker save velora-panel:testing | gzip > testing-artifacts/velora-panel-linux-amd64.tar.gz
+          cd testing-artifacts
+          sha256sum *.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: panel-validation-${{ github.sha }}
+          path: testing-artifacts/
+          if-no-files-found: error
+          retention-days: 3
+  operations:
+    needs: source
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Build and test without publishing
+        run: docker build --platform linux/amd64 --build-arg OPS_REVISION="$GITHUB_SHA" --tag velora-operations:testing panel/operations
+      - name: Smoke-test the exact image
+        run: |
+          docker run -d --name ops-smoke --read-only --tmpfs /tmp --tmpfs /data:uid=1000 --cap-drop ALL \
+            -e OPS_INSECURE_COOKIES=1 -e PANEL_INTERNAL_URL=http://127.0.0.1:9 -p 127.0.0.1:18080:8080 velora-operations:testing
+          for attempt in $(seq 30); do curl -fsS http://127.0.0.1:18080/healthz && break; sleep 1; done
+          curl -fsS http://127.0.0.1:18080/healthz
+          curl -fsS http://127.0.0.1:18080/ | grep -q 'Velora Operations'
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:18080/api/overview)" = 401
+          test "$(docker inspect --format '{{.Config.User}}' ops-smoke)" = node
+      - name: Clean up smoke container
+        if: always()
+        run: docker rm -f ops-smoke || true
+      - name: Export the tested image
+        run: |
+          mkdir -p testing-artifacts
+          docker save velora-operations:testing | gzip > testing-artifacts/velora-operations-linux-amd64.tar.gz
+          cd testing-artifacts
+          sha256sum *.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: operations-validation-${{ github.sha }}
+          path: testing-artifacts/
+          if-no-files-found: error
+          retention-days: 3
+  docs:
+    needs: source
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: npm ci --no-audit --no-fund
+      - run: npm test && npm run check && npm run build
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: docs-validation-${{ github.sha }}
+          path: docs/dist/
+          if-no-files-found: error
+          retention-days: 3
   desktop:
     needs: source
     timeout-minutes: 60

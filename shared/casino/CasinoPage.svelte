@@ -330,7 +330,7 @@
   .tabs button { position: relative; display: inline-flex; gap: 0.4rem; align-items: center; padding: 0.5rem 0.95rem; border: none; background: transparent; color: var(--muted); border-radius: var(--radius-sm); font-size: 0.88rem; box-shadow: none; }
   .tabs button:hover { color: var(--text); background: color-mix(in srgb, var(--text) 6%, transparent); }
   .pane[hidden] { display: none !important; }
-  .tabs button.active { color: #fff; background: var(--accent); box-shadow: 0 4px 16px -4px var(--accent); }
+  .tabs button.active { color: var(--text); background: var(--state-selected-surface, color-mix(in srgb, var(--accent) 20%, var(--surface, var(--bg)))); box-shadow: 0 4px 16px -4px var(--accent); }
   .dot { position: absolute; top: 0.3rem; right: 0.35rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #ef4444; box-shadow: 0 0 8px #ef4444; } .dot.gift { background: #ec4899; box-shadow: 0 0 8px #ec4899; }
 
   /* tables fill the window instead of floating in it */

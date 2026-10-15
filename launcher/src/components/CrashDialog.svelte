@@ -1,36 +1,58 @@
 <script lang="ts">
   import InterfaceIcon from '@velora/experience/InterfaceIcon.svelte';
-  import { FolderOpen, FileText, Copy, RotateCcw } from '@lucide/svelte';
+  import { FolderOpen, FileText, Copy, RotateCcw, Download } from '@lucide/svelte';
   import Modal from './Modal.svelte';
   import { app, play, toast } from '../lib/store.svelte';
   import { invoke } from '../lib/tauri';
+  import { createDiagnosticReport } from '../lib/diagnostics';
 
   let open = $state(false);
   $effect(() => {
     open = !!app.crash;
   });
-  const c = $derived(app.crash);
-  const hint = $derived.by(() => {
-    const text = c?.tail.join('\n') ?? '';
-    if (/OutOfMemoryError|Java heap space/.test(text)) return 'Minecraft ran out of memory. Give it more RAM in Settings → Game.';
-    if (/UnsupportedClassVersionError/.test(text)) return 'Wrong Java version. Switch Java back to "Automatic" in Settings → Java.';
-    if (/Could not reserve enough space|Invalid maximum heap size/.test(text)) return "Your PC can't give Minecraft that much memory. Lower it in Settings → Game.";
-    if (/Mixin|mixin.*failed|Incompatible mod set|requires .* but/i.test(text)) return 'A mod failed to load. If you added mods yourself, try removing them.';
-    return null;
-  });
+  const crash = $derived(app.crash);
+  const report = $derived(createDiagnosticReport(crash, app.launch));
+
+  async function copyReport() {
+    if (!crash) return;
+    try {
+      await navigator.clipboard.writeText(report.text);
+      toast('Support report copied');
+    } catch {
+      toast('Could not copy the report. Select the report text or try exporting.', 'error');
+    }
+  }
+
+  function exportReport() {
+    if (!crash) return;
+    let objectUrl: string | null = null;
+    try {
+      objectUrl = URL.createObjectURL(new Blob([report.text], { type: 'text/plain;charset=utf-8' }));
+      const download = document.createElement('a');
+      download.href = objectUrl;
+      download.download = 'velora-support-diagnostics.txt';
+      download.click();
+    } catch {
+      toast('Could not export the report. Select the report text or try copying.', 'error');
+    } finally {
+      if (objectUrl) setTimeout(() => URL.revokeObjectURL(objectUrl!), 1000);
+    }
+  }
 </script>
 
 <Modal bind:open title="Minecraft closed unexpectedly" width={40} onclose={() => (app.crash = null)}>
-  {#if c}
-    <p class="muted small">The game exited with code {c.code}. {hint ?? 'The last lines of the log are below — they usually explain what went wrong.'}</p>
-    {#if hint}<div class="hint">{hint}</div>{/if}
-    <pre class="tail selectable">{c.tail.slice(-40).join('\n')}</pre>
+  {#if crash}
+    <p class="muted small">This report summarizes only the existing crash/preparation snapshot. It does not inspect your computer or verify game health. Nothing is uploaded automatically.</p>
+    <div class="hint"><strong>Categories: {report.categories.join(', ')}</strong><ul>{#each report.advice as step}<li>{step}</li>{/each}</ul></div>
+    <p class="muted small">Review before sharing. Copy and export contain only the redacted report below. Original crash reports and logs may contain private information; opening them does not add them to this report.</p>
+    <pre class="tail selectable">{report.text}</pre>
   {/if}
   {#snippet footer()}
-    <button class="ghost" onclick={() => { navigator.clipboard.writeText(c?.tail.join('\n') ?? ''); toast('Copied'); }}><InterfaceIcon name="Copy" fallback={Copy} size={15} /> Copy</button>
-    {#if c?.crash_report}<button onclick={() => invoke('open_file', { path: c?.crash_report })}><InterfaceIcon name="FileText" fallback={FileText} size={15} /> Crash report</button>{/if}
-    <button onclick={() => c && invoke('open_folder', { kind: 'logs', instanceId: c.instance_id })}><InterfaceIcon name="FolderOpen" fallback={FolderOpen} size={15} /> Logs</button>
-    <button class="primary" onclick={() => { const id = c?.instance_id; app.crash = null; if (id) play(id); }}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={15} /> Try again</button>
+    <button class="ghost" disabled={!crash} onclick={copyReport}><InterfaceIcon name="Copy" fallback={Copy} size={15} /> Copy report</button>
+    <button class="ghost" disabled={!crash} onclick={exportReport}><InterfaceIcon name="Download" fallback={Download} size={15} /> Export report</button>
+    {#if crash?.crash_report}<button onclick={() => invoke('open_file', { path: crash?.crash_report })}><InterfaceIcon name="FileText" fallback={FileText} size={15} /> Crash report</button>{/if}
+    <button onclick={() => crash && invoke('open_folder', { kind: 'logs', instanceId: crash.instance_id })}><InterfaceIcon name="FolderOpen" fallback={FolderOpen} size={15} /> Logs</button>
+    <button class="primary" onclick={() => { const instanceId = crash?.instance_id; app.crash = null; if (instanceId) play(instanceId); }}><InterfaceIcon name="RotateCcw" fallback={RotateCcw} size={15} /> Try again</button>
   {/snippet}
 </Modal>
 

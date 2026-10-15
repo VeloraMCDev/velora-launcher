@@ -304,8 +304,8 @@
   .title { flex: 1; min-width: 0; display: flex; flex-direction: column; }
   .title strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.92rem; }
   .title small { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--muted); font-size: 0.74rem; }
-  .kind { align-self: flex-start; display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.45rem; border-radius: 99rem; background: color-mix(in srgb, var(--text) 9%, transparent); color: var(--muted); }
-  .kind.a { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent); }
+  .kind { align-self: flex-start; display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.15rem 0.45rem; border-radius: 99rem; background: color-mix(in srgb, var(--text) 9%, transparent); color: var(--text); }
+  .kind.a { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--state-info-text); }
   .price { display: flex; justify-content: space-between; gap: 0.5rem; }
   .price small { display: flex; align-items: center; gap: 0.25rem; font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
   .price b { font-size: 1.15rem; }

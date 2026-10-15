@@ -11,6 +11,7 @@ export default defineConfig({
   server: { port: 1420, strictPort: true, watch: { ignored: ['**/src-tauri/**'] }, fs: { allow: ['..'] } },
   envPrefix: ['VITE_', 'TAURI_ENV_'],
   build: {
+    manifest: true,
     target: 'es2022',
     cssCodeSplit: false,
     sourcemap: false,

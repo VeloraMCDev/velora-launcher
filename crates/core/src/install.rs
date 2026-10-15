@@ -12,8 +12,36 @@ use crate::progress::{self, Reporter, Stage};
 use crate::rules::Env;
 use crate::version::{self, VersionJson};
 use anyhow::{anyhow, bail, Context, Result};
-use velora_shared::Loader;
 use std::path::PathBuf;
+use velora_shared::Loader;
+
+#[cfg(test)]
+thread_local! {
+    static LIBRARY_CHECKS: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
+    static LIBRARY_RESOLUTIONS: std::cell::Cell<usize> = const { std::cell::Cell::new(0) };
+}
+
+fn resolve_libraries(version: &VersionJson, env: &Env) -> Vec<ResolvedLib> {
+    #[cfg(test)]
+    LIBRARY_RESOLUTIONS.with(|count| count.set(count.get() + 1));
+    libraries::resolve(&version.libraries, env)
+}
+
+fn resolved_version(
+    vanilla: VersionJson,
+    child: Option<VersionJson>,
+    vanilla_libraries: Vec<ResolvedLib>,
+    env: &Env,
+) -> (VersionJson, Vec<ResolvedLib>) {
+    match child {
+        Some(child) => {
+            let version = version::merge(vanilla, child);
+            let libraries = resolve_libraries(&version, env);
+            (version, libraries)
+        }
+        None => (vanilla, vanilla_libraries),
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct InstallSpec {
@@ -56,8 +84,12 @@ impl Installed {
 
 /// Vanilla version JSON: from Mojang (cached), falling back to disk.
 async fn vanilla_json(client: &reqwest::Client, layout: &Layout, mc: &str) -> Result<VersionJson> {
+    vanilla_json_from(client, layout, mc, meta::MOJANG_MANIFEST).await
+}
+
+async fn vanilla_json_from(client: &reqwest::Client, layout: &Layout, mc: &str, manifest_url: &str) -> Result<VersionJson> {
     let path = layout.version_json(mc);
-    let manifest = match meta::mojang_manifest(client).await {
+    let manifest = match http::get_json::<meta::VersionManifest>(client, manifest_url).await {
         Ok(m) => m,
         Err(e) => {
             let bytes = std::fs::read(&path).map_err(|_| anyhow!("can't reach Mojang ({e}) and {mc} isn't installed yet"))?;
@@ -74,20 +106,46 @@ async fn vanilla_json(client: &reqwest::Client, layout: &Layout, mc: &str) -> Re
 
 fn library_downloads(libs: &[ResolvedLib], layout: &Layout, deep: bool) -> Vec<Download> {
     let dir = layout.libraries();
-    let mut out: Vec<Download> =
-        libs.iter().filter(|l| !http::file_ok(&l.file(&dir), l.sha1.as_deref(), l.size, deep)).filter_map(|l| l.download(&dir)).collect();
+    let mut out: Vec<Download> = libs
+        .iter()
+        .filter(|library| {
+            #[cfg(test)]
+            LIBRARY_CHECKS.with(|count| count.set(count.get() + 1));
+            !http::file_ok(&library.file(&dir), library.sha1.as_deref(), library.size, deep)
+        })
+        .filter_map(|library| library.download(&dir))
+        .collect();
     out.sort_by(|a, b| a.dest.cmp(&b.dest));
     out.dedup_by(|a, b| a.dest == b.dest);
     out
 }
 
 pub async fn install(client: &reqwest::Client, layout: &Layout, spec: &InstallSpec, reporter: &Reporter) -> Result<Installed> {
+    install_from(client, layout, spec, reporter, None).await
+}
+
+struct Sources<'source> {
+    versions: &'source str,
+    java: &'source str,
+    assets: &'source str,
+}
+
+async fn install_from(
+    client: &reqwest::Client,
+    layout: &Layout,
+    spec: &InstallSpec,
+    reporter: &Reporter,
+    sources: Option<&Sources<'_>>,
+) -> Result<Installed> {
     let env = Env::current();
     let mc = spec.mc_version.as_str();
     progress::stage(reporter, Stage::Preparing, format!("Preparing Minecraft {mc}"));
 
     // 1. Vanilla metadata ----------------------------------------------------
-    let vanilla = vanilla_json(client, layout, mc).await?;
+    let vanilla = match sources {
+        Some(sources) => vanilla_json_from(client, layout, mc, sources.versions).await?,
+        None => vanilla_json(client, layout, mc).await?,
+    };
 
     // 2. Java ----------------------------------------------------------------
     let (java_dir, java_major) = match &spec.java_override {
@@ -96,7 +154,13 @@ pub async fn install(client: &reqwest::Client, layout: &Layout, spec: &InstallSp
         None => {
             let component = vanilla.java_component();
             progress::stage(reporter, Stage::Java, "Checking Java");
-            (Some(java::ensure_runtime(client, layout, &component, spec.concurrency, reporter).await?), vanilla.java_major())
+            let runtime = match sources {
+                Some(sources) => {
+                    java::ensure_runtime_from_index(client, layout, &component, spec.concurrency, reporter, sources.java).await?
+                }
+                None => java::ensure_runtime(client, layout, &component, spec.concurrency, reporter).await?,
+            };
+            (Some(runtime), vanilla.java_major())
         }
     };
     let (java_windowed, java_console) = match (&java_dir, &spec.java_override) {
@@ -114,11 +178,15 @@ pub async fn install(client: &reqwest::Client, layout: &Layout, spec: &InstallSp
             downloads.push(Download::new(client_dl.url.clone(), vanilla_client.clone(), client_dl.sha1.clone(), client_dl.size));
         }
     }
-    downloads.extend(library_downloads(&libraries::resolve(&vanilla.libraries, &env), layout, spec.deep_verify));
+    let vanilla_libraries = resolve_libraries(&vanilla, &env);
+    downloads.extend(library_downloads(&vanilla_libraries, layout, spec.deep_verify));
 
     let asset_ref = vanilla.asset_index.clone().ok_or_else(|| anyhow!("version {mc} has no asset index"))?;
     let asset_index = assets::load_index(client, layout, &asset_ref).await?;
-    downloads.extend(assets::missing_objects(layout, &asset_index, spec.deep_verify));
+    downloads.extend(match sources {
+        Some(sources) => assets::missing_objects_from(layout, &asset_index, spec.deep_verify, sources.assets),
+        None => assets::missing_objects(layout, &asset_index, spec.deep_verify),
+    });
 
     let mut logging_arg = None;
     if let Some(log) = vanilla.logging.as_ref().and_then(|l| l.client.as_ref()) {
@@ -161,13 +229,9 @@ pub async fn install(client: &reqwest::Client, layout: &Layout, spec: &InstallSp
             )
         }
     };
-    let version = match child {
-        Some(child) => version::merge(vanilla, child),
-        None => vanilla,
-    };
+    let (version, libs) = resolved_version(vanilla, child, vanilla_libraries, &env);
 
     // 5. Remaining (loader) libraries -----------------------------------------
-    let libs = libraries::resolve(&version.libraries, &env);
     let lib_downloads = library_downloads(&libs, layout, false);
     if !lib_downloads.is_empty() {
         progress::stage(reporter, Stage::Loader, "Downloading loader libraries");
@@ -213,3 +277,6 @@ pub async fn install(client: &reqwest::Client, layout: &Layout, spec: &InstallSp
         version,
     })
 }
+
+#[cfg(test)]
+mod profile_tests;

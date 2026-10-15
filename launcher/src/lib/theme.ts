@@ -1,4 +1,5 @@
 import type { Branding, Settings } from './types';
+import { actionContrast } from './action-contrast';
 
 import { configureIcons } from '@velora/experience/icons.svelte';
 
@@ -10,8 +11,15 @@ export function applyTheme(b: Branding, s: Settings | null, panelUrl = '') {
   const root = document.documentElement;
   const custom = s?.theme_mode === 'custom' && b.features.allow_user_theme;
   const accent = (custom && s?.accent) || b.colors.accent;
+  const filledAction = actionContrast(accent);
+  const filledDanger = actionContrast(b.colors.danger);
   const vars: Record<string, string> = {
     '--accent': accent,
+    '--filled-action-bg': filledAction.background,
+    '--filled-action-fg': filledAction.foreground,
+    '--filled-action-highlight': filledAction.foreground === '#000000' ? '#ffffff' : '#000000',
+    '--filled-danger-bg': filledDanger.background,
+    '--filled-danger-fg': filledDanger.foreground,
     '--accent-2': custom && s?.accent ? shift(accent) : b.colors.accent_2,
     '--bg': b.colors.background,
     '--surface': b.colors.surface,

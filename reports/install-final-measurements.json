@@ -1,0 +1,3001 @@
+{
+  "schema": 1,
+  "date": "2026-10-13",
+  "scope": "bounded modern Vanilla install and harmless local JDK 21 fixture; no native Minecraft/loader/OS release acceptance",
+  "host": {
+    "os": "Darwin",
+    "arch": "arm64",
+    "rust": "1.98.1",
+    "jdk": "Oracle JDK 21.0.3"
+  },
+  "source_sha256": {
+    "crates/core/src/install.rs": "2fe9e7928931d341a17b4a9f4144e3eb995821c5ba44ae19619304ea5000fa66",
+    "crates/core/src/install/profile_tests.rs": "aa50315333d7be738569b965981095c9896aeec10cced86b4c7908cc680e6770",
+    "crates/core/src/assets.rs": "13778453fb2db3c914f1ff38fa2079c7c2bce9ec6dae747f3da863d549f3ce43",
+    "crates/core/src/java.rs": "ddb715136bcee9bf3507ebf8e7e0789dd1bad88ab81b23e221c232d99be16b88"
+  },
+  "profiles": {
+    "baseline": {
+      "log_sha256": "26b44d8fcbc3847c04b4efd947e36f94fd83d7533823a56fb938b4c2dea5ebb4",
+      "record": {
+        "automatic": [
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 115.547,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.010583,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.456125,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.921875,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.691042,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 7.8565830000000005,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.004333,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.413541,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 0.6859999999999999,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 0.7380829999999999,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 8.854709,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.005667,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.616292,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.0380420000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.0916249999999998,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 1.7412910000000001,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.005708,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.510833,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 0.82,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 0.878833,
+                  "stage": "game"
+                }
+              ]
+            }
+          },
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 62.653792,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.006959,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.534209,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.145875,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.974959,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 8.964540999999999,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.004083,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.558541,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.087625,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.139958,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.203917,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.004834,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.651542,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.237292,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.283375,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 2.1674160000000002,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.005208,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.550458,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.068541,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.129,
+                  "stage": "game"
+                }
+              ]
+            }
+          },
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 60.676375,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.008167,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.79925,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.440709,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 3.370334,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 8.168750000000001,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.0047090000000000005,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.599209,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.1008339999999999,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.152375,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.471625,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.0043749999999999995,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.576708,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.166083,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.210875,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 2.310125,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.004834,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.553917,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.0989170000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.158209,
+                  "stage": "game"
+                }
+              ]
+            }
+          },
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 83.467833,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.007542,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.645417,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.224542,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 3.067625,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 7.9500839999999995,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.00425,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.49487499999999995,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 0.935542,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 0.982875,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.171666,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.013125000000000001,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.53975,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.135208,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.183583,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 2.062583,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.006791,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.58975,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.080541,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.1405,
+                  "stage": "game"
+                }
+              ]
+            }
+          },
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 65.579166,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.007125,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.625666,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.106833,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.953416,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 8.184709,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.004459,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.511459,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.034334,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.08825,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.3765,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.00425,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.637084,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.272834,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.332959,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 1.9865410000000001,
+              "library_file_checks": 258,
+              "library_resolutions": 2,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.006125,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.548875,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.030208,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.089416,
+                  "stage": "game"
+                }
+              ]
+            }
+          }
+        ],
+        "automatic_runtime": "synthetic executable never executed",
+        "build": "debug-test-no-debug-info",
+        "configured_concurrency": 4,
+        "game_launch": false,
+        "library_count": 128,
+        "native": [
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 110.827916,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.005208,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 39.881166,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 31.452875,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.006541,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.635416,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 31.933499999999995,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.00725,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.302667,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 24.307542,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.00575,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.231417,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 4.805083,
+              "library_resolution_ms": 0.101125,
+              "metadata_parse_ms": 0.20408300000000001,
+              "native_extraction_ms": 0.040542,
+              "texture_extraction_ms": 0.409708
+            },
+            "jvm": {
+              "command_ms": 0.46125,
+              "exit_success": true,
+              "java_detection_ms": 22.353082999999998,
+              "spawn_to_exit_ms": 60.385791000000005
+            }
+          },
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 83.551625,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.005083000000000001,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.893416000000002,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 31.457625000000004,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.005332999999999999,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.912416999999998,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 32.674458,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.028583,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.328083,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 24.775458999999998,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.007084,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.789292,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 5.294959,
+              "library_resolution_ms": 0.10900000000000001,
+              "metadata_parse_ms": 0.20350000000000001,
+              "native_extraction_ms": 0.037625,
+              "texture_extraction_ms": 0.642417
+            },
+            "jvm": {
+              "command_ms": 0.46783399999999997,
+              "exit_success": true,
+              "java_detection_ms": 23.26475,
+              "spawn_to_exit_ms": 42.133542000000006
+            }
+          },
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 89.95100000000001,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.005291,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 25.042958000000002,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 30.997207999999997,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.005582999999999999,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.452917,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 32.805875,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.014,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.29525,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 25.88225,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.006417,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.882333,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 5.09575,
+              "library_resolution_ms": 0.10354200000000001,
+              "metadata_parse_ms": 0.199042,
+              "native_extraction_ms": 0.037959,
+              "texture_extraction_ms": 0.464916
+            },
+            "jvm": {
+              "command_ms": 0.430958,
+              "exit_success": true,
+              "java_detection_ms": 23.600125,
+              "spawn_to_exit_ms": 41.623625
+            }
+          },
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 89.51325,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.005541,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 25.618583,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 31.713167000000002,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.0050420000000000005,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.136292,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 31.943125000000002,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.013791000000000001,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.636457999999998,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 22.584166999999997,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.0052499999999999995,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 21.606417,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 5.124167,
+              "library_resolution_ms": 0.102875,
+              "metadata_parse_ms": 0.214625,
+              "native_extraction_ms": 0.063292,
+              "texture_extraction_ms": 0.499084
+            },
+            "jvm": {
+              "command_ms": 0.429833,
+              "exit_success": true,
+              "java_detection_ms": 23.157375000000002,
+              "spawn_to_exit_ms": 42.03575
+            }
+          },
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 81.78904100000001,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.00575,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.509875,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 31.528750000000002,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.0050409999999999995,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.784041,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 31.759957999999997,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.013040999999999999,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 22.976875,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 24.8245,
+                "library_file_checks": 258,
+                "library_resolutions": 2,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.00575,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.743958,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 4.7874170000000005,
+              "library_resolution_ms": 0.104167,
+              "metadata_parse_ms": 0.197416,
+              "native_extraction_ms": 0.038583,
+              "texture_extraction_ms": 0.444417
+            },
+            "jvm": {
+              "command_ms": 0.708125,
+              "exit_success": true,
+              "java_detection_ms": 22.788375,
+              "spawn_to_exit_ms": 41.730708
+            }
+          }
+        ],
+        "native_java_major": 21,
+        "os_cache": "uncontrolled",
+        "samples": 5,
+        "schema": 1,
+        "server": "serial-loopback"
+      }
+    },
+    "optimized": {
+      "log_sha256": "3542f65351d9ca882d0b4f53455b1cee894c19ffbe8645eeb05546b0efa264cf",
+      "record": {
+        "automatic": [
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 64.0805,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.010334,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.785667,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.246792,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 3.084667,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 8.339125,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.0043749999999999995,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.571583,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.187375,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.239083,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.293291,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.004791,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.8221660000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.393041,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.445458,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 2.170291,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.007666000000000001,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.6953750000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.3024580000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.371583,
+                  "stage": "game"
+                }
+              ]
+            }
+          },
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 53.999249999999996,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.006583,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.373042,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.858375,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.695875,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 8.07,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.006,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.577666,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 0.991875,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.0425,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.25875,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.004583,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.5721660000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.016666,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.068458,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 1.770958,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.005542,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.5433330000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 0.9381250000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 0.989333,
+                  "stage": "game"
+                }
+              ]
+            }
+          },
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 50.231208,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.007208,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.4330829999999999,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.0102919999999997,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.817208,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 8.275708,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.006792,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.606208,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.1115000000000002,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.1680830000000002,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.658625,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.0053750000000000004,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.630583,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.319833,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.374375,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 1.961709,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.0050420000000000005,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.601417,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.14625,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.19725,
+                  "stage": "game"
+                }
+              ]
+            }
+          },
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 54.991541999999995,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.007708,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.580583,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.279417,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 3.476542,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 8.371375,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.004167,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.59075,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.151667,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.2032919999999998,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.280040999999999,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.0048330000000000005,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.717,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.359833,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.4115829999999998,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 2.056334,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.005542,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.661667,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.2069590000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.2598340000000001,
+                  "stage": "game"
+                }
+              ]
+            }
+          },
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 57.237166,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.007208,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.689625,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.3223330000000004,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 3.361916,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 8.920957999999999,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.004416,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.634166,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.188833,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.237375,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.179209,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.018459,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.7380000000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.385375,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.437375,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 2.080542,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.006458,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.663333,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.249042,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.308625,
+                  "stage": "game"
+                }
+              ]
+            }
+          }
+        ],
+        "automatic_runtime": "synthetic executable never executed",
+        "build": "debug-test-no-debug-info",
+        "configured_concurrency": 4,
+        "game_launch": false,
+        "library_count": 128,
+        "native": [
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 83.6045,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.005915999999999999,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 30.086958,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 32.243333,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.0067079999999999996,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 25.135125000000002,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 31.958833,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.007166,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.946458,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 32.697167,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.00625,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 31.756292,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 4.828291,
+              "library_resolution_ms": 0.107542,
+              "metadata_parse_ms": 0.204709,
+              "native_extraction_ms": 0.042375,
+              "texture_extraction_ms": 0.4165
+            },
+            "jvm": {
+              "command_ms": 0.477541,
+              "exit_success": true,
+              "java_detection_ms": 23.505875,
+              "spawn_to_exit_ms": 51.930792000000004
+            }
+          },
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 70.594833,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.005332999999999999,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 22.124667000000002,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 30.998167,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.005709,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.098125,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 32.201875,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.006041,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.789,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 25.238875,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.005292000000000001,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.310792000000003,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 5.309,
+              "library_resolution_ms": 0.104583,
+              "metadata_parse_ms": 0.20133299999999998,
+              "native_extraction_ms": 0.041999999999999996,
+              "texture_extraction_ms": 0.46575
+            },
+            "jvm": {
+              "command_ms": 0.473041,
+              "exit_success": true,
+              "java_detection_ms": 22.7395,
+              "spawn_to_exit_ms": 42.416042000000004
+            }
+          },
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 78.75825,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.006583,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 29.427666000000002,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 31.194083000000003,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.005875,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.630542000000002,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 32.191790999999995,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.006291000000000001,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.676333,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 28.461,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.006042,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 27.448084,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 5.015958,
+              "library_resolution_ms": 0.103667,
+              "metadata_parse_ms": 0.208166,
+              "native_extraction_ms": 0.04375,
+              "texture_extraction_ms": 0.600166
+            },
+            "jvm": {
+              "command_ms": 0.44095799999999996,
+              "exit_success": true,
+              "java_detection_ms": 24.727708,
+              "spawn_to_exit_ms": 42.575416999999995
+            }
+          },
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 79.1225,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.005084,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 25.534709,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 30.87275,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.006041,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.313541,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 32.724084,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.006584,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.018167,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 24.703917,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.0053750000000000004,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.776958,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 4.897541,
+              "library_resolution_ms": 0.13783299999999998,
+              "metadata_parse_ms": 0.199333,
+              "native_extraction_ms": 0.041999999999999996,
+              "texture_extraction_ms": 0.416458
+            },
+            "jvm": {
+              "command_ms": 0.45508400000000004,
+              "exit_success": true,
+              "java_detection_ms": 22.596458,
+              "spawn_to_exit_ms": 42.451084
+            }
+          },
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 81.618333,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.0053750000000000004,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 25.438291,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 31.119167,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.00575,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.5425,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 32.263625,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.006834,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.881,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 25.5365,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.005667,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.553667,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 4.976125,
+              "library_resolution_ms": 0.138542,
+              "metadata_parse_ms": 0.199,
+              "native_extraction_ms": 0.039833,
+              "texture_extraction_ms": 0.439
+            },
+            "jvm": {
+              "command_ms": 0.439958,
+              "exit_success": true,
+              "java_detection_ms": 23.106208,
+              "spawn_to_exit_ms": 41.976916
+            }
+          }
+        ],
+        "native_java_major": 21,
+        "os_cache": "uncontrolled",
+        "samples": 5,
+        "schema": 1,
+        "server": "serial-loopback"
+      }
+    },
+    "final_repeat": {
+      "log_sha256": "9844249c17a024f687e87af840fbfd188110f8e652672f0f4bd9ef53b9cd1faa",
+      "record": {
+        "automatic": [
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 68.431125,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.009166,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 4.1395,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 4.764416,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 5.598708,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 7.885666,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.004541,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.516083,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.019208,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.067083,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.036709,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.006042,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.6755,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.1735840000000002,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.227,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 2.004042,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.00625,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.600792,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.0990419999999999,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.166417,
+                  "stage": "game"
+                }
+              ]
+            }
+          },
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 66.581292,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.01025,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.5721669999999999,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.080584,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.837167,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 7.952291000000001,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.004333,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.537791,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 0.9948750000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.043416,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.225541999999999,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.004667,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.672458,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.2904170000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.338625,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 2.1779159999999997,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.005833,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.611333,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.1325,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.194708,
+                  "stage": "game"
+                }
+              ]
+            }
+          },
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 71.421291,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.006833,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.497791,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.1717500000000003,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 3.041416,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 8.23625,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.005542,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.681167,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.122125,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.181459,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 8.895209,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.0043749999999999995,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.5369170000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.0322090000000002,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.0810419999999998,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 1.9901670000000002,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.005458,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.610542,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.164417,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.2156669999999998,
+                  "stage": "game"
+                }
+              ]
+            }
+          },
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 67.772,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.006375,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.4169580000000002,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.0369580000000003,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.796208,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 8.51975,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.003542,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.526083,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.057833,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.104417,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.078166,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.00475,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.6104160000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.214875,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.262,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 1.918458,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.005458,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.5855,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.0730410000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.125916,
+                  "stage": "game"
+                }
+              ]
+            }
+          },
+          {
+            "cold": {
+              "artifact_requests": 133,
+              "elapsed_ms": 85.596333,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 5,
+              "requests": 138,
+              "stages": [
+                {
+                  "at_ms": 0.007666000000000001,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 1.729583,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 2.284583,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 3.07875,
+                  "stage": "game"
+                }
+              ]
+            },
+            "deep": {
+              "artifact_requests": 0,
+              "elapsed_ms": 8.628667,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.004042,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.5279170000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.03575,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.089792,
+                  "stage": "game"
+                }
+              ]
+            },
+            "repair": {
+              "artifact_requests": 1,
+              "elapsed_ms": 9.147834000000001,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 4,
+              "stages": [
+                {
+                  "at_ms": 0.004084,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.613792,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.1595,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.204542,
+                  "stage": "game"
+                }
+              ]
+            },
+            "warm": {
+              "artifact_requests": 0,
+              "elapsed_ms": 2.108292,
+              "library_file_checks": 258,
+              "library_resolutions": 1,
+              "metadata_requests": 3,
+              "requests": 3,
+              "stages": [
+                {
+                  "at_ms": 0.0054589999999999994,
+                  "stage": "preparing"
+                },
+                {
+                  "at_ms": 0.5687920000000001,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.100375,
+                  "stage": "java"
+                },
+                {
+                  "at_ms": 1.159959,
+                  "stage": "game"
+                }
+              ]
+            }
+          }
+        ],
+        "automatic_runtime": "synthetic executable never executed",
+        "build": "debug-test-no-debug-info",
+        "configured_concurrency": 4,
+        "game_launch": false,
+        "library_count": 128,
+        "native": [
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 91.02687499999999,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.005208999999999999,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 26.05625,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 28.097666,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.005208,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 20.800666,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 33.016084,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.00575,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.722417,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 24.594875,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.007,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.677958999999998,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 5.023834,
+              "library_resolution_ms": 0.108625,
+              "metadata_parse_ms": 0.210583,
+              "native_extraction_ms": 0.039875,
+              "texture_extraction_ms": 0.43733299999999997
+            },
+            "jvm": {
+              "command_ms": 0.677041,
+              "exit_success": true,
+              "java_detection_ms": 23.529917,
+              "spawn_to_exit_ms": 42.8215
+            }
+          },
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 90.942708,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.004875,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 25.245667,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 31.331999999999997,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.008124999999999999,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.193958000000002,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 33.867084,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.013375,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 25.0845,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 25.532959,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.006167000000000001,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.606959,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 4.8965,
+              "library_resolution_ms": 0.106541,
+              "metadata_parse_ms": 0.209458,
+              "native_extraction_ms": 0.042125,
+              "texture_extraction_ms": 0.421417
+            },
+            "jvm": {
+              "command_ms": 0.452666,
+              "exit_success": true,
+              "java_detection_ms": 22.381375,
+              "spawn_to_exit_ms": 41.925375
+            }
+          },
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 83.938292,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.006583,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.388417,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 32.068583,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.007500000000000001,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.517042,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 30.1875,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.021500000000000002,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 21.984792,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 25.542667,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.005582999999999999,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.6595,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 4.856666,
+              "library_resolution_ms": 0.128709,
+              "metadata_parse_ms": 0.212834,
+              "native_extraction_ms": 0.047166,
+              "texture_extraction_ms": 0.472042
+            },
+            "jvm": {
+              "command_ms": 0.45508400000000004,
+              "exit_success": true,
+              "java_detection_ms": 23.114917,
+              "spawn_to_exit_ms": 43.290583
+            }
+          },
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 81.88199999999999,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.005458,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.401458,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 31.810791,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.005625000000000001,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.675333000000002,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 32.596958,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.006625,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.697208,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 25.285625,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.006417,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.393125,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 5.326166000000001,
+              "library_resolution_ms": 0.166,
+              "metadata_parse_ms": 0.257792,
+              "native_extraction_ms": 0.04825,
+              "texture_extraction_ms": 0.475875
+            },
+            "jvm": {
+              "command_ms": 0.433625,
+              "exit_success": true,
+              "java_detection_ms": 22.871208,
+              "spawn_to_exit_ms": 41.956832999999996
+            }
+          },
+          {
+            "flows": {
+              "cold": {
+                "artifact_requests": 132,
+                "elapsed_ms": 87.15275,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 3,
+                "requests": 135,
+                "stages": [
+                  {
+                    "at_ms": 0.007834,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 24.40525,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "deep": {
+                "artifact_requests": 0,
+                "elapsed_ms": 31.745666,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.006416,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.873458,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "repair": {
+                "artifact_requests": 1,
+                "elapsed_ms": 31.948749999999997,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 2,
+                "stages": [
+                  {
+                    "at_ms": 0.014666,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 23.373624999999997,
+                    "stage": "game"
+                  }
+                ]
+              },
+              "warm": {
+                "artifact_requests": 0,
+                "elapsed_ms": 31.413499999999996,
+                "library_file_checks": 258,
+                "library_resolutions": 1,
+                "metadata_requests": 1,
+                "requests": 1,
+                "stages": [
+                  {
+                    "at_ms": 0.005582999999999999,
+                    "stage": "preparing"
+                  },
+                  {
+                    "at_ms": 30.495,
+                    "stage": "game"
+                  }
+                ]
+              }
+            },
+            "helpers": {
+              "hash_verification_ms": 4.8455829999999995,
+              "library_resolution_ms": 0.102333,
+              "metadata_parse_ms": 0.201875,
+              "native_extraction_ms": 0.039125,
+              "texture_extraction_ms": 0.564917
+            },
+            "jvm": {
+              "command_ms": 0.438291,
+              "exit_success": true,
+              "java_detection_ms": 23.743875000000003,
+              "spawn_to_exit_ms": 55.067291999999995
+            }
+          }
+        ],
+        "native_java_major": 21,
+        "os_cache": "uncontrolled",
+        "samples": 5,
+        "schema": 1,
+        "server": "serial-loopback"
+      }
+    }
+  }
+}

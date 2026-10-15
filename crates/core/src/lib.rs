@@ -6,6 +6,7 @@
 
 pub mod assets;
 pub mod authlib;
+pub mod content_cache;
 pub mod http;
 pub mod install;
 pub mod java;

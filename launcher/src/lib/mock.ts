@@ -118,8 +118,11 @@ const profile: PlayerProfile = {
   ],
 };
 let running = false;
+let runningGame: { instance_id: string; operation_id: string; run_id: string } | null = null;
+let preparation: { instanceId: string; operationId: string } | null = null;
 
-async function fakeLaunch(id: string) {
+async function fakeLaunch(id: string, operationId: string, start: boolean) {
+  const emit = (event: string, payload: Record<string, unknown>) => mockEmit(event, { ...payload, instance_id: id, operation_id: operationId });
   const stages: [string, string, number, number][] = [
     ['java', 'Installing Java 21', 48_000_000, 212],
     ['game', 'Downloading Minecraft 1.21.1', 420_000_000, 3412],
@@ -127,20 +130,31 @@ async function fakeLaunch(id: string) {
     ['files', 'Syncing instance files', 184_000_000, 48],
   ];
   for (const [stage, label, total, files] of stages) {
-    mockEmit('launch://progress', { type: 'stage', stage, label });
+    if (preparation?.operationId !== operationId) return;
+    emit('launch://progress', { type: 'stage', stage, label });
     for (let i = 1; i <= 20; i++) {
       await sleep(scenario === 'progress' ? 400 : 60);
-      mockEmit('launch://progress', { type: 'progress', stage, done: (total * i) / 20, total, files_done: Math.round((files * i) / 20), files_total: files });
+      if (preparation?.operationId !== operationId) return;
+      emit('launch://progress', { type: 'progress', stage, done: (total * i) / 20, total, files_done: Math.round((files * i) / 20), files_total: files });
     }
   }
-  mockEmit('launch://progress', { type: 'stage', stage: 'launching', label: 'Starting Minecraft' });
+  if (!start) {
+    preparation = null;
+    emit('launch://state', { run_id: null, state: 'idle', message: 'Instance is up to date' });
+    return;
+  }
+  emit('launch://progress', { type: 'stage', stage: 'launching', label: 'Starting Minecraft' });
   await sleep(500);
+  if (preparation?.operationId !== operationId) return;
+  preparation = null;
   running = true;
-  mockEmit('launch://state', { instance_id: id, run_id: 'mock-run', state: 'running', message: null });
+  const runId = crypto.randomUUID();
+  runningGame = { instance_id: id, operation_id: operationId, run_id: runId };
+  emit('launch://state', { run_id: runId, state: 'running', message: null });
   const lines = ['[main/INFO]: Loading Minecraft 1.21.1 with Fabric Loader 0.16.9', '[Render thread/INFO]: Setting user: Alex_Miner', '[Render thread/INFO]: Backend library: LWJGL version 3.3.3', '[Render thread/INFO]: Reloading ResourceManager: vanilla, fabric', '[Render thread/INFO]: Sound engine started', '[Render thread/INFO]: Connecting to play.velora.example, 25565'];
   for (const l of lines) {
     await sleep(300);
-    mockEmit('game://log', [`[12:00:0${lines.indexOf(l)}] ${l}`]);
+    emit('game://log', { run_id: runId, lines: [`[12:00:0${lines.indexOf(l)}] ${l}`] });
   }
 }
 
@@ -233,7 +247,7 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
         accounts,
         active_account: active,
         manifest: scenario === 'setup' ? null : manifest,
-        game_running: running ? [{ run_id: 'mock-run', instance_id: 'survival-smp' }] : [],
+        game_running: running && runningGame ? [{ run_id: runningGame.run_id, instance_id: runningGame.instance_id }] : [],
       };
       return structuredClone(b);
     }
@@ -270,12 +284,26 @@ async function mockInvokeInner(cmd: string, args: Record<string, any>): Promise<
       active = args.id;
       return null;
     case 'launch':
-      fakeLaunch(args.instanceId);
+    case 'repair_instance': {
+      if (preparation) throw new Error('already preparing an instance');
+      const operationId = crypto.randomUUID();
+      preparation = { instanceId: args.instanceId, operationId };
+      void fakeLaunch(args.instanceId, operationId, cmd === 'launch');
+      return operationId;
+    }
+    case 'cancel_launch':
+      if (preparation && preparation.instanceId === args.instanceId && preparation.operationId === args.operationId) {
+        preparation = null;
+        mockEmit('launch://state', { instance_id: args.instanceId, operation_id: args.operationId, run_id: null, state: 'idle', message: 'Cancelled' });
+      }
       return null;
     case 'kill_game':
-      running = false;
-      mockEmit('game://exit', { instance_id: 'survival-smp', run_id: args?.runId ?? 'mock-run', code: 0, crashed: false, tail: [], crash_report: null });
-      mockEmit('launch://state', { instance_id: 'survival-smp', state: 'idle', message: null });
+      if (runningGame && runningGame.run_id === args.runId) {
+        running = false;
+        mockEmit('game://exit', { instance_id: runningGame.instance_id, run_id: runningGame.run_id, code: 0, crashed: false, tail: [], crash_report: null });
+        mockEmit('launch://state', { ...runningGame, state: 'idle', message: null });
+        runningGame = null;
+      }
       return null;
     case 'save_instance_options':
       return { fov: '0.8', gamma: '1.0', graphicsMode: '1', autoJump: 'true' };
